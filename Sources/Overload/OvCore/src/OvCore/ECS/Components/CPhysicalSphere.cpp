@@ -17,7 +17,7 @@ OvCore::ECS::Components::CPhysicalSphere::CPhysicalSphere(ECS::Actor & p_owner) 
 {
 	m_physicalObject = std::make_unique<PhysicalSphere>(p_owner.transform.GetFTransform());
 
-	m_physicalObject->SetUserData<std::reference_wrapper<CPhysicalObject>>(std::ref(*this));
+	m_physicalObject->SetUserData<std::reference_wrapper<CPhysicalObject>>(*this);
 
 	BindListener();
 	Init();

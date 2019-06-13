@@ -41,6 +41,8 @@ public:
 		collapsable = false;
 		movable = false;
 
+		std::filesystem::create_directories(std::string(getenv("APPDATA")) + "\\OverloadTech\\OvEditor\\");
+
 		SetSize({ 1000, 580 });
 		SetPosition({ 0.f, 0.f });
 

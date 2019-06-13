@@ -17,27 +17,16 @@ OvEditor::Panels::HardwareInfo::HardwareInfo
 	bool p_opened,
 	const OvUI::Settings::PanelWindowSettings& p_windowSettings,
 	float p_logFrequency,
-	size_t p_maxElements,
-	EDisplayMode p_displayMode
+	size_t p_maxElements
 ) :
 	PanelWindow(p_title, p_opened, p_windowSettings),
 	m_logFrequency(p_logFrequency),
 	m_maxElements(p_maxElements),
 	m_hardwareInfo(new OvAnalytics::Hardware::HardwareInfo(m_logFrequency))
 {
-	switch (p_displayMode)
-	{
-	case OvEditor::Panels::HardwareInfo::EDisplayMode::PLOT_LINES:
-		m_cpuUsage = &CreateWidget<Plots::PlotLines>();
-		m_gpuUsage = &CreateWidget<Plots::PlotLines>();
-		m_ramUsage = &CreateWidget<Plots::PlotLines>();
-		break;
-	case OvEditor::Panels::HardwareInfo::EDisplayMode::PLOT_HISTOGRAM:
-		m_cpuUsage = &CreateWidget<Plots::PlotHistogram>();
-		m_gpuUsage = &CreateWidget<Plots::PlotHistogram>();
-		m_ramUsage = &CreateWidget<Plots::PlotHistogram>();
-		break;
-	}
+	m_cpuUsage = &CreateWidget<Plots::PlotLines>();
+	m_gpuUsage = &CreateWidget<Plots::PlotLines>();
+	m_ramUsage = &CreateWidget<Plots::PlotLines>();
 	
 	m_cpuUsage->minScale = 0.0f;
 	m_cpuUsage->maxScale = 100.0f;

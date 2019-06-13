@@ -15,7 +15,7 @@
 
 OvCore::ECS::Components::CAudioSource::CAudioSource(ECS::Actor& p_owner) :
 	AComponent(p_owner),
-	m_audioSource(OvAudio::Entities::AudioSource(OvCore::Global::ServiceLocator::Get<OvAudio::Core::AudioPlayer>(), owner.transform.GetFTransform()))
+	m_audioSource(OvCore::Global::ServiceLocator::Get<OvAudio::Core::AudioPlayer>(), owner.transform.GetFTransform())
 {
 }
 

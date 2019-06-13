@@ -53,7 +53,7 @@ void OvEditor::Core::Editor::SetupUI()
 
 	m_panelsManager.CreatePanel<OvEditor::Panels::MenuBar>("Menu Bar");
 	m_panelsManager.CreatePanel<OvEditor::Panels::AssetBrowser>("Asset Browser", true, settings, m_context.engineAssetsPath, m_context.projectAssetsPath, m_context.projectScriptsPath);
-	m_panelsManager.CreatePanel<OvEditor::Panels::HardwareInfo>("Hardware Info", false, settings, 0.2f, 50, HardwareInfo::EDisplayMode::PLOT_LINES);
+	m_panelsManager.CreatePanel<OvEditor::Panels::HardwareInfo>("Hardware Info", false, settings, 0.2f, 50);
 	m_panelsManager.CreatePanel<OvEditor::Panels::Profiler>("Profiler", true, settings, 0.25f);
 	m_panelsManager.CreatePanel<OvEditor::Panels::Console>("Console", true, settings);
 	m_panelsManager.CreatePanel<OvEditor::Panels::Hierarchy>("Hierarchy", true, settings);

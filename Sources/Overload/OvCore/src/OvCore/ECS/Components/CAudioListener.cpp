@@ -9,7 +9,7 @@
 
 OvCore::ECS::Components::CAudioListener::CAudioListener(ECS::Actor& p_owner) :
 	AComponent(p_owner),
-	m_audioListener(OvAudio::Entities::AudioListener(owner.transform.GetFTransform()))
+	m_audioListener(owner.transform.GetFTransform())
 {
 	m_audioListener.SetEnabled(false);
 }

@@ -39,6 +39,8 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 
 	/* Settings */
 	OvWindowing::Settings::DeviceSettings deviceSettings;
+	deviceSettings.contextMajorVersion = 4;
+	deviceSettings.contextMajorVersion = 3;
 	windowSettings.title = "Overload Editor";
 	windowSettings.width = 1280;
 	windowSettings.height = 720;
@@ -158,8 +160,8 @@ void OvEditor::Core::Context::ResetProjectSettings()
 	projectSettings.Add<bool>("vsync", true);
 	projectSettings.Add<bool>("multisampling", true);
 	projectSettings.Add<int>("samples", 4);
-	projectSettings.Add<int>("opengl_major", 3);
-	projectSettings.Add<int>("opengl_minor", 2);
+	projectSettings.Add<int>("opengl_major", 4);
+	projectSettings.Add<int>("opengl_minor", 3);
 	projectSettings.Add<bool>("dev_build", true);
 }
 

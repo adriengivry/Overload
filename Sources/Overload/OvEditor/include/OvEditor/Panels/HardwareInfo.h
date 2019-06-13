@@ -18,15 +18,6 @@ namespace OvEditor::Panels
 	{
 	public:
 		/**
-		* Defines some display modes for the hardware info information
-		*/
-		enum class EDisplayMode
-		{
-			PLOT_LINES,
-			PLOT_HISTOGRAM
-		};
-
-		/**
 		* Constructor
 		* @param p_title
 		* @param p_opened
@@ -41,8 +32,7 @@ namespace OvEditor::Panels
 			bool p_opened,
 			const OvUI::Settings::PanelWindowSettings& p_windowSettings,
 			float p_logFrequency,
-			size_t p_maxElements,
-			EDisplayMode p_displayMode
+			size_t p_maxElements
 		);
 
 		/**
