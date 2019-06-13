@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{7EBB8C83-AB76-40FA-9F8F-8C2398AA3F7F}</ProjectGuid>
+    <RootNamespace>OvEditor</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Build\OvCore\include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\..\Build\OvCore\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Build\OvCore\include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\..\Build\OvCore\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>_DISABLE_EXTENDED_ALIGNED_STORAGE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>del "$(OutDir)*.dll"
+xcopy "$(SolutionDir)..\..\Build\OvCore\bin\$(Configuration)\*.dll" "$(OutDir)"  /e /y /i /r
+
+:: Deleting the previous build ::
+RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)"
+
+:: Build folder creation ::
+xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)" /y /i
+xcopy "$(OutDir)*.exe" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)" /y /i
+
+:: Resource integration to build folder ::
+xcopy "$(SolutionDir)..\..\Resources\Engine\*" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)\Data\Engine" /y /i /r /e
+xcopy "$(SolutionDir)..\..\Resources\Editor\*" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)\Data\Editor" /y /i /r /e
+
+:: Cooking folder generation ::
+xcopy "$(SolutionDir)..\..\Build\OvGame\Debug" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)\Builder\Development" /y /i /c
+xcopy "$(SolutionDir)..\..\Build\OvGame\Release" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)\Builder\Shipping" /y /i /c
+
+:: Misc files copy ::
+xcopy "$(ProjectDir)Layout.ini" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)\Config\" /y /i</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>OvAnalytics.lib;OvDebug.lib;OvCore.lib;OvAudio.lib;OvRendering.lib;OvWindowing.lib;OvTools.lib;OvMaths.lib;OvUI.lib;OvPhysics.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>_DISABLE_EXTENDED_ALIGNED_STORAGE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>OvAnalytics.lib;OvDebug.lib;OvCore.lib;OvAudio.lib;OvRendering.lib;OvWindowing.lib;OvTools.lib;OvMaths.lib;OvUI.lib;OvPhysics.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <PostBuildEvent>
+      <Command>del "$(OutDir)*.dll"
+xcopy "$(SolutionDir)..\..\Build\OvCore\bin\$(Configuration)\*.dll" "$(OutDir)"  /e /y /i /r
+
+:: Deleting the previous build ::
+RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)"
+
+:: Build folder creation ::
+xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)" /y /i
+xcopy "$(OutDir)*.exe" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)" /y /i
+
+:: Resource integration to build folder ::
+xcopy "$(SolutionDir)..\..\Resources\Engine\*" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)\Data\Engine" /y /i /r /e
+xcopy "$(SolutionDir)..\..\Resources\Editor\*" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)\Data\Editor" /y /i /r /e
+
+:: Cooking folder generation ::
+xcopy "$(SolutionDir)..\..\Build\OvGame\Debug" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)\Builder\Development" /y /i /c
+xcopy "$(SolutionDir)..\..\Build\OvGame\Release" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)\Builder\Shipping" /y /i /c
+
+:: Misc files copy ::
+xcopy "$(ProjectDir)Layout.ini" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)\Config\" /y /i</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\OvEditor\Core\Application.cpp" />
+    <ClCompile Include="src\OvEditor\Core\CameraController.cpp" />
+    <ClCompile Include="src\OvEditor\Core\Context.cpp" />
+    <ClCompile Include="src\OvEditor\Core\Editor.cpp" />
+    <ClCompile Include="src\OvEditor\Core\EditorActions.cpp" />
+    <ClCompile Include="src\OvEditor\Core\EditorRenderer.cpp" />
+    <ClCompile Include="src\OvEditor\Core\EditorResources.cpp" />
+    <ClCompile Include="src\OvEditor\Core\PanelsManager.cpp" />
+    <ClCompile Include="src\OvEditor\Core\ProjectHub.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\AssetBrowser.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\AssetView.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\AView.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\AViewControllable.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\Console.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\GameView.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\HardwareInfo.cpp" />
+    <ClCompile Include="src\OvEditor\Main.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\HelpWindow.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\Hierarchy.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\Inspector.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\MaterialEditor.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\MenuBar.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\Profiler.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\ProjectSettings.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\SceneView.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\Toolbar.cpp" />
+    <ClCompile Include="src\OvEditor\Resources\RawShaders.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\OvEditor\Core\Application.h" />
+    <ClInclude Include="include\OvEditor\Core\CameraController.h" />
+    <ClInclude Include="include\OvEditor\Core\Context.h" />
+    <ClInclude Include="include\OvEditor\Core\Editor.h" />
+    <ClInclude Include="include\OvEditor\Core\EditorActions.h" />
+    <ClInclude Include="include\OvEditor\Core\EditorRenderer.h" />
+    <ClInclude Include="include\OvEditor\Core\EditorResources.h" />
+    <ClInclude Include="include\OvEditor\Core\PanelsManager.h" />
+    <ClInclude Include="include\OvEditor\Core\ProjectHub.h" />
+    <ClInclude Include="include\OvEditor\Resources\RawShaders.h" />
+    <ClInclude Include="include\OvEditor\Resources\RawTextures.h" />
+    <ClInclude Include="include\OvEditor\Panels\AssetBrowser.h" />
+    <ClInclude Include="include\OvEditor\Panels\AssetView.h" />
+    <ClInclude Include="include\OvEditor\Panels\AView.h" />
+    <ClInclude Include="include\OvEditor\Panels\AViewControllable.h" />
+    <ClInclude Include="include\OvEditor\Panels\Console.h" />
+    <ClInclude Include="include\OvEditor\Panels\GameView.h" />
+    <ClInclude Include="include\OvEditor\Panels\HardwareInfo.h" />
+    <ClInclude Include="include\OvEditor\Panels\HelpWindow.h" />
+    <ClInclude Include="include\OvEditor\Panels\Hierarchy.h" />
+    <ClInclude Include="include\OvEditor\Panels\Inspector.h" />
+    <ClInclude Include="include\OvEditor\Panels\MaterialEditor.h" />
+    <ClInclude Include="include\OvEditor\Panels\MenuBar.h" />
+    <ClInclude Include="include\OvEditor\Panels\Profiler.h" />
+    <ClInclude Include="include\OvEditor\Panels\ProjectSettings.h" />
+    <ClInclude Include="include\OvEditor\Panels\SceneView.h" />
+    <ClInclude Include="include\OvEditor\Panels\Toolbar.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="include\OvEditor\Core\EditorActions.inl" />
+    <None Include="Layout.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="OvEditor.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

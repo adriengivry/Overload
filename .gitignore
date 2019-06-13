@@ -1,0 +1,6 @@
+.vs/
+Bin/
+Bin-Int/
+Build/
+imgui.ini
+*.aps

@@ -1,0 +1,50 @@
+/**
+* @project: Overload
+* @author: Overload Tech.
+* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+*/
+
+#pragma once
+
+#include <irrklang/irrKlang.h>
+
+#include "OvAudio/API/Export.h"
+#include "OvAudio/Tracking/SoundStopEventBinder.h"
+
+namespace OvAudio::Tracking
+{
+	/**
+	* Track a playing sound and allow the modification of its settings
+	*/
+	class API_OVAUDIO SoundTracker
+	{
+	public:
+		/**
+		* Constructor
+		* @param p_track
+		*/
+		SoundTracker(irrklang::ISound* p_track);
+
+		/**
+		* Destructor
+		*/
+		~SoundTracker();
+
+		/**
+		* Returns the tracked sound instance
+		*/
+		irrklang::ISound* GetTrack() const;
+
+	public:
+		/**
+		* FinishedEvent is called when the track get stopped/finished
+		*/
+		OvTools::Eventing::Event<> StopEvent;
+
+	private:
+		irrklang::ISound* const m_track = nullptr;
+
+	private:
+		SoundStopEventBinder m_soundStopEventBinder;
+	};
+}
