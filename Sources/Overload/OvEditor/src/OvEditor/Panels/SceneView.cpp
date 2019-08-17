@@ -51,12 +51,14 @@ void OvEditor::Panels::SceneView::Update(float p_deltaTime)
 
 void OvEditor::Panels::SceneView::_Render_Impl()
 {
-	EDITOR_CONTEXT(renderer)->SetStencilMask(0xFF);
-	EDITOR_CONTEXT(renderer)->Clear(m_camera);
-	EDITOR_CONTEXT(renderer)->SetStencilMask(0x00);
+	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
 
-	uint8_t glState = EDITOR_CONTEXT(renderer)->FetchGLState();
-	EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
+	baseRenderer.SetStencilMask(0xFF);
+	baseRenderer.Clear(m_camera);
+	baseRenderer.SetStencilMask(0x00);
+
+	uint8_t glState = baseRenderer.FetchGLState();
+	baseRenderer.ApplyStateMask(glState);
 
 	m_editorRenderer.RenderGrid(m_cameraPosition, m_gridColor);
 	m_editorRenderer.RenderCameras();
@@ -69,14 +71,14 @@ void OvEditor::Panels::SceneView::_Render_Impl()
 		if (selectedActor.IsActive())
 		{
 			m_editorRenderer.RenderActorAsSelected(selectedActor, true);
-			EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
+			baseRenderer.ApplyStateMask(glState);
 			m_editorRenderer.RenderActorAsSelected(selectedActor, false);
 		}
 
-		EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
-		EDITOR_CONTEXT(renderer)->Clear(false, true, false);
+		baseRenderer.ApplyStateMask(glState);
+		baseRenderer.Clear(false, true, false);
 		m_editorRenderer.RenderGuizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation());
 	}
 
-	EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
+	baseRenderer.ApplyStateMask(glState);
 }

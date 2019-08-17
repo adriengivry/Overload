@@ -47,12 +47,14 @@ OvEditor::Panels::AssetView::AssetView
 
 void OvEditor::Panels::AssetView::_Render_Impl()
 {
-	EDITOR_CONTEXT(renderer)->SetStencilMask(0xFF);
-	EDITOR_CONTEXT(renderer)->Clear(m_camera);
-	EDITOR_CONTEXT(renderer)->SetStencilMask(0x00);
+	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
 
-	uint8_t glState = EDITOR_CONTEXT(renderer)->FetchGLState();
-	EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
+	baseRenderer.SetStencilMask(0xFF);
+	baseRenderer.Clear(m_camera);
+	baseRenderer.SetStencilMask(0x00);
+
+	uint8_t glState = baseRenderer.FetchGLState();
+	baseRenderer.ApplyStateMask(glState);
 
 	m_editorRenderer.RenderGrid(m_cameraPosition, m_gridColor);
 
@@ -65,7 +67,7 @@ void OvEditor::Panels::AssetView::_Render_Impl()
 	if (auto pval = std::get_if<OvCore::Resources::Material*>(&m_resource); pval && *pval)
 		m_editorRenderer.RenderMaterialAsset(**pval);
 
-	EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
+	baseRenderer.ApplyStateMask(glState);
 }
 
 void OvEditor::Panels::AssetView::SetResource(ViewableResource p_resource)
