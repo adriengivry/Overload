@@ -104,6 +104,7 @@ xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configura
     <ClInclude Include="include\OvTools\Eventing\Event.h" />
     <ClInclude Include="include\OvTools\Filesystem\IniFile.h" />
     <ClInclude Include="include\OvTools\Utils\PathParser.h" />
+    <ClInclude Include="include\OvTools\Utils\ReferenceOrValue.h" />
     <ClInclude Include="include\OvTools\Utils\String.h" />
     <ClInclude Include="include\OvTools\Utils\SystemCalls.h" />
     <ClInclude Include="include\OvTools\Utils\Random.h" />
