@@ -5,6 +5,8 @@
 */
 
 #include <string>
+#include <stdexcept>
+#include <cmath>
 
 #include "OvMaths/FMatrix3.h"
 

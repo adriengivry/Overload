@@ -7,6 +7,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <string>
+#include <cmath>
 
 #include "OvMaths/FMatrix4.h"
 #include "OvMaths/FVector3.h"

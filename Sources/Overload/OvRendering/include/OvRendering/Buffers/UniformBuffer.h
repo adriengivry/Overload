@@ -7,6 +7,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 #include "OvRendering/Context/Driver.h"
 #include "OvRendering/Buffers/EAccessSpecifier.h"
