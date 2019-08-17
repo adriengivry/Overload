@@ -6,6 +6,9 @@
 
 #pragma once
 
+
+#include <OvDebug/Utils/Logger.h>
+
 #include "OvCore/ECS/Components/Behaviour.h"
 
 namespace OvCore::ECS::Components
