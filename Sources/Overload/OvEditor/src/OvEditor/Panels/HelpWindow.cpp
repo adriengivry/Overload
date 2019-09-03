@@ -11,25 +11,6 @@
 #include <OvUI/Widgets/Visual/Bullet.h>
 #include <OvUI/Widgets/Layout/Columns.h>
 
-class TestWidget : public OvUI::Widgets::AWidget
-{
-public:
-	TestWidget(std::string pid) { id = pid; }
-
-	virtual void _Draw_Impl() override
-	{
-		ImGui::Columns(2, id.c_str(), false);
-		ImGui::SetColumnWidth(0, 75);
-		ImGui::Text("Coucou je suis a gauche");
-		ImGui::NextColumn();
-		ImGui::Text("Coucou je suis a droite");
-
-		ImGui::Columns(1);
-	}
-
-	std::string id;
-};
-
 OvEditor::Panels::HelpWindow::HelpWindow
 (
 	const std::string& p_title,
