@@ -10,6 +10,7 @@
 #include <OvUI/Panels/PanelWindow.h>
 #include <OvUI/Widgets/Visual/Image.h>
 #include <OvRendering/Buffers/UniformBuffer.h>
+#include <OvRendering/Buffers/Framebuffer.h>
 #include <OvRendering/LowRenderer/Camera.h>
 
 namespace OvEditor::Core { class EditorRenderer; }
@@ -34,11 +35,6 @@ namespace OvEditor::Panels
 			bool p_opened,
 			const OvUI::Settings::PanelWindowSettings& p_windowSettings
 		);
-
-		/**
-		* Destructor
-		*/
-		~AView();
 
 		/**
 		* Update the view
@@ -117,8 +113,6 @@ namespace OvEditor::Panels
 		OvMaths::FVector3 m_gridColor = OvMaths::FVector3::One;
 
 	private:
-		uint32_t m_fbo;
-		uint32_t m_renderTexture;
-		uint32_t m_depthStencilBuffer;
+		OvRendering::Buffers::Framebuffer m_fbo;
 	};
 }
