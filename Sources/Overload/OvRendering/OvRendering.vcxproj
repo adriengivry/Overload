@@ -129,6 +129,7 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
   <ItemGroup>
     <ClInclude Include="include\OvRendering\API\Export.h" />
     <ClInclude Include="include\OvRendering\Buffers\EAccessSpecifier.h" />
+    <ClInclude Include="include\OvRendering\Buffers\Framebuffer.h" />
     <ClInclude Include="include\OvRendering\Buffers\IndexBuffer.h" />
     <ClInclude Include="include\OvRendering\Buffers\ShaderStorageBuffer.h" />
     <ClInclude Include="include\OvRendering\Buffers\UniformBuffer.h" />
@@ -163,6 +164,7 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
     <ClInclude Include="include\OvRendering\Settings\ETextureFilteringMode.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\OvRendering\Buffers\Framebuffer.cpp" />
     <ClCompile Include="src\OvRendering\Core\ShapeDrawer.cpp" />
     <ClCompile Include="src\OvRendering\Buffers\IndexBuffer.cpp" />
     <ClCompile Include="src\OvRendering\Buffers\ShaderStorageBuffer.cpp" />
