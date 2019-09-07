@@ -96,6 +96,9 @@
     <ClCompile Include="src\OvEditor\Resources\RawShaders.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\OvEditor\Core\GuizmoOperations.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\OvEditor\Panels\AssetBrowser.h">
@@ -180,6 +183,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\OvEditor\Resources\RawShaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OvEditor\Core\GuizmoOperations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

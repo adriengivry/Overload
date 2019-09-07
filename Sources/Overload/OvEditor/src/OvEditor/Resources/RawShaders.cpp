@@ -143,6 +143,7 @@ out VS_OUT
 } vs_out;
 
 uniform bool u_IsBall;
+uniform bool u_IsPickable;
 
 mat4 rotationMatrix(vec3 axis, float angle)
 {
@@ -171,9 +172,19 @@ void main()
 
     float distanceToCamera = distance(ubo_ViewPos, instanceModel[3].xyz);
 
-    vs_out.FragPos      = vec3(instanceModel * vec4(geo_Pos * distanceToCamera * 0.1f, 1.0));
+	vec3 pos = geo_Pos;
+
+    vs_out.FragPos      = vec3(instanceModel * vec4(pos * distanceToCamera * 0.1f, 1.0));
     vs_out.Normal       = normalize(mat3(transpose(inverse(instanceModel))) * geo_Normal);
-    vs_out.Color        = vec3(float(gl_InstanceID == 1 || u_IsBall), float(gl_InstanceID == 2 || u_IsBall), float(gl_InstanceID == 0 || u_IsBall));
+
+	if (u_IsPickable)
+	{
+		vs_out.Color = vec3(1.0f, 1.0f, (254 - gl_InstanceID) / 255.0f);
+	}
+	else
+	{
+		vs_out.Color = vec3(float(gl_InstanceID == 1 || u_IsBall), float(gl_InstanceID == 2 || u_IsBall), float(gl_InstanceID == 0 || u_IsBall));
+	}
 
     gl_Position = ubo_Projection * ubo_View * vec4(vs_out.FragPos, 1.0);
 }
@@ -201,9 +212,18 @@ vec3 Lambert(vec3 p_fragPos, vec3 p_normal)
     return clamp(c_lightDiffuse * diffuse + c_lightAmbient, 0.0, 1.0);
 }
 
+uniform bool u_IsPickable;
+
 void main()
 {
-    FRAGMENT_COLOR = vec4(Lambert(fs_in.FragPos, fs_in.Normal) * fs_in.Color, 0.5f);
+	if (u_IsPickable)
+	{
+		FRAGMENT_COLOR = vec4(fs_in.Color, 1.0f);
+	}
+	else
+	{
+		FRAGMENT_COLOR = vec4(Lambert(fs_in.FragPos, fs_in.Normal) * fs_in.Color, 0.5f);
+	}
 })";
 
 	return source;

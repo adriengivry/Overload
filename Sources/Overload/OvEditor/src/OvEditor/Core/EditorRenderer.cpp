@@ -102,11 +102,18 @@ void OvEditor::Core::EditorRenderer::InitMaterials()
 	m_guizmoArrowMaterial.SetShader(m_context.editorResources->GetShader("Guizmo"));
 	m_guizmoArrowMaterial.SetGPUInstances(3);
 	m_guizmoArrowMaterial.Set("u_IsBall", false);
+	m_guizmoArrowMaterial.Set("u_IsPickable", false);
 
 	/* Guizmo Ball Material */
 	m_guizmoBallMaterial.SetShader(m_context.editorResources->GetShader("Guizmo"));
-	m_guizmoBallMaterial.SetShader(m_context.editorResources->GetShader("Guizmo"));
 	m_guizmoBallMaterial.Set("u_IsBall", true);
+	m_guizmoBallMaterial.Set("u_IsPickable", false);
+
+	/* Guizmo Pickable Material */
+	m_guizmoPickingMaterial.SetShader(m_context.editorResources->GetShader("Guizmo"));
+	m_guizmoPickingMaterial.SetGPUInstances(3);
+	m_guizmoPickingMaterial.Set("u_IsBall", false);
+	m_guizmoPickingMaterial.Set("u_IsPickable", true);
 
 	/* Picking Material */
 	m_actorPickingMaterial.SetShader(m_context.shaderManager[":Shaders\\Unlit.glsl"]);
@@ -227,14 +234,19 @@ void OvEditor::Core::EditorRenderer::RenderCameras()
 	}
 }
 
-void OvEditor::Core::EditorRenderer::RenderGuizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation)
+void OvEditor::Core::EditorRenderer::RenderGuizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, bool p_pickable)
 {
 	using namespace OvMaths;
 
 	FMatrix4 model = FMatrix4::Translation(p_position) * FQuaternion::ToMatrix4(FQuaternion::Normalize(p_rotation));
-	FMatrix4 sphereModel = model * OvMaths::FMatrix4::Scaling({ 0.1f, 0.1f, 0.1f });
-	m_context.renderer->DrawModelWithSingleMaterial(*m_context.editorResources->GetModel("Sphere"), m_guizmoBallMaterial, &sphereModel);
-	m_context.renderer->DrawModelWithSingleMaterial(*m_context.editorResources->GetModel("Arrow"), m_guizmoArrowMaterial, &model);
+
+	if (!p_pickable)
+	{
+		FMatrix4 sphereModel = model * OvMaths::FMatrix4::Scaling({ 0.1f, 0.1f, 0.1f });
+		m_context.renderer->DrawModelWithSingleMaterial(*m_context.editorResources->GetModel("Sphere"), m_guizmoBallMaterial, &sphereModel);
+	}
+
+	m_context.renderer->DrawModelWithSingleMaterial(*m_context.editorResources->GetModel("Arrow"), p_pickable ? m_guizmoPickingMaterial : m_guizmoArrowMaterial, &model);
 }
 
 void OvEditor::Core::EditorRenderer::RenderModelToStencil(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model)

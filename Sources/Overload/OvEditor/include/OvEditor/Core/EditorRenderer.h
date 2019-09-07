@@ -75,8 +75,9 @@ namespace OvEditor::Core
 		* Render a guizmo at position
 		* @param p_position
 		* @param p_rotation
+		* @param p_pickable (Determine the shader to use to render the guizmo)
 		*/
-		void RenderGuizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation);
+		void RenderGuizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, bool p_pickable = false);
 
 		/**
 		* Render a model to the stencil buffer
@@ -148,6 +149,7 @@ namespace OvEditor::Core
 		OvCore::Resources::Material m_cameraMaterial;
 		OvCore::Resources::Material m_guizmoArrowMaterial;
 		OvCore::Resources::Material m_guizmoBallMaterial;
+		OvCore::Resources::Material m_guizmoPickingMaterial;
 		OvCore::Resources::Material m_actorPickingMaterial;
 	};
 }

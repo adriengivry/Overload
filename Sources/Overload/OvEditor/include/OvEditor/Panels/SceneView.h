@@ -7,6 +7,7 @@
 #pragma once
 
 #include "OvEditor/Panels/AViewControllable.h"
+#include "OvEditor/Core/GuizmoOperations.h"
 
 namespace OvEditor::Panels
 {
@@ -50,5 +51,6 @@ namespace OvEditor::Panels
 	private:
 		OvCore::SceneSystem::SceneManager& m_sceneManager;
 		OvRendering::Buffers::Framebuffer m_actorPickingFramebuffer;
+		OvEditor::Core::GuizmoOperations m_guizmoOperations;
 	};
 }
