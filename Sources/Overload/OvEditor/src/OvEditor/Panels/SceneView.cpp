@@ -78,51 +78,68 @@ void OvEditor::Panels::SceneView::RenderScene(uint8_t p_defaultRenderState)
 	m_fbo.Unbind();
 }
 
+void OvEditor::Panels::SceneView::RenderSceneForActorPicking()
+{
+	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
+
+	auto [winWidth, winHeight] = GetSafeSize();
+
+	m_actorPickingFramebuffer.Resize(winWidth, winHeight);
+	m_actorPickingFramebuffer.Bind();
+	baseRenderer.SetClearColor(1.0f, 1.0f, 1.0f);
+	baseRenderer.Clear();
+	m_editorRenderer.RenderSceneForActorPicking();
+	m_actorPickingFramebuffer.Unbind();
+}
+
 void OvEditor::Panels::SceneView::HandleActorPicking()
 {
-	if (IsHovered() && EDITOR_CONTEXT(inputManager)->IsMouseButtonPressed(OvWindowing::Inputs::EMouseButton::MOUSE_BUTTON_LEFT))
+	using namespace OvWindowing::Inputs;
+
+	auto cursor = ImGui::GetMouseCursor();
+
+	bool isResizing =
+		cursor == ImGuiMouseCursor_ResizeEW ||
+		cursor == ImGuiMouseCursor_ResizeNS ||
+		cursor == ImGuiMouseCursor_ResizeNWSE ||
+		cursor == ImGuiMouseCursor_ResizeNESW ||
+		cursor == ImGuiMouseCursor_ResizeAll;
+
+	bool mouseClicked = EDITOR_CONTEXT(inputManager)->IsMouseButtonPressed(EMouseButton::MOUSE_BUTTON_LEFT);
+
+	bool enableActorPickingDebugDraw = EDITOR_CONTEXT(inputManager)->GetKeyState(EKey::KEY_G) == EKeyState::KEY_DOWN;
+
+	if (mouseClicked || enableActorPickingDebugDraw)
 	{
-		/* Prevent losing focus on actor while resizing a window */
-		if (auto cursor = ImGui::GetMouseCursor();
-			cursor != ImGuiMouseCursor_ResizeEW &&
-			cursor != ImGuiMouseCursor_ResizeNS &&
-			cursor != ImGuiMouseCursor_ResizeNWSE &&
-			cursor != ImGuiMouseCursor_ResizeNESW &&
-			cursor != ImGuiMouseCursor_ResizeAll)
+		RenderSceneForActorPicking();
+	}
+
+	if (IsHovered() && !isResizing && mouseClicked)
+	{
+		// Look actor under mouse
+		auto mousePosition = EDITOR_CONTEXT(inputManager)->GetMousePosition();
+		auto mouseX = static_cast<uint16_t>(mousePosition.first);
+		auto mouseY = static_cast<uint16_t>(mousePosition.second);
+		mouseX -= static_cast<uint16_t>(m_position.x);
+		mouseY -= static_cast<uint16_t>(m_position.y);
+		mouseY = GetSafeSize().second - mouseY + 25;
+
+		m_actorPickingFramebuffer.Bind();
+		uint8_t pixels[3];
+		glReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+		m_actorPickingFramebuffer.Unbind();
+
+		uint32_t actorID = (0 << 24) | (pixels[2] << 16) | (pixels[1] << 8) | (pixels[0] << 0);
+
+		if (auto actor = EDITOR_CONTEXT(sceneManager).GetCurrentScene()->FindActorByID(actorID))
 		{
-			auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
-
-			auto [winWidth, winHeight] = GetSafeSize();
-
-			m_actorPickingFramebuffer.Resize(winWidth, winHeight);
-			m_actorPickingFramebuffer.Bind();
-			baseRenderer.SetClearColor(1.0f, 1.0f, 1.0f);
-			baseRenderer.Clear();
-			m_editorRenderer.RenderSceneForActorPicking();
-
-			// Look actor under mouse
-			auto mousePosition = EDITOR_CONTEXT(inputManager)->GetMousePosition();
-			auto mouseX = static_cast<uint16_t>(mousePosition.first);
-			auto mouseY = static_cast<uint16_t>(mousePosition.second);
-			mouseX -= static_cast<uint16_t>(m_position.x);
-			mouseY -= static_cast<uint16_t>(m_position.y);
-			mouseY = GetSafeSize().second - mouseY + 25;
-
-			uint8_t pixels[3];
-			glReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-			m_actorPickingFramebuffer.Unbind();
-
-			uint32_t actorID = (0 << 24) | (pixels[2] << 16) | (pixels[1] << 8) | (pixels[0] << 0);
-
-			if (auto actor = EDITOR_CONTEXT(sceneManager).GetCurrentScene()->FindActorByID(actorID))
-			{
-				EDITOR_EXEC(SelectActor(*actor));
-			}
-			else
-			{
-				EDITOR_EXEC(UnselectActor());
-			}
-
+			EDITOR_EXEC(SelectActor(*actor));
+		}
+		else
+		{
+			EDITOR_EXEC(UnselectActor());
 		}
 	}
+
+	m_image->textureID.d = enableActorPickingDebugDraw ? m_actorPickingFramebuffer.GetTextureID() : m_fbo.GetTextureID();
 }

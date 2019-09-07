@@ -38,6 +38,11 @@ namespace OvEditor::Panels
 		void RenderScene(uint8_t p_defaultRenderState);
 
 		/**
+		* Render the scene for actor picking (Using unlit colors)
+		*/
+		void RenderSceneForActorPicking();
+
+		/**
 		* Render the scene for actor picking and handle the logic behind it
 		*/
 		void HandleActorPicking();
