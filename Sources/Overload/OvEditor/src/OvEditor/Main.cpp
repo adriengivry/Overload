@@ -27,11 +27,16 @@ void UpdateWorkingDirectory(const std::string& p_executablePath)
 	}
 }
 
-#ifdef _DEBUG
-	int main(int argc, char** argv)
-#else
+int main(int argc, char** argv);
+
+#ifndef _DEBUG
 INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
+{
+	main(__argc, __argv);
+}
 #endif
+
+int main(int argc, char** argv)
 {
 	UpdateWorkingDirectory(argv[0]);
 
