@@ -13,6 +13,8 @@
 #include <OvCore/ECS/Components/CDirectionalLight.h>
 #include <OvCore/ECS/Components/CSpotLight.h>
 
+#include <OvDebug/Utils/Assertion.h>
+
 #include "OvEditor/Core/EditorRenderer.h"
 #include "OvEditor/Core/EditorResources.h"
 #include "OvEditor/Panels/AView.h"
@@ -105,6 +107,32 @@ void OvEditor::Core::EditorRenderer::InitMaterials()
 	m_guizmoBallMaterial.SetShader(m_context.editorResources->GetShader("Guizmo"));
 	m_guizmoBallMaterial.SetShader(m_context.editorResources->GetShader("Guizmo"));
 	m_guizmoBallMaterial.Set("u_IsBall", true);
+
+	/* Picking Material */
+	m_actorPickingMaterial.SetShader(m_context.shaderManager[":Shaders\\Unlit.glsl"]);
+	m_actorPickingMaterial.Set("u_Diffuse", FVector4(1.f, 1.f, 1.f, 1.0f));
+	m_actorPickingMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
+	m_actorPickingMaterial.SetFrontfaceCulling(false);
+	m_actorPickingMaterial.SetBackfaceCulling(false);
+}
+
+void OvEditor::Core::EditorRenderer::PreparePickingMaterial(OvCore::ECS::Actor& p_actor)
+{
+	uint32_t actorID = static_cast<uint32_t>(p_actor.GetID());
+
+	auto bytes = reinterpret_cast<uint8_t*>(&actorID);
+	auto color = FVector4{ bytes[0] / 255.0f, bytes[1] / 255.0f, bytes[2] / 255.0f, 1.0f };
+
+	m_actorPickingMaterial.Set("u_Diffuse", color);
+}
+
+OvMaths::FMatrix4 OvEditor::Core::EditorRenderer::CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor)
+{
+	auto translation = FMatrix4::Translation(p_actor.transform.GetWorldPosition());
+	auto rotation = FQuaternion::ToMatrix4(p_actor.transform.GetWorldRotation());
+	auto scale = FMatrix4::Scaling({ 0.4f, 0.4f, 0.4f });
+
+	return translation * rotation * scale;
 }
 
 void OvEditor::Core::EditorRenderer::RenderScene(const OvMaths::FVector3& p_cameraPosition)
@@ -113,6 +141,69 @@ void OvEditor::Core::EditorRenderer::RenderScene(const OvMaths::FVector3& p_came
 	m_context.lightSSBO->Bind(0);
 	m_context.renderer->RenderScene(*m_context.sceneManager.GetCurrentScene(), p_cameraPosition, &m_emptyMaterial);
 	m_context.lightSSBO->Unbind();
+}
+
+void OvEditor::Core::EditorRenderer::RenderSceneForActorPicking()
+{
+	auto& scene = *m_context.sceneManager.GetCurrentScene();
+
+	/* Render models */
+	for (auto modelRenderer : scene.GetFastAccessComponents().modelRenderers)
+	{
+		auto& actor = modelRenderer->owner;
+
+		if (actor.IsActive())
+		{
+			if (auto model = modelRenderer->GetModel())
+			{
+
+				if (auto materialRenderer = modelRenderer->owner.GetComponent<OvCore::ECS::Components::CMaterialRenderer>())
+				{
+					const OvCore::ECS::Components::CMaterialRenderer::MaterialList& materials = materialRenderer->GetMaterials();
+					auto modelMatrix = actor.transform.GetWorldMatrix();
+					PreparePickingMaterial(actor);
+
+					for (auto mesh : model->GetMeshes())
+					{
+						OvCore::Resources::Material* material = nullptr;
+
+						if (mesh->GetMaterialIndex() < MAX_MATERIAL_COUNT)
+						{
+							material = materials.at(mesh->GetMaterialIndex());
+							if (!material || !material->GetShader())
+								material = &m_emptyMaterial;
+						}
+
+						if (material)
+						{
+							m_actorPickingMaterial.SetBackfaceCulling(material->HasBackfaceCulling());
+							m_actorPickingMaterial.SetFrontfaceCulling(material->HasFrontfaceCulling());
+							m_actorPickingMaterial.SetColorWriting(material->HasColorWriting());
+							m_actorPickingMaterial.SetDepthTest(material->HasDepthTest());
+							m_actorPickingMaterial.SetDepthWriting(material->HasDepthWriting());
+
+							m_context.renderer->DrawMesh(*mesh, m_actorPickingMaterial, &modelMatrix);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/* Render cameras */
+	for (auto camera : m_context.sceneManager.GetCurrentScene()->GetFastAccessComponents().cameras)
+	{
+		auto& actor = camera->owner;
+
+		if (actor.IsActive())
+		{
+			PreparePickingMaterial(actor);
+			auto& model = *m_context.editorResources->GetModel("Camera");
+			auto modelMatrix = CalculateCameraModelMatrix(actor);
+
+			m_context.renderer->DrawModelWithSingleMaterial(model, m_actorPickingMaterial, &modelMatrix);
+		}
+	}
 }
 
 void OvEditor::Core::EditorRenderer::RenderUI()
@@ -124,10 +215,14 @@ void OvEditor::Core::EditorRenderer::RenderCameras()
 {
 	for (auto camera : m_context.sceneManager.GetCurrentScene()->GetFastAccessComponents().cameras)
 	{
-		if (camera->owner.IsActive())
+		auto& actor = camera->owner;
+
+		if (actor.IsActive())
 		{
-			auto modelMatrix = FMatrix4::Translation(camera->owner.transform.GetWorldPosition()) * FQuaternion::ToMatrix4(camera->owner.transform.GetWorldRotation()) * FMatrix4::Scaling({ 0.4f, 0.4f, 0.4f });
-			m_context.renderer->DrawModelWithSingleMaterial(*m_context.editorResources->GetModel("Camera"), m_cameraMaterial, &modelMatrix);
+			auto& model = *m_context.editorResources->GetModel("Camera");
+			auto modelMatrix = CalculateCameraModelMatrix(actor);
+			
+			m_context.renderer->DrawModelWithSingleMaterial(model, m_cameraMaterial, &modelMatrix);
 		}
 	}
 }

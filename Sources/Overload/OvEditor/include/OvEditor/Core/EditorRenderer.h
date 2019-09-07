@@ -39,10 +39,27 @@ namespace OvEditor::Core
 		void InitMaterials();
 
 		/**
+		* Prepare the picking material by send it the color corresponding to the given actor
+		* @param p_actor
+		*/
+		void PreparePickingMaterial(OvCore::ECS::Actor& p_actor);
+
+		/**
+		* Calculate the model matrix for a camera attached to the given actor
+		* @param p_actor
+		*/
+		OvMaths::FMatrix4 CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor);
+
+		/**
 		* Render the scene
 		* @param p_cameraPosition
 		*/
 		void RenderScene(const OvMaths::FVector3& p_cameraPosition);
+
+		/**
+		* Render the scene for actor picking (Unlit version of the scene with colors indicating actor IDs)
+		*/
+		void RenderSceneForActorPicking();
 
 		/**
 		* Render the User Interface
@@ -131,5 +148,6 @@ namespace OvEditor::Core
 		OvCore::Resources::Material m_cameraMaterial;
 		OvCore::Resources::Material m_guizmoArrowMaterial;
 		OvCore::Resources::Material m_guizmoBallMaterial;
+		OvCore::Resources::Material m_actorPickingMaterial;
 	};
 }

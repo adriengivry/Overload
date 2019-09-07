@@ -43,16 +43,6 @@ namespace OvEditor::Panels
 		virtual void Update(float p_deltaTime);
 
 		/**
-		* Bind the FBO attached to the view
-		*/
-		void Bind();
-
-		/**
-		* Unbind the FBO attached to the view
-		*/
-		void Unbind();
-
-		/**
 		* Custom implementation of the draw method
 		*/
 		void _Draw_Impl() override;
@@ -112,7 +102,6 @@ namespace OvEditor::Panels
 
 		OvMaths::FVector3 m_gridColor = OvMaths::FVector3::One;
 
-	private:
 		OvRendering::Buffers::Framebuffer m_fbo;
 	};
 }

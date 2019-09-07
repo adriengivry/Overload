@@ -82,8 +82,8 @@ void OvEditor::Core::Editor::PreUpdate()
 void OvEditor::Core::Editor::Update(float p_deltaTime)
 {
 	UpdateCurrentEditorMode(p_deltaTime);
-	UpdateEditorPanels(p_deltaTime);
 	PrepareRendering(p_deltaTime);
+	UpdateEditorPanels(p_deltaTime);
 	RenderViews(p_deltaTime);
 	RenderEditorUI(p_deltaTime);
 	m_editorActions.ExecuteDelayedActions();
