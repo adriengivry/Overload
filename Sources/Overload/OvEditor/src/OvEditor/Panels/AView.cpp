@@ -25,29 +25,11 @@ OvEditor::Panels::AView::AView
 
 void OvEditor::Panels::AView::Update(float p_deltaTime)
 {
-	Bind();
-
 	auto[winWidth, winHeight] = GetSafeSize();
 
 	m_image->size = OvMaths::FVector2(static_cast<float>(winWidth), static_cast<float>(winHeight));
 
 	m_fbo.Resize(winWidth, winHeight);
-
-	Unbind();
-}
-
-void OvEditor::Panels::AView::Bind()
-{
-	auto[winWidth, winHeight] = GetSafeSize();
-
-	glViewport(0, 0, winWidth, winHeight);
-
-	m_fbo.Bind();
-}
-
-void OvEditor::Panels::AView::Unbind()
-{
-	m_fbo.Unbind();
 }
 
 void OvEditor::Panels::AView::_Draw_Impl()
@@ -67,10 +49,9 @@ void OvEditor::Panels::AView::Render()
 	auto projection = m_camera.GetProjectionMatrix(winWidth, winHeight);
 	auto view = m_camera.GetViewMatrix(m_cameraPosition);
 	EDITOR_CONTEXT(shapeDrawer)->SetViewProjection(projection * view);
+	glViewport(0, 0, winWidth, winHeight); // TODO: Move this OpenGL call to OvRendering
 
-	Bind();
 	_Render_Impl();
-	Unbind();
 }
 
 void OvEditor::Panels::AView::SetCameraPosition(const OvMaths::FVector3 & p_position)

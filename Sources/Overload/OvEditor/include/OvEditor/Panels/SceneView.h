@@ -27,17 +27,23 @@ namespace OvEditor::Panels
 		);
 
 		/**
-		* Update the scene view (Inputs logic)
-		* @param p_deltaTime
-		*/
-		virtual void Update(float p_deltaTime) override;
-
-		/**
 		* Custom implementation of the render method
 		*/
 		virtual void _Render_Impl() override;
 
+		/**
+		* Render the actual scene
+		* @param p_defaultRenderState
+		*/
+		void RenderScene(uint8_t p_defaultRenderState);
+
+		/**
+		* Render the scene for actor picking and handle the logic behind it
+		*/
+		void HandleActorPicking();
+
 	private:
 		OvCore::SceneSystem::SceneManager& m_sceneManager;
+		OvRendering::Buffers::Framebuffer m_actorPickingFramebuffer;
 	};
 }

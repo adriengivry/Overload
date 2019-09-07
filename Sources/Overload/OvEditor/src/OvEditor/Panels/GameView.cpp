@@ -45,6 +45,8 @@ void OvEditor::Panels::GameView::Update(float p_deltaTime)
 void OvEditor::Panels::GameView::_Render_Impl()
 {
 	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
+	
+	m_fbo.Bind();
 
 	baseRenderer.Clear(m_camera);
 
@@ -54,5 +56,8 @@ void OvEditor::Panels::GameView::_Render_Impl()
 	if (m_hasCamera)
 		m_editorRenderer.RenderScene(m_cameraPosition);
 
+
 	baseRenderer.ApplyStateMask(glState);
+
+	m_fbo.Unbind();
 }
