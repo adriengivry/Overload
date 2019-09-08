@@ -63,14 +63,14 @@ OvMaths::FVector3 OvEditor::Core::GizmoBehaviour::GetRealDirection(bool p_relati
 
 OvMaths::FVector2 OvEditor::Core::GizmoBehaviour::GetScreenDirection(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
 {
-	auto start = m_target->transform.GetWorldPosition();
-	auto end = m_target->transform.GetWorldPosition() + GetRealDirection(true);
+	auto start = m_originalTransform.GetWorldPosition();
+	auto end = m_originalTransform.GetWorldPosition() + GetRealDirection(true) * 0.01f;
 
 	auto start2D = OvMaths::FVector2();
 	{
 		auto clipSpacePos = p_projectionMatrix * (p_viewMatrix * OvMaths::FVector4{ start.x, start.y, start.z, 1.0f });
 		auto ndcSpacePos = OvMaths::FVector3{ clipSpacePos.x, clipSpacePos.y, clipSpacePos.z } / clipSpacePos.w;
-		auto windowSpacePos = ((OvMaths::FVector2{ ndcSpacePos.x, ndcSpacePos.y } +1.0) / 2.0);
+		auto windowSpacePos = ((OvMaths::FVector2{ ndcSpacePos.x, ndcSpacePos.y } + 1.0f) / 2.0f);
 		windowSpacePos.x *= p_viewSize.x;
 		windowSpacePos.y *= p_viewSize.y;
 		start2D = windowSpacePos;
@@ -80,7 +80,7 @@ OvMaths::FVector2 OvEditor::Core::GizmoBehaviour::GetScreenDirection(const OvMat
 	{
 		auto clipSpacePos = p_projectionMatrix * (p_viewMatrix * OvMaths::FVector4{ end.x, end.y, end.z, 1.0f });
 		auto ndcSpacePos = OvMaths::FVector3{ clipSpacePos.x, clipSpacePos.y, clipSpacePos.z } / clipSpacePos.w;
-		auto windowSpacePos = ((OvMaths::FVector2{ ndcSpacePos.x, ndcSpacePos.y } +1.0) / 2.0);
+		auto windowSpacePos = ((OvMaths::FVector2{ ndcSpacePos.x, ndcSpacePos.y } + 1.0f) / 2.0f);
 		windowSpacePos.x *= p_viewSize.x;
 		windowSpacePos.y *= p_viewSize.y;
 		end2D = windowSpacePos;
