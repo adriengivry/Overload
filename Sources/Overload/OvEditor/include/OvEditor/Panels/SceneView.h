@@ -28,6 +28,11 @@ namespace OvEditor::Panels
 		);
 
 		/**
+		* Update the scene view
+		*/
+		virtual void Update(float p_deltaTime) override;
+
+		/**
 		* Custom implementation of the render method
 		*/
 		virtual void _Render_Impl() override;
@@ -52,5 +57,6 @@ namespace OvEditor::Panels
 		OvCore::SceneSystem::SceneManager& m_sceneManager;
 		OvRendering::Buffers::Framebuffer m_actorPickingFramebuffer;
 		OvEditor::Core::GuizmoOperations m_guizmoOperations;
+		OvEditor::Core::GuizmoOperations::EOperation m_currentOperation = OvEditor::Core::GuizmoOperations::EOperation::TRANSLATION;
 	};
 }

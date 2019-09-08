@@ -32,6 +32,28 @@ OvEditor::Panels::SceneView::SceneView
 	};
 }
 
+void OvEditor::Panels::SceneView::Update(float p_deltaTime)
+{
+	AViewControllable::Update(p_deltaTime);
+
+	using namespace OvWindowing::Inputs;
+
+	if (EDITOR_CONTEXT(inputManager)->IsKeyPressed(EKey::KEY_Z))
+	{
+		m_currentOperation = OvEditor::Core::GuizmoOperations::EOperation::TRANSLATION;
+	}
+
+	if (EDITOR_CONTEXT(inputManager)->IsKeyPressed(EKey::KEY_X))
+	{
+		m_currentOperation = OvEditor::Core::GuizmoOperations::EOperation::ROTATION;
+	}
+
+	if (EDITOR_CONTEXT(inputManager)->IsKeyPressed(EKey::KEY_C))
+	{
+		m_currentOperation = OvEditor::Core::GuizmoOperations::EOperation::SCALE;
+	}
+}
+
 void OvEditor::Panels::SceneView::_Render_Impl()
 {
 	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
@@ -151,17 +173,17 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 			{
 			/* Guizmo X */
 			case 253:
-				m_guizmoOperations.StartPicking(actor, actor.transform.GetLocalRight(), m_cameraPosition);
+				m_guizmoOperations.StartPicking(actor, m_cameraPosition, m_currentOperation, OvEditor::Core::GuizmoOperations::EDirection::X);
 				break;
 
 			/* Guizmo Y */
 			case 252:
-				m_guizmoOperations.StartPicking(actor, actor.transform.GetLocalUp(), m_cameraPosition);
+				m_guizmoOperations.StartPicking(actor, m_cameraPosition, m_currentOperation, OvEditor::Core::GuizmoOperations::EDirection::Y);
 				break;
 
 			/* Guizmo Z */
 			case 254:
-				m_guizmoOperations.StartPicking(actor, actor.transform.GetLocalForward(), m_cameraPosition);
+				m_guizmoOperations.StartPicking(actor, m_cameraPosition, m_currentOperation, OvEditor::Core::GuizmoOperations::EDirection::Z);
 				break;
 			}
 		}
@@ -192,6 +214,6 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 		auto view = m_camera.GetViewMatrix(m_cameraPosition);
 
 		m_guizmoOperations.SetCurrentMouse({ static_cast<float>(mousePosition.first), static_cast<float>(mousePosition.second) });
-		m_guizmoOperations.ApplyTranslation(view, projection, { static_cast<float>(winWidth), static_cast<float>(winHeight) });
+		m_guizmoOperations.ApplyOperation(view, projection, { static_cast<float>(winWidth), static_cast<float>(winHeight) });
 	}
 }

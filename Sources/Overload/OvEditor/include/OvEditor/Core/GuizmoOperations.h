@@ -14,13 +14,28 @@ namespace OvEditor::Core
 	class GuizmoOperations
 	{
 	public:
+		enum class EOperation
+		{
+			TRANSLATION,
+			ROTATION,
+			SCALE
+		};
+
+		enum class EDirection
+		{
+			X,
+			Y,
+			Z
+		};
+
 		/**
 		* Starts the guizmo picking behaviour for the given target in the given direction
 		* @param p_actor
-		* @param p_direction
 		* @param p_cameraPosition
+		* @param p_operation
+		* @param p_direction
 		*/
-		void StartPicking(OvCore::ECS::Actor& p_target, const OvMaths::FVector3& p_direction, const OvMaths::FVector3& p_cameraPosition);
+		void StartPicking(OvCore::ECS::Actor& p_target, const OvMaths::FVector3& p_cameraPosition, EOperation p_operation, EDirection p_direction);
 
 		/**
 		* Stops the guizmo picking behaviour
@@ -28,12 +43,12 @@ namespace OvEditor::Core
 		void StopPicking();
 
 		/**
-		* Handle the translation behaviour
+		* Handle the current behaviour
 		* @param p_viewMatrix
 		* @param p_projectionMatrix
 		* @param p_viewSize
 		*/
-		void ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const;
+		void ApplyOperation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize);
 
 		/**
 		* Set the given mouse position as the current mouse position and update the previous mouse position
@@ -47,11 +62,58 @@ namespace OvEditor::Core
 		bool IsPicking() const;
 
 	private:
+		/**
+		* Returns the global direction matching with the current m_direction
+		*/
+		OvMaths::FVector3 GetFakeDirection() const;
+
+		/**
+		* Returns the actual direction of the target matching with the current m_direction
+		* @param p_relative (If true, the direction depends on hierarchy)
+		*/
+		OvMaths::FVector3 GetRealDirection(bool p_relative = false) const;
+
+		/**
+		* Returns the 3D vector of the arrow projected to the screen
+		* @param p_viewMatrix
+		* @param p_projectionMatrix
+		* @param p_viewSize
+		*/
+		OvMaths::FVector2 GetScreenDirection(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const;
+
+		/**
+		* Handle the translation behaviour
+		* @param p_viewMatrix
+		* @param p_projectionMatrix
+		* @param p_viewSize
+		*/
+		void ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const;
+
+		/**
+		* Handle the rotation behaviour
+		* @param p_viewMatrix
+		* @param p_projectionMatrix
+		* @param p_viewSize
+		*/
+		void ApplyRotation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const;
+
+		/**
+		* Handle the scale behaviour
+		* @param p_viewMatrix
+		* @param p_projectionMatrix
+		* @param p_viewSize
+		*/
+		void ApplyScale(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const;
+
+	private:
 		bool m_firstMouse = true;
 		float m_distanceToActor = 0.0f;
 		OvCore::ECS::Actor* m_target;
-		OvMaths::FVector3 m_direction;
-		OvMaths::FVector2 m_previousMouse;
+		EOperation m_currentOperation;
+		EDirection m_direction;
+		OvMaths::FTransform m_originalTransform;
+		OvMaths::FVector2 m_originMouse;
 		OvMaths::FVector2 m_currentMouse;
+		OvMaths::FVector2 m_screenDirection;
 	};
 }
