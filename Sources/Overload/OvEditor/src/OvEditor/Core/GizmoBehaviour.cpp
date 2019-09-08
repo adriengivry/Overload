@@ -145,11 +145,11 @@ void OvEditor::Core::GizmoBehaviour::ApplyOperation(const OvMaths::FMatrix4& p_v
 {
 	switch (m_currentOperation)
 	{
-	case EGizmoOperation::TRANSLATION:
+	case EGizmoOperation::TRANSLATE:
 		ApplyTranslation(p_viewMatrix, p_projectionMatrix, p_viewSize);
 		break;
 
-	case EGizmoOperation::ROTATION:
+	case EGizmoOperation::ROTATE:
 		ApplyRotation(p_viewMatrix, p_projectionMatrix, p_viewSize);
 		break;
 

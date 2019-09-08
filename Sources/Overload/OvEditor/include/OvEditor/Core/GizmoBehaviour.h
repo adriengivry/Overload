@@ -12,8 +12,8 @@ namespace OvEditor::Core
 {
 	enum class EGizmoOperation
 	{
-		TRANSLATION,
-		ROTATION,
+		TRANSLATE,
+		ROTATE,
 		SCALE
 	};
 

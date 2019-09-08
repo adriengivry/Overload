@@ -40,7 +40,7 @@ namespace OvEditor::Panels
 		*/
 		OvEditor::Core::CameraController& GetCameraController();
 
-	private:
+	protected:
 		OvEditor::Core::CameraController m_cameraController;
 	};
 }

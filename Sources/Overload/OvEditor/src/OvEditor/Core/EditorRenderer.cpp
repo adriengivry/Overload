@@ -251,10 +251,10 @@ void OvEditor::Core::EditorRenderer::RenderGizmo(const OvMaths::FVector3& p_posi
 
 	switch (p_operation)
 	{
-	case OvEditor::Core::EGizmoOperation::TRANSLATION:
+	case OvEditor::Core::EGizmoOperation::TRANSLATE:
 		arrowModel = m_context.editorResources->GetModel("Arrow_Translate");
 		break;
-	case OvEditor::Core::EGizmoOperation::ROTATION:
+	case OvEditor::Core::EGizmoOperation::ROTATE:
 		arrowModel = m_context.editorResources->GetModel("Arrow_Rotate");
 		break;
 	case OvEditor::Core::EGizmoOperation::SCALE:
