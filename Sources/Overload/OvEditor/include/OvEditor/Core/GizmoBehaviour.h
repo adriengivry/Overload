@@ -10,17 +10,17 @@
 
 namespace OvEditor::Core
 {
-	/* Handle guizmo behaviours */
-	class GuizmoOperations
+	enum class EGizmoOperation
+	{
+		TRANSLATION,
+		ROTATION,
+		SCALE
+	};
+
+	/* Handle gizmo behaviours */
+	class GizmoBehaviour
 	{
 	public:
-		enum class EOperation
-		{
-			TRANSLATION,
-			ROTATION,
-			SCALE
-		};
-
 		enum class EDirection
 		{
 			X,
@@ -29,16 +29,16 @@ namespace OvEditor::Core
 		};
 
 		/**
-		* Starts the guizmo picking behaviour for the given target in the given direction
+		* Starts the gizmo picking behaviour for the given target in the given direction
 		* @param p_actor
 		* @param p_cameraPosition
 		* @param p_operation
 		* @param p_direction
 		*/
-		void StartPicking(OvCore::ECS::Actor& p_target, const OvMaths::FVector3& p_cameraPosition, EOperation p_operation, EDirection p_direction);
+		void StartPicking(OvCore::ECS::Actor& p_target, const OvMaths::FVector3& p_cameraPosition, EGizmoOperation p_operation, EDirection p_direction);
 
 		/**
-		* Stops the guizmo picking behaviour
+		* Stops the gizmo picking behaviour
 		*/
 		void StopPicking();
 
@@ -57,7 +57,7 @@ namespace OvEditor::Core
 		void SetCurrentMouse(const OvMaths::FVector2& p_mousePosition);
 
 		/**
-		* Returns true if the guizmo is currently picked
+		* Returns true if the gizmo is currently picked
 		*/
 		bool IsPicking() const;
 
@@ -109,7 +109,7 @@ namespace OvEditor::Core
 		bool m_firstMouse = true;
 		float m_distanceToActor = 0.0f;
 		OvCore::ECS::Actor* m_target;
-		EOperation m_currentOperation;
+		EGizmoOperation m_currentOperation;
 		EDirection m_direction;
 		OvMaths::FTransform m_originalTransform;
 		OvMaths::FVector2 m_originMouse;

@@ -7,7 +7,7 @@
 #pragma once
 
 #include "OvEditor/Panels/AViewControllable.h"
-#include "OvEditor/Core/GuizmoOperations.h"
+#include "OvEditor/Core/GizmoBehaviour.h"
 
 namespace OvEditor::Panels
 {
@@ -56,7 +56,7 @@ namespace OvEditor::Panels
 	private:
 		OvCore::SceneSystem::SceneManager& m_sceneManager;
 		OvRendering::Buffers::Framebuffer m_actorPickingFramebuffer;
-		OvEditor::Core::GuizmoOperations m_guizmoOperations;
-		OvEditor::Core::GuizmoOperations::EOperation m_currentOperation = OvEditor::Core::GuizmoOperations::EOperation::TRANSLATION;
+		OvEditor::Core::GizmoBehaviour m_gizmoOperations;
+		OvEditor::Core::EGizmoOperation m_currentOperation = OvEditor::Core::EGizmoOperation::TRANSLATION;
 	};
 }

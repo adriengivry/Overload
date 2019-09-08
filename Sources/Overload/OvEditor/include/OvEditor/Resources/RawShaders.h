@@ -22,8 +22,8 @@ namespace OvEditor::Resources
 		static std::pair<std::string, std::string> GetGrid();
 
 		/**
-		* Returns the guizmo shader
+		* Returns the gizmo shader
 		*/
-		static std::pair<std::string, std::string> GetGuizmo();
+		static std::pair<std::string, std::string> GetGizmo();
 	};
 }

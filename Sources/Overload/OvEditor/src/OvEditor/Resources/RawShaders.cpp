@@ -115,7 +115,7 @@ void main()
 	return source;
 }
 
-std::pair<std::string, std::string> OvEditor::Resources::RawShaders::GetGuizmo()
+std::pair<std::string, std::string> OvEditor::Resources::RawShaders::GetGizmo()
 {
 	std::pair<std::string, std::string> source;
 
@@ -137,8 +137,6 @@ layout (std140) uniform EngineUBO
 
 out VS_OUT
 {
-    vec3        FragPos;
-    vec3        Normal;
     flat vec3   Color;
 } vs_out;
 
@@ -174,19 +172,40 @@ void main()
 
 	vec3 pos = geo_Pos;
 
-    vs_out.FragPos      = vec3(instanceModel * vec4(pos * distanceToCamera * 0.1f, 1.0));
-    vs_out.Normal       = normalize(mat3(transpose(inverse(instanceModel))) * geo_Normal);
+    vec3 fragPos = vec3(instanceModel * vec4(pos * distanceToCamera * 0.1f, 1.0));
 
 	if (u_IsPickable)
 	{
-		vs_out.Color = vec3(1.0f, 1.0f, (254 - gl_InstanceID) / 255.0f);
+		int blueComponent = 0;
+
+		if (gl_InstanceID == 1)
+			blueComponent = 252;
+
+		if (gl_InstanceID == 2)
+			blueComponent = 253;
+
+		if (gl_InstanceID == 0)
+			blueComponent = 254;
+
+		vs_out.Color = vec3(1.0f, 1.0f, blueComponent / 255.0f);
 	}
 	else
 	{
-		vs_out.Color = vec3(float(gl_InstanceID == 1 || u_IsBall), float(gl_InstanceID == 2 || u_IsBall), float(gl_InstanceID == 0 || u_IsBall));
+		if (u_IsBall)
+		{
+			vs_out.Color = vec3(1.0f);
+		}
+		else
+		{
+			float red	= float(gl_InstanceID == 1); // X
+			float green = float(gl_InstanceID == 2); // Y
+			float blue	= float(gl_InstanceID == 0); // Z
+
+			vs_out.Color = vec3(red, green, blue);
+		}
 	}
 
-    gl_Position = ubo_Projection * ubo_View * vec4(vs_out.FragPos, 1.0);
+    gl_Position = ubo_Projection * ubo_View * vec4(fragPos, 1.0);
 }
 )";
 
@@ -197,33 +216,14 @@ out vec4 FRAGMENT_COLOR;
 
 in VS_OUT
 {
-    vec3 FragPos;
-    vec3 Normal;
     vec3 Color;
 } fs_in;
-
-const vec3 c_lightPosition    = vec3(-9000.0, 10000.0, 11000.0);
-const vec3 c_lightDiffuse     = vec3(1.0, 1.0, 1.0);
-const vec3 c_lightAmbient     = vec3(0.3, 0.3, 0.3);
-
-vec3 Lambert(vec3 p_fragPos, vec3 p_normal)
-{
-    const float diffuse = max(dot(p_normal, normalize(c_lightPosition - p_fragPos)), 0.0);
-    return clamp(c_lightDiffuse * diffuse + c_lightAmbient, 0.0, 1.0);
-}
 
 uniform bool u_IsPickable;
 
 void main()
 {
-	if (u_IsPickable)
-	{
-		FRAGMENT_COLOR = vec4(fs_in.Color, 1.0f);
-	}
-	else
-	{
-		FRAGMENT_COLOR = vec4(Lambert(fs_in.FragPos, fs_in.Normal) * fs_in.Color, 0.5f);
-	}
+	FRAGMENT_COLOR = vec4(fs_in.Color, 1.0f);
 })";
 
 	return source;

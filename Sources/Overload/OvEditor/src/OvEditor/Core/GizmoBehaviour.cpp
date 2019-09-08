@@ -4,9 +4,9 @@
 * @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
 */
 
-#include "OvEditor/Core/GuizmoOperations.h"
+#include "OvEditor/Core/GizmoBehaviour.h"
 
-void OvEditor::Core::GuizmoOperations::StartPicking(OvCore::ECS::Actor& p_target, const OvMaths::FVector3& p_cameraPosition, EOperation p_operation, EDirection p_direction)
+void OvEditor::Core::GizmoBehaviour::StartPicking(OvCore::ECS::Actor& p_target, const OvMaths::FVector3& p_cameraPosition, EGizmoOperation p_operation, EDirection p_direction)
 {
 	m_target = &p_target;
 	m_firstMouse = true;
@@ -16,24 +16,24 @@ void OvEditor::Core::GuizmoOperations::StartPicking(OvCore::ECS::Actor& p_target
 	m_direction = p_direction;
 }
 
-void OvEditor::Core::GuizmoOperations::StopPicking()
+void OvEditor::Core::GizmoBehaviour::StopPicking()
 {
 	m_target = nullptr;
 }
 
-OvMaths::FVector3 OvEditor::Core::GuizmoOperations::GetFakeDirection() const
+OvMaths::FVector3 OvEditor::Core::GizmoBehaviour::GetFakeDirection() const
 {
 	auto result = OvMaths::FVector3();
 
 	switch (m_direction)
 	{
-	case OvEditor::Core::GuizmoOperations::EDirection::X:
+	case OvEditor::Core::GizmoBehaviour::EDirection::X:
 		result = OvMaths::FVector3::Right;
 		break;
-	case OvEditor::Core::GuizmoOperations::EDirection::Y:
+	case OvEditor::Core::GizmoBehaviour::EDirection::Y:
 		result = OvMaths::FVector3::Up;
 		break;
-	case OvEditor::Core::GuizmoOperations::EDirection::Z:
+	case OvEditor::Core::GizmoBehaviour::EDirection::Z:
 		result = OvMaths::FVector3::Forward;
 		break;
 	}
@@ -41,19 +41,19 @@ OvMaths::FVector3 OvEditor::Core::GuizmoOperations::GetFakeDirection() const
 	return result;
 }
 
-OvMaths::FVector3 OvEditor::Core::GuizmoOperations::GetRealDirection(bool p_relative) const
+OvMaths::FVector3 OvEditor::Core::GizmoBehaviour::GetRealDirection(bool p_relative) const
 {
 	auto result = OvMaths::FVector3();
 
 	switch (m_direction)
 	{
-	case OvEditor::Core::GuizmoOperations::EDirection::X:
+	case OvEditor::Core::GizmoBehaviour::EDirection::X:
 		result = p_relative ? m_originalTransform.GetWorldRight() : m_originalTransform.GetLocalRight();
 		break;
-	case OvEditor::Core::GuizmoOperations::EDirection::Y:
+	case OvEditor::Core::GizmoBehaviour::EDirection::Y:
 		result = p_relative ? m_originalTransform.GetWorldUp() : m_originalTransform.GetLocalUp();
 		break;
-	case OvEditor::Core::GuizmoOperations::EDirection::Z:
+	case OvEditor::Core::GizmoBehaviour::EDirection::Z:
 		result = p_relative ? m_originalTransform.GetWorldForward() : m_originalTransform.GetLocalForward();
 		break;
 	}
@@ -61,7 +61,7 @@ OvMaths::FVector3 OvEditor::Core::GuizmoOperations::GetRealDirection(bool p_rela
 	return result;
 }
 
-OvMaths::FVector2 OvEditor::Core::GuizmoOperations::GetScreenDirection(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
+OvMaths::FVector2 OvEditor::Core::GizmoBehaviour::GetScreenDirection(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
 {
 	auto start = m_target->transform.GetWorldPosition();
 	auto end = m_target->transform.GetWorldPosition() + GetRealDirection(true);
@@ -93,7 +93,7 @@ OvMaths::FVector2 OvEditor::Core::GuizmoOperations::GetScreenDirection(const OvM
 	return OvMaths::FVector2::Normalize(result);
 }
 
-void OvEditor::Core::GuizmoOperations::ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
+void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
 {
 	auto unitsPerPixel = 0.001f * m_distanceToActor;
 	auto originPosition = m_originalTransform.GetLocalPosition();
@@ -106,7 +106,7 @@ void OvEditor::Core::GuizmoOperations::ApplyTranslation(const OvMaths::FMatrix4&
 	m_target->transform.SetLocalPosition(originPosition + GetRealDirection() * translationCoefficient * unitsPerPixel);
 }
 
-void OvEditor::Core::GuizmoOperations::ApplyRotation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
+void OvEditor::Core::GizmoBehaviour::ApplyRotation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
 {
 	auto unitsPerPixel = 0.2f;
 	auto originRotation = m_originalTransform.GetLocalRotation();
@@ -121,9 +121,9 @@ void OvEditor::Core::GuizmoOperations::ApplyRotation(const OvMaths::FMatrix4& p_
 	m_target->transform.SetLocalRotation(originRotation * rotationToApply);
 }
 
-void OvEditor::Core::GuizmoOperations::ApplyScale(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
+void OvEditor::Core::GizmoBehaviour::ApplyScale(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
 {
-	auto unitsPerPixel = 0.005f;
+	auto unitsPerPixel = 0.01f;
 	auto originScale = m_originalTransform.GetLocalScale();
 
 	auto screenDirection = GetScreenDirection(p_viewMatrix, p_projectionMatrix, p_viewSize);
@@ -141,25 +141,25 @@ void OvEditor::Core::GuizmoOperations::ApplyScale(const OvMaths::FMatrix4& p_vie
 	m_target->transform.SetLocalScale(newScale);
 }
 
-void OvEditor::Core::GuizmoOperations::ApplyOperation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize)
+void OvEditor::Core::GizmoBehaviour::ApplyOperation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize)
 {
 	switch (m_currentOperation)
 	{
-	case EOperation::TRANSLATION:
+	case EGizmoOperation::TRANSLATION:
 		ApplyTranslation(p_viewMatrix, p_projectionMatrix, p_viewSize);
 		break;
 
-	case EOperation::ROTATION:
+	case EGizmoOperation::ROTATION:
 		ApplyRotation(p_viewMatrix, p_projectionMatrix, p_viewSize);
 		break;
 
-	case EOperation::SCALE:
+	case EGizmoOperation::SCALE:
 		ApplyScale(p_viewMatrix, p_projectionMatrix, p_viewSize);
 		break;
 	}
 }
 
-void OvEditor::Core::GuizmoOperations::SetCurrentMouse(const OvMaths::FVector2& p_mousePosition)
+void OvEditor::Core::GizmoBehaviour::SetCurrentMouse(const OvMaths::FVector2& p_mousePosition)
 {
 	if (m_firstMouse)
 	{
@@ -172,7 +172,7 @@ void OvEditor::Core::GuizmoOperations::SetCurrentMouse(const OvMaths::FVector2& 
 	}
 }
 
-bool OvEditor::Core::GuizmoOperations::IsPicking() const
+bool OvEditor::Core::GizmoBehaviour::IsPicking() const
 {
 	return m_target;
 }

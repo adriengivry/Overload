@@ -40,17 +40,17 @@ void OvEditor::Panels::SceneView::Update(float p_deltaTime)
 
 	if (EDITOR_CONTEXT(inputManager)->IsKeyPressed(EKey::KEY_Z))
 	{
-		m_currentOperation = OvEditor::Core::GuizmoOperations::EOperation::TRANSLATION;
+		m_currentOperation = OvEditor::Core::EGizmoOperation::TRANSLATION;
 	}
 
 	if (EDITOR_CONTEXT(inputManager)->IsKeyPressed(EKey::KEY_X))
 	{
-		m_currentOperation = OvEditor::Core::GuizmoOperations::EOperation::ROTATION;
+		m_currentOperation = OvEditor::Core::EGizmoOperation::ROTATION;
 	}
 
 	if (EDITOR_CONTEXT(inputManager)->IsKeyPressed(EKey::KEY_C))
 	{
-		m_currentOperation = OvEditor::Core::GuizmoOperations::EOperation::SCALE;
+		m_currentOperation = OvEditor::Core::EGizmoOperation::SCALE;
 	}
 }
 
@@ -94,7 +94,7 @@ void OvEditor::Panels::SceneView::RenderScene(uint8_t p_defaultRenderState)
 
 		baseRenderer.ApplyStateMask(p_defaultRenderState);
 		baseRenderer.Clear(false, true, false);
-		m_editorRenderer.RenderGuizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation());
+		m_editorRenderer.RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation);
 	}
 
 	m_fbo.Unbind();
@@ -116,7 +116,7 @@ void OvEditor::Panels::SceneView::RenderSceneForActorPicking()
 	{
 		auto& selectedActor = EDITOR_EXEC(GetSelectedActor());
 		baseRenderer.Clear(false, true, false);
-		m_editorRenderer.RenderGuizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), true);
+		m_editorRenderer.RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation, true);
 	}
 
 	m_actorPickingFramebuffer.Unbind();
@@ -137,7 +137,7 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 
 	if (EDITOR_CONTEXT(inputManager)->IsMouseButtonReleased(EMouseButton::MOUSE_BUTTON_LEFT))
 	{
-		m_guizmoOperations.StopPicking();
+		m_gizmoOperations.StopPicking();
 	}
 
 	bool mouseClicked = EDITOR_CONTEXT(inputManager)->IsMouseButtonPressed(EMouseButton::MOUSE_BUTTON_LEFT);
@@ -164,26 +164,26 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 		glReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 		m_actorPickingFramebuffer.Unbind();
 
-		/* Guizmo picking */
+		/* Gizmo picking */
 		if (EDITOR_EXEC(IsAnyActorSelected()) && pixels[0] == 255 && pixels[1] == 255 && pixels[2] >= 252 && pixels[2] <= 254)
 		{
 			auto& actor = EDITOR_EXEC(GetSelectedActor());
 
 			switch (pixels[2])
 			{
-			/* Guizmo X */
-			case 253:
-				m_guizmoOperations.StartPicking(actor, m_cameraPosition, m_currentOperation, OvEditor::Core::GuizmoOperations::EDirection::X);
-				break;
-
-			/* Guizmo Y */
+			/* Gizmo X */
 			case 252:
-				m_guizmoOperations.StartPicking(actor, m_cameraPosition, m_currentOperation, OvEditor::Core::GuizmoOperations::EDirection::Y);
+				m_gizmoOperations.StartPicking(actor, m_cameraPosition, m_currentOperation, OvEditor::Core::GizmoBehaviour::EDirection::X);
 				break;
 
-			/* Guizmo Z */
+			/* Gizmo Y */
+			case 253:
+				m_gizmoOperations.StartPicking(actor, m_cameraPosition, m_currentOperation, OvEditor::Core::GizmoBehaviour::EDirection::Y);
+				break;
+
+			/* Gizmo Z */
 			case 254:
-				m_guizmoOperations.StartPicking(actor, m_cameraPosition, m_currentOperation, OvEditor::Core::GuizmoOperations::EDirection::Z);
+				m_gizmoOperations.StartPicking(actor, m_cameraPosition, m_currentOperation, OvEditor::Core::GizmoBehaviour::EDirection::Z);
 				break;
 			}
 		}
@@ -205,7 +205,7 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 
 	m_image->textureID.d = enableActorPickingDebugDraw ? m_actorPickingFramebuffer.GetTextureID() : m_fbo.GetTextureID();
 
-	if (m_guizmoOperations.IsPicking())
+	if (m_gizmoOperations.IsPicking())
 	{
 		auto mousePosition = EDITOR_CONTEXT(inputManager)->GetMousePosition();
 
@@ -213,7 +213,7 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 		auto projection = m_camera.GetProjectionMatrix(winWidth, winHeight);
 		auto view = m_camera.GetViewMatrix(m_cameraPosition);
 
-		m_guizmoOperations.SetCurrentMouse({ static_cast<float>(mousePosition.first), static_cast<float>(mousePosition.second) });
-		m_guizmoOperations.ApplyOperation(view, projection, { static_cast<float>(winWidth), static_cast<float>(winHeight) });
+		m_gizmoOperations.SetCurrentMouse({ static_cast<float>(mousePosition.first), static_cast<float>(mousePosition.second) });
+		m_gizmoOperations.ApplyOperation(view, projection, { static_cast<float>(winWidth), static_cast<float>(winHeight) });
 	}
 }
