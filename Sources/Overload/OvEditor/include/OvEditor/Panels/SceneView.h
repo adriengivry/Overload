@@ -7,6 +7,7 @@
 #pragma once
 
 #include "OvEditor/Panels/AViewControllable.h"
+#include "OvEditor/Core/GizmoBehaviour.h"
 
 namespace OvEditor::Panels
 {
@@ -27,6 +28,11 @@ namespace OvEditor::Panels
 		);
 
 		/**
+		* Update the scene view
+		*/
+		virtual void Update(float p_deltaTime) override;
+
+		/**
 		* Custom implementation of the render method
 		*/
 		virtual void _Render_Impl() override;
@@ -38,6 +44,11 @@ namespace OvEditor::Panels
 		void RenderScene(uint8_t p_defaultRenderState);
 
 		/**
+		* Render the scene for actor picking (Using unlit colors)
+		*/
+		void RenderSceneForActorPicking();
+
+		/**
 		* Render the scene for actor picking and handle the logic behind it
 		*/
 		void HandleActorPicking();
@@ -45,5 +56,7 @@ namespace OvEditor::Panels
 	private:
 		OvCore::SceneSystem::SceneManager& m_sceneManager;
 		OvRendering::Buffers::Framebuffer m_actorPickingFramebuffer;
+		OvEditor::Core::GizmoBehaviour m_gizmoOperations;
+		OvEditor::Core::EGizmoOperation m_currentOperation = OvEditor::Core::EGizmoOperation::TRANSLATE;
 	};
 }

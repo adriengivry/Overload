@@ -120,19 +120,21 @@ OvEditor::Core::EditorResources::EditorResources(const std::string& p_editorAsse
 	}
 
 	/* Models */
-	m_models["Cube"]		= ModelLoader::Create(modelsFolder + "Cube.fbx", modelParserFlags);
-	m_models["Cylinder"]	= ModelLoader::Create(modelsFolder + "Cylinder.fbx", modelParserFlags);
-	m_models["Plane"]		= ModelLoader::Create(modelsFolder + "Plane.fbx", modelParserFlags);
-	m_models["Roll"]		= ModelLoader::Create(modelsFolder + "Roll.fbx", modelParserFlags);
-	m_models["Sphere"]		= ModelLoader::Create(modelsFolder + "Sphere.fbx", modelParserFlags);
-	m_models["Arrow"]		= ModelLoader::Create(modelsFolder + "Arrow.fbx", modelParserFlags);
-	m_models["Camera"]		= ModelLoader::Create(modelsFolder + "Camera.fbx", modelParserFlags);
+	m_models["Cube"]			= ModelLoader::Create(modelsFolder + "Cube.fbx", modelParserFlags);
+	m_models["Cylinder"]		= ModelLoader::Create(modelsFolder + "Cylinder.fbx", modelParserFlags);
+	m_models["Plane"]			= ModelLoader::Create(modelsFolder + "Plane.fbx", modelParserFlags);
+	m_models["Roll"]			= ModelLoader::Create(modelsFolder + "Roll.fbx", modelParserFlags);
+	m_models["Sphere"]			= ModelLoader::Create(modelsFolder + "Sphere.fbx", modelParserFlags);
+	m_models["Arrow_Translate"]	= ModelLoader::Create(modelsFolder + "Arrow_Translate.fbx", modelParserFlags);
+	m_models["Arrow_Rotate"]	= ModelLoader::Create(modelsFolder + "Arrow_Rotate.fbx", modelParserFlags);
+	m_models["Arrow_Scale"]		= ModelLoader::Create(modelsFolder + "Arrow_Scale.fbx", modelParserFlags);
+	m_models["Camera"]			= ModelLoader::Create(modelsFolder + "Camera.fbx", modelParserFlags);
 
 	/* Shaders */
 	auto gridSource		= OvEditor::Resources::RawShaders::GetGrid();
-	auto guizmoSource	= OvEditor::Resources::RawShaders::GetGuizmo();
+	auto gizmoSource	= OvEditor::Resources::RawShaders::GetGizmo();
 	m_shaders["Grid"]		= ShaderLoader::CreateFromSource(gridSource.first, gridSource.second);
-	m_shaders["Guizmo"]		= ShaderLoader::CreateFromSource(guizmoSource.first, guizmoSource.second);
+	m_shaders["Gizmo"]		= ShaderLoader::CreateFromSource(gizmoSource.first, gizmoSource.second);
 
 	/* From memory */
 	{

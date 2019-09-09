@@ -32,6 +32,31 @@ OvEditor::Panels::SceneView::SceneView
 	};
 }
 
+void OvEditor::Panels::SceneView::Update(float p_deltaTime)
+{
+	AViewControllable::Update(p_deltaTime);
+
+	using namespace OvWindowing::Inputs;
+
+	if (IsFocused() && !m_cameraController.IsRightMousePressed())
+	{
+		if (EDITOR_CONTEXT(inputManager)->IsKeyPressed(EKey::KEY_W))
+		{
+			m_currentOperation = OvEditor::Core::EGizmoOperation::TRANSLATE;
+		}
+
+		if (EDITOR_CONTEXT(inputManager)->IsKeyPressed(EKey::KEY_E))
+		{
+			m_currentOperation = OvEditor::Core::EGizmoOperation::ROTATE;
+		}
+
+		if (EDITOR_CONTEXT(inputManager)->IsKeyPressed(EKey::KEY_R))
+		{
+			m_currentOperation = OvEditor::Core::EGizmoOperation::SCALE;
+		}
+	}
+}
+
 void OvEditor::Panels::SceneView::_Render_Impl()
 {
 	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
@@ -72,47 +97,82 @@ void OvEditor::Panels::SceneView::RenderScene(uint8_t p_defaultRenderState)
 
 		baseRenderer.ApplyStateMask(p_defaultRenderState);
 		baseRenderer.Clear(false, true, false);
-		m_editorRenderer.RenderGuizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation());
+		m_editorRenderer.RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation);
 	}
 
 	m_fbo.Unbind();
 }
 
+void OvEditor::Panels::SceneView::RenderSceneForActorPicking()
+{
+	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
+
+	auto [winWidth, winHeight] = GetSafeSize();
+
+	m_actorPickingFramebuffer.Resize(winWidth, winHeight);
+	m_actorPickingFramebuffer.Bind();
+	baseRenderer.SetClearColor(1.0f, 1.0f, 1.0f);
+	baseRenderer.Clear();
+	m_editorRenderer.RenderSceneForActorPicking();
+
+	if (EDITOR_EXEC(IsAnyActorSelected()))
+	{
+		auto& selectedActor = EDITOR_EXEC(GetSelectedActor());
+		baseRenderer.Clear(false, true, false);
+		m_editorRenderer.RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation, true);
+	}
+
+	m_actorPickingFramebuffer.Unbind();
+}
+
+bool IsResizing()
+{
+	auto cursor = ImGui::GetMouseCursor();
+
+	return 
+		cursor == ImGuiMouseCursor_ResizeEW ||
+		cursor == ImGuiMouseCursor_ResizeNS ||
+		cursor == ImGuiMouseCursor_ResizeNWSE ||
+		cursor == ImGuiMouseCursor_ResizeNESW ||
+		cursor == ImGuiMouseCursor_ResizeAll;;
+}
+
 void OvEditor::Panels::SceneView::HandleActorPicking()
 {
-	if (IsHovered() && EDITOR_CONTEXT(inputManager)->IsMouseButtonPressed(OvWindowing::Inputs::EMouseButton::MOUSE_BUTTON_LEFT))
+	using namespace OvWindowing::Inputs;
+
+	auto& inputManager = *EDITOR_CONTEXT(inputManager);
+
+	if (inputManager.IsMouseButtonReleased(EMouseButton::MOUSE_BUTTON_LEFT))
 	{
-		/* Prevent losing focus on actor while resizing a window */
-		if (auto cursor = ImGui::GetMouseCursor();
-			cursor != ImGuiMouseCursor_ResizeEW &&
-			cursor != ImGuiMouseCursor_ResizeNS &&
-			cursor != ImGuiMouseCursor_ResizeNWSE &&
-			cursor != ImGuiMouseCursor_ResizeNESW &&
-			cursor != ImGuiMouseCursor_ResizeAll)
+		m_gizmoOperations.StopPicking();
+	}
+
+	if (IsHovered() && !IsResizing() && inputManager.IsMouseButtonPressed(EMouseButton::MOUSE_BUTTON_LEFT) && !m_cameraController.IsRightMousePressed())
+	{
+		RenderSceneForActorPicking();
+
+		// Look actor under mouse
+		auto [mouseX, mouseY] = inputManager.GetMousePosition();
+		mouseX -= m_position.x;
+		mouseY -= m_position.y;
+		mouseY = GetSafeSize().second - mouseY + 25;
+
+		m_actorPickingFramebuffer.Bind();
+		uint8_t pixel[3];
+		glReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+		m_actorPickingFramebuffer.Unbind();
+
+		/* Gizmo picking */
+		if (EDITOR_EXEC(IsAnyActorSelected()) && pixel[0] == 255 && pixel[1] == 255 && pixel[2] >= 252 && pixel[2] <= 254)
 		{
-			auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
-
-			auto [winWidth, winHeight] = GetSafeSize();
-
-			m_actorPickingFramebuffer.Resize(winWidth, winHeight);
-			m_actorPickingFramebuffer.Bind();
-			baseRenderer.SetClearColor(1.0f, 1.0f, 1.0f);
-			baseRenderer.Clear();
-			m_editorRenderer.RenderSceneForActorPicking();
-
-			// Look actor under mouse
-			auto mousePosition = EDITOR_CONTEXT(inputManager)->GetMousePosition();
-			auto mouseX = static_cast<uint16_t>(mousePosition.first);
-			auto mouseY = static_cast<uint16_t>(mousePosition.second);
-			mouseX -= static_cast<uint16_t>(m_position.x);
-			mouseY -= static_cast<uint16_t>(m_position.y);
-			mouseY = GetSafeSize().second - mouseY + 25;
-
-			uint8_t pixels[3];
-			glReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-			m_actorPickingFramebuffer.Unbind();
-
-			uint32_t actorID = (0 << 24) | (pixels[2] << 16) | (pixels[1] << 8) | (pixels[0] << 0);
+			auto direction = static_cast<OvEditor::Core::GizmoBehaviour::EDirection>(pixel[2] - 252);
+			m_gizmoOperations.StartPicking(EDITOR_EXEC(GetSelectedActor()), m_cameraPosition, m_currentOperation, direction);
+		}
+		/* Actor picking */
+		else
+		{
+			uint32_t actorID = (0 << 24) | (pixel[2] << 16) | (pixel[1] << 8) | (pixel[0] << 0);
 
 			if (auto actor = EDITOR_CONTEXT(sceneManager).GetCurrentScene()->FindActorByID(actorID))
 			{
@@ -122,7 +182,18 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 			{
 				EDITOR_EXEC(UnselectActor());
 			}
-
 		}
+	}
+
+	if (m_gizmoOperations.IsPicking())
+	{
+		auto mousePosition = EDITOR_CONTEXT(inputManager)->GetMousePosition();
+
+		auto [winWidth, winHeight] = GetSafeSize();
+		auto projection = m_camera.GetProjectionMatrix(winWidth, winHeight);
+		auto view = m_camera.GetViewMatrix(m_cameraPosition);
+
+		m_gizmoOperations.SetCurrentMouse({ static_cast<float>(mousePosition.first), static_cast<float>(mousePosition.second) });
+		m_gizmoOperations.ApplyOperation(view, projection, { static_cast<float>(winWidth), static_cast<float>(winHeight) });
 	}
 }

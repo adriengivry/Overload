@@ -18,6 +18,7 @@
 #include "OvEditor/Core/EditorRenderer.h"
 #include "OvEditor/Core/EditorResources.h"
 #include "OvEditor/Panels/AView.h"
+#include "OvEditor/Core/GizmoBehaviour.h"
 
 #include "OvEditor/Core/EditorActions.h"
 
@@ -98,15 +99,22 @@ void OvEditor::Core::EditorRenderer::InitMaterials()
 	m_outlineMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
 	m_outlineMaterial.SetDepthTest(false);
 
-	/* Guizmo Arrow Material */
-	m_guizmoArrowMaterial.SetShader(m_context.editorResources->GetShader("Guizmo"));
-	m_guizmoArrowMaterial.SetGPUInstances(3);
-	m_guizmoArrowMaterial.Set("u_IsBall", false);
+	/* Gizmo Arrow Material */
+	m_gizmoArrowMaterial.SetShader(m_context.editorResources->GetShader("Gizmo"));
+	m_gizmoArrowMaterial.SetGPUInstances(3);
+	m_gizmoArrowMaterial.Set("u_IsBall", false);
+	m_gizmoArrowMaterial.Set("u_IsPickable", false);
 
-	/* Guizmo Ball Material */
-	m_guizmoBallMaterial.SetShader(m_context.editorResources->GetShader("Guizmo"));
-	m_guizmoBallMaterial.SetShader(m_context.editorResources->GetShader("Guizmo"));
-	m_guizmoBallMaterial.Set("u_IsBall", true);
+	/* Gizmo Ball Material */
+	m_gizmoBallMaterial.SetShader(m_context.editorResources->GetShader("Gizmo"));
+	m_gizmoBallMaterial.Set("u_IsBall", true);
+	m_gizmoBallMaterial.Set("u_IsPickable", false);
+
+	/* Gizmo Pickable Material */
+	m_gizmoPickingMaterial.SetShader(m_context.editorResources->GetShader("Gizmo"));
+	m_gizmoPickingMaterial.SetGPUInstances(3);
+	m_gizmoPickingMaterial.Set("u_IsBall", false);
+	m_gizmoPickingMaterial.Set("u_IsPickable", true);
 
 	/* Picking Material */
 	m_actorPickingMaterial.SetShader(m_context.shaderManager[":Shaders\\Unlit.glsl"]);
@@ -227,14 +235,37 @@ void OvEditor::Core::EditorRenderer::RenderCameras()
 	}
 }
 
-void OvEditor::Core::EditorRenderer::RenderGuizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation)
+void OvEditor::Core::EditorRenderer::RenderGizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, OvEditor::Core::EGizmoOperation p_operation, bool p_pickable)
 {
 	using namespace OvMaths;
 
 	FMatrix4 model = FMatrix4::Translation(p_position) * FQuaternion::ToMatrix4(FQuaternion::Normalize(p_rotation));
-	FMatrix4 sphereModel = model * OvMaths::FMatrix4::Scaling({ 0.1f, 0.1f, 0.1f });
-	m_context.renderer->DrawModelWithSingleMaterial(*m_context.editorResources->GetModel("Sphere"), m_guizmoBallMaterial, &sphereModel);
-	m_context.renderer->DrawModelWithSingleMaterial(*m_context.editorResources->GetModel("Arrow"), m_guizmoArrowMaterial, &model);
+
+	if (!p_pickable)
+	{
+		FMatrix4 sphereModel = model * OvMaths::FMatrix4::Scaling({ 0.1f, 0.1f, 0.1f });
+		m_context.renderer->DrawModelWithSingleMaterial(*m_context.editorResources->GetModel("Sphere"), m_gizmoBallMaterial, &sphereModel);
+	}
+
+	OvRendering::Resources::Model* arrowModel = nullptr;
+
+	switch (p_operation)
+	{
+	case OvEditor::Core::EGizmoOperation::TRANSLATE:
+		arrowModel = m_context.editorResources->GetModel("Arrow_Translate");
+		break;
+	case OvEditor::Core::EGizmoOperation::ROTATE:
+		arrowModel = m_context.editorResources->GetModel("Arrow_Rotate");
+		break;
+	case OvEditor::Core::EGizmoOperation::SCALE:
+		arrowModel = m_context.editorResources->GetModel("Arrow_Scale");
+		break;
+	}
+
+	if (arrowModel)
+	{
+		m_context.renderer->DrawModelWithSingleMaterial(*arrowModel, p_pickable ? m_gizmoPickingMaterial : m_gizmoArrowMaterial, &model);
+	}
 }
 
 void OvEditor::Core::EditorRenderer::RenderModelToStencil(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model)

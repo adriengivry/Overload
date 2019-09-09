@@ -17,6 +17,7 @@
 
 #include "OvEditor/Core/Context.h"
 
+namespace OvEditor::Core { enum class EGizmoOperation; }
 namespace OvEditor::Panels { class AView; }
 
 namespace OvEditor::Core
@@ -72,11 +73,13 @@ namespace OvEditor::Core
 		void RenderCameras();
 
 		/**
-		* Render a guizmo at position
+		* Render a gizmo at position
 		* @param p_position
 		* @param p_rotation
+		* @param p_operation
+		* @param p_pickable (Determine the shader to use to render the gizmo)
 		*/
-		void RenderGuizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation);
+		void RenderGizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, OvEditor::Core::EGizmoOperation p_operation, bool p_pickable = false);
 
 		/**
 		* Render a model to the stencil buffer
@@ -146,8 +149,9 @@ namespace OvEditor::Core
 		OvCore::Resources::Material m_emptyMaterial;
 		OvCore::Resources::Material m_defaultMaterial;
 		OvCore::Resources::Material m_cameraMaterial;
-		OvCore::Resources::Material m_guizmoArrowMaterial;
-		OvCore::Resources::Material m_guizmoBallMaterial;
+		OvCore::Resources::Material m_gizmoArrowMaterial;
+		OvCore::Resources::Material m_gizmoBallMaterial;
+		OvCore::Resources::Material m_gizmoPickingMaterial;
 		OvCore::Resources::Material m_actorPickingMaterial;
 	};
 }
