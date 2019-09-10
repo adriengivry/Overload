@@ -53,15 +53,21 @@ void OvGame::Core::GameRenderer::RenderScene()
 	{
 		UpdateLights(*currentScene);
 
-		if (OvCore::ECS::Components::CCamera* mainCamera = m_context.renderer->FindMainCamera(*currentScene))
+		if (OvCore::ECS::Components::CCamera* mainCameraComponent = m_context.renderer->FindMainCamera(*currentScene))
 		{
-			UpdateEngineUBO(*mainCamera);
+			auto [winWidth, winHeight] = m_context.window->GetSize();
+			const auto& cameraPosition = mainCameraComponent->owner.transform.GetWorldPosition();
+			auto& camera = mainCameraComponent->GetCamera();
 
-			m_context.renderer->Clear(mainCamera->GetCamera(), true, true, false);
+			camera.CacheMatrices(winWidth, winHeight, cameraPosition);
+
+			UpdateEngineUBO(*mainCameraComponent);
+
+			m_context.renderer->Clear(camera, true, true, false);
 
 			uint8_t glState = m_context.renderer->FetchGLState();
 			m_context.renderer->ApplyStateMask(glState);
-			m_context.renderer->RenderScene(*currentScene, mainCamera->owner.transform.GetWorldPosition(), &m_emptyMaterial);
+			m_context.renderer->RenderScene(*currentScene, cameraPosition, nullptr, &m_emptyMaterial);
 			m_context.renderer->ApplyStateMask(glState);
 		}
 		else
@@ -74,12 +80,11 @@ void OvGame::Core::GameRenderer::RenderScene()
 
 void OvGame::Core::GameRenderer::UpdateEngineUBO(OvCore::ECS::Components::CCamera& p_mainCamera)
 {
-	auto [winWidth, winHeight] = m_context.window->GetSize();
-
 	size_t offset = sizeof(OvMaths::FMatrix4); // We skip the model matrix (Which is a special case, modified every draw calls)
+	auto& camera = p_mainCamera.GetCamera();
 
-	m_context.engineUBO->SetSubData(OvMaths::FMatrix4::Transpose(p_mainCamera.GetViewMatrix()), std::ref(offset));
-	m_context.engineUBO->SetSubData(OvMaths::FMatrix4::Transpose(p_mainCamera.GetProjectionMatrix(winWidth, winHeight)), std::ref(offset));
+	m_context.engineUBO->SetSubData(OvMaths::FMatrix4::Transpose(camera.GetViewMatrix()), std::ref(offset));
+	m_context.engineUBO->SetSubData(OvMaths::FMatrix4::Transpose(camera.GetProjectionMatrix()), std::ref(offset));
 	m_context.engineUBO->SetSubData(p_mainCamera.owner.transform.GetWorldPosition(), std::ref(offset));
 }
 

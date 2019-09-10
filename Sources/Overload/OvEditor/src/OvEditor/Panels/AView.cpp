@@ -46,9 +46,9 @@ void OvEditor::Panels::AView::Render()
 	FillEngineUBO();
 
 	auto [winWidth, winHeight] = GetSafeSize();
-	auto projection = m_camera.GetProjectionMatrix(winWidth, winHeight);
-	auto view = m_camera.GetViewMatrix(m_cameraPosition);
-	EDITOR_CONTEXT(shapeDrawer)->SetViewProjection(projection * view);
+
+	EDITOR_CONTEXT(shapeDrawer)->SetViewProjection(m_camera.GetProjectionMatrix() * m_camera.GetViewMatrix());
+
 	glViewport(0, 0, winWidth, winHeight); // TODO: Move this OpenGL call to OvRendering
 
 	_Render_Impl();
@@ -92,8 +92,14 @@ void OvEditor::Panels::AView::FillEngineUBO()
 	auto[winWidth, winHeight] = GetSafeSize();
 
 	size_t offset = sizeof(OvMaths::FMatrix4); // We skip the model matrix (Which is a special case, modified every draw calls)
-	engineUBO.SetSubData(OvMaths::FMatrix4::Transpose(m_camera.GetViewMatrix(m_cameraPosition)), std::ref(offset));
-	engineUBO.SetSubData(OvMaths::FMatrix4::Transpose(m_camera.GetProjectionMatrix(winWidth, winHeight)), std::ref(offset));
+	engineUBO.SetSubData(OvMaths::FMatrix4::Transpose(m_camera.GetViewMatrix()), std::ref(offset));
+	engineUBO.SetSubData(OvMaths::FMatrix4::Transpose(m_camera.GetProjectionMatrix()), std::ref(offset));
 	engineUBO.SetSubData(m_cameraPosition, std::ref(offset));
+}
+
+void OvEditor::Panels::AView::PrepareCamera()
+{
+	auto [winWidth, winHeight] = GetSafeSize();
+	m_camera.CacheMatrices(winWidth, winHeight, m_cameraPosition);
 }
 

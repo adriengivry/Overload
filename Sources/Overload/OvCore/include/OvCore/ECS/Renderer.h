@@ -10,6 +10,7 @@
 
 #include <OvRendering/Core/Renderer.h>
 #include <OvRendering/Resources/Mesh.h>
+#include <OvRendering/Data/Frustum.h>
 
 #include "OvCore/API/Export.h"
 #include "OvCore/Resources/Material.h"
@@ -59,9 +60,10 @@ namespace OvCore::ECS
 		* Draw the given scene using the given default material (optional) if no material found on an actor
 		* @param p_scene
 		* @param p_cameraPosition
+		* @param p_frustum
 		* @param p_defaultMaterial
 		*/
-		void RenderScene(OvCore::SceneSystem::Scene& p_scene, const OvMaths::FVector3& p_cameraPosition, Resources::Material* p_defaultMaterial = nullptr);
+		void RenderScene(OvCore::SceneSystem::Scene& p_scene, const OvMaths::FVector3& p_cameraPosition, OvRendering::Data::Frustum const* p_frustum = nullptr, Resources::Material* p_defaultMaterial = nullptr);
 
 		/**
 		* Find every drawables objects in the scene. Sorting order:
@@ -71,9 +73,10 @@ namespace OvCore::ECS
 		* @param p_transparents
 		* @param p_scene
 		* @param p_cameraPosition
+		* @param p_frustum
 		* @param p_defaultMaterial
 		*/
-		void FindAndSortDrawables(OpaqueDrawables& p_opaques, TransparentDrawables& p_transparents, const OvCore::SceneSystem::Scene& p_scene, const OvMaths::FVector3& p_cameraPosition, Resources::Material* p_defaultMaterial = nullptr);
+		void FindAndSortDrawables(OpaqueDrawables& p_opaques, TransparentDrawables& p_transparents, const OvCore::SceneSystem::Scene& p_scene, const OvMaths::FVector3& p_cameraPosition, OvRendering::Data::Frustum const* p_frustum = nullptr, Resources::Material* p_defaultMaterial = nullptr);
 
 		/**
 		* Draw a Drawable instance

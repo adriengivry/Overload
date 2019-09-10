@@ -9,6 +9,7 @@
 #include "OvEditor/Core/EditorRenderer.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Panels/SceneView.h"
+#include "OvEditor/Panels/GameView.h"
 
 OvEditor::Panels::SceneView::SceneView
 (
@@ -59,6 +60,8 @@ void OvEditor::Panels::SceneView::Update(float p_deltaTime)
 
 void OvEditor::Panels::SceneView::_Render_Impl()
 {
+	PrepareCamera();
+
 	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
 
 	uint8_t glState = baseRenderer.FetchGLState();
@@ -68,6 +71,13 @@ void OvEditor::Panels::SceneView::_Render_Impl()
 	baseRenderer.ApplyStateMask(glState);
 	HandleActorPicking();
 	baseRenderer.ApplyStateMask(glState);
+}
+
+OvRendering::Data::Frustum const* GetGameViewFrustum()
+{
+	auto& gameView = EDITOR_PANEL(OvEditor::Panels::GameView, "Game View");
+	bool notInEditMode = EDITOR_EXEC(GetCurrentEditorMode()) != OvEditor::Core::EditorActions::EEditorMode::EDIT;
+	return (notInEditMode && gameView.HasCamera()) ? &gameView.GetCamera().GetFrustum() : nullptr;
 }
 
 void OvEditor::Panels::SceneView::RenderScene(uint8_t p_defaultRenderState)
@@ -82,7 +92,8 @@ void OvEditor::Panels::SceneView::RenderScene(uint8_t p_defaultRenderState)
 
 	m_editorRenderer.RenderGrid(m_cameraPosition, m_gridColor);
 	m_editorRenderer.RenderCameras();
-	m_editorRenderer.RenderScene(m_cameraPosition);
+	
+	m_editorRenderer.RenderScene(m_cameraPosition, GetGameViewFrustum());
 
 	if (EDITOR_EXEC(IsAnyActorSelected()))
 	{
@@ -113,7 +124,7 @@ void OvEditor::Panels::SceneView::RenderSceneForActorPicking()
 	m_actorPickingFramebuffer.Bind();
 	baseRenderer.SetClearColor(1.0f, 1.0f, 1.0f);
 	baseRenderer.Clear();
-	m_editorRenderer.RenderSceneForActorPicking();
+	m_editorRenderer.RenderSceneForActorPicking(GetGameViewFrustum());
 
 	if (EDITOR_EXEC(IsAnyActorSelected()))
 	{
@@ -190,10 +201,8 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 		auto mousePosition = EDITOR_CONTEXT(inputManager)->GetMousePosition();
 
 		auto [winWidth, winHeight] = GetSafeSize();
-		auto projection = m_camera.GetProjectionMatrix(winWidth, winHeight);
-		auto view = m_camera.GetViewMatrix(m_cameraPosition);
 
 		m_gizmoOperations.SetCurrentMouse({ static_cast<float>(mousePosition.first), static_cast<float>(mousePosition.second) });
-		m_gizmoOperations.ApplyOperation(view, projection, { static_cast<float>(winWidth), static_cast<float>(winHeight) });
+		m_gizmoOperations.ApplyOperation(m_camera.GetViewMatrix(), m_camera.GetProjectionMatrix(), { static_cast<float>(winWidth), static_cast<float>(winHeight) });
 	}
 }

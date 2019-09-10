@@ -35,17 +35,6 @@ std::string OvCore::ECS::Components::CCamera::GetName()
 	return "Camera";
 }
 
-
-OvMaths::FMatrix4 OvCore::ECS::Components::CCamera::GetProjectionMatrix(uint16_t p_windowWidth, uint16_t p_windowHeight)
-{
-	return m_camera.GetProjectionMatrix(p_windowWidth, p_windowHeight);
-}
-
-OvMaths::FMatrix4 OvCore::ECS::Components::CCamera::GetViewMatrix()
-{
-	return m_camera.GetViewMatrix(owner.transform.GetWorldPosition());
-}
-
 void OvCore::ECS::Components::CCamera::SetFov(float p_value)
 {
 	m_camera.SetFov(p_value);

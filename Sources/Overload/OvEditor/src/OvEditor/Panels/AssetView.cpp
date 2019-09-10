@@ -47,6 +47,8 @@ OvEditor::Panels::AssetView::AssetView
 
 void OvEditor::Panels::AssetView::_Render_Impl()
 {
+	PrepareCamera();
+
 	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
 
 	m_fbo.Bind();

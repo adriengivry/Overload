@@ -21,19 +21,26 @@ OvRendering::LowRenderer::Camera::Camera() :
 	UpdateCameraVectors();
 }
 
-OvMaths::FMatrix4 OvRendering::LowRenderer::Camera::GetProjectionMatrix(uint16_t p_windowWidth, uint16_t p_windowHeight) const
+void OvRendering::LowRenderer::Camera::CacheMatrices(uint16_t p_windowWidth, uint16_t p_windowHeight, const OvMaths::FVector3& p_position)
 {
-	return OvMaths::FMatrix4::CreatePerspective(m_fov, static_cast<float>(p_windowWidth) / static_cast<float>(p_windowHeight), m_near, m_far);
+	CacheProjectionMatrix(p_windowWidth, p_windowHeight);
+	CacheViewMatrix(p_position);
+	CacheFrustum(m_viewMatrix, m_projectionMatrix);
 }
 
-OvMaths::FMatrix4 OvRendering::LowRenderer::Camera::GetViewMatrix(const OvMaths::FVector3& p_position) const
+void OvRendering::LowRenderer::Camera::CacheProjectionMatrix(uint16_t p_windowWidth, uint16_t p_windowHeight)
 {
-	return OvMaths::FMatrix4::CreateView
-	(
-		p_position.x, p_position.y, p_position.z,													// Position
-		p_position.x + m_forward.x, p_position.y + m_forward.y, p_position.z + m_forward.z,			// LookAt (Position + Forward)
-		m_up.x, m_up.y, m_up.z																		// Up Vector
-	);
+	m_projectionMatrix = CalculateProjectionMatrix(p_windowWidth, p_windowHeight);
+}
+
+void OvRendering::LowRenderer::Camera::CacheViewMatrix(const OvMaths::FVector3& p_position)
+{
+	m_viewMatrix = CalculateViewMatrix(p_position);
+}
+
+void OvRendering::LowRenderer::Camera::CacheFrustum(const OvMaths::FMatrix4& p_view, const OvMaths::FMatrix4& p_projection)
+{
+	m_frustum.CalculateFrustum(p_projection * p_view);
 }
 
 const OvMaths::FVector3 & OvRendering::LowRenderer::Camera::GetForward() const
@@ -86,6 +93,21 @@ const OvMaths::FVector3 & OvRendering::LowRenderer::Camera::GetClearColor() cons
 	return m_clearColor;
 }
 
+const OvMaths::FMatrix4& OvRendering::LowRenderer::Camera::GetProjectionMatrix() const
+{
+	return m_projectionMatrix;
+}
+
+const OvMaths::FMatrix4& OvRendering::LowRenderer::Camera::GetViewMatrix() const
+{
+	return m_viewMatrix;
+}
+
+const OvRendering::Data::Frustum& OvRendering::LowRenderer::Camera::GetFrustum() const
+{
+	return m_frustum;
+}
+
 void OvRendering::LowRenderer::Camera::SetYaw(float p_value)
 {
 	m_yaw = p_value;
@@ -132,6 +154,21 @@ void OvRendering::LowRenderer::Camera::SetRotation(const OvMaths::FQuaternion & 
 	m_forward = p_rotation * OvMaths::FVector3(0.f, 0.f, 1.f);
 	m_right = p_rotation * OvMaths::FVector3(1.f, 0.f, 0.f);
 	m_up = p_rotation * OvMaths::FVector3(0.f, 1.f, 0.f);
+}
+
+OvMaths::FMatrix4 OvRendering::LowRenderer::Camera::CalculateProjectionMatrix(uint16_t p_windowWidth, uint16_t p_windowHeight) const
+{
+	return OvMaths::FMatrix4::CreatePerspective(m_fov, static_cast<float>(p_windowWidth) / static_cast<float>(p_windowHeight), m_near, m_far);
+}
+
+OvMaths::FMatrix4 OvRendering::LowRenderer::Camera::CalculateViewMatrix(const OvMaths::FVector3& p_position) const
+{
+	return OvMaths::FMatrix4::CreateView
+	(
+		p_position.x, p_position.y, p_position.z,													// Position
+		p_position.x + m_forward.x, p_position.y + m_forward.y, p_position.z + m_forward.z,			// LookAt (Position + Forward)
+		m_up.x, m_up.y, m_up.z																		// Up Vector
+	);
 }
 
 void OvRendering::LowRenderer::Camera::UpdateCameraVectors()

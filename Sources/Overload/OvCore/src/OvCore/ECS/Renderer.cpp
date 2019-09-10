@@ -5,6 +5,7 @@
 */
 
 #include <OvRendering/Resources/Loaders/TextureLoader.h>
+#include <OvRendering/Data/Frustum.h>
 
 #include "OvCore/ECS/Renderer.h"
 #include "OvCore/ECS/Components/CModelRenderer.h"
@@ -45,12 +46,12 @@ void OvCore::ECS::Renderer::FindLightMatrices(const OvCore::SceneSystem::Scene& 
 			p_out.push_back(light->GetData().GenerateMatrix());
 }
 
-void OvCore::ECS::Renderer::RenderScene(OvCore::SceneSystem::Scene& p_scene, const OvMaths::FVector3& p_cameraPosition, Resources::Material* p_defaultMaterial)
+void OvCore::ECS::Renderer::RenderScene(OvCore::SceneSystem::Scene& p_scene, const OvMaths::FVector3& p_cameraPosition, OvRendering::Data::Frustum const* p_frustum, Resources::Material* p_defaultMaterial)
 {
 	OpaqueDrawables			opaqueMeshes;
 	TransparentDrawables	transparentMeshes;
 
-	FindAndSortDrawables(opaqueMeshes, transparentMeshes, p_scene, p_cameraPosition, p_defaultMaterial);
+	FindAndSortDrawables(opaqueMeshes, transparentMeshes, p_scene, p_cameraPosition, p_frustum, p_defaultMaterial);
 
 	for (const auto&[distance, drawable] : opaqueMeshes)
 		DrawDrawable(drawable);
@@ -59,39 +60,53 @@ void OvCore::ECS::Renderer::RenderScene(OvCore::SceneSystem::Scene& p_scene, con
 		DrawDrawable(drawable);
 }
 
-void OvCore::ECS::Renderer::FindAndSortDrawables(OpaqueDrawables& p_opaques, TransparentDrawables& p_transparents, const OvCore::SceneSystem::Scene& p_scene, const OvMaths::FVector3& p_cameraPosition, Resources::Material* p_defaultMaterial)
+void OvCore::ECS::Renderer::FindAndSortDrawables
+(
+	OpaqueDrawables& p_opaques,
+	TransparentDrawables& p_transparents,
+	const OvCore::SceneSystem::Scene& p_scene,
+	const OvMaths::FVector3& p_cameraPosition,
+	OvRendering::Data::Frustum const* p_frustum,
+	Resources::Material* p_defaultMaterial
+)
 {
+	auto camera = FindMainCamera(p_scene);
+
 	for (OvCore::ECS::Components::CModelRenderer* modelRenderer : p_scene.GetFastAccessComponents().modelRenderers)
 	{
+		auto position = modelRenderer->owner.transform.GetWorldPosition();
 		if (modelRenderer->owner.IsActive())
 		{
 			if (auto model = modelRenderer->GetModel())
 			{
-				float distanceToActor = OvMaths::FVector3::Distance(modelRenderer->owner.transform.GetWorldPosition(), p_cameraPosition);
-
-				if (auto materialRenderer = modelRenderer->owner.GetComponent<OvCore::ECS::Components::CMaterialRenderer>())
+				if (!p_frustum || p_frustum->PointInFrustum(position.x, position.y, position.z))
 				{
-					const OvCore::ECS::Components::CMaterialRenderer::MaterialList& materials = materialRenderer->GetMaterials();
+					float distanceToActor = OvMaths::FVector3::Distance(modelRenderer->owner.transform.GetWorldPosition(), p_cameraPosition);
 
-					for (auto mesh : model->GetMeshes())
+					if (auto materialRenderer = modelRenderer->owner.GetComponent<OvCore::ECS::Components::CMaterialRenderer>())
 					{
-						OvCore::Resources::Material* material = nullptr;
+						const OvCore::ECS::Components::CMaterialRenderer::MaterialList& materials = materialRenderer->GetMaterials();
 
-						if (mesh->GetMaterialIndex() < MAX_MATERIAL_COUNT)
+						for (auto mesh : model->GetMeshes())
 						{
-							material = materials.at(mesh->GetMaterialIndex());
-							if (!material || !material->GetShader())
-								material = p_defaultMaterial;
-						}
+							OvCore::Resources::Material* material = nullptr;
 
-						if (material)
-						{
-							Drawable element = { modelRenderer->owner.transform.GetWorldMatrix(), mesh, material, materialRenderer->GetUserMatrix() };
+							if (mesh->GetMaterialIndex() < MAX_MATERIAL_COUNT)
+							{
+								material = materials.at(mesh->GetMaterialIndex());
+								if (!material || !material->GetShader())
+									material = p_defaultMaterial;
+							}
 
-							if (material->IsBlendable())
-								p_transparents.emplace(distanceToActor, element);
-							else
-								p_opaques.emplace(distanceToActor, element);
+							if (material)
+							{
+								Drawable element = { modelRenderer->owner.transform.GetWorldMatrix(), mesh, material, materialRenderer->GetUserMatrix() };
+
+								if (material->IsBlendable())
+									p_transparents.emplace(distanceToActor, element);
+								else
+									p_opaques.emplace(distanceToActor, element);
+							}
 						}
 					}
 				}

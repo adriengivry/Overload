@@ -54,13 +54,15 @@ namespace OvEditor::Core
 		/**
 		* Render the scene
 		* @param p_cameraPosition
+		* @param p_frustum
 		*/
-		void RenderScene(const OvMaths::FVector3& p_cameraPosition);
+		void RenderScene(const OvMaths::FVector3& p_cameraPosition, OvRendering::Data::Frustum const* p_frustum = nullptr);
 
 		/**
 		* Render the scene for actor picking (Unlit version of the scene with colors indicating actor IDs)
+		* @param p_frustum
 		*/
-		void RenderSceneForActorPicking();
+		void RenderSceneForActorPicking(OvRendering::Data::Frustum const* p_frustum = nullptr);
 
 		/**
 		* Render the User Interface

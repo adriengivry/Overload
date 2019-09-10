@@ -197,8 +197,8 @@ void OvEditor::Core::Editor::RenderViews(float p_deltaTime)
 		PROFILER_SPY("Editor Views Update");
 
 		assetView.Update(p_deltaTime);
-		sceneView.Update(p_deltaTime);
 		gameView.Update(p_deltaTime);
+		sceneView.Update(p_deltaTime);
 	}
 
 	if (assetView.IsOpened())
@@ -212,18 +212,18 @@ void OvEditor::Core::Editor::RenderViews(float p_deltaTime)
 
 	m_context.lightSSBO->Bind(0);
 
-	if (sceneView.IsOpened())
-	{
-		PROFILER_SPY("Scene View Rendering");
-		
-		sceneView.Render();
-	}
-
 	if (gameView.IsOpened())
 	{
 		PROFILER_SPY("Game View Rendering");
 
 		gameView.Render();
+	}
+
+	if (sceneView.IsOpened())
+	{
+		PROFILER_SPY("Scene View Rendering");
+
+		sceneView.Render();
 	}
 
 	m_context.lightSSBO->Unbind();

@@ -143,15 +143,15 @@ OvMaths::FMatrix4 OvEditor::Core::EditorRenderer::CalculateCameraModelMatrix(OvC
 	return translation * rotation * scale;
 }
 
-void OvEditor::Core::EditorRenderer::RenderScene(const OvMaths::FVector3& p_cameraPosition)
+void OvEditor::Core::EditorRenderer::RenderScene(const OvMaths::FVector3& p_cameraPosition, OvRendering::Data::Frustum const* p_frustum)
 {
 	/* Render the actors */
 	m_context.lightSSBO->Bind(0);
-	m_context.renderer->RenderScene(*m_context.sceneManager.GetCurrentScene(), p_cameraPosition, &m_emptyMaterial);
+	m_context.renderer->RenderScene(*m_context.sceneManager.GetCurrentScene(), p_cameraPosition, p_frustum, &m_emptyMaterial);
 	m_context.lightSSBO->Unbind();
 }
 
-void OvEditor::Core::EditorRenderer::RenderSceneForActorPicking()
+void OvEditor::Core::EditorRenderer::RenderSceneForActorPicking(OvRendering::Data::Frustum const* p_frustum)
 {
 	auto& scene = *m_context.sceneManager.GetCurrentScene();
 
@@ -164,33 +164,37 @@ void OvEditor::Core::EditorRenderer::RenderSceneForActorPicking()
 		{
 			if (auto model = modelRenderer->GetModel())
 			{
+				const auto& position = actor.transform.GetWorldPosition();
 
-				if (auto materialRenderer = modelRenderer->owner.GetComponent<OvCore::ECS::Components::CMaterialRenderer>())
+				if (!p_frustum || p_frustum->PointInFrustum(position.x, position.y, position.z))
 				{
-					const OvCore::ECS::Components::CMaterialRenderer::MaterialList& materials = materialRenderer->GetMaterials();
-					auto modelMatrix = actor.transform.GetWorldMatrix();
-					PreparePickingMaterial(actor);
-
-					for (auto mesh : model->GetMeshes())
+					if (auto materialRenderer = modelRenderer->owner.GetComponent<OvCore::ECS::Components::CMaterialRenderer>())
 					{
-						OvCore::Resources::Material* material = nullptr;
+						const OvCore::ECS::Components::CMaterialRenderer::MaterialList& materials = materialRenderer->GetMaterials();
+						auto modelMatrix = actor.transform.GetWorldMatrix();
+						PreparePickingMaterial(actor);
 
-						if (mesh->GetMaterialIndex() < MAX_MATERIAL_COUNT)
+						for (auto mesh : model->GetMeshes())
 						{
-							material = materials.at(mesh->GetMaterialIndex());
-							if (!material || !material->GetShader())
-								material = &m_emptyMaterial;
-						}
+							OvCore::Resources::Material* material = nullptr;
 
-						if (material)
-						{
-							m_actorPickingMaterial.SetBackfaceCulling(material->HasBackfaceCulling());
-							m_actorPickingMaterial.SetFrontfaceCulling(material->HasFrontfaceCulling());
-							m_actorPickingMaterial.SetColorWriting(material->HasColorWriting());
-							m_actorPickingMaterial.SetDepthTest(material->HasDepthTest());
-							m_actorPickingMaterial.SetDepthWriting(material->HasDepthWriting());
+							if (mesh->GetMaterialIndex() < MAX_MATERIAL_COUNT)
+							{
+								material = materials.at(mesh->GetMaterialIndex());
+								if (!material || !material->GetShader())
+									material = &m_emptyMaterial;
+							}
 
-							m_context.renderer->DrawMesh(*mesh, m_actorPickingMaterial, &modelMatrix);
+							if (material)
+							{
+								m_actorPickingMaterial.SetBackfaceCulling(material->HasBackfaceCulling());
+								m_actorPickingMaterial.SetFrontfaceCulling(material->HasFrontfaceCulling());
+								m_actorPickingMaterial.SetColorWriting(material->HasColorWriting());
+								m_actorPickingMaterial.SetDepthTest(material->HasDepthTest());
+								m_actorPickingMaterial.SetDepthWriting(material->HasDepthWriting());
+
+								m_context.renderer->DrawMesh(*mesh, m_actorPickingMaterial, &modelMatrix);
+							}
 						}
 					}
 				}

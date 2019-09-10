@@ -36,18 +36,6 @@ namespace OvCore::ECS::Components
 		std::string GetName() override;
 
 		/**
-		* Returns the projection matrix
-		* @param p_windowWidth
-		* @param p_windowHeight
-		*/
-		OvMaths::FMatrix4 GetProjectionMatrix(uint16_t p_windowWidth, uint16_t p_windowHeight);
-
-		/**
-		* Returns the view matrix
-		*/
-		OvMaths::FMatrix4 GetViewMatrix();
-
-		/**
 		* Sets the fov of the camera to the given value
 		* @param p_value
 		*/

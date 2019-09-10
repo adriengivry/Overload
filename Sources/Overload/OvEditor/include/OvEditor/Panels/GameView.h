@@ -41,6 +41,11 @@ namespace OvEditor::Panels
 		*/
 		virtual void _Render_Impl() override;
 
+		/**
+		* Returns true if the game view has a camera
+		*/
+		bool HasCamera() const;
+
 	private:
 		OvCore::SceneSystem::SceneManager& m_sceneManager;
 		bool m_hasCamera = false;

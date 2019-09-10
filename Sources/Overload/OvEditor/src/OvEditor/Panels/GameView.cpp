@@ -33,6 +33,7 @@ void OvEditor::Panels::GameView::Update(float p_deltaTime)
 			m_camera = cameraComponent->GetCamera();
 			m_cameraPosition = cameraComponent->owner.transform.GetWorldPosition();
 			m_hasCamera = true;
+			PrepareCamera();
 		}
 		else
 		{
@@ -54,10 +55,16 @@ void OvEditor::Panels::GameView::_Render_Impl()
 	baseRenderer.ApplyStateMask(glState);
 
 	if (m_hasCamera)
-		m_editorRenderer.RenderScene(m_cameraPosition);
-
+	{
+		m_editorRenderer.RenderScene(m_cameraPosition, &m_camera.GetFrustum());
+	}
 
 	baseRenderer.ApplyStateMask(glState);
 
 	m_fbo.Unbind();
+}
+
+bool OvEditor::Panels::GameView::HasCamera() const
+{
+	return m_hasCamera;
 }

@@ -137,6 +137,7 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
     <ClInclude Include="include\OvRendering\Buffers\VertexBuffer.h" />
     <ClInclude Include="include\OvRendering\Context\Driver.h" />
     <ClInclude Include="include\OvRendering\Core\ShapeDrawer.h" />
+    <ClInclude Include="include\OvRendering\Data\Frustum.h" />
     <ClInclude Include="include\OvRendering\Entities\Light.h" />
     <ClInclude Include="include\OvRendering\Geometry\Vertex.h" />
     <ClInclude Include="include\OvRendering\LowRenderer\Camera.h" />
@@ -171,6 +172,7 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
     <ClCompile Include="src\OvRendering\Buffers\UniformBuffer.cpp" />
     <ClCompile Include="src\OvRendering\Buffers\VertexArray.cpp" />
     <ClCompile Include="src\OvRendering\Context\Driver.cpp" />
+    <ClCompile Include="src\OvRendering\Data\Frustum.cpp" />
     <ClCompile Include="src\OvRendering\Entities\Light.cpp" />
     <ClCompile Include="src\OvRendering\LowRenderer\Camera.cpp" />
     <ClCompile Include="src\OvRendering\Core\Renderer.cpp" />
