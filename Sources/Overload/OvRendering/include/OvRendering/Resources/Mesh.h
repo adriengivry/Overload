@@ -13,6 +13,7 @@
 #include "OvRendering/Buffers/IndexBuffer.h"
 #include "OvRendering/Resources/IMesh.h"
 #include "OvRendering/Geometry/Vertex.h"
+#include "OvRendering/Geometry/BoundingSphere.h"
 
 namespace OvRendering::Resources
 {
@@ -55,8 +56,14 @@ namespace OvRendering::Resources
 		*/
 		uint32_t GetMaterialIndex() const;
 
+		/**
+		* Returns the bounding sphere of the mesh
+		*/
+		const OvRendering::Geometry::BoundingSphere& GetBoundingSphere() const;
+
 	private:
 		void CreateBuffers(const std::vector<Geometry::Vertex>& p_vertices, const std::vector<uint32_t>& p_indices);
+		void ComputeBoundingSphere(const std::vector<Geometry::Vertex>& p_vertices);
 
 	private:
 		const uint32_t m_vertexCount;
@@ -66,5 +73,7 @@ namespace OvRendering::Resources
 		Buffers::VertexArray							m_vertexArray;
 		std::unique_ptr<Buffers::VertexBuffer<float>>	m_vertexBuffer;
 		std::unique_ptr<Buffers::IndexBuffer>			m_indexBuffer;
+
+		Geometry::BoundingSphere m_boundingSphere;
 	};
 }

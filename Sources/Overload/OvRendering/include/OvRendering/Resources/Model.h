@@ -32,9 +32,16 @@ namespace OvRendering::Resources
 		*/
 		const std::vector<std::string>& GetMaterialNames() const;
 
+		/**
+		* Returns the bounding sphere of the model
+		*/
+		const OvRendering::Geometry::BoundingSphere& GetBoundingSphere() const;
+
 	private:
 		Model(const std::string& p_path);
 		~Model();
+
+		void ComputeBoundingSphere();
 
 	public:
 		const std::string path;
@@ -42,5 +49,7 @@ namespace OvRendering::Resources
 	private:
 		std::vector<Mesh*> m_meshes;
 		std::vector<std::string> m_materialNames;
+
+		Geometry::BoundingSphere m_boundingSphere;
 	};
 }

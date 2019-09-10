@@ -139,6 +139,7 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
     <ClInclude Include="include\OvRendering\Core\ShapeDrawer.h" />
     <ClInclude Include="include\OvRendering\Data\Frustum.h" />
     <ClInclude Include="include\OvRendering\Entities\Light.h" />
+    <ClInclude Include="include\OvRendering\Geometry\BoundingSphere.h" />
     <ClInclude Include="include\OvRendering\Geometry\Vertex.h" />
     <ClInclude Include="include\OvRendering\LowRenderer\Camera.h" />
     <ClInclude Include="include\OvRendering\Core\Renderer.h" />

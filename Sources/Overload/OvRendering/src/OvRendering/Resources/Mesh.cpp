@@ -4,6 +4,8 @@
 * @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
 */
 
+#include <algorithm>
+
 #include "OvRendering/Resources/Mesh.h"
 
 OvRendering::Resources::Mesh::Mesh(const std::vector<Geometry::Vertex>& p_vertices, const std::vector<uint32_t>& p_indices, uint32_t p_materialIndex) :
@@ -12,6 +14,7 @@ OvRendering::Resources::Mesh::Mesh(const std::vector<Geometry::Vertex>& p_vertic
 	m_materialIndex(p_materialIndex)
 {
 	CreateBuffers(p_vertices, p_indices);
+	ComputeBoundingSphere(p_vertices);
 }
 
 void OvRendering::Resources::Mesh::Bind()
@@ -37,6 +40,11 @@ uint32_t OvRendering::Resources::Mesh::GetIndexCount()
 uint32_t OvRendering::Resources::Mesh::GetMaterialIndex() const
 {
 	return m_materialIndex;
+}
+
+const OvRendering::Geometry::BoundingSphere& OvRendering::Resources::Mesh::GetBoundingSphere() const
+{
+	return m_boundingSphere;
 }
 
 void OvRendering::Resources::Mesh::CreateBuffers(const std::vector<Geometry::Vertex>& p_vertices, const std::vector<uint32_t>& p_indices)
@@ -77,4 +85,13 @@ void OvRendering::Resources::Mesh::CreateBuffers(const std::vector<Geometry::Ver
 	m_vertexArray.BindAttribute(2, *m_vertexBuffer,	Buffers::EType::FLOAT, 3, vertexSize, sizeof(float) * 5);
 	m_vertexArray.BindAttribute(3, *m_vertexBuffer,	Buffers::EType::FLOAT, 3, vertexSize, sizeof(float) * 8);
 	m_vertexArray.BindAttribute(4, *m_vertexBuffer,	Buffers::EType::FLOAT, 3, vertexSize, sizeof(float) * 11);
+}
+
+void OvRendering::Resources::Mesh::ComputeBoundingSphere(const std::vector<Geometry::Vertex>& p_vertices)
+{
+	for (const auto& vertex : p_vertices)
+	{
+		const auto& position = reinterpret_cast<const OvMaths::FVector3&>(vertex.position);
+		m_boundingSphere.radius = std::max(m_boundingSphere.radius, OvMaths::FVector3::Length(position));
+	}
 }

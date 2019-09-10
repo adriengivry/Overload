@@ -74,12 +74,14 @@ void OvCore::ECS::Renderer::FindAndSortDrawables
 
 	for (OvCore::ECS::Components::CModelRenderer* modelRenderer : p_scene.GetFastAccessComponents().modelRenderers)
 	{
-		auto position = modelRenderer->owner.transform.GetWorldPosition();
+		const auto& position = modelRenderer->owner.transform.GetWorldPosition();
+		const auto& scale = modelRenderer->owner.transform.GetWorldScale();
+
 		if (modelRenderer->owner.IsActive())
 		{
 			if (auto model = modelRenderer->GetModel())
 			{
-				if (!p_frustum || p_frustum->PointInFrustum(position.x, position.y, position.z))
+				if (!p_frustum || p_frustum->SphereInFrustum(position.x, position.y, position.z, model->GetBoundingSphere().radius * std::max(std::max(std::max(scale.x, scale.y), scale.z), 0.0f)))
 				{
 					float distanceToActor = OvMaths::FVector3::Distance(modelRenderer->owner.transform.GetWorldPosition(), p_cameraPosition);
 
