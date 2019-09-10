@@ -89,9 +89,36 @@ void OvRendering::Resources::Mesh::CreateBuffers(const std::vector<Geometry::Ver
 
 void OvRendering::Resources::Mesh::ComputeBoundingSphere(const std::vector<Geometry::Vertex>& p_vertices)
 {
-	for (const auto& vertex : p_vertices)
+	m_boundingSphere.position = OvMaths::FVector3::Zero;
+	m_boundingSphere.radius = 0.0f;
+
+	if (!p_vertices.empty())
 	{
-		const auto& position = reinterpret_cast<const OvMaths::FVector3&>(vertex.position);
-		m_boundingSphere.radius = std::max(m_boundingSphere.radius, OvMaths::FVector3::Length(position));
+		float minX = std::numeric_limits<float>::max();
+		float minY = std::numeric_limits<float>::max();
+		float minZ = std::numeric_limits<float>::max();
+
+		float maxX = std::numeric_limits<float>::min();
+		float maxY = std::numeric_limits<float>::min();
+		float maxZ = std::numeric_limits<float>::min();
+
+		for (const auto& vertex : p_vertices)
+		{
+			minX = std::min(minX, vertex.position[0]);
+			minY = std::min(minY, vertex.position[1]);
+			minZ = std::min(minZ, vertex.position[2]);
+
+			maxX = std::max(maxX, vertex.position[0]);
+			maxY = std::max(maxY, vertex.position[1]);
+			maxZ = std::max(maxZ, vertex.position[2]);
+		}
+
+		m_boundingSphere.position = OvMaths::FVector3{ minX + maxX, minY + maxY, minZ + maxZ } / 2.0f;
+
+		for (const auto& vertex : p_vertices)
+		{
+			const auto& position = reinterpret_cast<const OvMaths::FVector3&>(vertex.position);
+			m_boundingSphere.radius = std::max(m_boundingSphere.radius, OvMaths::FVector3::Distance(m_boundingSphere.position, position));
+		}
 	}
 }

@@ -65,9 +65,11 @@ void OvGame::Core::GameRenderer::RenderScene()
 
 			m_context.renderer->Clear(camera, true, true, false);
 
+			bool disableFrustum = m_context.inputManager->GetKeyState(OvWindowing::Inputs::EKey::KEY_C) == OvWindowing::Inputs::EKeyState::KEY_DOWN;
+
 			uint8_t glState = m_context.renderer->FetchGLState();
 			m_context.renderer->ApplyStateMask(glState);
-			m_context.renderer->RenderScene(*currentScene, cameraPosition, nullptr, &m_emptyMaterial);
+			m_context.renderer->RenderScene(*currentScene, cameraPosition, disableFrustum ? nullptr : &camera.GetFrustum(), &m_emptyMaterial);
 			m_context.renderer->ApplyStateMask(glState);
 		}
 		else

@@ -4,6 +4,8 @@
 * @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
 */
 
+#include <OvAnalytics/Profiling/ProfilerSpy.h>
+
 #include <OvRendering/Resources/Loaders/TextureLoader.h>
 #include <OvRendering/Data/Frustum.h>
 
@@ -70,44 +72,44 @@ void OvCore::ECS::Renderer::FindAndSortDrawables
 	Resources::Material* p_defaultMaterial
 )
 {
-	auto camera = FindMainCamera(p_scene);
-
 	for (OvCore::ECS::Components::CModelRenderer* modelRenderer : p_scene.GetFastAccessComponents().modelRenderers)
 	{
-		const auto& position = modelRenderer->owner.transform.GetWorldPosition();
-		const auto& scale = modelRenderer->owner.transform.GetWorldScale();
-
 		if (modelRenderer->owner.IsActive())
 		{
 			if (auto model = modelRenderer->GetModel())
 			{
-				if (!p_frustum || p_frustum->SphereInFrustum(position.x, position.y, position.z, model->GetBoundingSphere().radius * std::max(std::max(std::max(scale.x, scale.y), scale.z), 0.0f)))
-				{
-					float distanceToActor = OvMaths::FVector3::Distance(modelRenderer->owner.transform.GetWorldPosition(), p_cameraPosition);
+				float distanceToActor = OvMaths::FVector3::Distance(modelRenderer->owner.transform.GetWorldPosition(), p_cameraPosition);
 
-					if (auto materialRenderer = modelRenderer->owner.GetComponent<OvCore::ECS::Components::CMaterialRenderer>())
+				if (auto materialRenderer = modelRenderer->owner.GetComponent<OvCore::ECS::Components::CMaterialRenderer>())
+				{
+					const auto& transform = modelRenderer->owner.transform.GetFTransform();
+
+					if (!p_frustum || p_frustum->BoundingSphereInFrustum(model->GetBoundingSphere(), transform))
 					{
 						const OvCore::ECS::Components::CMaterialRenderer::MaterialList& materials = materialRenderer->GetMaterials();
 
 						for (auto mesh : model->GetMeshes())
 						{
-							OvCore::Resources::Material* material = nullptr;
-
-							if (mesh->GetMaterialIndex() < MAX_MATERIAL_COUNT)
+							if (!p_frustum || p_frustum->BoundingSphereInFrustum(mesh->GetBoundingSphere(), transform))
 							{
-								material = materials.at(mesh->GetMaterialIndex());
-								if (!material || !material->GetShader())
-									material = p_defaultMaterial;
-							}
+								OvCore::Resources::Material* material = nullptr;
 
-							if (material)
-							{
-								Drawable element = { modelRenderer->owner.transform.GetWorldMatrix(), mesh, material, materialRenderer->GetUserMatrix() };
+								if (mesh->GetMaterialIndex() < MAX_MATERIAL_COUNT)
+								{
+									material = materials.at(mesh->GetMaterialIndex());
+									if (!material || !material->GetShader())
+										material = p_defaultMaterial;
+								}
 
-								if (material->IsBlendable())
-									p_transparents.emplace(distanceToActor, element);
-								else
-									p_opaques.emplace(distanceToActor, element);
+								if (material)
+								{
+									Drawable element = { transform.GetWorldMatrix(), mesh, material, materialRenderer->GetUserMatrix() };
+
+									if (material->IsBlendable())
+										p_transparents.emplace(distanceToActor, element);
+									else
+										p_opaques.emplace(distanceToActor, element);
+								}
 							}
 						}
 					}

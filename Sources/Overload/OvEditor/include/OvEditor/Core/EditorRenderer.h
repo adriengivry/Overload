@@ -116,6 +116,12 @@ namespace OvEditor::Core
 		void RenderAmbientSphereVolume(OvCore::ECS::Components::CAmbientSphereLight& p_ambientSphereLight);
 
 		/**
+		* Render the the bounding spheres of the given model renderer
+		* @param p_modelRenderer
+		*/
+		void RenderBoundingSpheres(OvCore::ECS::Components::CModelRenderer& p_modelRenderer, bool p_perMesh = false);
+
+		/**
 		* Render model
 		*/
 		void RenderModelAsset(OvRendering::Resources::Model& p_model);

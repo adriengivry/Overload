@@ -159,16 +159,14 @@ void OvEditor::Core::EditorRenderer::RenderSceneForActorPicking(OvRendering::Dat
 	for (auto modelRenderer : scene.GetFastAccessComponents().modelRenderers)
 	{
 		auto& actor = modelRenderer->owner;
-		const auto& position = actor.transform.GetWorldPosition();
-		const auto& scale = actor.transform.GetWorldScale();
 
 		if (actor.IsActive())
 		{
 			if (auto model = modelRenderer->GetModel())
 			{
-				if (!p_frustum || p_frustum->SphereInFrustum(position.x, position.y, position.z, model->GetBoundingSphere().radius * std::max(std::max(std::max(scale.x, scale.y), scale.z), 0.0f)))
+				if (auto materialRenderer = modelRenderer->owner.GetComponent<OvCore::ECS::Components::CMaterialRenderer>())
 				{
-					if (auto materialRenderer = modelRenderer->owner.GetComponent<OvCore::ECS::Components::CMaterialRenderer>())
+					if (!p_frustum || p_frustum->BoundingSphereInFrustum(model->GetBoundingSphere(), actor.transform.GetFTransform()))
 					{
 						const OvCore::ECS::Components::CMaterialRenderer::MaterialList& materials = materialRenderer->GetMaterials();
 						auto modelMatrix = actor.transform.GetWorldMatrix();
@@ -176,24 +174,27 @@ void OvEditor::Core::EditorRenderer::RenderSceneForActorPicking(OvRendering::Dat
 
 						for (auto mesh : model->GetMeshes())
 						{
-							OvCore::Resources::Material* material = nullptr;
-
-							if (mesh->GetMaterialIndex() < MAX_MATERIAL_COUNT)
+							if (!p_frustum || p_frustum->BoundingSphereInFrustum(mesh->GetBoundingSphere(), actor.transform.GetFTransform()))
 							{
-								material = materials.at(mesh->GetMaterialIndex());
-								if (!material || !material->GetShader())
-									material = &m_emptyMaterial;
-							}
+								OvCore::Resources::Material* material = nullptr;
 
-							if (material)
-							{
-								m_actorPickingMaterial.SetBackfaceCulling(material->HasBackfaceCulling());
-								m_actorPickingMaterial.SetFrontfaceCulling(material->HasFrontfaceCulling());
-								m_actorPickingMaterial.SetColorWriting(material->HasColorWriting());
-								m_actorPickingMaterial.SetDepthTest(material->HasDepthTest());
-								m_actorPickingMaterial.SetDepthWriting(material->HasDepthWriting());
+								if (mesh->GetMaterialIndex() < MAX_MATERIAL_COUNT)
+								{
+									material = materials.at(mesh->GetMaterialIndex());
+									if (!material || !material->GetShader())
+										material = &m_emptyMaterial;
+								}
 
-								m_context.renderer->DrawMesh(*mesh, m_actorPickingMaterial, &modelMatrix);
+								if (material)
+								{
+									m_actorPickingMaterial.SetBackfaceCulling(material->HasBackfaceCulling());
+									m_actorPickingMaterial.SetFrontfaceCulling(material->HasFrontfaceCulling());
+									m_actorPickingMaterial.SetColorWriting(material->HasColorWriting());
+									m_actorPickingMaterial.SetDepthTest(material->HasDepthTest());
+									m_actorPickingMaterial.SetDepthWriting(material->HasDepthWriting());
+
+									m_context.renderer->DrawMesh(*mesh, m_actorPickingMaterial, &modelMatrix);
+								}
 							}
 						}
 					}
@@ -294,13 +295,15 @@ void OvEditor::Core::EditorRenderer::RenderActorAsSelected(OvCore::ECS::Actor& p
 {
 	if (p_actor.IsActive())
 	{
-		/* Render static mesh outline */
+		/* Render static mesh outline and bounding spheres */
 		if (auto modelRenderer = p_actor.GetComponent<OvCore::ECS::Components::CModelRenderer>(); modelRenderer && modelRenderer->GetModel())
 		{
 			if (p_toStencil)
 				RenderModelToStencil(p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel());
 			else
 				RenderModelOutline(p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel());
+
+			RenderBoundingSpheres(*modelRenderer, false);
 		}
 
 		/* Render camera component outline */
@@ -474,6 +477,62 @@ void OvEditor::Core::EditorRenderer::RenderAmbientSphereVolume(OvCore::ECS::Comp
 	}
 
 	m_context.renderer->SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, depthTestBackup);
+}
+
+void OvEditor::Core::EditorRenderer::RenderBoundingSpheres(OvCore::ECS::Components::CModelRenderer& p_modelRenderer, bool p_perMesh)
+{
+	using namespace OvCore::ECS::Components;
+	using namespace OvPhysics::Entities;
+
+	bool depthTestBackup = m_context.renderer->GetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST);
+	m_context.renderer->SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, false);
+
+	/* Draw the sphere collider if any */
+	if (auto model = p_modelRenderer.GetModel())
+	{
+		auto& actor = p_modelRenderer.owner;
+
+		OvMaths::FVector3 actorScale = actor.transform.GetWorldScale();
+		OvMaths::FQuaternion actorRotation = actor.transform.GetWorldRotation();
+		OvMaths::FVector3 actorPosition = actor.transform.GetWorldPosition();
+
+		if (p_perMesh)
+		{
+			for (auto mesh : model->GetMeshes())
+			{
+				float radiusScale = std::max(std::max(std::max(actorScale.x, actorScale.y), actorScale.z), 0.0f);
+				float scaledRadius = mesh->GetBoundingSphere().radius * radiusScale;
+				auto sphereOffset = OvMaths::FQuaternion::RotatePoint(mesh->GetBoundingSphere().position, actorRotation) * radiusScale;
+
+				OvMaths::FVector3 boundingSphereCenter = actorPosition + sphereOffset;
+
+				for (float i = 0; i <= 360.0f; i += 10.0f)
+				{
+					m_context.shapeDrawer->DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } *scaledRadius), OvMaths::FVector3{ 1.f, 0.f, 0.f }, 1.f);
+					m_context.shapeDrawer->DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } *scaledRadius), OvMaths::FVector3{ 1.f, 0.f, 0.f }, 1.f);
+					m_context.shapeDrawer->DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *scaledRadius), OvMaths::FVector3{ 1.f, 0.f, 0.f }, 1.f);
+				}
+			}
+		}
+		else
+		{
+			float radiusScale = std::max(std::max(std::max(actorScale.x, actorScale.y), actorScale.z), 0.0f);
+			float scaledRadius = model->GetBoundingSphere().radius * radiusScale;
+			auto sphereOffset = OvMaths::FQuaternion::RotatePoint(model->GetBoundingSphere().position, actorRotation) * radiusScale;
+
+			OvMaths::FVector3 boundingSphereCenter = actorPosition + sphereOffset;
+
+			for (float i = 0; i <= 360.0f; i += 10.0f)
+			{
+				m_context.shapeDrawer->DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } *scaledRadius), OvMaths::FVector3{ 1.f, 0.f, 0.f }, 1.f);
+				m_context.shapeDrawer->DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } *scaledRadius), OvMaths::FVector3{ 1.f, 0.f, 0.f }, 1.f);
+				m_context.shapeDrawer->DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *scaledRadius), OvMaths::FVector3{ 1.f, 0.f, 0.f }, 1.f);
+			}
+		}
+	}
+
+	m_context.renderer->SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, depthTestBackup);
+	m_context.renderer->SetRasterizationLinesWidth(1.0f);
 }
 
 void OvEditor::Core::EditorRenderer::RenderModelAsset(OvRendering::Resources::Model& p_model)
