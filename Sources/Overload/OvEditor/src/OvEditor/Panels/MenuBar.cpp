@@ -210,6 +210,7 @@ void OvEditor::Panels::MenuBar::CreateLayoutMenu()
 void OvEditor::Panels::MenuBar::CreateHelpMenu()
 {
 	auto& helpMenu = CreateWidget<MenuList>("Help");
+	helpMenu.CreateWidget<MenuItem>("Overload Documentation").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org/documentation"); };
 	helpMenu.CreateWidget<MenuItem>("Scripting Documentation").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org/api"); };
 	helpMenu.CreateWidget<MenuItem>("Overload Website").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org"); };
 
