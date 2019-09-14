@@ -64,6 +64,8 @@ int main(int argc, char** argv)
 				projectName = OvTools::Utils::PathParser::GetElementName(projectFile);
 				OvTools::Utils::String::Replace(projectName, ".ovproject", "");
 			}
+
+			hub.RegisterProject(projectPath);
 		}
 	}
 
