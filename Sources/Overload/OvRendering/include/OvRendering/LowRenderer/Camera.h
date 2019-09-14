@@ -121,6 +121,16 @@ namespace OvRendering::LowRenderer
 		const OvRendering::Data::Frustum& GetFrustum() const;
 
 		/**
+		* Returns true if the frustum culling for geometry is enabled
+		*/
+		bool HasFrustumGeometryCulling() const;
+
+		/**
+		* Returns true if the frustum culling for lights is enabled
+		*/
+		bool HasFrustumLightCulling() const;
+
+		/**
 		* Sets the yaw of the camera to the given value
 		* @param p_value
 		*/
@@ -163,6 +173,18 @@ namespace OvRendering::LowRenderer
 		void SetClearColor(const OvMaths::FVector3& p_clearColor);
 
 		/**
+		* Defines if the camera should apply frustum culling to geometry while rendering
+		* @param p_enable
+		*/
+		void SetFrustumGeometryCulling(bool p_enable);
+
+		/**
+		* Defines if the camera should apply frustum culling to lights while rendering
+		* @param p_enable
+		*/
+		void SetFrustumLightCulling(bool p_enable);
+
+		/**
 		* Sets the rotation to the camera with a quaternion
 		* @param p_rotation
 		*/
@@ -191,5 +213,8 @@ namespace OvRendering::LowRenderer
 		float m_far;
 
 		OvMaths::FVector3 m_clearColor;
+
+		bool m_frustumGeometryCulling;
+		bool m_frustumLightCulling;
 	};
 }

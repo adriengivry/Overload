@@ -10,6 +10,7 @@
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Panels/SceneView.h"
 #include "OvEditor/Panels/GameView.h"
+#include "OvEditor/Settings/EditorSettings.h"
 
 OvEditor::Panels::SceneView::SceneView
 (
@@ -20,6 +21,7 @@ OvEditor::Panels::SceneView::SceneView
 	m_sceneManager(EDITOR_CONTEXT(sceneManager))
 {
 	m_camera.SetClearColor({ 0.278f, 0.278f, 0.278f });
+	m_camera.SetFar(1000.0f);
 
 	m_image->AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, OvUI::Widgets::Layout::Group*>>>("File").DataReceivedEvent += [this](auto p_data)
 	{
@@ -73,16 +75,21 @@ void OvEditor::Panels::SceneView::_Render_Impl()
 	baseRenderer.ApplyStateMask(glState);
 }
 
-OvRendering::Data::Frustum const* GetGameViewFrustum()
-{
-	auto& gameView = EDITOR_PANEL(OvEditor::Panels::GameView, "Game View");
-	bool notInEditMode = EDITOR_EXEC(GetCurrentEditorMode()) != OvEditor::Core::EditorActions::EEditorMode::EDIT;
-	return (notInEditMode && gameView.HasCamera()) ? &gameView.GetCamera().GetFrustum() : nullptr;
-}
-
 void OvEditor::Panels::SceneView::RenderScene(uint8_t p_defaultRenderState)
 {
 	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
+	auto& currentScene = *m_sceneManager.GetCurrentScene();
+	auto& gameView = EDITOR_PANEL(OvEditor::Panels::GameView, "Game View");
+
+	// If the game is playing, and ShowLightFrustumCullingInSceneView is true, apply the game view frustum culling to the scene view (For debugging purposes)
+	if (auto gameViewFrustum = gameView.GetActiveFrustum(); gameViewFrustum.has_value() && gameView.GetCamera().HasFrustumLightCulling() && Settings::EditorSettings::ShowLightFrustumCullingInSceneView)
+	{
+		m_editorRenderer.UpdateLightsInFrustum(currentScene, gameViewFrustum.value());
+	}
+	else
+	{
+		m_editorRenderer.UpdateLights(currentScene);
+	}
 
 	m_fbo.Bind();
 
@@ -92,8 +99,18 @@ void OvEditor::Panels::SceneView::RenderScene(uint8_t p_defaultRenderState)
 
 	m_editorRenderer.RenderGrid(m_cameraPosition, m_gridColor);
 	m_editorRenderer.RenderCameras();
-	
-	m_editorRenderer.RenderScene(m_cameraPosition, GetGameViewFrustum());
+
+	// If the game is playing, and ShowGeometryFrustumCullingInSceneView is true, apply the game view frustum culling to the scene view (For debugging purposes)
+	if (auto gameViewFrustum = gameView.GetActiveFrustum(); gameViewFrustum.has_value() && gameView.GetCamera().HasFrustumLightCulling() && Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView)
+	{
+		m_camera.SetFrustumGeometryCulling(gameView.HasCamera() ? gameView.GetCamera().HasFrustumGeometryCulling() : false);
+		m_editorRenderer.RenderScene(m_cameraPosition, m_camera, &gameViewFrustum.value());
+		m_camera.SetFrustumGeometryCulling(false);
+	}
+	else
+	{
+		m_editorRenderer.RenderScene(m_cameraPosition, m_camera);
+	}
 
 	if (EDITOR_EXEC(IsAnyActorSelected()))
 	{
@@ -124,7 +141,7 @@ void OvEditor::Panels::SceneView::RenderSceneForActorPicking()
 	m_actorPickingFramebuffer.Bind();
 	baseRenderer.SetClearColor(1.0f, 1.0f, 1.0f);
 	baseRenderer.Clear();
-	m_editorRenderer.RenderSceneForActorPicking(GetGameViewFrustum());
+	m_editorRenderer.RenderSceneForActorPicking();
 
 	if (EDITOR_EXEC(IsAnyActorSelected()))
 	{

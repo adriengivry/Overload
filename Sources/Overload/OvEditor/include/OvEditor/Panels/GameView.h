@@ -46,6 +46,11 @@ namespace OvEditor::Panels
 		*/
 		bool HasCamera() const;
 
+		/**
+		* Returns the game view camera frustum or nothing if the game isn't playing
+		*/
+		std::optional<OvRendering::Data::Frustum> GetActiveFrustum() const;
+
 	private:
 		OvCore::SceneSystem::SceneManager& m_sceneManager;
 		bool m_hasCamera = false;

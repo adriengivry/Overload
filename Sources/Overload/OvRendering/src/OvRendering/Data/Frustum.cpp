@@ -265,3 +265,13 @@ bool OvRendering::Data::Frustum::BoundingSphereInFrustum(const OvRendering::Geom
 
 	return SphereInFrustum(worldCenter.x, worldCenter.y, worldCenter.z, scaledRadius);
 }
+
+std::array<float, 4> OvRendering::Data::Frustum::GetNearPlane() const
+{
+	return { m_frustum[FRONT][0], m_frustum[FRONT][1], m_frustum[FRONT][2], m_frustum[FRONT][3] };
+}
+
+std::array<float, 4> OvRendering::Data::Frustum::GetFarPlane() const
+{
+	return { m_frustum[BACK][0], m_frustum[BACK][1], m_frustum[BACK][2], m_frustum[BACK][3] };
+}

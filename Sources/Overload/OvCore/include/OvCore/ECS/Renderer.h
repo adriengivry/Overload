@@ -52,31 +52,60 @@ namespace OvCore::ECS
 		/**
 		* Fill the given FMatrix4 vector with lights information
 		* @param p_scene
-		* @param p_out
 		*/
-		void FindLightMatrices(const OvCore::SceneSystem::Scene& p_scene, std::vector<OvMaths::FMatrix4>& p_out);
+		std::vector<OvMaths::FMatrix4> FindLightMatrices(const OvCore::SceneSystem::Scene& p_scene);
+
+		/**
+		* Fill the given FMatrix4 vector with lights information that are inside the frustum
+		* @param p_scene
+		* @param p_frustum
+		*/
+		std::vector<OvMaths::FMatrix4> FindLightMatricesInFrustum(const OvCore::SceneSystem::Scene& p_scene, const OvRendering::Data::Frustum& p_frustum);
 
 		/**
 		* Draw the given scene using the given default material (optional) if no material found on an actor
 		* @param p_scene
 		* @param p_cameraPosition
-		* @param p_frustum
+		* @param p_camera
+		* @param p_customFrustum
 		* @param p_defaultMaterial
 		*/
-		void RenderScene(OvCore::SceneSystem::Scene& p_scene, const OvMaths::FVector3& p_cameraPosition, OvRendering::Data::Frustum const* p_frustum = nullptr, Resources::Material* p_defaultMaterial = nullptr);
+		void RenderScene
+		(
+			OvCore::SceneSystem::Scene& p_scene,
+			const OvMaths::FVector3& p_cameraPosition,
+			const OvRendering::LowRenderer::Camera& p_camera,
+			const OvRendering::Data::Frustum* p_customFrustum = nullptr,
+			OvCore::Resources::Material* p_defaultMaterial = nullptr
+		);
 
 		/**
-		* Find every drawables objects in the scene. Sorting order:
-		* - Opaques (Front to back)
-		* - Transparents (Back to front)
-		* @param p_opaques
-		* @param p_transparents
+		* Returns opaque and transparents drawables from the scene with frustum culling
 		* @param p_scene
 		* @param p_cameraPosition
 		* @param p_frustum
 		* @param p_defaultMaterial
 		*/
-		void FindAndSortDrawables(OpaqueDrawables& p_opaques, TransparentDrawables& p_transparents, const OvCore::SceneSystem::Scene& p_scene, const OvMaths::FVector3& p_cameraPosition, OvRendering::Data::Frustum const* p_frustum = nullptr, Resources::Material* p_defaultMaterial = nullptr);
+		std::pair<OpaqueDrawables, TransparentDrawables> FindAndSortFrustumCulledDrawables
+		(
+			const OvCore::SceneSystem::Scene& p_scene,
+			const OvMaths::FVector3& p_cameraPosition,
+			const OvRendering::Data::Frustum& p_frustum,
+			OvCore::Resources::Material* p_defaultMaterial
+		);
+
+		/**
+		* Returns opaque and transparents drawables from the scene
+		* @param p_scene
+		* @param p_cameraPosition
+		* @param p_defaultMaterial
+		*/
+		std::pair<OpaqueDrawables, TransparentDrawables> FindAndSortDrawables
+		(
+			const OvCore::SceneSystem::Scene& p_scene,
+			const OvMaths::FVector3& p_cameraPosition,
+			OvCore::Resources::Material* p_defaultMaterial
+		);
 
 		/**
 		* Draw a Drawable instance

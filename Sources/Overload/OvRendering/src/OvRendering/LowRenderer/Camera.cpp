@@ -15,8 +15,10 @@ OvRendering::LowRenderer::Camera::Camera() :
 	m_roll(0.f),
 	m_fov(45.f),
 	m_near(0.1f),
-	m_far(1000.f),
-	m_clearColor(0.f, 0.f, 0.f)
+	m_far(100.f),
+	m_clearColor(0.f, 0.f, 0.f),
+	m_frustumGeometryCulling(false),
+	m_frustumLightCulling(false)
 {
 	UpdateCameraVectors();
 }
@@ -108,6 +110,16 @@ const OvRendering::Data::Frustum& OvRendering::LowRenderer::Camera::GetFrustum()
 	return m_frustum;
 }
 
+bool OvRendering::LowRenderer::Camera::HasFrustumGeometryCulling() const
+{
+	return m_frustumGeometryCulling;
+}
+
+bool OvRendering::LowRenderer::Camera::HasFrustumLightCulling() const
+{
+	return m_frustumLightCulling;
+}
+
 void OvRendering::LowRenderer::Camera::SetYaw(float p_value)
 {
 	m_yaw = p_value;
@@ -147,6 +159,16 @@ void OvRendering::LowRenderer::Camera::SetFar(float p_value)
 void OvRendering::LowRenderer::Camera::SetClearColor(const OvMaths::FVector3 & p_clearColor)
 {
 	m_clearColor = p_clearColor;
+}
+
+void OvRendering::LowRenderer::Camera::SetFrustumGeometryCulling(bool p_enable)
+{
+	m_frustumGeometryCulling = p_enable;
+}
+
+void OvRendering::LowRenderer::Camera::SetFrustumLightCulling(bool p_enable)
+{
+	m_frustumLightCulling = p_enable;
 }
 
 void OvRendering::LowRenderer::Camera::SetRotation(const OvMaths::FQuaternion & p_rotation)

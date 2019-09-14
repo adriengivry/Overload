@@ -6,6 +6,8 @@
 
 #include "OvGame/Core/GameRenderer.h"
 
+#include <OvAnalytics/Profiling/ProfilerSpy.h>
+
 #include <OvCore/ECS/Components/CMaterialRenderer.h>
 #include <OvCore/ECS/Components/CModelRenderer.h>
 #include <OvCore/ECS/Components/CPointLight.h>
@@ -51,10 +53,17 @@ void OvGame::Core::GameRenderer::RenderScene()
 {
 	if (auto currentScene = m_context.sceneManager.GetCurrentScene())
 	{
-		UpdateLights(*currentScene);
-
 		if (OvCore::ECS::Components::CCamera* mainCameraComponent = m_context.renderer->FindMainCamera(*currentScene))
 		{
+			if (mainCameraComponent->HasFrustumLightCulling())
+			{
+				UpdateLightsInFrustum(*currentScene, mainCameraComponent->GetCamera().GetFrustum());
+			}
+			else
+			{
+				UpdateLights(*currentScene);
+			}
+
 			auto [winWidth, winHeight] = m_context.window->GetSize();
 			const auto& cameraPosition = mainCameraComponent->owner.transform.GetWorldPosition();
 			auto& camera = mainCameraComponent->GetCamera();
@@ -65,11 +74,9 @@ void OvGame::Core::GameRenderer::RenderScene()
 
 			m_context.renderer->Clear(camera, true, true, false);
 
-			bool disableFrustum = m_context.inputManager->GetKeyState(OvWindowing::Inputs::EKey::KEY_C) == OvWindowing::Inputs::EKeyState::KEY_DOWN;
-
 			uint8_t glState = m_context.renderer->FetchGLState();
 			m_context.renderer->ApplyStateMask(glState);
-			m_context.renderer->RenderScene(*currentScene, cameraPosition, disableFrustum ? nullptr : &camera.GetFrustum(), &m_emptyMaterial);
+			m_context.renderer->RenderScene(*currentScene, cameraPosition, camera, nullptr, &m_emptyMaterial);
 			m_context.renderer->ApplyStateMask(glState);
 		}
 		else
@@ -92,7 +99,14 @@ void OvGame::Core::GameRenderer::UpdateEngineUBO(OvCore::ECS::Components::CCamer
 
 void OvGame::Core::GameRenderer::UpdateLights(OvCore::SceneSystem::Scene& p_scene)
 {
-	std::vector<FMatrix4> lightMatrices;
-	m_context.renderer->FindLightMatrices(p_scene, lightMatrices);
+	PROFILER_SPY("Light SSBO Update");
+	auto lightMatrices = m_context.renderer->FindLightMatrices(p_scene);
+	m_context.lightSSBO->SendBlocks<FMatrix4>(lightMatrices.data(), lightMatrices.size() * sizeof(FMatrix4));
+}
+
+void OvGame::Core::GameRenderer::UpdateLightsInFrustum(OvCore::SceneSystem::Scene& p_scene, const OvRendering::Data::Frustum& p_frustum)
+{
+	PROFILER_SPY("Light SSBO Update (Frustum culled)");
+	auto lightMatrices = m_context.renderer->FindLightMatricesInFrustum(p_scene, p_frustum);
 	m_context.lightSSBO->SendBlocks<FMatrix4>(lightMatrices.data(), lightMatrices.size() * sizeof(FMatrix4));
 }

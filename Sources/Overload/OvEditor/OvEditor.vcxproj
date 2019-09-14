@@ -161,6 +161,7 @@ xcopy "$(ProjectDir)Layout.ini" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Conf
     <ClCompile Include="src\OvEditor\Panels\SceneView.cpp" />
     <ClCompile Include="src\OvEditor\Panels\Toolbar.cpp" />
     <ClCompile Include="src\OvEditor\Resources\RawShaders.cpp" />
+    <ClCompile Include="src\OvEditor\Settings\EditorSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\OvEditor\Core\Application.h" />
@@ -192,6 +193,7 @@ xcopy "$(ProjectDir)Layout.ini" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Conf
     <ClInclude Include="include\OvEditor\Panels\SceneView.h" />
     <ClInclude Include="include\OvEditor\Panels\Toolbar.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="include\OvEditor\Settings\EditorSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\OvEditor\Core\EditorActions.inl" />

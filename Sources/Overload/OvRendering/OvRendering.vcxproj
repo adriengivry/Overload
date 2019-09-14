@@ -158,6 +158,7 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
     <ClInclude Include="include\OvRendering\Resources\Parsers\AssimpParser.h" />
     <ClInclude Include="include\OvRendering\Resources\Parsers\IModelParser.h" />
     <ClInclude Include="include\OvRendering\Settings\ECullFace.h" />
+    <ClInclude Include="include\OvRendering\Settings\ECullingOptions.h" />
     <ClInclude Include="include\OvRendering\Settings\EOperation.h" />
     <ClInclude Include="include\OvRendering\Settings\EPrimitiveMode.h" />
     <ClInclude Include="include\OvRendering\Settings\ERasterizationMode.h" />

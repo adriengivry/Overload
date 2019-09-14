@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <array>
+
 #include <OvMaths/FMatrix4.h>
 #include <OvMaths/FTransform.h>
 
@@ -58,6 +60,16 @@ namespace OvRendering::Data
 		* @param p_transform
 		*/
 		bool BoundingSphereInFrustum(const OvRendering::Geometry::BoundingSphere& p_boundingSphere, const OvMaths::FTransform& p_transform) const;
+
+		/**
+		* Returns the near plane
+		*/
+		std::array<float, 4> GetNearPlane() const;
+
+		/**
+		* Returns the far plane
+		*/
+		std::array<float, 4> GetFarPlane() const;
 
 	private:
 		float m_frustum[6][4];

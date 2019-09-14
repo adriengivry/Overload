@@ -126,6 +126,9 @@
     <ClInclude Include="include\OvRendering\Geometry\BoundingSphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\OvRendering\Settings\ECullingOptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OvRendering\Context\Driver.cpp">

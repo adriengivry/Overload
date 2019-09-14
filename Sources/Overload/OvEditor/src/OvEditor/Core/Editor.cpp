@@ -176,15 +176,8 @@ void OvEditor::Core::Editor::UpdateEditorPanels(float p_deltaTime)
 
 void OvEditor::Core::Editor::PrepareRendering(float p_deltaTime)
 {
-	{
-		PROFILER_SPY("Light SSBO Update");
-		m_editorRenderer.UpdateLights(*m_context.sceneManager.GetCurrentScene());
-	}
-
-	{
-		PROFILER_SPY("Engine UBO Update");
-		m_context.engineUBO->SetSubData(m_context.device->GetElapsedTime(), 3 * sizeof(OvMaths::FMatrix4) + sizeof(OvMaths::FVector3));
-	}
+	PROFILER_SPY("Engine UBO Update");
+	m_context.engineUBO->SetSubData(m_context.device->GetElapsedTime(), 3 * sizeof(OvMaths::FMatrix4) + sizeof(OvMaths::FVector3));
 }
 
 void OvEditor::Core::Editor::RenderViews(float p_deltaTime)

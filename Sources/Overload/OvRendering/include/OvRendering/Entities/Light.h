@@ -36,6 +36,16 @@ namespace OvRendering::Entities
 		*/
 		OvMaths::FMatrix4 GenerateMatrix() const;
 
+		/**
+		* Calculate the light effect range from the quadratic falloff equation
+		*/
+		float GetEffectRange() const;
+
+		/**
+		* Returns the light transform
+		*/
+		const OvMaths::FTransform& GetTransform() const;
+
 		OvMaths::FVector3	color		= { 1.f, 1.f, 1.f };
 		float				intensity	= 1.f;
 		float				constant	= 0.0f;

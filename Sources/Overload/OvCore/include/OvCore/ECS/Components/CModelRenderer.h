@@ -22,6 +22,17 @@ namespace OvCore::ECS::Components
 	{
 	public:
 		/**
+		* Defines how the model renderer bounding sphere should be interpreted
+		*/
+		enum class EFrustumBehaviour
+		{
+			DISABLED = 0,
+			CULL_MODEL = 1,
+			CULL_MESHES = 2,
+			CULL_CUSTOM = 3
+		};
+
+		/**
 		* Constructor
 		* @param p_owner
 		*/
@@ -42,6 +53,28 @@ namespace OvCore::ECS::Components
 		* Returns the current model
 		*/
 		OvRendering::Resources::Model* GetModel() const;
+
+		/**
+		* Sets a bounding mode
+		* @param p_boundingMode
+		*/
+		void SetFrustumBehaviour(EFrustumBehaviour p_boundingMode);
+
+		/**
+		* Returns the current bounding mode
+		*/
+		EFrustumBehaviour GetFrustumBehaviour() const;
+
+		/**
+		* Returns the custom bounding sphere
+		*/
+		const OvRendering::Geometry::BoundingSphere& GetCustomBoundingSphere() const;
+
+		/**
+		* Sets the custom bounding sphere
+		* @param p_boundingSphere
+		*/
+		void SetCustomBoundingSphere(const OvRendering::Geometry::BoundingSphere& p_boundingSphere);
 
 		/**
 		* Serialize the component
@@ -66,5 +99,7 @@ namespace OvCore::ECS::Components
 	private:
 		OvRendering::Resources::Model* m_model = nullptr;
 		OvTools::Eventing::Event<> m_modelChangedEvent;
+		OvRendering::Geometry::BoundingSphere m_customBoundingSphere = { {}, 1.0f };
+		EFrustumBehaviour m_frustumBehaviour = EFrustumBehaviour::CULL_MODEL;
 	};
 }
