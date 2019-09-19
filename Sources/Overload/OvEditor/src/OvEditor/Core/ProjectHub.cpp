@@ -307,3 +307,8 @@ void OvEditor::Core::ProjectHub::SetupContext()
 	m_uiManager->EnableEditorLayoutSave(false);
 	m_uiManager->EnableDocking(false);
 }
+
+void OvEditor::Core::ProjectHub::RegisterProject(const std::string& p_path)
+{
+	static_cast<ProjectHubPanel*>(m_mainPanel.get())->RegisterProject(p_path);
+}

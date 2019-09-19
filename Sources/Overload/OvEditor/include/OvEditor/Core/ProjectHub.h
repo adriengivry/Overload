@@ -36,6 +36,12 @@ namespace OvEditor::Core
 		*/
 		void SetupContext();
 
+		/**
+		* Register the project (identified from the given path) into the project hub
+		* @param p_path
+		*/
+		void RegisterProject(const std::string& p_path);
+
 	private:
 		std::unique_ptr<OvWindowing::Context::Device>		m_device;
 		std::unique_ptr<OvWindowing::Window>				m_window;
