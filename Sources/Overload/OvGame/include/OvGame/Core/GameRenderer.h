@@ -43,6 +43,12 @@ namespace OvGame::Core
 		*/
 		void UpdateLights(OvCore::SceneSystem::Scene& p_scene);
 
+		/**
+		* Update the light SSBO with the current scene (Lights outside of the given frustum are culled)
+		* @param p_scene
+		*/
+		void UpdateLightsInFrustum(OvCore::SceneSystem::Scene& p_scene, const OvRendering::Data::Frustum& p_frustum);
+
 	private:
 		Context& m_context;
 		OvCore::Resources::Material m_emptyMaterial;

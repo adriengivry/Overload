@@ -6,6 +6,8 @@
 
 #include "OvGame/Core/GameRenderer.h"
 
+#include <OvAnalytics/Profiling/ProfilerSpy.h>
+
 #include <OvCore/ECS/Components/CMaterialRenderer.h>
 #include <OvCore/ECS/Components/CModelRenderer.h>
 #include <OvCore/ECS/Components/CPointLight.h>
@@ -51,17 +53,30 @@ void OvGame::Core::GameRenderer::RenderScene()
 {
 	if (auto currentScene = m_context.sceneManager.GetCurrentScene())
 	{
-		UpdateLights(*currentScene);
-
-		if (OvCore::ECS::Components::CCamera* mainCamera = m_context.renderer->FindMainCamera(*currentScene))
+		if (OvCore::ECS::Components::CCamera* mainCameraComponent = m_context.renderer->FindMainCamera(*currentScene))
 		{
-			UpdateEngineUBO(*mainCamera);
+			if (mainCameraComponent->HasFrustumLightCulling())
+			{
+				UpdateLightsInFrustum(*currentScene, mainCameraComponent->GetCamera().GetFrustum());
+			}
+			else
+			{
+				UpdateLights(*currentScene);
+			}
 
-			m_context.renderer->Clear(mainCamera->GetCamera(), true, true, false);
+			auto [winWidth, winHeight] = m_context.window->GetSize();
+			const auto& cameraPosition = mainCameraComponent->owner.transform.GetWorldPosition();
+			auto& camera = mainCameraComponent->GetCamera();
+
+			camera.CacheMatrices(winWidth, winHeight, cameraPosition);
+
+			UpdateEngineUBO(*mainCameraComponent);
+
+			m_context.renderer->Clear(camera, true, true, false);
 
 			uint8_t glState = m_context.renderer->FetchGLState();
 			m_context.renderer->ApplyStateMask(glState);
-			m_context.renderer->RenderScene(*currentScene, mainCamera->owner.transform.GetWorldPosition(), &m_emptyMaterial);
+			m_context.renderer->RenderScene(*currentScene, cameraPosition, camera, nullptr, &m_emptyMaterial);
 			m_context.renderer->ApplyStateMask(glState);
 		}
 		else
@@ -74,18 +89,24 @@ void OvGame::Core::GameRenderer::RenderScene()
 
 void OvGame::Core::GameRenderer::UpdateEngineUBO(OvCore::ECS::Components::CCamera& p_mainCamera)
 {
-	auto [winWidth, winHeight] = m_context.window->GetSize();
-
 	size_t offset = sizeof(OvMaths::FMatrix4); // We skip the model matrix (Which is a special case, modified every draw calls)
+	auto& camera = p_mainCamera.GetCamera();
 
-	m_context.engineUBO->SetSubData(OvMaths::FMatrix4::Transpose(p_mainCamera.GetViewMatrix()), std::ref(offset));
-	m_context.engineUBO->SetSubData(OvMaths::FMatrix4::Transpose(p_mainCamera.GetProjectionMatrix(winWidth, winHeight)), std::ref(offset));
+	m_context.engineUBO->SetSubData(OvMaths::FMatrix4::Transpose(camera.GetViewMatrix()), std::ref(offset));
+	m_context.engineUBO->SetSubData(OvMaths::FMatrix4::Transpose(camera.GetProjectionMatrix()), std::ref(offset));
 	m_context.engineUBO->SetSubData(p_mainCamera.owner.transform.GetWorldPosition(), std::ref(offset));
 }
 
 void OvGame::Core::GameRenderer::UpdateLights(OvCore::SceneSystem::Scene& p_scene)
 {
-	std::vector<FMatrix4> lightMatrices;
-	m_context.renderer->FindLightMatrices(p_scene, lightMatrices);
+	PROFILER_SPY("Light SSBO Update");
+	auto lightMatrices = m_context.renderer->FindLightMatrices(p_scene);
+	m_context.lightSSBO->SendBlocks<FMatrix4>(lightMatrices.data(), lightMatrices.size() * sizeof(FMatrix4));
+}
+
+void OvGame::Core::GameRenderer::UpdateLightsInFrustum(OvCore::SceneSystem::Scene& p_scene, const OvRendering::Data::Frustum& p_frustum)
+{
+	PROFILER_SPY("Light SSBO Update (Frustum culled)");
+	auto lightMatrices = m_context.renderer->FindLightMatricesInFrustum(p_scene, p_frustum);
 	m_context.lightSSBO->SendBlocks<FMatrix4>(lightMatrices.data(), lightMatrices.size() * sizeof(FMatrix4));
 }

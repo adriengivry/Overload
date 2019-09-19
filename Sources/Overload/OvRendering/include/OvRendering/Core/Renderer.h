@@ -10,14 +10,15 @@
 
 #include "OvRendering/Context/Driver.h"
 #include "OvRendering/LowRenderer/Camera.h"
-#include "OvRendering/Resources/IMesh.h"
 #include "OvRendering/Resources/Shader.h"
+#include "OvRendering/Resources/Model.h"
 #include "OvRendering/Settings/ERenderingCapability.h"
 #include "OvRendering/Settings/EPrimitiveMode.h"
 #include "OvRendering/Settings/ERasterizationMode.h"
 #include "OvRendering/Settings/EComparaisonAlgorithm.h"
 #include "OvRendering/Settings/EOperation.h"
 #include "OvRendering/Settings/ECullFace.h"
+#include "OvRendering/Settings/ECullingOptions.h"
 
 namespace OvRendering::Core
 {
@@ -246,6 +247,23 @@ namespace OvRendering::Core
 		* @param p_instances
 		*/
 		void Draw(Resources::IMesh& p_mesh, Settings::EPrimitiveMode p_primitiveMode = Settings::EPrimitiveMode::TRIANGLES, uint32_t p_instances = 1);
+
+		/**
+		* Returns the list of meshes from a model that should be rendered
+		* @param p_model
+		* @param p_modelBoundingSphere
+		* @param p_modelTransform
+		* @param p_frustum
+		* @param p_cullingOptions
+		*/
+		std::vector<std::reference_wrapper<OvRendering::Resources::Mesh>> GetMeshesInFrustum
+		(
+			const OvRendering::Resources::Model& p_model,
+			const OvRendering::Geometry::BoundingSphere& p_modelBoundingSphere,
+			const OvMaths::FTransform& p_modelTransform,
+			const OvRendering::Data::Frustum& p_frustum,
+			OvRendering::Settings::ECullingOptions p_cullingOptions
+		);
 
 		/**
 		* Fetch and returns the actual OpenGL state

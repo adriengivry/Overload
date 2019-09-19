@@ -54,8 +54,9 @@ namespace OvEditor::Core
 		/**
 		* Render the scene
 		* @param p_cameraPosition
+		* @param p_camera
 		*/
-		void RenderScene(const OvMaths::FVector3& p_cameraPosition);
+		void RenderScene(const OvMaths::FVector3& p_cameraPosition, const OvRendering::LowRenderer::Camera& p_camera, const OvRendering::Data::Frustum* p_customFrustum = nullptr);
 
 		/**
 		* Render the scene for actor picking (Unlit version of the scene with colors indicating actor IDs)
@@ -99,9 +100,19 @@ namespace OvEditor::Core
 		void RenderActorAsSelected(OvCore::ECS::Actor& p_actor, bool p_toStencil);
 
 		/**
+		* Render the camera frustum
+		*/
+		void RenderCameraFrustum(OvCore::ECS::Components::CCamera& p_camera);
+
+		/**
 		* Render an actor collider
 		*/
 		void RenderActorCollider(OvCore::ECS::Actor& p_actor);
+
+		/**
+		* Render light bounds
+		*/
+		void RenderLightBounds(OvCore::ECS::Components::CLight& p_light);
 
 		/**
 		* Render ambient box volume
@@ -112,6 +123,11 @@ namespace OvEditor::Core
 		* Render ambient sphere volume
 		*/
 		void RenderAmbientSphereVolume(OvCore::ECS::Components::CAmbientSphereLight& p_ambientSphereLight);
+
+		/**
+		* Render the the bounding spheres of the given model renderer
+		*/
+		void RenderBoundingSpheres(OvCore::ECS::Components::CModelRenderer& p_modelRenderer);
 
 		/**
 		* Render model
@@ -138,6 +154,12 @@ namespace OvEditor::Core
 		* @param p_scene
 		*/
 		void UpdateLights(OvCore::SceneSystem::Scene& p_scene);
+
+		/**
+		* Update the light SSBO with the current scene (Lights outside of the given frustum are culled)
+		* @param p_scene
+		*/
+		void UpdateLightsInFrustum(OvCore::SceneSystem::Scene& p_scene, const OvRendering::Data::Frustum& p_frustum);
 
 	private:
 		Context& m_context;

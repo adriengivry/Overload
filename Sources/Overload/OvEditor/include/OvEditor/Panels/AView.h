@@ -95,6 +95,12 @@ namespace OvEditor::Panels
 		void FillEngineUBO();
 
 	protected:
+		/**
+		* Update camera matrices
+		*/
+		void PrepareCamera();
+
+	protected:
 		OvEditor::Core::EditorRenderer& m_editorRenderer;
 		OvRendering::LowRenderer::Camera m_camera;
 		OvMaths::FVector3 m_cameraPosition;
