@@ -223,11 +223,26 @@ void OvEditor::Panels::Hierarchy::SelectActorByInstance(OvCore::ECS::Actor& p_ac
 			SelectActorByWidget(*result->second);
 }
 
+void ExpandTreeNode(OvUI::Widgets::Layout::TreeNode& p_toExpand, const OvUI::Widgets::Layout::TreeNode* p_root)
+{
+	p_toExpand.Open();
+
+	if (&p_toExpand != p_root && p_toExpand.HasParent())
+	{
+		ExpandTreeNode(*static_cast<OvUI::Widgets::Layout::TreeNode*>(p_toExpand.GetParent()), p_root);
+	}
+}
+
 void OvEditor::Panels::Hierarchy::SelectActorByWidget(OvUI::Widgets::Layout::TreeNode & p_widget)
 {
 	UnselectActorsWidgets();
 
 	p_widget.selected = true;
+
+	if (p_widget.HasParent())
+	{
+		ExpandTreeNode(*static_cast<OvUI::Widgets::Layout::TreeNode*>(p_widget.GetParent()), m_sceneRoot);
+	}
 }
 
 void OvEditor::Panels::Hierarchy::AttachActorToParent(OvCore::ECS::Actor & p_actor)
