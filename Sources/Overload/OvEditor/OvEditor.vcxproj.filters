@@ -96,6 +96,12 @@
     <ClCompile Include="src\OvEditor\Resources\RawShaders.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\OvEditor\Core\GizmoBehaviour.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OvEditor\Settings\EditorSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\OvEditor\Panels\AssetBrowser.h">
@@ -180,6 +186,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\OvEditor\Resources\RawShaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OvEditor\Core\GizmoBehaviour.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OvEditor\Settings\EditorSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

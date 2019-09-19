@@ -9,6 +9,7 @@
 #include "OvEditor/Core/EditorRenderer.h"
 #include "OvEditor/Panels/GameView.h"
 #include "OvEditor/Core/EditorActions.h"
+#include "OvEditor/Settings/EditorSettings.h"
 
 OvEditor::Panels::GameView::GameView
 (
@@ -33,6 +34,7 @@ void OvEditor::Panels::GameView::Update(float p_deltaTime)
 			m_camera = cameraComponent->GetCamera();
 			m_cameraPosition = cameraComponent->owner.transform.GetWorldPosition();
 			m_hasCamera = true;
+			PrepareCamera();
 		}
 		else
 		{
@@ -44,13 +46,41 @@ void OvEditor::Panels::GameView::Update(float p_deltaTime)
 
 void OvEditor::Panels::GameView::_Render_Impl()
 {
-	EDITOR_CONTEXT(renderer)->Clear(m_camera);
+	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
+	auto& currentScene = *m_sceneManager.GetCurrentScene();
 
-	uint8_t glState = EDITOR_CONTEXT(renderer)->FetchGLState();
-	EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
+	m_fbo.Bind();
+
+	baseRenderer.Clear(m_camera);
+
+	uint8_t glState = baseRenderer.FetchGLState();
+	baseRenderer.ApplyStateMask(glState);
 
 	if (m_hasCamera)
-		m_editorRenderer.RenderScene(m_cameraPosition);
+	{
+		if (m_camera.HasFrustumLightCulling())
+		{
+			m_editorRenderer.UpdateLightsInFrustum(currentScene, m_camera.GetFrustum());
+		}
+		else
+		{
+			m_editorRenderer.UpdateLights(currentScene);
+		}
 
-	EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
+		m_editorRenderer.RenderScene(m_cameraPosition, m_camera);
+	}
+
+	baseRenderer.ApplyStateMask(glState);
+
+	m_fbo.Unbind();
+}
+
+bool OvEditor::Panels::GameView::HasCamera() const
+{
+	return m_hasCamera;
+}
+
+std::optional<OvRendering::Data::Frustum> OvEditor::Panels::GameView::GetActiveFrustum() const
+{
+	return m_hasCamera ? m_camera.GetFrustum() : std::optional<OvRendering::Data::Frustum>{};
 }

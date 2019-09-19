@@ -873,6 +873,32 @@ OvEditor::Panels::AssetBrowser::AssetBrowser
 	m_projectAssetFolder(p_projectAssetFolder),
 	m_projectScriptFolder(p_projectScriptFolder)
 {
+	if (!std::filesystem::exists(m_projectAssetFolder))
+	{
+		std::filesystem::create_directories(m_projectAssetFolder);
+
+		OvWindowing::Dialogs::MessageBox message
+		(
+			"Assets folder not found",
+			"The \"Assets/\" folders hasn't been found in your project directory.\nIt has been automatically generated",
+			OvWindowing::Dialogs::MessageBox::EMessageType::WARNING,
+			OvWindowing::Dialogs::MessageBox::EButtonLayout::OK
+		);
+	}
+
+	if (!std::filesystem::exists(m_projectScriptFolder))
+	{
+		std::filesystem::create_directories(m_projectScriptFolder);
+
+		OvWindowing::Dialogs::MessageBox message
+		(
+			"Scripts folder not found",
+			"The \"Scripts/\" folders hasn't been found in your project directory.\nIt has been automatically generated",
+			OvWindowing::Dialogs::MessageBox::EMessageType::WARNING,
+			OvWindowing::Dialogs::MessageBox::EButtonLayout::OK
+		);
+	}
+
 	auto& refreshButton = CreateWidget<Buttons::Button>("Rescan assets");
 	refreshButton.ClickedEvent += std::bind(&AssetBrowser::Refresh, this);
 	refreshButton.lineBreak = false;

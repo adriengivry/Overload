@@ -78,6 +78,11 @@ namespace OvEditor::Core
 		*/
 		OvMaths::FVector3 GetPosition() const;
 
+		/**
+		* Returns true if the right mouse click is being pressed
+		*/
+		bool IsRightMousePressed() const;
+
 	private:
 		void HandleCameraXYMovement(float p_deltaTime);
 		void HandleCameraZMovement(float p_deltaTime);

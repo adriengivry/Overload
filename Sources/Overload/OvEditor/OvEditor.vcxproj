@@ -14,19 +14,19 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{7EBB8C83-AB76-40FA-9F8F-8C2398AA3F7F}</ProjectGuid>
     <RootNamespace>OvEditor</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -48,6 +48,7 @@
     <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Build\OvCore\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\..\Build\OvCore\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
+    <TargetName>Overload</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
@@ -55,6 +56,7 @@
     <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Build\OvCore\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\..\Build\OvCore\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
+    <TargetName>Overload</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -140,6 +142,7 @@ xcopy "$(ProjectDir)Layout.ini" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Conf
     <ClCompile Include="src\OvEditor\Core\EditorActions.cpp" />
     <ClCompile Include="src\OvEditor\Core\EditorRenderer.cpp" />
     <ClCompile Include="src\OvEditor\Core\EditorResources.cpp" />
+    <ClCompile Include="src\OvEditor\Core\GizmoBehaviour.cpp" />
     <ClCompile Include="src\OvEditor\Core\PanelsManager.cpp" />
     <ClCompile Include="src\OvEditor\Core\ProjectHub.cpp" />
     <ClCompile Include="src\OvEditor\Panels\AssetBrowser.cpp" />
@@ -160,6 +163,7 @@ xcopy "$(ProjectDir)Layout.ini" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Conf
     <ClCompile Include="src\OvEditor\Panels\SceneView.cpp" />
     <ClCompile Include="src\OvEditor\Panels\Toolbar.cpp" />
     <ClCompile Include="src\OvEditor\Resources\RawShaders.cpp" />
+    <ClCompile Include="src\OvEditor\Settings\EditorSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\OvEditor\Core\Application.h" />
@@ -169,6 +173,7 @@ xcopy "$(ProjectDir)Layout.ini" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Conf
     <ClInclude Include="include\OvEditor\Core\EditorActions.h" />
     <ClInclude Include="include\OvEditor\Core\EditorRenderer.h" />
     <ClInclude Include="include\OvEditor\Core\EditorResources.h" />
+    <ClInclude Include="include\OvEditor\Core\GizmoBehaviour.h" />
     <ClInclude Include="include\OvEditor\Core\PanelsManager.h" />
     <ClInclude Include="include\OvEditor\Core\ProjectHub.h" />
     <ClInclude Include="include\OvEditor\Resources\RawShaders.h" />
@@ -190,6 +195,7 @@ xcopy "$(ProjectDir)Layout.ini" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Conf
     <ClInclude Include="include\OvEditor\Panels\SceneView.h" />
     <ClInclude Include="include\OvEditor\Panels\Toolbar.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="include\OvEditor\Settings\EditorSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\OvEditor\Core\EditorActions.inl" />

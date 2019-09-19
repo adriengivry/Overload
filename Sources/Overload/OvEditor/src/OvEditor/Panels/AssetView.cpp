@@ -20,6 +20,7 @@ OvEditor::Panels::AssetView::AssetView
 ) : AViewControllable(p_title, p_opened, p_windowSettings)
 {
 	m_camera.SetClearColor({ 0.278f, 0.278f, 0.278f });
+	m_camera.SetFar(1000.0f);
 
 	m_resource = static_cast<OvRendering::Resources::Model*>(nullptr);
 	m_image->AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, OvUI::Widgets::Layout::Group*>>>("File").DataReceivedEvent += [this](auto p_data)
@@ -47,12 +48,18 @@ OvEditor::Panels::AssetView::AssetView
 
 void OvEditor::Panels::AssetView::_Render_Impl()
 {
-	EDITOR_CONTEXT(renderer)->SetStencilMask(0xFF);
-	EDITOR_CONTEXT(renderer)->Clear(m_camera);
-	EDITOR_CONTEXT(renderer)->SetStencilMask(0x00);
+	PrepareCamera();
 
-	uint8_t glState = EDITOR_CONTEXT(renderer)->FetchGLState();
-	EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
+	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
+
+	m_fbo.Bind();
+
+	baseRenderer.SetStencilMask(0xFF);
+	baseRenderer.Clear(m_camera);
+	baseRenderer.SetStencilMask(0x00);
+
+	uint8_t glState = baseRenderer.FetchGLState();
+	baseRenderer.ApplyStateMask(glState);
 
 	m_editorRenderer.RenderGrid(m_cameraPosition, m_gridColor);
 
@@ -65,7 +72,9 @@ void OvEditor::Panels::AssetView::_Render_Impl()
 	if (auto pval = std::get_if<OvCore::Resources::Material*>(&m_resource); pval && *pval)
 		m_editorRenderer.RenderMaterialAsset(**pval);
 
-	EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
+	baseRenderer.ApplyStateMask(glState);
+
+	m_fbo.Unbind();
 }
 
 void OvEditor::Panels::AssetView::SetResource(ViewableResource p_resource)

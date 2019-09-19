@@ -6,6 +6,7 @@
 
 #include <utility>
 #include <stdexcept>
+#include <cmath>
 
 #include "OvMaths/FVector3.h"
 
@@ -140,7 +141,7 @@ OvMaths::FVector3 OvMaths::FVector3::Divide(const FVector3& p_left, float p_scal
 
 float OvMaths::FVector3::Length(const FVector3& p_target)
 {
-	return sqrtf(p_target.x * p_target.x + p_target.y * p_target.y + p_target.z * p_target.z);
+	return std::sqrt(p_target.x * p_target.x + p_target.y * p_target.y + p_target.z * p_target.z);
 }
 
 float OvMaths::FVector3::Dot(const FVector3& p_left, const FVector3& p_right)
@@ -150,7 +151,7 @@ float OvMaths::FVector3::Dot(const FVector3& p_left, const FVector3& p_right)
 
 float OvMaths::FVector3::Distance(const FVector3 & p_left, const FVector3 & p_right)
 {
-	return sqrt
+	return std::sqrt
 	(
 		(p_left.x - p_right.x) * (p_left.x - p_right.x) +
 		(p_left.y - p_right.y) * (p_left.y - p_right.y) +

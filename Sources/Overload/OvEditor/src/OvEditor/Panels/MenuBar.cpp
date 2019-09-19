@@ -26,6 +26,7 @@
 #include "OvEditor/Panels/SceneView.h"
 #include "OvEditor/Panels/AssetView.h"
 #include "OvEditor/Core/EditorActions.h"
+#include "OvEditor/Settings/EditorSettings.h"
 
 using namespace OvUI::Panels;
 using namespace OvUI::Widgets;
@@ -150,7 +151,6 @@ void OvEditor::Panels::MenuBar::CreateSettingsMenu()
 	cameraPositionMenu.CreateWidget<MenuItem>("Scene View").ClickedEvent += EDITOR_BIND(ResetSceneViewCameraPosition);
 	cameraPositionMenu.CreateWidget<MenuItem>("Asset View").ClickedEvent += EDITOR_BIND(ResetAssetViewCameraPosition);
 
-	
 	auto& viewColors = settingsMenu.CreateWidget<MenuList>("View Colors");
 	auto& sceneViewBackground = viewColors.CreateWidget<MenuList>("Scene View Background");
 	auto& sceneViewBackgroundPicker = sceneViewBackground.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color{ 0.278f, 0.278f, 0.278f });
@@ -199,9 +199,16 @@ void OvEditor::Panels::MenuBar::CreateSettingsMenu()
 		EDITOR_PANEL(Panels::AssetView, "Asset View").SetGridColor(OvMaths::FVector3::One);
 		assetViewGridPicker.color = OvUI::Types::Color::White;
 	};
+
+	auto& debuggingMenu = settingsMenu.CreateWidget<MenuList>("Debugging");
+	debuggingMenu.CreateWidget<MenuItem>("Show geometry bounds", "", true, Settings::EditorSettings::ShowGeometryBounds).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowGeometryBounds = p_value; };
+	debuggingMenu.CreateWidget<MenuItem>("Show lights bounds", "", true, Settings::EditorSettings::ShowLightBounds).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowLightBounds = p_value; };
+	auto& subMenu = debuggingMenu.CreateWidget<MenuList>("Frustum culling visualizer...");
+	subMenu.CreateWidget<MenuItem>("For geometry", "", true, Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView = p_value; };
+	subMenu.CreateWidget<MenuItem>("For lights", "", true, Settings::EditorSettings::ShowLightFrustumCullingInSceneView).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowLightFrustumCullingInSceneView = p_value; };
 }
 
-void OvEditor::Panels::MenuBar::CreateLayoutMenu()
+void OvEditor::Panels::MenuBar::CreateLayoutMenu() 
 {
 	auto& layoutMenu = CreateWidget<MenuList>("Layout");
 	layoutMenu.CreateWidget<MenuItem>("Reset").ClickedEvent += EDITOR_BIND(ResetLayout);
@@ -210,6 +217,7 @@ void OvEditor::Panels::MenuBar::CreateLayoutMenu()
 void OvEditor::Panels::MenuBar::CreateHelpMenu()
 {
 	auto& helpMenu = CreateWidget<MenuList>("Help");
+	helpMenu.CreateWidget<MenuItem>("Overload Documentation").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org/documentation/annotated.html"); };
 	helpMenu.CreateWidget<MenuItem>("Scripting Documentation").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org/api"); };
 	helpMenu.CreateWidget<MenuItem>("Overload Website").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org"); };
 

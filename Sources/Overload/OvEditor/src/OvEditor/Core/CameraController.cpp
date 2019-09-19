@@ -232,6 +232,11 @@ OvMaths::FVector3 OvEditor::Core::CameraController::GetPosition() const
 	return m_cameraPosition;
 }
 
+bool OvEditor::Core::CameraController::IsRightMousePressed() const
+{
+	return m_rightMousePressed;
+}
+
 void OvEditor::Core::CameraController::HandleCameraXYMovement(float p_deltaTime)
 {
 	ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);

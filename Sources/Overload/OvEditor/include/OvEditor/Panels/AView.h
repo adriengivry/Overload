@@ -10,6 +10,7 @@
 #include <OvUI/Panels/PanelWindow.h>
 #include <OvUI/Widgets/Visual/Image.h>
 #include <OvRendering/Buffers/UniformBuffer.h>
+#include <OvRendering/Buffers/Framebuffer.h>
 #include <OvRendering/LowRenderer/Camera.h>
 
 namespace OvEditor::Core { class EditorRenderer; }
@@ -36,25 +37,10 @@ namespace OvEditor::Panels
 		);
 
 		/**
-		* Destructor
-		*/
-		~AView();
-
-		/**
 		* Update the view
 		* @param p_deltaTime
 		*/
 		virtual void Update(float p_deltaTime);
-
-		/**
-		* Bind the FBO attached to the view
-		*/
-		void Bind();
-
-		/**
-		* Unbind the FBO attached to the view
-		*/
-		void Unbind();
 
 		/**
 		* Custom implementation of the draw method
@@ -109,6 +95,12 @@ namespace OvEditor::Panels
 		void FillEngineUBO();
 
 	protected:
+		/**
+		* Update camera matrices
+		*/
+		void PrepareCamera();
+
+	protected:
 		OvEditor::Core::EditorRenderer& m_editorRenderer;
 		OvRendering::LowRenderer::Camera m_camera;
 		OvMaths::FVector3 m_cameraPosition;
@@ -116,9 +108,6 @@ namespace OvEditor::Panels
 
 		OvMaths::FVector3 m_gridColor = OvMaths::FVector3::One;
 
-	private:
-		uint32_t m_fbo;
-		uint32_t m_renderTexture;
-		uint32_t m_depthStencilBuffer;
+		OvRendering::Buffers::Framebuffer m_fbo;
 	};
 }

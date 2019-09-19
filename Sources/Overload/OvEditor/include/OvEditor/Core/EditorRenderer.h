@@ -17,6 +17,7 @@
 
 #include "OvEditor/Core/Context.h"
 
+namespace OvEditor::Core { enum class EGizmoOperation; }
 namespace OvEditor::Panels { class AView; }
 
 namespace OvEditor::Core
@@ -39,10 +40,28 @@ namespace OvEditor::Core
 		void InitMaterials();
 
 		/**
+		* Prepare the picking material by send it the color corresponding to the given actor
+		* @param p_actor
+		*/
+		void PreparePickingMaterial(OvCore::ECS::Actor& p_actor);
+
+		/**
+		* Calculate the model matrix for a camera attached to the given actor
+		* @param p_actor
+		*/
+		OvMaths::FMatrix4 CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor);
+
+		/**
 		* Render the scene
 		* @param p_cameraPosition
+		* @param p_camera
 		*/
-		void RenderScene(const OvMaths::FVector3& p_cameraPosition);
+		void RenderScene(const OvMaths::FVector3& p_cameraPosition, const OvRendering::LowRenderer::Camera& p_camera, const OvRendering::Data::Frustum* p_customFrustum = nullptr);
+
+		/**
+		* Render the scene for actor picking (Unlit version of the scene with colors indicating actor IDs)
+		*/
+		void RenderSceneForActorPicking();
 
 		/**
 		* Render the User Interface
@@ -55,11 +74,13 @@ namespace OvEditor::Core
 		void RenderCameras();
 
 		/**
-		* Render a guizmo at position
+		* Render a gizmo at position
 		* @param p_position
 		* @param p_rotation
+		* @param p_operation
+		* @param p_pickable (Determine the shader to use to render the gizmo)
 		*/
-		void RenderGuizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation);
+		void RenderGizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, OvEditor::Core::EGizmoOperation p_operation, bool p_pickable = false);
 
 		/**
 		* Render a model to the stencil buffer
@@ -79,9 +100,19 @@ namespace OvEditor::Core
 		void RenderActorAsSelected(OvCore::ECS::Actor& p_actor, bool p_toStencil);
 
 		/**
+		* Render the camera frustum
+		*/
+		void RenderCameraFrustum(OvCore::ECS::Components::CCamera& p_camera);
+
+		/**
 		* Render an actor collider
 		*/
 		void RenderActorCollider(OvCore::ECS::Actor& p_actor);
+
+		/**
+		* Render light bounds
+		*/
+		void RenderLightBounds(OvCore::ECS::Components::CLight& p_light);
 
 		/**
 		* Render ambient box volume
@@ -92,6 +123,11 @@ namespace OvEditor::Core
 		* Render ambient sphere volume
 		*/
 		void RenderAmbientSphereVolume(OvCore::ECS::Components::CAmbientSphereLight& p_ambientSphereLight);
+
+		/**
+		* Render the the bounding spheres of the given model renderer
+		*/
+		void RenderBoundingSpheres(OvCore::ECS::Components::CModelRenderer& p_modelRenderer);
 
 		/**
 		* Render model
@@ -119,6 +155,12 @@ namespace OvEditor::Core
 		*/
 		void UpdateLights(OvCore::SceneSystem::Scene& p_scene);
 
+		/**
+		* Update the light SSBO with the current scene (Lights outside of the given frustum are culled)
+		* @param p_scene
+		*/
+		void UpdateLightsInFrustum(OvCore::SceneSystem::Scene& p_scene, const OvRendering::Data::Frustum& p_frustum);
+
 	private:
 		Context& m_context;
 
@@ -129,7 +171,9 @@ namespace OvEditor::Core
 		OvCore::Resources::Material m_emptyMaterial;
 		OvCore::Resources::Material m_defaultMaterial;
 		OvCore::Resources::Material m_cameraMaterial;
-		OvCore::Resources::Material m_guizmoArrowMaterial;
-		OvCore::Resources::Material m_guizmoBallMaterial;
+		OvCore::Resources::Material m_gizmoArrowMaterial;
+		OvCore::Resources::Material m_gizmoBallMaterial;
+		OvCore::Resources::Material m_gizmoPickingMaterial;
+		OvCore::Resources::Material m_actorPickingMaterial;
 	};
 }

@@ -14,19 +14,19 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{677CDBA0-43A9-4A7C-9A7C-3C38C73D1D50}</ProjectGuid>
     <RootNamespace>OvRendering</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -129,6 +129,7 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
   <ItemGroup>
     <ClInclude Include="include\OvRendering\API\Export.h" />
     <ClInclude Include="include\OvRendering\Buffers\EAccessSpecifier.h" />
+    <ClInclude Include="include\OvRendering\Buffers\Framebuffer.h" />
     <ClInclude Include="include\OvRendering\Buffers\IndexBuffer.h" />
     <ClInclude Include="include\OvRendering\Buffers\ShaderStorageBuffer.h" />
     <ClInclude Include="include\OvRendering\Buffers\UniformBuffer.h" />
@@ -136,7 +137,9 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
     <ClInclude Include="include\OvRendering\Buffers\VertexBuffer.h" />
     <ClInclude Include="include\OvRendering\Context\Driver.h" />
     <ClInclude Include="include\OvRendering\Core\ShapeDrawer.h" />
+    <ClInclude Include="include\OvRendering\Data\Frustum.h" />
     <ClInclude Include="include\OvRendering\Entities\Light.h" />
+    <ClInclude Include="include\OvRendering\Geometry\BoundingSphere.h" />
     <ClInclude Include="include\OvRendering\Geometry\Vertex.h" />
     <ClInclude Include="include\OvRendering\LowRenderer\Camera.h" />
     <ClInclude Include="include\OvRendering\Core\Renderer.h" />
@@ -155,6 +158,7 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
     <ClInclude Include="include\OvRendering\Resources\Parsers\AssimpParser.h" />
     <ClInclude Include="include\OvRendering\Resources\Parsers\IModelParser.h" />
     <ClInclude Include="include\OvRendering\Settings\ECullFace.h" />
+    <ClInclude Include="include\OvRendering\Settings\ECullingOptions.h" />
     <ClInclude Include="include\OvRendering\Settings\EOperation.h" />
     <ClInclude Include="include\OvRendering\Settings\EPrimitiveMode.h" />
     <ClInclude Include="include\OvRendering\Settings\ERasterizationMode.h" />
@@ -163,12 +167,14 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
     <ClInclude Include="include\OvRendering\Settings\ETextureFilteringMode.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\OvRendering\Buffers\Framebuffer.cpp" />
     <ClCompile Include="src\OvRendering\Core\ShapeDrawer.cpp" />
     <ClCompile Include="src\OvRendering\Buffers\IndexBuffer.cpp" />
     <ClCompile Include="src\OvRendering\Buffers\ShaderStorageBuffer.cpp" />
     <ClCompile Include="src\OvRendering\Buffers\UniformBuffer.cpp" />
     <ClCompile Include="src\OvRendering\Buffers\VertexArray.cpp" />
     <ClCompile Include="src\OvRendering\Context\Driver.cpp" />
+    <ClCompile Include="src\OvRendering\Data\Frustum.cpp" />
     <ClCompile Include="src\OvRendering\Entities\Light.cpp" />
     <ClCompile Include="src\OvRendering\LowRenderer\Camera.cpp" />
     <ClCompile Include="src\OvRendering\Core\Renderer.cpp" />

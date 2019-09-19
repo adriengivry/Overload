@@ -9,6 +9,8 @@
 #include "OvEditor/Core/EditorRenderer.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Panels/SceneView.h"
+#include "OvEditor/Panels/GameView.h"
+#include "OvEditor/Settings/EditorSettings.h"
 
 OvEditor::Panels::SceneView::SceneView
 (
@@ -19,6 +21,7 @@ OvEditor::Panels::SceneView::SceneView
 	m_sceneManager(EDITOR_CONTEXT(sceneManager))
 {
 	m_camera.SetClearColor({ 0.278f, 0.278f, 0.278f });
+	m_camera.SetFar(1000.0f);
 
 	m_image->AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, OvUI::Widgets::Layout::Group*>>>("File").DataReceivedEvent += [this](auto p_data)
 	{
@@ -36,31 +39,78 @@ void OvEditor::Panels::SceneView::Update(float p_deltaTime)
 {
 	AViewControllable::Update(p_deltaTime);
 
-	if (IsHovered() && EDITOR_CONTEXT(inputManager)->IsMouseButtonPressed(OvWindowing::Inputs::EMouseButton::MOUSE_BUTTON_LEFT))
+	using namespace OvWindowing::Inputs;
+
+	if (IsFocused() && !m_cameraController.IsRightMousePressed())
 	{
-		/* Prevent losing focus on actor while resizing a window */
-		if (auto cursor = ImGui::GetMouseCursor();
-			cursor != ImGuiMouseCursor_ResizeEW &&
-			cursor != ImGuiMouseCursor_ResizeNS &&
-			cursor != ImGuiMouseCursor_ResizeNWSE &&
-			cursor != ImGuiMouseCursor_ResizeNESW &&
-			cursor != ImGuiMouseCursor_ResizeAll)
-		EDITOR_EXEC(UnselectActor());
+		if (EDITOR_CONTEXT(inputManager)->IsKeyPressed(EKey::KEY_W))
+		{
+			m_currentOperation = OvEditor::Core::EGizmoOperation::TRANSLATE;
+		}
+
+		if (EDITOR_CONTEXT(inputManager)->IsKeyPressed(EKey::KEY_E))
+		{
+			m_currentOperation = OvEditor::Core::EGizmoOperation::ROTATE;
+		}
+
+		if (EDITOR_CONTEXT(inputManager)->IsKeyPressed(EKey::KEY_R))
+		{
+			m_currentOperation = OvEditor::Core::EGizmoOperation::SCALE;
+		}
 	}
 }
 
 void OvEditor::Panels::SceneView::_Render_Impl()
 {
-	EDITOR_CONTEXT(renderer)->SetStencilMask(0xFF);
-	EDITOR_CONTEXT(renderer)->Clear(m_camera);
-	EDITOR_CONTEXT(renderer)->SetStencilMask(0x00);
+	PrepareCamera();
 
-	uint8_t glState = EDITOR_CONTEXT(renderer)->FetchGLState();
-	EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
+	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
+
+	uint8_t glState = baseRenderer.FetchGLState();
+	baseRenderer.ApplyStateMask(glState);
+
+	RenderScene(glState);
+	baseRenderer.ApplyStateMask(glState);
+	HandleActorPicking();
+	baseRenderer.ApplyStateMask(glState);
+}
+
+void OvEditor::Panels::SceneView::RenderScene(uint8_t p_defaultRenderState)
+{
+	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
+	auto& currentScene = *m_sceneManager.GetCurrentScene();
+	auto& gameView = EDITOR_PANEL(OvEditor::Panels::GameView, "Game View");
+
+	// If the game is playing, and ShowLightFrustumCullingInSceneView is true, apply the game view frustum culling to the scene view (For debugging purposes)
+	if (auto gameViewFrustum = gameView.GetActiveFrustum(); gameViewFrustum.has_value() && gameView.GetCamera().HasFrustumLightCulling() && Settings::EditorSettings::ShowLightFrustumCullingInSceneView)
+	{
+		m_editorRenderer.UpdateLightsInFrustum(currentScene, gameViewFrustum.value());
+	}
+	else
+	{
+		m_editorRenderer.UpdateLights(currentScene);
+	}
+
+	m_fbo.Bind();
+
+	baseRenderer.SetStencilMask(0xFF);
+	baseRenderer.Clear(m_camera);
+	baseRenderer.SetStencilMask(0x00);
 
 	m_editorRenderer.RenderGrid(m_cameraPosition, m_gridColor);
 	m_editorRenderer.RenderCameras();
-	m_editorRenderer.RenderScene(m_cameraPosition);
+
+	// If the game is playing, and ShowGeometryFrustumCullingInSceneView is true, apply the game view frustum culling to the scene view (For debugging purposes)
+	if (auto gameViewFrustum = gameView.GetActiveFrustum(); gameViewFrustum.has_value() && gameView.GetCamera().HasFrustumLightCulling() && Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView)
+	{
+		m_camera.SetFrustumGeometryCulling(gameView.HasCamera() ? gameView.GetCamera().HasFrustumGeometryCulling() : false);
+		m_editorRenderer.RenderScene(m_cameraPosition, m_camera, &gameViewFrustum.value());
+		m_camera.SetFrustumGeometryCulling(false);
+	}
+	else
+	{
+		m_editorRenderer.RenderScene(m_cameraPosition, m_camera);
+	}
 
 	if (EDITOR_EXEC(IsAnyActorSelected()))
 	{
@@ -69,14 +119,107 @@ void OvEditor::Panels::SceneView::_Render_Impl()
 		if (selectedActor.IsActive())
 		{
 			m_editorRenderer.RenderActorAsSelected(selectedActor, true);
-			EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
+			baseRenderer.ApplyStateMask(p_defaultRenderState);
 			m_editorRenderer.RenderActorAsSelected(selectedActor, false);
 		}
 
-		EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
-		EDITOR_CONTEXT(renderer)->Clear(false, true, false);
-		m_editorRenderer.RenderGuizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation());
+		baseRenderer.ApplyStateMask(p_defaultRenderState);
+		baseRenderer.Clear(false, true, false);
+		m_editorRenderer.RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation);
 	}
 
-	EDITOR_CONTEXT(renderer)->ApplyStateMask(glState);
+	m_fbo.Unbind();
+}
+
+void OvEditor::Panels::SceneView::RenderSceneForActorPicking()
+{
+	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
+
+	auto [winWidth, winHeight] = GetSafeSize();
+
+	m_actorPickingFramebuffer.Resize(winWidth, winHeight);
+	m_actorPickingFramebuffer.Bind();
+	baseRenderer.SetClearColor(1.0f, 1.0f, 1.0f);
+	baseRenderer.Clear();
+	m_editorRenderer.RenderSceneForActorPicking();
+
+	if (EDITOR_EXEC(IsAnyActorSelected()))
+	{
+		auto& selectedActor = EDITOR_EXEC(GetSelectedActor());
+		baseRenderer.Clear(false, true, false);
+		m_editorRenderer.RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation, true);
+	}
+
+	m_actorPickingFramebuffer.Unbind();
+}
+
+bool IsResizing()
+{
+	auto cursor = ImGui::GetMouseCursor();
+
+	return 
+		cursor == ImGuiMouseCursor_ResizeEW ||
+		cursor == ImGuiMouseCursor_ResizeNS ||
+		cursor == ImGuiMouseCursor_ResizeNWSE ||
+		cursor == ImGuiMouseCursor_ResizeNESW ||
+		cursor == ImGuiMouseCursor_ResizeAll;;
+}
+
+void OvEditor::Panels::SceneView::HandleActorPicking()
+{
+	using namespace OvWindowing::Inputs;
+
+	auto& inputManager = *EDITOR_CONTEXT(inputManager);
+
+	if (inputManager.IsMouseButtonReleased(EMouseButton::MOUSE_BUTTON_LEFT))
+	{
+		m_gizmoOperations.StopPicking();
+	}
+
+	if (IsHovered() && !IsResizing() && inputManager.IsMouseButtonPressed(EMouseButton::MOUSE_BUTTON_LEFT) && !m_cameraController.IsRightMousePressed())
+	{
+		RenderSceneForActorPicking();
+
+		// Look actor under mouse
+		auto [mouseX, mouseY] = inputManager.GetMousePosition();
+		mouseX -= m_position.x;
+		mouseY -= m_position.y;
+		mouseY = GetSafeSize().second - mouseY + 25;
+
+		m_actorPickingFramebuffer.Bind();
+		uint8_t pixel[3];
+		glReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+		m_actorPickingFramebuffer.Unbind();
+
+		/* Gizmo picking */
+		if (EDITOR_EXEC(IsAnyActorSelected()) && pixel[0] == 255 && pixel[1] == 255 && pixel[2] >= 252 && pixel[2] <= 254)
+		{
+			auto direction = static_cast<OvEditor::Core::GizmoBehaviour::EDirection>(pixel[2] - 252);
+			m_gizmoOperations.StartPicking(EDITOR_EXEC(GetSelectedActor()), m_cameraPosition, m_currentOperation, direction);
+		}
+		/* Actor picking */
+		else
+		{
+			uint32_t actorID = (0 << 24) | (pixel[2] << 16) | (pixel[1] << 8) | (pixel[0] << 0);
+
+			if (auto actor = EDITOR_CONTEXT(sceneManager).GetCurrentScene()->FindActorByID(actorID))
+			{
+				EDITOR_EXEC(SelectActor(*actor));
+			}
+			else
+			{
+				EDITOR_EXEC(UnselectActor());
+			}
+		}
+	}
+
+	if (m_gizmoOperations.IsPicking())
+	{
+		auto mousePosition = EDITOR_CONTEXT(inputManager)->GetMousePosition();
+
+		auto [winWidth, winHeight] = GetSafeSize();
+
+		m_gizmoOperations.SetCurrentMouse({ static_cast<float>(mousePosition.first), static_cast<float>(mousePosition.second) });
+		m_gizmoOperations.ApplyOperation(m_camera.GetViewMatrix(), m_camera.GetProjectionMatrix(), { static_cast<float>(winWidth), static_cast<float>(winHeight) });
+	}
 }

@@ -36,18 +36,6 @@ namespace OvCore::ECS::Components
 		std::string GetName() override;
 
 		/**
-		* Returns the projection matrix
-		* @param p_windowWidth
-		* @param p_windowHeight
-		*/
-		OvMaths::FMatrix4 GetProjectionMatrix(uint16_t p_windowWidth, uint16_t p_windowHeight);
-
-		/**
-		* Returns the view matrix
-		*/
-		OvMaths::FMatrix4 GetViewMatrix();
-
-		/**
 		* Sets the fov of the camera to the given value
 		* @param p_value
 		*/
@@ -72,6 +60,18 @@ namespace OvCore::ECS::Components
 		void SetClearColor(const OvMaths::FVector3& p_clearColor);
 
 		/**
+		* Defines if the camera should apply frustum geometry culling in rendering
+		* @param p_enable
+		*/
+		void SetFrustumGeometryCulling(bool p_enable);
+
+		/**
+		* Defines if the camera should apply frustum light culling in rendering
+		* @param p_enable
+		*/
+		void SetFrustumLightCulling(bool p_enable);
+
+		/**
 		* Returns the fov of the camera
 		*/
 		float GetFov() const;
@@ -90,6 +90,16 @@ namespace OvCore::ECS::Components
 		* Returns the clear color of the camera
 		*/
 		const OvMaths::FVector3& GetClearColor() const;
+
+		/**
+		* Returns true if the frustum geometry culling is enabled
+		*/
+		bool HasFrustumGeometryCulling() const;
+
+		/**
+		* Returns true if the frustum light culling is enabled
+		*/
+		bool HasFrustumLightCulling() const;
 
 		/**
 		* Returns the OvRendering camera instance attached to this component

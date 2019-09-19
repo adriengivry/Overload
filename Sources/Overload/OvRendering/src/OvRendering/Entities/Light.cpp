@@ -48,3 +48,76 @@ OvMaths::FMatrix4 OvRendering::Entities::Light::GenerateMatrix() const
 
 	return result;
 }
+
+float CalculateLuminosity(float p_constant, float p_linear, float p_quadratic, float p_intensity, float p_distance)
+{
+	auto attenuation = (p_constant + p_linear * p_distance + p_quadratic * (p_distance * p_distance));
+	return (1.0f / attenuation) * p_intensity;
+}
+
+float CalculatePointLightRadius(float p_constant, float p_linear, float p_quadratic, float p_intensity)
+{
+	constexpr float threshold = 1 / 255.0f;
+	constexpr float step = 1.0f;
+
+	float distance = 0.0f;
+
+	#define TRY_GREATER(value)\
+	else if (CalculateLuminosity(p_constant, p_linear, p_quadratic, p_intensity, value) > threshold)\
+	{\
+		distance = value;\
+	}
+
+	#define TRY_LESS(value, newValue)\
+	else if (CalculateLuminosity(p_constant, p_linear, p_quadratic, p_intensity, value) < threshold)\
+	{\
+		distance = newValue;\
+	}
+
+	// Prevents infinite while true. If a light has a bigger radius than 10000 we ignore it and make it infinite
+	if (CalculateLuminosity(p_constant, p_linear, p_quadratic, p_intensity, 1000.0f) > threshold)
+	{
+		return std::numeric_limits<float>::infinity();
+	}
+	TRY_LESS(20.0f, 0.0f)
+	TRY_GREATER(750.0f)
+	TRY_LESS(50.0f, 20.0f + step)
+	TRY_LESS(100.0f, 50.0f + step)
+	TRY_GREATER(500.0f)
+	TRY_GREATER(250.0f)
+
+	while (true)
+	{
+		if (CalculateLuminosity(p_constant, p_linear, p_quadratic, p_intensity, distance) < threshold) // If the light has a very low luminosity for the given distance, we consider the current distance as the light radius
+		{
+			return distance;
+		}
+		else
+		{
+			distance += step;
+		}
+	}
+}
+
+float CalculateAmbientBoxLightRadius(const OvMaths::FVector3& p_position, const OvMaths::FVector3& p_size)
+{
+	return OvMaths::FVector3::Distance(p_position, p_position + p_size);
+}
+
+float OvRendering::Entities::Light::GetEffectRange() const
+{
+	switch (static_cast<OvRendering::Entities::Light::Type>(static_cast<int>(type)))
+	{
+	case Type::POINT:
+	case Type::SPOT:			return CalculatePointLightRadius(constant, linear, quadratic, intensity);
+	case Type::AMBIENT_BOX:		return CalculateAmbientBoxLightRadius(m_transform.GetWorldPosition(), { constant, linear, quadratic });
+	case Type::AMBIENT_SPHERE:	return constant;
+	}
+
+	return std::numeric_limits<float>::infinity();
+}
+
+const OvMaths::FTransform& OvRendering::Entities::Light::GetTransform() const
+{
+	return m_transform;
+}
