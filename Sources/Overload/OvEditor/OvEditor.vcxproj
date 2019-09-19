@@ -48,6 +48,7 @@
     <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Build\OvCore\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\..\Build\OvCore\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
+    <TargetName>Overload</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
@@ -55,6 +56,7 @@
     <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Build\OvCore\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\..\Build\OvCore\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
+    <TargetName>Overload</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
