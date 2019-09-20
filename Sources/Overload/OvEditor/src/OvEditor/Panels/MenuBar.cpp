@@ -217,8 +217,8 @@ void OvEditor::Panels::MenuBar::CreateLayoutMenu()
 void OvEditor::Panels::MenuBar::CreateHelpMenu()
 {
 	auto& helpMenu = CreateWidget<MenuList>("Help");
-	helpMenu.CreateWidget<MenuItem>("Overload Documentation").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org/documentation/annotated.html"); };
-	helpMenu.CreateWidget<MenuItem>("Scripting Documentation").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org/api"); };
+	helpMenu.CreateWidget<MenuItem>("Overload Documentation").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org/doc/1.1/annotated.html"); };
+	helpMenu.CreateWidget<MenuItem>("Scripting Documentation").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org/api/1.1"); };
 	helpMenu.CreateWidget<MenuItem>("Overload Website").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org"); };
 
 	helpMenu.CreateWidget<Visual::Separator>();
@@ -226,6 +226,9 @@ void OvEditor::Panels::MenuBar::CreateHelpMenu()
 	auto& max = creditsMenu.CreateWidget<MenuList>("Max BRUN");
 	auto& adrien = creditsMenu.CreateWidget<MenuList>("Adrien GIVRY");
 	auto& benji = creditsMenu.CreateWidget<MenuList>("Benjamin VIRANIN");
+
+	helpMenu.CreateWidget<Visual::Separator>();
+	helpMenu.CreateWidget<Texts::Text>("Current version: 1.1.1");
 
 	max.CreateWidget<MenuItem>("Website").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("https://maxbrun.wixsite.com/maxbrundevelopment"); };
 	max.CreateWidget<MenuItem>("GitHub").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("https://github.com/maxbrundev"); };
