@@ -27,6 +27,11 @@ namespace OvEditor::Core
 			Y,
 			Z
 		};
+		
+		/**
+		* Returns true if the snapping behaviour is enabled
+		*/
+		bool IsSnappedBehaviourEnabled() const;
 
 		/**
 		* Starts the gizmo picking behaviour for the given target in the given direction
