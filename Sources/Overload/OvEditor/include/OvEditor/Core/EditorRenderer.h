@@ -42,8 +42,9 @@ namespace OvEditor::Core
 		/**
 		* Prepare the picking material by send it the color corresponding to the given actor
 		* @param p_actor
+		* @param p_material
 		*/
-		void PreparePickingMaterial(OvCore::ECS::Actor& p_actor);
+		void PreparePickingMaterial(OvCore::ECS::Actor& p_actor, OvCore::Resources::Material& p_material);
 
 		/**
 		* Calculate the model matrix for a camera attached to the given actor
@@ -72,6 +73,11 @@ namespace OvEditor::Core
 		* Render every scene cameras
 		*/
 		void RenderCameras();
+
+		/**
+		* Render every scene lights as billboards
+		*/
+		void RenderLights();
 
 		/**
 		* Render a gizmo at position
@@ -171,6 +177,7 @@ namespace OvEditor::Core
 		OvCore::Resources::Material m_emptyMaterial;
 		OvCore::Resources::Material m_defaultMaterial;
 		OvCore::Resources::Material m_cameraMaterial;
+		OvCore::Resources::Material m_lightMaterial;
 		OvCore::Resources::Material m_gizmoArrowMaterial;
 		OvCore::Resources::Material m_gizmoBallMaterial;
 		OvCore::Resources::Material m_gizmoPickingMaterial;

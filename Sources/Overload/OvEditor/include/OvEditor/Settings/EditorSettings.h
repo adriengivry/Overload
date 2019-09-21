@@ -77,5 +77,6 @@ namespace OvEditor::Settings
 		inline static Property<bool> ShowLightBounds = { false };
 		inline static Property<bool> ShowGeometryFrustumCullingInSceneView = { false };
 		inline static Property<bool> ShowLightFrustumCullingInSceneView = { false };
+		inline static Property<float> LightBillboardScale = { 0.5f };
 	};
 }

@@ -20,6 +20,7 @@
 
 #include <OvUI/Widgets/Visual/Separator.h>
 #include <OvUI/Widgets/Sliders/SliderInt.h>
+#include <OvUI/Widgets/Sliders/SliderFloat.h>
 #include <OvUI/Widgets/Selection/ColorEdit.h>
 
 #include "OvEditor/Panels/MenuBar.h"
@@ -199,6 +200,11 @@ void OvEditor::Panels::MenuBar::CreateSettingsMenu()
 		EDITOR_PANEL(Panels::AssetView, "Asset View").SetGridColor(OvMaths::FVector3::One);
 		assetViewGridPicker.color = OvUI::Types::Color::White;
 	};
+
+	auto& sceneViewBillboardScaleMenu = settingsMenu.CreateWidget<MenuList>("3D Icons Scales");
+	auto& lightBillboardScaleSlider = sceneViewBillboardScaleMenu.CreateWidget<Sliders::SliderInt>(0, 100, static_cast<int>(Settings::EditorSettings::LightBillboardScale * 100.0f), OvUI::Widgets::Sliders::ESliderOrientation::HORIZONTAL, "Lights");
+	lightBillboardScaleSlider.ValueChangedEvent += [this](int p_value) { Settings::EditorSettings::LightBillboardScale = p_value / 100.0f; };
+	lightBillboardScaleSlider.format = "%d %%";
 
 	auto& debuggingMenu = settingsMenu.CreateWidget<MenuList>("Debugging");
 	debuggingMenu.CreateWidget<MenuItem>("Show geometry bounds", "", true, Settings::EditorSettings::ShowGeometryBounds).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowGeometryBounds = p_value; };

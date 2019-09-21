@@ -25,5 +25,10 @@ namespace OvEditor::Resources
 		* Returns the gizmo shader
 		*/
 		static std::pair<std::string, std::string> GetGizmo();
+
+		/**
+		* Returns the billboard shader
+		*/
+		static std::pair<std::string, std::string> GetBillboard();
 	};
 }
