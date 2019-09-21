@@ -38,6 +38,11 @@ namespace OvUI::Widgets::Layout
 		*/
 		void Close();
 
+		/**
+		* Returns true if the TreeNode is currently opened
+		*/
+		bool IsOpened() const;
+
 	protected:
 		virtual void _Draw_Impl() override;
 
