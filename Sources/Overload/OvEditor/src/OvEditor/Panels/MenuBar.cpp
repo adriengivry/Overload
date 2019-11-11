@@ -21,6 +21,7 @@
 #include <OvUI/Widgets/Visual/Separator.h>
 #include <OvUI/Widgets/Sliders/SliderInt.h>
 #include <OvUI/Widgets/Sliders/SliderFloat.h>
+#include <OvUI/Widgets/Drags/DragFloat.h>
 #include <OvUI/Widgets/Selection/ColorEdit.h>
 
 #include "OvEditor/Panels/MenuBar.h"
@@ -205,6 +206,11 @@ void OvEditor::Panels::MenuBar::CreateSettingsMenu()
 	auto& lightBillboardScaleSlider = sceneViewBillboardScaleMenu.CreateWidget<Sliders::SliderInt>(0, 100, static_cast<int>(Settings::EditorSettings::LightBillboardScale * 100.0f), OvUI::Widgets::Sliders::ESliderOrientation::HORIZONTAL, "Lights");
 	lightBillboardScaleSlider.ValueChangedEvent += [this](int p_value) { Settings::EditorSettings::LightBillboardScale = p_value / 100.0f; };
 	lightBillboardScaleSlider.format = "%d %%";
+
+	auto& snappingMenu = settingsMenu.CreateWidget<MenuList>("Snapping");
+	snappingMenu.CreateWidget<Drags::DragFloat>(0.001f, 999999.0f, Settings::EditorSettings::TranslationSnapUnit, 0.05f, "Translation Unit").ValueChangedEvent += [this](float p_value) { Settings::EditorSettings::TranslationSnapUnit = p_value; };
+	snappingMenu.CreateWidget<Drags::DragFloat>(0.001f, 999999.0f, Settings::EditorSettings::RotationSnapUnit, 1.0f, "Rotation Unit").ValueChangedEvent += [this](float p_value) { Settings::EditorSettings::RotationSnapUnit = p_value; };
+	snappingMenu.CreateWidget<Drags::DragFloat>(0.001f, 999999.0f, Settings::EditorSettings::ScalingSnapUnit, 0.05f, "Scaling Unit").ValueChangedEvent += [this](float p_value) { Settings::EditorSettings::ScalingSnapUnit = p_value; };
 
 	auto& debuggingMenu = settingsMenu.CreateWidget<MenuList>("Debugging");
 	debuggingMenu.CreateWidget<MenuItem>("Show geometry bounds", "", true, Settings::EditorSettings::ShowGeometryBounds).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowGeometryBounds = p_value; };
