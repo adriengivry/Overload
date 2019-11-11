@@ -26,6 +26,11 @@ void OvUI::Widgets::Layout::TreeNode::Close()
 	m_shouldOpen = false;
 }
 
+bool OvUI::Widgets::Layout::TreeNode::IsOpened() const
+{
+	return m_opened;
+}
+
 void OvUI::Widgets::Layout::TreeNode::_Draw_Impl()
 {
 	bool prevOpened = m_opened;
