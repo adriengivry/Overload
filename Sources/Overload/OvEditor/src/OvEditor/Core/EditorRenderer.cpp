@@ -88,6 +88,13 @@ void OvEditor::Core::EditorRenderer::InitMaterials()
 	m_cameraMaterial.Set("u_Diffuse", FVector4(0.0f, 0.3f, 0.7f, 1.0f));
 	m_cameraMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
 
+	/* Light Material */
+	m_lightMaterial.SetShader(m_context.editorResources->GetShader("Billboard"));
+	m_lightMaterial.Set("u_Diffuse", FVector4(1.f, 1.f, 0.5f, 0.5f));
+	m_lightMaterial.SetBackfaceCulling(false);
+	m_lightMaterial.SetBlendable(true);
+	m_lightMaterial.SetDepthTest(false);
+
 	/* Stencil Fill Material */
 	m_stencilFillMaterial.SetShader(m_context.shaderManager[":Shaders\\Unlit.glsl"]);
 	m_stencilFillMaterial.SetBackfaceCulling(true);
@@ -133,14 +140,14 @@ void OvEditor::Core::EditorRenderer::InitMaterials()
 	m_actorPickingMaterial.SetBackfaceCulling(false);
 }
 
-void OvEditor::Core::EditorRenderer::PreparePickingMaterial(OvCore::ECS::Actor& p_actor)
+void OvEditor::Core::EditorRenderer::PreparePickingMaterial(OvCore::ECS::Actor& p_actor, OvCore::Resources::Material& p_material)
 {
 	uint32_t actorID = static_cast<uint32_t>(p_actor.GetID());
 
 	auto bytes = reinterpret_cast<uint8_t*>(&actorID);
 	auto color = FVector4{ bytes[0] / 255.0f, bytes[1] / 255.0f, bytes[2] / 255.0f, 1.0f };
 
-	m_actorPickingMaterial.Set("u_Diffuse", color);
+	p_material.Set("u_Diffuse", color);
 }
 
 OvMaths::FMatrix4 OvEditor::Core::EditorRenderer::CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor)
@@ -178,7 +185,7 @@ void OvEditor::Core::EditorRenderer::RenderSceneForActorPicking()
 					const OvCore::ECS::Components::CMaterialRenderer::MaterialList& materials = materialRenderer->GetMaterials();
 					const auto& modelMatrix = actor.transform.GetWorldMatrix();
 
-					PreparePickingMaterial(actor);
+					PreparePickingMaterial(actor, m_actorPickingMaterial);
 
 					for (auto mesh : model->GetMeshes())
 					{
@@ -214,11 +221,34 @@ void OvEditor::Core::EditorRenderer::RenderSceneForActorPicking()
 
 		if (actor.IsActive())
 		{
-			PreparePickingMaterial(actor);
+			PreparePickingMaterial(actor, m_actorPickingMaterial);
 			auto& model = *m_context.editorResources->GetModel("Camera");
 			auto modelMatrix = CalculateCameraModelMatrix(actor);
 
 			m_context.renderer->DrawModelWithSingleMaterial(model, m_actorPickingMaterial, &modelMatrix);
+		}
+	}
+
+	/* Render lights */
+	if (Settings::EditorSettings::LightBillboardScale > 0.001f)
+	{
+		m_context.renderer->Clear(false, true, false);
+
+		m_lightMaterial.SetDepthTest(true);
+		m_lightMaterial.Set<float>("u_Scale", Settings::EditorSettings::LightBillboardScale * 0.1f);
+		m_lightMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
+
+		for (auto light : m_context.sceneManager.GetCurrentScene()->GetFastAccessComponents().lights)
+		{
+			auto& actor = light->owner;
+
+			if (actor.IsActive())
+			{
+				PreparePickingMaterial(actor, m_lightMaterial);
+				auto& model = *m_context.editorResources->GetModel("Vertical_Plane");
+				auto modelMatrix = FMatrix4::Translation(actor.transform.GetWorldPosition());
+				m_context.renderer->DrawModelWithSingleMaterial(model, m_lightMaterial, &modelMatrix);
+			}
 		}
 	}
 }
@@ -242,6 +272,41 @@ void OvEditor::Core::EditorRenderer::RenderCameras()
 			auto modelMatrix = CalculateCameraModelMatrix(actor);
 			
 			m_context.renderer->DrawModelWithSingleMaterial(model, m_cameraMaterial, &modelMatrix);
+		}
+	}
+}
+
+void OvEditor::Core::EditorRenderer::RenderLights()
+{
+	using namespace OvMaths;
+
+	m_lightMaterial.SetDepthTest(false);
+	m_lightMaterial.Set<float>("u_Scale", Settings::EditorSettings::LightBillboardScale * 0.1f);
+
+	for (auto light : m_context.sceneManager.GetCurrentScene()->GetFastAccessComponents().lights)
+	{
+		auto& actor = light->owner;
+
+		if (actor.IsActive())
+		{
+			auto& model = *m_context.editorResources->GetModel("Vertical_Plane");
+			auto modelMatrix = FMatrix4::Translation(actor.transform.GetWorldPosition());
+
+			OvRendering::Resources::Texture* texture = nullptr;
+
+			switch (static_cast<OvRendering::Entities::Light::Type>(static_cast<int>(light->GetData().type)))
+			{
+			case OvRendering::Entities::Light::Type::POINT:				texture = m_context.editorResources->GetTexture("Bill_Point_Light");			break;
+			case OvRendering::Entities::Light::Type::SPOT:				texture = m_context.editorResources->GetTexture("Bill_Spot_Light");				break;
+			case OvRendering::Entities::Light::Type::DIRECTIONAL:		texture = m_context.editorResources->GetTexture("Bill_Directional_Light");		break;
+			case OvRendering::Entities::Light::Type::AMBIENT_BOX:		texture = m_context.editorResources->GetTexture("Bill_Ambient_Box_Light");		break;
+			case OvRendering::Entities::Light::Type::AMBIENT_SPHERE:	texture = m_context.editorResources->GetTexture("Bill_Ambient_Sphere_Light");	break;
+			}
+
+			const auto& lightColor = light->GetColor();
+			m_lightMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", texture);
+			m_lightMaterial.Set<OvMaths::FVector4>("u_Diffuse", OvMaths::FVector4(lightColor.x, lightColor.y, lightColor.z, 0.75f));
+			m_context.renderer->DrawModelWithSingleMaterial(model, m_lightMaterial, &modelMatrix);
 		}
 	}
 }
