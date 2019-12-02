@@ -174,6 +174,35 @@ private:
 	OvUI::Widgets::Layout::TreeNode& m_treeNode;
 };
 
+void ExpandTreeNode(OvUI::Widgets::Layout::TreeNode& p_toExpand, const OvUI::Widgets::Layout::TreeNode* p_root)
+{
+	p_toExpand.Open();
+
+	if (&p_toExpand != p_root && p_toExpand.HasParent())
+	{
+		ExpandTreeNode(*static_cast<OvUI::Widgets::Layout::TreeNode*>(p_toExpand.GetParent()), p_root);
+	}
+}
+
+std::vector<OvUI::Widgets::Layout::TreeNode*> nodesToCollapse;
+std::vector<OvUI::Widgets::Layout::TreeNode*> founds;
+
+void ExpandTreeNodeAndEnable(OvUI::Widgets::Layout::TreeNode& p_toExpand, const OvUI::Widgets::Layout::TreeNode* p_root)
+{
+	if (!p_toExpand.IsOpened())
+	{
+		p_toExpand.Open();
+		nodesToCollapse.push_back(&p_toExpand);
+	}
+
+	p_toExpand.enabled = true;
+
+	if (&p_toExpand != p_root && p_toExpand.HasParent())
+	{
+		ExpandTreeNodeAndEnable(*static_cast<OvUI::Widgets::Layout::TreeNode*>(p_toExpand.GetParent()), p_root);
+	}
+}
+
 OvEditor::Panels::Hierarchy::Hierarchy
 (
 	const std::string & p_title,
@@ -181,6 +210,54 @@ OvEditor::Panels::Hierarchy::Hierarchy
 	const OvUI::Settings::PanelWindowSettings& p_windowSettings
 ) : PanelWindow(p_title, p_opened, p_windowSettings)
 {
+	auto& searchBar = CreateWidget<OvUI::Widgets::InputFields::InputText>();
+	searchBar.ContentChangedEvent += [this](const std::string& p_content)
+	{
+		founds.clear();
+		auto content = p_content;
+		std::transform(content.begin(), content.end(), content.begin(), ::tolower);
+
+		for (auto& [actor, item] : m_widgetActorLink)
+		{
+			if (!p_content.empty())
+			{
+				auto itemName = item->name;
+				std::transform(itemName.begin(), itemName.end(), itemName.begin(), ::tolower);
+
+				if (itemName.find(content) != std::string::npos)
+				{
+					founds.push_back(item);
+				}
+
+				item->enabled = false;
+			}
+			else
+			{
+				item->enabled = true;
+			}
+		}
+
+		for (auto node : founds)
+		{
+			node->enabled = true;
+
+			if (node->HasParent())
+			{
+				ExpandTreeNodeAndEnable(*static_cast<OvUI::Widgets::Layout::TreeNode*>(node->GetParent()), m_sceneRoot);
+			}
+		}
+
+		if (p_content.empty())
+		{
+			for (auto node : nodesToCollapse)
+			{
+				node->Close();
+			}
+
+			nodesToCollapse.clear();
+		}
+	};
+
 	m_sceneRoot = &CreateWidget<OvUI::Widgets::Layout::TreeNode>("Root", true);
 	static_cast<OvUI::Widgets::Layout::TreeNode*>(m_sceneRoot)->Open();
 	m_sceneRoot->AddPlugin<OvUI::Plugins::DDTarget<std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*>>>("Actor").DataReceivedEvent += [this](std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*> p_element)
@@ -223,16 +300,6 @@ void OvEditor::Panels::Hierarchy::SelectActorByInstance(OvCore::ECS::Actor& p_ac
 			SelectActorByWidget(*result->second);
 }
 
-void ExpandTreeNode(OvUI::Widgets::Layout::TreeNode& p_toExpand, const OvUI::Widgets::Layout::TreeNode* p_root)
-{
-	p_toExpand.Open();
-
-	if (&p_toExpand != p_root && p_toExpand.HasParent())
-	{
-		ExpandTreeNode(*static_cast<OvUI::Widgets::Layout::TreeNode*>(p_toExpand.GetParent()), p_root);
-	}
-}
-
 void OvEditor::Panels::Hierarchy::SelectActorByWidget(OvUI::Widgets::Layout::TreeNode & p_widget)
 {
 	UnselectActorsWidgets();
@@ -267,15 +334,14 @@ void OvEditor::Panels::Hierarchy::AttachActorToParent(OvCore::ECS::Actor & p_act
 
 void OvEditor::Panels::Hierarchy::DetachFromParent(OvCore::ECS::Actor & p_actor)
 {
-	auto actorWidget = m_widgetActorLink.find(&p_actor);
-
-	if (actorWidget != m_widgetActorLink.end())
+	if (auto actorWidget = m_widgetActorLink.find(&p_actor); actorWidget != m_widgetActorLink.end())
 	{
 		if (p_actor.HasParent() && p_actor.GetParent()->GetChildren().size() == 1)
 		{
-			auto parentWidget = m_widgetActorLink.at(p_actor.GetParent());
-			if (parentWidget)
-				parentWidget->leaf = true;
+			if (auto parentWidget = m_widgetActorLink.find(p_actor.GetParent()); parentWidget != m_widgetActorLink.end())
+			{
+				parentWidget->second->leaf = true;
+			}
 		}
 
 		auto widget = actorWidget->second;
@@ -290,8 +356,14 @@ void OvEditor::Panels::Hierarchy::DetachFromParent(OvCore::ECS::Actor & p_actor)
 void OvEditor::Panels::Hierarchy::DeleteActorByInstance(OvCore::ECS::Actor& p_actor)
 {
 	if (auto result = m_widgetActorLink.find(&p_actor); result != m_widgetActorLink.end())
+	{
 		if (result->second)
+		{
 			result->second->Destroy();
+		}
+
+		m_widgetActorLink.erase(result);
+	}
 }
 
 void OvEditor::Panels::Hierarchy::AddActorByInstance(OvCore::ECS::Actor & p_actor)

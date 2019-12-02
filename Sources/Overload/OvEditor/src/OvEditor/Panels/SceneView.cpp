@@ -112,6 +112,8 @@ void OvEditor::Panels::SceneView::RenderScene(uint8_t p_defaultRenderState)
 		m_editorRenderer.RenderScene(m_cameraPosition, m_camera);
 	}
 
+	m_editorRenderer.RenderLights();
+
 	if (EDITOR_EXEC(IsAnyActorSelected()))
 	{
 		auto& selectedActor = EDITOR_EXEC(GetSelectedActor());

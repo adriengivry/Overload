@@ -52,7 +52,7 @@ OvMaths::FMatrix4 OvRendering::Entities::Light::GenerateMatrix() const
 float CalculateLuminosity(float p_constant, float p_linear, float p_quadratic, float p_intensity, float p_distance)
 {
 	auto attenuation = (p_constant + p_linear * p_distance + p_quadratic * (p_distance * p_distance));
-	return (1.0f / attenuation) * p_intensity;
+	return (1.0f / attenuation) * std::abs(p_intensity);
 }
 
 float CalculatePointLightRadius(float p_constant, float p_linear, float p_quadratic, float p_intensity)

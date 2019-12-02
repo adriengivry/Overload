@@ -41,6 +41,9 @@ OvEditor::Core::EditorResources::EditorResources(const std::string& p_editorAsse
 	OvRendering::Settings::ETextureFilteringMode firstFilterEditor = OvRendering::Settings::ETextureFilteringMode::LINEAR;
 	OvRendering::Settings::ETextureFilteringMode secondFilterEditor = OvRendering::Settings::ETextureFilteringMode::LINEAR;
 
+	OvRendering::Settings::ETextureFilteringMode firstFilterBillboard = OvRendering::Settings::ETextureFilteringMode::NEAREST;
+	OvRendering::Settings::ETextureFilteringMode secondFilterBillboard = OvRendering::Settings::ETextureFilteringMode::NEAREST;
+
 	/* Buttons */
 
 	{
@@ -119,10 +122,36 @@ OvEditor::Core::EditorResources::EditorResources(const std::string& p_editorAsse
 		m_textures["Icon_Font"] = TextureLoader::CreateFromMemory(reinterpret_cast<uint8_t*>(raw.data()), 16, 16, firstFilterEditor, secondFilterEditor, false);
 	}
 
+	{
+		std::vector<uint64_t> raw = BILL_PLIGHT;
+		m_textures["Bill_Point_Light"] = TextureLoader::CreateFromMemory(reinterpret_cast<uint8_t*>(raw.data()), 128, 128, firstFilterBillboard, secondFilterBillboard, false);
+	}
+
+	{
+		std::vector<uint64_t> raw = BILL_SLIGHT;
+		m_textures["Bill_Spot_Light"] = TextureLoader::CreateFromMemory(reinterpret_cast<uint8_t*>(raw.data()), 128, 128, firstFilterBillboard, secondFilterBillboard, false);
+	}
+
+	{
+		std::vector<uint64_t> raw = BILL_DLIGHT;
+		m_textures["Bill_Directional_Light"] = TextureLoader::CreateFromMemory(reinterpret_cast<uint8_t*>(raw.data()), 128, 128, firstFilterBillboard, secondFilterBillboard, false);
+	}
+
+	{
+		std::vector<uint64_t> raw = BILL_ABLIGHT;
+		m_textures["Bill_Ambient_Box_Light"] = TextureLoader::CreateFromMemory(reinterpret_cast<uint8_t*>(raw.data()), 128, 128, firstFilterBillboard, secondFilterBillboard, false);
+	}
+
+	{
+		std::vector<uint64_t> raw = BILL_ASLIGHT;
+		m_textures["Bill_Ambient_Sphere_Light"] = TextureLoader::CreateFromMemory(reinterpret_cast<uint8_t*>(raw.data()), 128, 128, firstFilterBillboard, secondFilterBillboard, false);
+	}
+
 	/* Models */
 	m_models["Cube"]			= ModelLoader::Create(modelsFolder + "Cube.fbx", modelParserFlags);
 	m_models["Cylinder"]		= ModelLoader::Create(modelsFolder + "Cylinder.fbx", modelParserFlags);
 	m_models["Plane"]			= ModelLoader::Create(modelsFolder + "Plane.fbx", modelParserFlags);
+	m_models["Vertical_Plane"]	= ModelLoader::Create(modelsFolder + "Vertical_Plane.fbx", modelParserFlags);
 	m_models["Roll"]			= ModelLoader::Create(modelsFolder + "Roll.fbx", modelParserFlags);
 	m_models["Sphere"]			= ModelLoader::Create(modelsFolder + "Sphere.fbx", modelParserFlags);
 	m_models["Arrow_Translate"]	= ModelLoader::Create(modelsFolder + "Arrow_Translate.fbx", modelParserFlags);
@@ -131,10 +160,12 @@ OvEditor::Core::EditorResources::EditorResources(const std::string& p_editorAsse
 	m_models["Camera"]			= ModelLoader::Create(modelsFolder + "Camera.fbx", modelParserFlags);
 
 	/* Shaders */
-	auto gridSource		= OvEditor::Resources::RawShaders::GetGrid();
-	auto gizmoSource	= OvEditor::Resources::RawShaders::GetGizmo();
+	auto gridSource			= OvEditor::Resources::RawShaders::GetGrid();
+	auto gizmoSource		= OvEditor::Resources::RawShaders::GetGizmo();
+	auto billboardSource	= OvEditor::Resources::RawShaders::GetBillboard();
 	m_shaders["Grid"]		= ShaderLoader::CreateFromSource(gridSource.first, gridSource.second);
 	m_shaders["Gizmo"]		= ShaderLoader::CreateFromSource(gizmoSource.first, gizmoSource.second);
+	m_shaders["Billboard"]	= ShaderLoader::CreateFromSource(billboardSource.first, billboardSource.second);
 
 	/* From memory */
 	{

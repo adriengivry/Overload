@@ -5,6 +5,20 @@
 */
 
 #include "OvEditor/Core/GizmoBehaviour.h"
+#include "OvEditor/Settings/EditorSettings.h"
+
+float SnapValue(float p_value, float p_step)
+{
+	return p_value - std::fmod(p_value, p_step);
+}
+
+bool OvEditor::Core::GizmoBehaviour::IsSnappedBehaviourEnabled() const
+{
+	using namespace OvWindowing::Inputs;
+
+	const auto& inputManager = EDITOR_CONTEXT(inputManager);
+	return inputManager->GetKeyState(EKey::KEY_LEFT_CONTROL) == EKeyState::KEY_DOWN || inputManager->GetKeyState(EKey::KEY_RIGHT_CONTROL) == EKeyState::KEY_DOWN;
+}
 
 void OvEditor::Core::GizmoBehaviour::StartPicking(OvCore::ECS::Actor& p_target, const OvMaths::FVector3& p_cameraPosition, EGizmoOperation p_operation, EDirection p_direction)
 {
@@ -101,9 +115,14 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 	auto screenDirection = GetScreenDirection(p_viewMatrix, p_projectionMatrix, p_viewSize);
 
 	auto totalDisplacement = m_currentMouse - m_originMouse;
-	auto translationCoefficient = OvMaths::FVector2::Dot(totalDisplacement, screenDirection);
+	auto translationCoefficient = OvMaths::FVector2::Dot(totalDisplacement, screenDirection) * unitsPerPixel;
 
-	m_target->transform.SetLocalPosition(originPosition + GetRealDirection() * translationCoefficient * unitsPerPixel);
+	if (IsSnappedBehaviourEnabled())
+	{
+		translationCoefficient = SnapValue(translationCoefficient, OvEditor::Settings::EditorSettings::TranslationSnapUnit);
+	}
+
+	m_target->transform.SetLocalPosition(originPosition + GetRealDirection() * translationCoefficient);
 }
 
 void OvEditor::Core::GizmoBehaviour::ApplyRotation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
@@ -115,9 +134,14 @@ void OvEditor::Core::GizmoBehaviour::ApplyRotation(const OvMaths::FMatrix4& p_vi
 	screenDirection = OvMaths::FVector2(-screenDirection.y, screenDirection.x);
 
 	auto totalDisplacement = m_currentMouse - m_originMouse;
-	auto rotationCoefficient = OvMaths::FVector2::Dot(totalDisplacement, screenDirection);
+	auto rotationCoefficient = OvMaths::FVector2::Dot(totalDisplacement, screenDirection) * unitsPerPixel;
 
-	auto rotationToApply = OvMaths::FQuaternion(OvMaths::FVector3(GetFakeDirection() * rotationCoefficient * unitsPerPixel));
+	if (IsSnappedBehaviourEnabled())
+	{
+		rotationCoefficient = SnapValue(rotationCoefficient, OvEditor::Settings::EditorSettings::RotationSnapUnit);
+	}
+
+	auto rotationToApply = OvMaths::FQuaternion(OvMaths::FVector3(GetFakeDirection() * rotationCoefficient));
 	m_target->transform.SetLocalRotation(originRotation * rotationToApply);
 }
 
@@ -129,9 +153,14 @@ void OvEditor::Core::GizmoBehaviour::ApplyScale(const OvMaths::FMatrix4& p_viewM
 	auto screenDirection = GetScreenDirection(p_viewMatrix, p_projectionMatrix, p_viewSize);
 
 	auto totalDisplacement = m_currentMouse - m_originMouse;
-	auto scaleCoefficient = OvMaths::FVector2::Dot(totalDisplacement, screenDirection);
+	auto scaleCoefficient = OvMaths::FVector2::Dot(totalDisplacement, screenDirection) * unitsPerPixel;
 
-	auto newScale = originScale + GetFakeDirection() * scaleCoefficient * unitsPerPixel;
+	if (IsSnappedBehaviourEnabled())
+	{
+		scaleCoefficient = SnapValue(scaleCoefficient, OvEditor::Settings::EditorSettings::ScalingSnapUnit);
+	}
+
+	auto newScale = originScale + GetFakeDirection() * scaleCoefficient;
 
 	/* Prevent scale from being negative*/
 	newScale.x = std::max(newScale.x, 0.0001f);

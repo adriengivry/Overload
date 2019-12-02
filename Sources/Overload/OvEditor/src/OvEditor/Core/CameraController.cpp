@@ -35,7 +35,7 @@ OvEditor::Core::CameraController::CameraController
 
 float GetActorFocusDist(OvCore::ECS::Actor& p_actor)
 {
-	float distance = 5.0f;
+	float distance = 4.0f;
 
 	if (p_actor.IsActive())
 	{
@@ -80,33 +80,14 @@ float GetActorFocusDist(OvCore::ECS::Actor& p_actor)
 
 		if (auto modelRenderer = p_actor.GetComponent<OvCore::ECS::Components::CModelRenderer>())
 		{
-			distance = std::max(distance, 10.0f);
-		}
+			const bool hasCustomBoundingSphere = modelRenderer->GetFrustumBehaviour() == OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::CULL_CUSTOM;
+			const bool hasModel = modelRenderer->GetModel();
+			const auto boundingSphere = hasCustomBoundingSphere ? &modelRenderer->GetCustomBoundingSphere() : hasModel ? &modelRenderer->GetModel()->GetBoundingSphere() : nullptr;
+			const auto& actorPosition = p_actor.transform.GetWorldPosition();
+			const auto& actorScale = p_actor.transform.GetWorldScale();
+			const auto scaleFactor = std::max(std::max(actorScale.x, actorScale.y), actorScale.z);
 
-		if (auto ambientBoxLight = p_actor.GetComponent<OvCore::ECS::Components::CAmbientBoxLight>())
-		{
-			distance = std::max(distance, std::max
-			(
-				std::max
-				(
-					ambientBoxLight->GetSize().x,
-					ambientBoxLight->GetSize().y
-				),
-				ambientBoxLight->GetSize().z
-			) * 1.5f);
-		}
-
-		if (auto ambientSphereLight = p_actor.GetComponent<OvCore::ECS::Components::CAmbientSphereLight>())
-		{
-			distance = std::max(distance, std::max
-			(
-				std::max
-				(
-					ambientSphereLight->GetRadius(),
-					ambientSphereLight->GetRadius()
-				),
-				ambientSphereLight->GetRadius()
-			) * 1.5f);
+			distance = std::max(distance, boundingSphere ? (boundingSphere->radius + OvMaths::FVector3::Length(boundingSphere->position)) * scaleFactor * 2.0f : 10.0f);
 		}
 
 		for (auto child : p_actor.GetChildren())
