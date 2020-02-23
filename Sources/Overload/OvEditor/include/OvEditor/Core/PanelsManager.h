@@ -8,7 +8,9 @@
 
 #include <unordered_map>
 
+#include "OvEditor/Panels/MenuBar.h"
 #include "OvUI/Panels/APanel.h"
+#include "OvUI/Panels/PanelWindow.h"
 #include "OvUI/Modules/Canvas.h"
 
 namespace OvEditor::Core
