@@ -58,8 +58,11 @@ namespace OvRendering::Resources::Loaders
 		* Reload a texture from file
 		* @param p_texture
 		* @param p_filePath
+		* @param p_firstFilter
+		* @param p_secondFilter
+		* @param p_generateMipmap
 		*/
-		static void Reload(Texture& p_texture, const std::string& p_filePath);
+		static void Reload(Texture& p_texture, const std::string& p_filePath, OvRendering::Settings::ETextureFilteringMode p_firstFilter, OvRendering::Settings::ETextureFilteringMode p_secondFilter, bool p_generateMipmap);
 
 		/**
 		* Destroy a texture

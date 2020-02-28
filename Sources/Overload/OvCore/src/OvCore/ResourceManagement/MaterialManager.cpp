@@ -23,3 +23,8 @@ void OvCore::ResourceManagement::MaterialManager::DestroyResource(OvCore::Resour
 {
 	OvCore::Resources::Loaders::MaterialLoader::Destroy(p_resource);
 }
+
+void OvCore::ResourceManagement::MaterialManager::ReloadResource(OvCore::Resources::Material* p_resource, const std::string& p_path)
+{
+	OvCore::Resources::Loaders::MaterialLoader::Reload(*p_resource, p_path);
+}

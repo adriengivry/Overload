@@ -20,3 +20,8 @@ void OvCore::ResourceManagement::ShaderManager::DestroyResource(OvRendering::Res
 {
 	OvRendering::Resources::Loaders::ShaderLoader::Destroy(p_resource);
 }
+
+void OvCore::ResourceManagement::ShaderManager::ReloadResource(OvRendering::Resources::Shader* p_resource, const std::string& p_path)
+{
+	OvRendering::Resources::Loaders::ShaderLoader::Recompile(*p_resource, p_path);
+}

@@ -32,6 +32,7 @@
 #include "OvEditor/Panels/AssetBrowser.h"
 #include "OvEditor/Panels/AssetView.h"
 #include "OvEditor/Panels/MaterialEditor.h"
+#include "OvEditor/Panels/AssetMetadataEditor.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Core/EditorResources.h"
 
@@ -653,6 +654,28 @@ public:
 
 	virtual void CreateList() override
 	{
+		auto& reloadAction = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Reload");
+
+		reloadAction.ClickedEvent += [this]
+		{
+			auto& modelManager = OVSERVICE(OvCore::ResourceManagement::ModelManager);
+			std::string resourcePath = EDITOR_EXEC(GetResourcePath(filePath, m_protected));
+			if (modelManager.IsResourceRegistered(resourcePath))
+			{
+				modelManager.AResourceManager::ReloadResource(resourcePath);
+			}
+		};
+
+		auto& editMetadata = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Edit metadata");
+
+		editMetadata.ClickedEvent += [this]
+		{
+			auto& panel = EDITOR_PANEL(OvEditor::Panels::AssetMetadataEditor, "Asset Metadata Editor");
+			panel.SetTarget(filePath);
+			panel.Open();
+			panel.Focus();
+		};
+
 		if (!m_protected)
 		{
 			auto& generateMaterialsMenu = CreateWidget<OvUI::Widgets::Menu::MenuList>("Generate materials...");
@@ -790,9 +813,19 @@ public:
 			if (textureManager.IsResourceRegistered(resourcePath))
 			{
 				/* Trying to recompile */
-				OvRendering::Resources::Loaders::TextureLoader::Reload(*textureManager[resourcePath], filePath);
+				textureManager.AResourceManager::ReloadResource(resourcePath);
 				EDITOR_PANEL(OvEditor::Panels::MaterialEditor, "Material Editor").Refresh();
 			}
+		};
+
+		auto& editMetadata = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Edit metadata");
+
+		editMetadata.ClickedEvent += [this]
+		{
+			auto& panel = EDITOR_PANEL(OvEditor::Panels::AssetMetadataEditor, "Asset Metadata Editor");
+			panel.SetTarget(filePath);
+			panel.Open();
+			panel.Focus();
 		};
 
 		PreviewableContextualMenu::CreateList();
@@ -847,10 +880,12 @@ public:
 		auto& reload = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Reload");
 		reload.ClickedEvent += [this]
 		{
-			OvCore::Resources::Material* material = OVSERVICE(OvCore::ResourceManagement::MaterialManager)[EDITOR_EXEC(GetResourcePath(filePath, m_protected))];
+			auto materialManager = OVSERVICE(OvCore::ResourceManagement::MaterialManager);
+			auto resourcePath = EDITOR_EXEC(GetResourcePath(filePath, m_protected));
+			OvCore::Resources::Material* material = materialManager[resourcePath];
 			if (material)
 			{
-				OvCore::Resources::Loaders::MaterialLoader::Reload(*material, filePath);
+				materialManager.AResourceManager::ReloadResource(resourcePath);
 				EDITOR_PANEL(OvEditor::Panels::MaterialEditor, "Material Editor").Refresh();
 			}
 		};
@@ -956,6 +991,14 @@ void OvEditor::Panels::AssetBrowser::ConsiderItem(OvUI::Widgets::Layout::TreeNod
 		path += '\\';
 	std::string resourceFormatPath = EDITOR_EXEC(GetResourcePath(path, p_isEngineItem));
 	bool protectedItem = !p_root || p_isEngineItem;
+
+	OvTools::Utils::PathParser::EFileType fileType = OvTools::Utils::PathParser::GetFileType(itemname);
+
+	// Unknown file, so we skip it
+	if (fileType == OvTools::Utils::PathParser::EFileType::UNKNOWN && !isDirectory)
+	{
+		return;
+	}
 
 	/* If there is a given treenode (p_root) we attach the new widget to it */
 	auto& itemGroup = p_root ? p_root->CreateWidget<Layout::Group>() : m_assetList->CreateWidget<Layout::Group>();
@@ -1140,8 +1183,6 @@ void OvEditor::Panels::AssetBrowser::ConsiderItem(OvUI::Widgets::Layout::TreeNod
 	}
 	else
 	{
-		OvTools::Utils::PathParser::EFileType fileType = OvTools::Utils::PathParser::GetFileType(itemname);
-
 		auto& clickableText = itemGroup.CreateWidget<Texts::TextClickable>(itemname);
 
 		FileContextualMenu* contextMenu = nullptr;

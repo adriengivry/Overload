@@ -30,6 +30,13 @@ namespace OvAudio::Resources::Loaders
 		static Sound* Create(const std::string& p_filepath);
 
 		/**
+		* Reload a sound
+		* @param p_sound
+		* @param p_path
+		*/
+		static void Reload(Sound& p_sound, const std::string& p_path);
+
+		/**
 		* Destroy a sound
 		* @param p_soundInstance
 		*/
