@@ -20,3 +20,7 @@ void OvCore::ResourceManagement::SoundManager::DestroyResource(OvAudio::Resource
 {
 	OvAudio::Resources::Loaders::SoundLoader::Destroy(p_resource);
 }
+
+void OvCore::ResourceManagement::SoundManager::ReloadResource(OvAudio::Resources::Sound* p_resource, const std::string& p_path)
+{
+}

@@ -52,6 +52,15 @@ namespace OvCore::ResourceManagement
 	}
 
 	template<typename T>
+	inline void AResourceManager<T>::ReloadResource(const std::string& p_path)
+	{
+		if (auto resource = GetResource(p_path, false); resource)
+		{
+			ReloadResource(resource, p_path);
+		}
+	}
+
+	template<typename T>
 	inline bool AResourceManager<T>::IsResourceRegistered(const std::string & p_path)
 	{
 		return m_resources.find(p_path) != m_resources.end();

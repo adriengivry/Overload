@@ -51,6 +51,12 @@ namespace OvTools::Filesystem
 	}
 
 	template<typename T>
+	inline T IniFile::GetOrDefault(const std::string& p_key, T p_default)
+	{
+		return IsKeyExisting(p_key) ? Get<T>(p_key) : p_default;
+	}
+
+	template<typename T>
 	inline bool IniFile::Set(const std::string& p_key, const T& p_value)
 	{
 		if (IsKeyExisting(p_key))

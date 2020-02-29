@@ -29,5 +29,12 @@ namespace OvCore::ResourceManagement
 		* @param p_resource
 		*/
 		virtual void DestroyResource(OvAudio::Resources::Sound* p_resource) override;
+
+		/**
+		* Reload the given resource
+		* @param p_resource
+		* @param p_path
+		*/
+		virtual void ReloadResource(OvAudio::Resources::Sound* p_resource, const std::string& p_path) override;
 	};
 }
