@@ -28,7 +28,7 @@ namespace OvCore::ECS::Components
 		/**
 		* Destructor
 		*/
-		~CCamera();
+		~CCamera() = default;
 
 		/**
 		* Returns the name of the component
@@ -128,6 +128,5 @@ namespace OvCore::ECS::Components
 
 	private:
 		OvRendering::LowRenderer::Camera m_camera;
-		OvTools::Eventing::ListenerID m_transformNotificationHandlerID;
 	};
 }

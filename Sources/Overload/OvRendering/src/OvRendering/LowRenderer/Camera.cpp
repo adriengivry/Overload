@@ -9,24 +9,20 @@
 #include "OvRendering/LowRenderer/Camera.h"
 #include "OvMaths/FMatrix4.h"
 
-OvRendering::LowRenderer::Camera::Camera() :
-	m_yaw(-90.f),
-	m_pitch(0.f),
-	m_roll(0.f),
-	m_fov(45.f),
+OvRendering::LowRenderer::Camera::Camera(OvMaths::FTransform* p_transform) :
+	m_fov(45.0f),
 	m_near(0.1f),
 	m_far(100.f),
 	m_clearColor(0.f, 0.f, 0.f),
 	m_frustumGeometryCulling(false),
 	m_frustumLightCulling(false)
 {
-	UpdateCameraVectors();
 }
 
-void OvRendering::LowRenderer::Camera::CacheMatrices(uint16_t p_windowWidth, uint16_t p_windowHeight, const OvMaths::FVector3& p_position)
+void OvRendering::LowRenderer::Camera::CacheMatrices(uint16_t p_windowWidth, uint16_t p_windowHeight, const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation)
 {
 	CacheProjectionMatrix(p_windowWidth, p_windowHeight);
-	CacheViewMatrix(p_position);
+	CacheViewMatrix(p_position, p_rotation);
 	CacheFrustum(m_viewMatrix, m_projectionMatrix);
 }
 
@@ -35,44 +31,14 @@ void OvRendering::LowRenderer::Camera::CacheProjectionMatrix(uint16_t p_windowWi
 	m_projectionMatrix = CalculateProjectionMatrix(p_windowWidth, p_windowHeight);
 }
 
-void OvRendering::LowRenderer::Camera::CacheViewMatrix(const OvMaths::FVector3& p_position)
+void OvRendering::LowRenderer::Camera::CacheViewMatrix(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation)
 {
-	m_viewMatrix = CalculateViewMatrix(p_position);
+	m_viewMatrix = CalculateViewMatrix(p_position, p_rotation);
 }
 
 void OvRendering::LowRenderer::Camera::CacheFrustum(const OvMaths::FMatrix4& p_view, const OvMaths::FMatrix4& p_projection)
 {
 	m_frustum.CalculateFrustum(p_projection * p_view);
-}
-
-const OvMaths::FVector3 & OvRendering::LowRenderer::Camera::GetForward() const
-{
-	return m_forward;
-}
-
-const OvMaths::FVector3 & OvRendering::LowRenderer::Camera::GetUp() const
-{
-	return m_up;
-}
-
-const OvMaths::FVector3 & OvRendering::LowRenderer::Camera::GetRight() const
-{
-	return m_right;
-}
-
-float OvRendering::LowRenderer::Camera::GetYaw() const
-{
-	return m_yaw;
-}
-
-float OvRendering::LowRenderer::Camera::GetPitch() const
-{
-	return m_pitch;
-}
-
-float OvRendering::LowRenderer::Camera::GetRoll() const
-{
-	return m_roll;
 }
 
 float OvRendering::LowRenderer::Camera::GetFov() const
@@ -120,27 +86,6 @@ bool OvRendering::LowRenderer::Camera::HasFrustumLightCulling() const
 	return m_frustumLightCulling;
 }
 
-void OvRendering::LowRenderer::Camera::SetYaw(float p_value)
-{
-	m_yaw = p_value;
-	while (m_yaw > 180.0f) m_yaw -= 360.0f;
-	UpdateCameraVectors();
-}
-
-void OvRendering::LowRenderer::Camera::SetPitch(float p_value)
-{
-	m_pitch = p_value;
-	while (m_pitch > 180.0f) m_pitch -= 360.0f;
-	UpdateCameraVectors();
-}
-
-void OvRendering::LowRenderer::Camera::SetRoll(float p_value)
-{
-	m_roll = p_value;
-	while (m_roll > 180.0f) m_roll -= 360.0f;
-	UpdateCameraVectors();
-}
-
 void OvRendering::LowRenderer::Camera::SetFov(float p_value)
 {
 	m_fov = p_value;
@@ -171,35 +116,20 @@ void OvRendering::LowRenderer::Camera::SetFrustumLightCulling(bool p_enable)
 	m_frustumLightCulling = p_enable;
 }
 
-void OvRendering::LowRenderer::Camera::SetRotation(const OvMaths::FQuaternion & p_rotation)
-{
-	m_forward = p_rotation * OvMaths::FVector3(0.f, 0.f, 1.f);
-	m_right = p_rotation * OvMaths::FVector3(1.f, 0.f, 0.f);
-	m_up = p_rotation * OvMaths::FVector3(0.f, 1.f, 0.f);
-}
-
 OvMaths::FMatrix4 OvRendering::LowRenderer::Camera::CalculateProjectionMatrix(uint16_t p_windowWidth, uint16_t p_windowHeight) const
 {
 	return OvMaths::FMatrix4::CreatePerspective(m_fov, static_cast<float>(p_windowWidth) / static_cast<float>(p_windowHeight), m_near, m_far);
 }
 
-OvMaths::FMatrix4 OvRendering::LowRenderer::Camera::CalculateViewMatrix(const OvMaths::FVector3& p_position) const
+OvMaths::FMatrix4 OvRendering::LowRenderer::Camera::CalculateViewMatrix(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation) const
 {
+	const auto& up = p_rotation * OvMaths::FVector3::Up;
+	const auto& forward = p_rotation * OvMaths::FVector3::Forward;
+
 	return OvMaths::FMatrix4::CreateView
 	(
-		p_position.x, p_position.y, p_position.z,													// Position
-		p_position.x + m_forward.x, p_position.y + m_forward.y, p_position.z + m_forward.z,			// LookAt (Position + Forward)
-		m_up.x, m_up.y, m_up.z																		// Up Vector
+		p_position.x, p_position.y, p_position.z,												// Position
+		p_position.x + forward.x, p_position.y + forward.y, p_position.z + forward.z,			// LookAt (Position + Forward)
+		up.x, up.y, up.z																		// Up Vector
 	);
-}
-
-void OvRendering::LowRenderer::Camera::UpdateCameraVectors()
-{
-	m_forward.x = std::cos(m_yaw * 0.0174f) * std::cos(m_pitch * 0.0174f);
-	m_forward.y = std::sin(m_pitch * 0.0174f);
-	m_forward.z = std::sin(m_yaw * 0.0174f) * std::cos(m_pitch * 0.0174f);
-
-	m_forward	= OvMaths::FVector3::Normalize(m_forward);
-	m_right		= OvMaths::FVector3::Normalize(OvMaths::FVector3::Cross(m_forward, OvMaths::FVector3(0.0f, 1.0f, 0.0f)));
-	m_up		= OvMaths::FVector3::Normalize(OvMaths::FVector3::Cross(m_right, m_forward));
 }

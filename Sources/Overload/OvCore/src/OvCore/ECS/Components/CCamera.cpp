@@ -14,20 +14,6 @@ OvCore::ECS::Components::CCamera::CCamera(ECS::Actor& p_owner) : AComponent(p_ow
 {
 	/* Default clear color for the CCamera (Different from Camera default clear color) */
 	SetClearColor({ 0.1921569f, 0.3019608f, 0.4745098f });
-
-	/* Handle the collider scaling when the actor transform changes */
-	m_transformNotificationHandlerID = owner.transform.GetFTransform().Notifier.AddNotificationHandler([this](auto p_notification)
-	{
-		if (p_notification == OvMaths::Internal::TransformNotifier::ENotification::TRANSFORM_CHANGED)
-		{
-			m_camera.SetRotation(owner.transform.GetWorldRotation());
-		}
-	});
-}
-
-OvCore::ECS::Components::CCamera::~CCamera()
-{
-	owner.transform.GetFTransform().Notifier.RemoveNotificationHandler(m_transformNotificationHandlerID);
 }
 
 std::string OvCore::ECS::Components::CCamera::GetName()

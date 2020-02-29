@@ -77,6 +77,13 @@ namespace OvMaths
 		FQuaternion(const FVector3& p_euler);
 
 		/**
+		* Create a quaternion from a forward and up vector
+		* @param p_forward
+		* @param p_up
+		*/
+		static FQuaternion LookAt(const FVector3& p_forward, const FVector3& p_up);
+
+		/**
 		* Check if the quaternion is Identity
 		* if the quaternion has no rotation(meaning x,y,z axis values = 0), it's Identity
 		* @param p_target

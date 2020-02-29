@@ -57,7 +57,7 @@ namespace OvTools::Utils
 		/**
 		* Implicit conversion of a ReferenceOrValue to a T
 		*/
-		operator T()
+		operator T&()
 		{
 			return Get();
 		}
@@ -75,7 +75,7 @@ namespace OvTools::Utils
 		/**
 		* Returns the value (From reference or directly from the value)
 		*/
-		T Get() const
+		T& Get() const
 		{
 			if (auto pval = std::get_if<T>(&m_data))
 				return *pval;
