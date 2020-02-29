@@ -43,6 +43,38 @@ using namespace OvUI::Widgets;
 
 const std::string FILENAMES_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-_=+ 0123456789()[]";
 
+std::string GetAssociatedMetaFile(const std::string& p_assetPath)
+{
+	return p_assetPath + ".meta";
+}
+
+void RenameAsset(const std::string& p_prev, const std::string& p_new)
+{
+	std::filesystem::rename(p_prev, p_new);
+
+	if (const std::string previousMetaPath = GetAssociatedMetaFile(p_prev); std::filesystem::exists(previousMetaPath))
+	{
+		if (const std::string newMetaPath = GetAssociatedMetaFile(p_new); !std::filesystem::exists(newMetaPath))
+		{
+			std::filesystem::rename(previousMetaPath, newMetaPath);
+		}
+		else
+		{
+			OVLOG_ERROR(newMetaPath + " is already existing, .meta creation failed");
+		}
+	}
+}
+
+void RemoveAsset(const std::string& p_toDelete)
+{
+	std::filesystem::remove(p_toDelete);
+
+	if (const std::string metaPath = GetAssociatedMetaFile(p_toDelete); std::filesystem::exists(metaPath))
+	{
+		std::filesystem::remove(metaPath);
+	}
+}
+
 class TexturePreview : public OvUI::Plugins::IPlugin
 {
 public:
@@ -582,7 +614,7 @@ public:
 
 		if (message.GetUserAction() == MessageBox::EUserAction::YES)
 		{
-			std::filesystem::remove(filePath);
+			RemoveAsset(filePath);
 			DestroyedEvent.Invoke(filePath);
 			EDITOR_EXEC(PropagateFileRename(filePath, "?"));
 		}
@@ -1056,7 +1088,7 @@ void OvEditor::Panels::AssetBrowser::ConsiderItem(OvUI::Widgets::Layout::TreeNod
 									std::filesystem::copy(prevPath, newPath, std::filesystem::copy_options::recursive);
 								else
 								{
-									std::filesystem::rename(prevPath, newPath);
+									RenameAsset(prevPath, newPath);
 									EDITOR_EXEC(PropagateFolderRename(prevPath, newPath));
 								}
 
@@ -1106,7 +1138,7 @@ void OvEditor::Panels::AssetBrowser::ConsiderItem(OvUI::Widgets::Layout::TreeNod
 								std::filesystem::copy_file(prevPath, newPath);
 							else
 							{
-								std::filesystem::rename(prevPath, newPath);
+								RenameAsset(prevPath, newPath);
 								EDITOR_EXEC(PropagateFileRename(prevPath, newPath));
 							}
 
@@ -1139,7 +1171,7 @@ void OvEditor::Panels::AssetBrowser::ConsiderItem(OvUI::Widgets::Layout::TreeNod
 
 				if (!std::filesystem::exists(p_newPath)) // Do not rename a folder if it already exists
 				{
-					std::filesystem::rename(p_prev, p_newPath);
+					RenameAsset(p_prev, p_newPath);
 					EDITOR_EXEC(PropagateFolderRename(p_prev, p_newPath));
 					std::string elementName = OvTools::Utils::PathParser::GetElementName(p_newPath);
 					std::string data = OvTools::Utils::PathParser::GetContainingFolder(ddSource.data.first) + elementName + "\\";
@@ -1220,7 +1252,7 @@ void OvEditor::Panels::AssetBrowser::ConsiderItem(OvUI::Widgets::Layout::TreeNod
 			{
 				if (!std::filesystem::exists(p_newPath))
 				{
-					std::filesystem::rename(p_prev, p_newPath);
+					RenameAsset(p_prev, p_newPath);
 					std::string elementName = OvTools::Utils::PathParser::GetElementName(p_newPath);
 					ddSource.data.first = OvTools::Utils::PathParser::GetContainingFolder(ddSource.data.first) + elementName;
 
