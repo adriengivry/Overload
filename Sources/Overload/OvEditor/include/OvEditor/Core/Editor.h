@@ -55,6 +55,11 @@ namespace OvEditor::Core
 		void Update(float p_deltaTime);
 
 		/**
+		* Handle editor global shortcuts
+		*/
+		void HandleGlobalShortcuts();
+
+		/**
 		* Update the current editor mode
 		* @param p_deltaTime
 		*/

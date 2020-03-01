@@ -83,12 +83,22 @@ void OvEditor::Core::Editor::PreUpdate()
 
 void OvEditor::Core::Editor::Update(float p_deltaTime)
 {
+	HandleGlobalShortcuts();
 	UpdateCurrentEditorMode(p_deltaTime);
 	PrepareRendering(p_deltaTime);
 	UpdateEditorPanels(p_deltaTime);
 	RenderViews(p_deltaTime);
 	RenderEditorUI(p_deltaTime);
 	m_editorActions.ExecuteDelayedActions();
+}
+
+void OvEditor::Core::Editor::HandleGlobalShortcuts()
+{
+	// If the [Del] key is pressed while an actor is selected and the Scene View or Hierarchy is focused
+	if (m_context.inputManager->IsKeyPressed(OvWindowing::Inputs::EKey::KEY_DELETE) && EDITOR_EXEC(IsAnyActorSelected()) && (EDITOR_PANEL(SceneView, "Scene View").IsFocused() || EDITOR_PANEL(Hierarchy, "Hierarchy").IsFocused()))
+	{
+		EDITOR_EXEC(DestroyActor(EDITOR_EXEC(GetSelectedActor())));
+	}
 }
 
 void OvEditor::Core::Editor::UpdateCurrentEditorMode(float p_deltaTime)
