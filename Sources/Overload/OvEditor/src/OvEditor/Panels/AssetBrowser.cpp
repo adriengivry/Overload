@@ -926,6 +926,22 @@ public:
 	}
 };
 
+void OnFileChanged(std::string file)
+{
+	switch (OvTools::Utils::PathParser::GetFileType(file))
+	{
+	case OvTools::Utils::PathParser::EFileType::SHADER:
+		auto& shaderManager = OVSERVICE(OvCore::ResourceManagement::ShaderManager);
+		std::string resourcePath = EDITOR_EXEC(GetResourcePath(file));
+		if (shaderManager.IsResourceRegistered(resourcePath))
+		{
+			OVLOG_INFO("Shader changed (" + file + "), automatic shader recompilation called");
+			OvRendering::Resources::Loaders::ShaderLoader::Recompile(*shaderManager[resourcePath], file);
+		}
+		break;
+	}
+}
+
 OvEditor::Panels::AssetBrowser::AssetBrowser
 (
 	const std::string& p_title,
@@ -938,7 +954,8 @@ OvEditor::Panels::AssetBrowser::AssetBrowser
 	PanelWindow(p_title, p_opened, p_windowSettings),
 	m_engineAssetFolder(p_engineAssetFolder),
 	m_projectAssetFolder(p_projectAssetFolder),
-	m_projectScriptFolder(p_projectScriptFolder)
+	m_projectScriptFolder(p_projectScriptFolder),
+	m_projectAssetWatcher(m_projectAssetFolder, std::chrono::milliseconds(2000))
 {
 	if (!std::filesystem::exists(m_projectAssetFolder))
 	{
@@ -978,6 +995,12 @@ OvEditor::Panels::AssetBrowser::AssetBrowser
 	m_assetList = &CreateWidget<Layout::Group>();
 
 	Fill();
+
+	m_projectAssetWatcher.FileChangedEvent += [](const std::string& file)
+	{
+		EDITOR_EXEC(DelayAction(std::bind(&OnFileChanged, file), 0));
+	};
+	m_projectAssetWatcher.Start();
 }
 
 void OvEditor::Panels::AssetBrowser::Fill()

@@ -13,6 +13,7 @@
 #include <OvUI/Panels/PanelWindow.h>
 #include <OvUI/Widgets/Layout/TreeNode.h>
 #include <OvRendering/Resources/Loaders/TextureLoader.h>
+#include <OvTools/Filesystem/FileWatcher.h>
 
 namespace OvEditor::Panels
 {
@@ -67,6 +68,7 @@ namespace OvEditor::Panels
 		std::string m_engineAssetFolder;
 		std::string m_projectAssetFolder;
 		std::string m_projectScriptFolder;
+		OvTools::Filesystem::FileWatcher m_projectAssetWatcher;
 		OvUI::Widgets::Layout::Group* m_assetList;
 		std::unordered_map<OvUI::Widgets::Layout::TreeNode*, std::string> m_pathUpdate;
 	};

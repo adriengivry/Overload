@@ -98,6 +98,7 @@ xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configura
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\OvTools\API\Export.h" />
+    <ClInclude Include="include\OvTools\Filesystem\FileWatcher.h" />
     <ClInclude Include="include\OvTools\Filesystem\tinyxml2.h" />
     <ClInclude Include="include\OvTools\Time\Clock.h" />
     <ClInclude Include="include\OvTools\Time\Date.h" />
@@ -110,6 +111,7 @@ xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configura
     <ClInclude Include="include\OvTools\Utils\Random.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\OvTools\Filesystem\FileWatcher.cpp" />
     <ClCompile Include="src\OvTools\Filesystem\tinyxml2.cpp" />
     <ClCompile Include="src\OvTools\Time\Clock.cpp" />
     <ClCompile Include="src\OvTools\Time\Date.cpp" />

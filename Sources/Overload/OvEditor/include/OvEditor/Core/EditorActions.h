@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <mutex>
+
 #include <OvCore/Global/ServiceLocator.h>
 #include <OvTools/Filesystem/IniFile.h>
 #include <OvTools/Utils/PathParser.h>
@@ -414,6 +416,7 @@ namespace OvEditor::Core
 		EActorSpawnMode m_actorSpawnMode = EActorSpawnMode::ORIGIN;
 		EEditorMode m_editorMode = EEditorMode::EDIT;
 
+		std::mutex m_delayedActionMutex;
 		std::vector<std::pair<uint32_t, std::function<void()>>> m_delayedActions;
 
 		tinyxml2::XMLDocument m_sceneBackup;
