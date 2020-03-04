@@ -58,5 +58,8 @@ namespace OvEditor::Panels
 		OvRendering::Buffers::Framebuffer m_actorPickingFramebuffer;
 		OvEditor::Core::GizmoBehaviour m_gizmoOperations;
 		OvEditor::Core::EGizmoOperation m_currentOperation = OvEditor::Core::EGizmoOperation::TRANSLATE;
+
+		std::optional<std::reference_wrapper<OvCore::ECS::Actor>> m_highlightedActor;
+		std::optional<OvEditor::Core::GizmoBehaviour::EDirection> m_highlightedGizmoDirection;
 	};
 }

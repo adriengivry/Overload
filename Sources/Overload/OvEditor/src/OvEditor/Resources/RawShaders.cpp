@@ -142,6 +142,7 @@ out VS_OUT
 
 uniform bool u_IsBall;
 uniform bool u_IsPickable;
+uniform int u_HighlightedAxis;
 
 mat4 rotationMatrix(vec3 axis, float angle)
 {
@@ -201,7 +202,14 @@ void main()
 			float green = float(gl_InstanceID == 2); // Y
 			float blue	= float(gl_InstanceID == 0); // Z
 
-			vs_out.Color = vec3(red, green, blue);
+			if (!u_IsPickable && ((gl_InstanceID == 1 && u_HighlightedAxis == 0) || (gl_InstanceID == 2 && u_HighlightedAxis == 1) || (gl_InstanceID == 0 && u_HighlightedAxis == 2)))
+			{
+				vs_out.Color = vec3(1.0f, 1.0f, 0.0f);
+			}	
+			else
+			{
+				vs_out.Color = vec3(red, green, blue);
+			}
 		}
 	}
 
