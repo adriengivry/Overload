@@ -54,6 +54,8 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 	inputManager = std::make_unique<OvWindowing::Inputs::InputManager>(*window);
 	window->MakeCurrentContext();
 
+	device->SetVsync(true);
+
 	/* Graphics context creation */
 	driver = std::make_unique<OvRendering::Context::Driver>(OvRendering::Settings::DriverSettings{ true });
 	renderer = std::make_unique<OvCore::ECS::Renderer>(*driver);
