@@ -12,7 +12,7 @@ OvEditor::Core::Application::Application(const std::string& p_projectPath, const
 	m_context(p_projectPath, p_projectName),
 	m_editor(m_context)
 {
-
+	m_context.device->SetVsync(true);
 }
 
 OvEditor::Core::Application::~Application()
