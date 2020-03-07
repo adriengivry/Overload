@@ -437,8 +437,8 @@ void OvEditor::Core::EditorRenderer::RenderCameraFrustum(OvCore::ECS::Components
 	auto& camera = p_camera.GetCamera();
 
 	const auto& cameraPos = owner.transform.GetWorldPosition();
-	const auto& cameraForward = owner.transform.GetWorldForward();
 	const auto& cameraRotation = owner.transform.GetWorldRotation();
+	const auto& cameraForward = owner.transform.GetWorldForward();
 
 	auto drawFrustumLine = [&](const FVector3& p_start, const FVector3& p_end, float planeDistance)
 	{
@@ -448,7 +448,7 @@ void OvEditor::Core::EditorRenderer::RenderCameraFrustum(OvCore::ECS::Components
 		m_context.shapeDrawer->DrawLine(start, end, FRUSTUM_COLOR);
 	};
 
-	camera.CacheMatrices(gameViewSize.first, gameViewSize.second, cameraPos);
+	camera.CacheMatrices(gameViewSize.first, gameViewSize.second, cameraPos, cameraRotation);
 	const auto proj = FMatrix4::Transpose(camera.GetProjectionMatrix());
 	const auto near = camera.GetNear();
 	const auto far = camera.GetFar();

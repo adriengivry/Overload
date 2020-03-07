@@ -66,9 +66,10 @@ void OvGame::Core::GameRenderer::RenderScene()
 
 			auto [winWidth, winHeight] = m_context.window->GetSize();
 			const auto& cameraPosition = mainCameraComponent->owner.transform.GetWorldPosition();
+			const auto& cameraRotation = mainCameraComponent->owner.transform.GetWorldRotation();
 			auto& camera = mainCameraComponent->GetCamera();
 
-			camera.CacheMatrices(winWidth, winHeight, cameraPosition);
+			camera.CacheMatrices(winWidth, winHeight, cameraPosition, cameraRotation);
 
 			UpdateEngineUBO(*mainCameraComponent);
 

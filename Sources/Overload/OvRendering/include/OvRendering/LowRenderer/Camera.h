@@ -10,6 +10,8 @@
 #include <OvMaths/FMatrix4.h>
 #include <OvMaths/FQuaternion.h>
 
+#include <OvTools/Utils/ReferenceOrValue.h>
+
 #include "OvRendering/API/Export.h"
 #include "OvRendering/Data/Frustum.h"
 
@@ -23,16 +25,18 @@ namespace OvRendering::LowRenderer
 	public:
 		/**
 		* Constructor
+		* @param p_transform
 		*/
-		Camera();
+		Camera(OvMaths::FTransform* p_transform = nullptr);
 
 		/**
 		* Cache the projection, view and frustum matrices
 		* @param p_windowWidth
 		* @param p_windowHeight
 		* @param p_position
+		* @param p_rotation
 		*/
-		void CacheMatrices(uint16_t p_windowWidth, uint16_t p_windowHeight, const OvMaths::FVector3& p_position);
+		void CacheMatrices(uint16_t p_windowWidth, uint16_t p_windowHeight, const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation);
 
 		/**
 		* Calculate and cache the result projection matrix
@@ -44,8 +48,9 @@ namespace OvRendering::LowRenderer
 		/**
 		* Calculate and cache the result view matrix
 		* @param p_position
+		* @param p_rotation
 		*/
-		void CacheViewMatrix(const OvMaths::FVector3& p_position);
+		void CacheViewMatrix(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation);
 
 		/**
 		* Calculate and cache the result frustum.
@@ -54,36 +59,6 @@ namespace OvRendering::LowRenderer
 		* @param p_projection
 		*/
 		void CacheFrustum(const OvMaths::FMatrix4& p_view, const OvMaths::FMatrix4& p_projection);
-
-		/**
-		* Returns the forward vector of the camera
-		*/
-		const OvMaths::FVector3& GetForward() const;
-
-		/**
-		* Returns the up vector of the camera
-		*/
-		const OvMaths::FVector3& GetUp() const;
-
-		/**
-		* Returns the right vector of the camera
-		*/
-		const OvMaths::FVector3& GetRight() const;
-
-		/**
-		* Returns the yaw of the camera
-		*/
-		float GetYaw() const;
-
-		/**
-		* Returns the pitch of the camera
-		*/
-		float GetPitch() const;
-
-		/**
-		* Returns the roll of the camera
-		*/
-		float GetRoll() const;
 
 		/**
 		* Returns the fov of the camera
@@ -131,24 +106,6 @@ namespace OvRendering::LowRenderer
 		bool HasFrustumLightCulling() const;
 
 		/**
-		* Sets the yaw of the camera to the given value
-		* @param p_value
-		*/
-		void SetYaw(float p_value);
-
-		/**
-		* Sets the pitch of the camera to the given value
-		* @param p_value
-		*/
-		void SetPitch(float p_value);
-
-		/**
-		* Sets the roll of the camera to the given value
-		* @param p_value
-		*/
-		void SetRoll(float p_value);
-
-		/**
 		* Sets the fov of the camera to the given value
 		* @param p_value
 		*/
@@ -184,29 +141,14 @@ namespace OvRendering::LowRenderer
 		*/
 		void SetFrustumLightCulling(bool p_enable);
 
-		/**
-		* Sets the rotation to the camera with a quaternion
-		* @param p_rotation
-		*/
-		void SetRotation(const OvMaths::FQuaternion& p_rotation);
-
 	private:
 		OvMaths::FMatrix4 CalculateProjectionMatrix(uint16_t p_windowWidth, uint16_t p_windowHeight) const;
-		OvMaths::FMatrix4 CalculateViewMatrix(const OvMaths::FVector3& p_position) const;
-		void UpdateCameraVectors();
+		OvMaths::FMatrix4 CalculateViewMatrix(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation) const;
 
 	private:
 		OvRendering::Data::Frustum m_frustum;
 		OvMaths::FMatrix4 m_viewMatrix;
 		OvMaths::FMatrix4 m_projectionMatrix;
-
-		OvMaths::FVector3 m_forward;
-		OvMaths::FVector3 m_up;
-		OvMaths::FVector3 m_right;
-
-		float m_yaw;
-		float m_pitch;
-		float m_roll;
 
 		float m_fov;
 		float m_near;

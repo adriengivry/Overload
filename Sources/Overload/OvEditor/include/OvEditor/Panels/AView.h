@@ -64,9 +64,20 @@ namespace OvEditor::Panels
 		void SetCameraPosition(const OvMaths::FVector3& p_position);
 
 		/**
+		* Defines the camera rotation
+		* @param p_rotation
+		*/
+		void SetCameraRotation(const OvMaths::FQuaternion& p_rotation);
+
+		/**
 		* Returns the camera position
 		*/
 		const OvMaths::FVector3& GetCameraPosition() const;
+
+		/**
+		* Returns the camera rotation
+		*/
+		const OvMaths::FQuaternion& GetCameraRotation() const;
 
 		/**
 		* Returns the camera used by this view
@@ -104,6 +115,7 @@ namespace OvEditor::Panels
 		OvEditor::Core::EditorRenderer& m_editorRenderer;
 		OvRendering::LowRenderer::Camera m_camera;
 		OvMaths::FVector3 m_cameraPosition;
+		OvMaths::FQuaternion m_cameraRotation;
 		OvUI::Widgets::Visual::Image* m_image;
 
 		OvMaths::FVector3 m_gridColor = OvMaths::FVector3::One;
