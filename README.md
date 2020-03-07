@@ -1,5 +1,23 @@
 ![Overload Logo](Showcase/logo.png)
 
+<p align="center">
+  <a href="https://github.com/adriengivry/Overload/releases">Releases</a> |
+  <a href="#screenshots">Screenshots</a> |
+  <a href="#features">Features</a>
+<br/>
+<br/>
+<a href="https://github.com/adriengivry/Overload/releases"><img alt="platforms" src="https://img.shields.io/badge/platforms-Windows-blue?style=flat-square"/></a>
+<a href="https://github.com/adriengivry/Overload/releases"><img alt="release" src="https://img.shields.io/github/v/release/adriengivry/overload?style=flat-square"/></a>
+<a href="https://github.com/adriengivry/Overload/tree/develop/Sources/Overload"><img alt="size" src="https://img.shields.io/github/repo-size/adriengivry/overload?style=flat-square"/></a>
+<br/>
+<a href="https://github.com/adriengivry/overload/issues"><img alt="issues" src="https://img.shields.io/github/issues-raw/adriengivry/overload.svg?color=yellow&style=flat-square"/></a>
+<a href="https://github.com/adriengivry/overload/pulls"><img alt="pulls" src="https://img.shields.io/github/issues-pr-raw/adriengivry/overload?color=yellow&style=flat-square"/></a>
+<br/>
+<a href="https://github.com/adriengivry/Overload/blob/develop/LICENSE"><img alt="license" src="https://img.shields.io/github/license/adriengivry/overload?color=green&style=flat-square"/></a>
+<a href="https://github.com/adriengivry/Overload/releases"><img alt="downloads" src="https://img.shields.io/github/downloads/adriengivry/overload/total?color=green&style=flat-square"></a>
+<br/>
+</p>
+
 # 1. What is Overload
 ## 1.1. Description
 Overload is an alternative game engine, inspired by industry standards, initiated by [Benjamin VIRANIN](https://github.com/BenjaminViranin), [Max BRUN](https://github.com/maxbrundev) and [Adrien GIVRY](https://github.com/adriengivry). Overload is now a community project, opened to any contribution.
@@ -53,6 +71,7 @@ We spent about a month designing our initial architecture. We tried to provide a
 ## 2.4. Production
 The production made us realize that we had a naive idea of what a game engine is. During this phase our architecture has evolved. We found that our initial architecture was sometimes too complex, non-optimal. We went back to architecture design multiple times during the project.
 
+<span name="features"></span>
 # 3. Features
 ## 3.1. Implemented
 Here is a non-exhaustive list of Overload main features:
@@ -107,6 +126,7 @@ https://www.youtube.com/watch?v=ARXSJh-ZMHM
 And join our Discord Server:<br>
 https://discord.gg/wqe775s<br>
 
+<span name="screenshots"></span>
 # 5. Screenshots
 ![Advanced lighting](Showcase/Advanced_Lighting.jpg)
 ![Standard shaders](Showcase/Standard_Shaders.jpg)
