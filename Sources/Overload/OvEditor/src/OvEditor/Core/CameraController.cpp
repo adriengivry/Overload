@@ -322,7 +322,6 @@ void OvEditor::Core::CameraController::HandleCameraFPSMouse(const OvMaths::FVect
 	{
 		m_ypr = OvMaths::FQuaternion::EulerAngles(m_cameraRotation);
 		m_ypr = RemoveRoll(m_ypr);
-		OVLOG("X:" + std::to_string(m_ypr.x) + " Y:" + std::to_string(m_ypr.y) + " Z:" + std::to_string(m_ypr.z));
 	}
 
 	m_ypr.y -= mouseOffset.x;
