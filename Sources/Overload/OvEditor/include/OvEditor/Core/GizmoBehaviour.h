@@ -6,7 +6,10 @@
 
 #pragma once
 
-#include <OvEditor/Core/EditorActions.h>
+#include <OvMaths/FTransform.h>
+#include <OvMaths/FVector2.h>
+
+#include <OvCore/ECS/Actor.h>
 
 namespace OvEditor::Core
 {
@@ -65,6 +68,11 @@ namespace OvEditor::Core
 		* Returns true if the gizmo is currently picked
 		*/
 		bool IsPicking() const;
+
+		/**
+		* Returns the current operation direction
+		*/
+		EDirection GetDirection() const;
 
 	private:
 		/**

@@ -111,7 +111,6 @@ void OvEditor::Core::EditorRenderer::InitMaterials()
 
 	/* Outline Material */
 	m_outlineMaterial.SetShader(m_context.shaderManager[":Shaders\\Unlit.glsl"]);
-	m_outlineMaterial.Set("u_Diffuse", FVector4(1.f, 1.f, 0.f, 1.0f));
 	m_outlineMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
 	m_outlineMaterial.SetDepthTest(false);
 
@@ -311,31 +310,36 @@ void OvEditor::Core::EditorRenderer::RenderLights()
 	}
 }
 
-void OvEditor::Core::EditorRenderer::RenderGizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, OvEditor::Core::EGizmoOperation p_operation, bool p_pickable)
+void OvEditor::Core::EditorRenderer::RenderGizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, OvEditor::Core::EGizmoOperation p_operation, bool p_pickable, int p_highlightedAxis)
 {
 	using namespace OvMaths;
 
 	FMatrix4 model = FMatrix4::Translation(p_position) * FQuaternion::ToMatrix4(FQuaternion::Normalize(p_rotation));
 
+	OvRendering::Resources::Model* arrowModel = nullptr;
+
 	if (!p_pickable)
 	{
 		FMatrix4 sphereModel = model * OvMaths::FMatrix4::Scaling({ 0.1f, 0.1f, 0.1f });
 		m_context.renderer->DrawModelWithSingleMaterial(*m_context.editorResources->GetModel("Sphere"), m_gizmoBallMaterial, &sphereModel);
+		m_gizmoArrowMaterial.Set("u_HighlightedAxis", p_highlightedAxis);
+
+		switch (p_operation)
+		{
+		case OvEditor::Core::EGizmoOperation::TRANSLATE:
+			arrowModel = m_context.editorResources->GetModel("Arrow_Translate");
+			break;
+		case OvEditor::Core::EGizmoOperation::ROTATE:
+			arrowModel = m_context.editorResources->GetModel("Arrow_Rotate");
+			break;
+		case OvEditor::Core::EGizmoOperation::SCALE:
+			arrowModel = m_context.editorResources->GetModel("Arrow_Scale");
+			break;
+		}
 	}
-
-	OvRendering::Resources::Model* arrowModel = nullptr;
-
-	switch (p_operation)
+	else
 	{
-	case OvEditor::Core::EGizmoOperation::TRANSLATE:
-		arrowModel = m_context.editorResources->GetModel("Arrow_Translate");
-		break;
-	case OvEditor::Core::EGizmoOperation::ROTATE:
-		arrowModel = m_context.editorResources->GetModel("Arrow_Rotate");
-		break;
-	case OvEditor::Core::EGizmoOperation::SCALE:
-		arrowModel = m_context.editorResources->GetModel("Arrow_Scale");
-		break;
+		arrowModel = m_context.editorResources->GetModel("Arrow_Picking");
 	}
 
 	if (arrowModel)
@@ -351,19 +355,23 @@ void OvEditor::Core::EditorRenderer::RenderModelToStencil(const OvMaths::FMatrix
 	m_context.renderer->SetStencilMask(0x00);
 }
 
-void OvEditor::Core::EditorRenderer::RenderModelOutline(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model)
+void OvEditor::Core::EditorRenderer::RenderModelOutline(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model, float p_width)
 {
 	m_context.renderer->SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::NOTEQUAL, 1, 0xFF);
 	m_context.renderer->SetRasterizationMode(OvRendering::Settings::ERasterizationMode::LINE);
-	m_context.renderer->SetRasterizationLinesWidth(5.f);
+	m_context.renderer->SetRasterizationLinesWidth(p_width);
 	m_context.renderer->DrawModelWithSingleMaterial(p_model, m_outlineMaterial, &p_worldMatrix);
 	m_context.renderer->SetRasterizationLinesWidth(1.f);
 	m_context.renderer->SetRasterizationMode(OvRendering::Settings::ERasterizationMode::FILL);
 	m_context.renderer->SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::ALWAYS, 1, 0xFF);
 }
 
-void OvEditor::Core::EditorRenderer::RenderActorAsSelected(OvCore::ECS::Actor& p_actor, bool p_toStencil)
+void OvEditor::Core::EditorRenderer::RenderActorOutlinePass(OvCore::ECS::Actor& p_actor, bool p_toStencil, bool p_isSelected)
 {
+	float outlineWidth = p_isSelected ? 5.0f : 2.5f;
+
+	m_outlineMaterial.Set("u_Diffuse", p_isSelected ? FVector4(1.f, 0.7f, 0.f, 1.0f) : FVector4(1.f, 1.f, 0.f, 1.0f));
+
 	if (p_actor.IsActive())
 	{
 		/* Render static mesh outline and bounding spheres */
@@ -372,9 +380,9 @@ void OvEditor::Core::EditorRenderer::RenderActorAsSelected(OvCore::ECS::Actor& p
 			if (p_toStencil)
 				RenderModelToStencil(p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel());
 			else
-				RenderModelOutline(p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel());
+				RenderModelOutline(p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel(), outlineWidth);
 
-			if (Settings::EditorSettings::ShowGeometryBounds)
+			if (p_isSelected && Settings::EditorSettings::ShowGeometryBounds && !p_toStencil)
 			{
 				RenderBoundingSpheres(*modelRenderer);
 			}
@@ -388,38 +396,46 @@ void OvEditor::Core::EditorRenderer::RenderActorAsSelected(OvCore::ECS::Actor& p
 			if (p_toStencil)
 				RenderModelToStencil(model, *m_context.editorResources->GetModel("Camera"));
 			else
-				RenderModelOutline(model, *m_context.editorResources->GetModel("Camera"));
+				RenderModelOutline(model, *m_context.editorResources->GetModel("Camera"), outlineWidth);
 
-			RenderCameraFrustum(*cameraComponent);
-		}
-
-		/* Render the actor collider */
-		if (p_actor.GetComponent<OvCore::ECS::Components::CPhysicalObject>() && !p_toStencil)
-		{
-			RenderActorCollider(p_actor);
-		}
-
-		/* Render the actor ambient light */
-		if (auto ambientBoxComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientBoxLight>(); ambientBoxComp && !p_toStencil)
-		{
-			RenderAmbientBoxVolume(*ambientBoxComp);
-		}
-
-		if (auto ambientSphereComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientSphereLight>(); ambientSphereComp && !p_toStencil)
-		{
-			RenderAmbientSphereVolume(*ambientSphereComp);
-		}
-
-		if (OvEditor::Settings::EditorSettings::ShowLightBounds)
-		{
-			if (auto light = p_actor.GetComponent<OvCore::ECS::Components::CLight>(); light && !p_toStencil)
+			if (p_isSelected && !p_toStencil)
 			{
-				RenderLightBounds(*light);
+				RenderCameraFrustum(*cameraComponent);
+			}
+		}
+
+		if (p_isSelected && !p_toStencil)
+		{
+			/* Render the actor collider */
+			if (p_actor.GetComponent<OvCore::ECS::Components::CPhysicalObject>())
+			{
+				RenderActorCollider(p_actor);
+			}
+
+			/* Render the actor ambient light */
+			if (auto ambientBoxComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientBoxLight>())
+			{
+				RenderAmbientBoxVolume(*ambientBoxComp);
+			}
+
+			if (auto ambientSphereComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientSphereLight>())
+			{
+				RenderAmbientSphereVolume(*ambientSphereComp);
+			}
+
+			if (OvEditor::Settings::EditorSettings::ShowLightBounds)
+			{
+				if (auto light = p_actor.GetComponent<OvCore::ECS::Components::CLight>())
+				{
+					RenderLightBounds(*light);
+				}
 			}
 		}
 
 		for (auto& child : p_actor.GetChildren())
-			RenderActorAsSelected(*child, p_toStencil);
+		{
+			RenderActorOutlinePass(*child, p_toStencil, p_isSelected);
+		}
 	}
 }
 

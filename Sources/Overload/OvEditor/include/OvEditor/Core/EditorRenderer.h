@@ -85,8 +85,9 @@ namespace OvEditor::Core
 		* @param p_rotation
 		* @param p_operation
 		* @param p_pickable (Determine the shader to use to render the gizmo)
+		* @param p_highlightedAxis (-1 to highlight no axis, 0 for X, 1 for Y, 2 for Z)
 		*/
-		void RenderGizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, OvEditor::Core::EGizmoOperation p_operation, bool p_pickable = false);
+		void RenderGizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, OvEditor::Core::EGizmoOperation p_operation, bool p_pickable, int p_highlightedAxis = -1);
 
 		/**
 		* Render a model to the stencil buffer
@@ -95,15 +96,19 @@ namespace OvEditor::Core
 
 		/**
 		* Render a model outline using the data stored in the stencil buffer
+		* @param p_worldMatrix
+		* @param p_model
+		* @param p_width
 		*/
-		void RenderModelOutline(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model);
+		void RenderModelOutline(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model, float p_width);
 
 		/**
 		* Render the actor as a selected actor (Outline)
 		* @param p_actor
 		* @param p_toStencil
+		* @param p_isSelected
 		*/
-		void RenderActorAsSelected(OvCore::ECS::Actor& p_actor, bool p_toStencil);
+		void RenderActorOutlinePass(OvCore::ECS::Actor& p_actor, bool p_toStencil, bool p_isSelected = false);
 
 		/**
 		* Render the camera frustum
