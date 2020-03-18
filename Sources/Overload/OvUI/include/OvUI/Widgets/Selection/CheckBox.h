@@ -12,25 +12,25 @@
 
 namespace OvUI::Widgets::Selection
 {
-	/**
-	* Checkbox widget that can be checked or not
-	*/
-	class API_OVUI CheckBox : public DataWidget<bool>
-	{
-	public:
-		/** 
-		* Constructor
-		* @param p_value
-		* @param p_label
-		*/
-		CheckBox(bool p_value = false, const std::string& p_label = "");
+    /**
+    * Checkbox widget that can be checked or not
+    */
+    class API_OVUI CheckBox : public DataWidget<bool>
+    {
+    public:
+        /** 
+        * Constructor
+        * @param p_value
+        * @param p_label
+        */
+        CheckBox(bool p_value = false, const std::string& p_label = "");
 
-	protected:
-		void _Draw_Impl() override;
+    protected:
+        void _Draw_Impl() override;
 
-	public:
-		bool value;
-		std::string label;
-		OvTools::Eventing::Event<bool> ValueChangedEvent;
-	};
+    public:
+        bool value;
+        std::string label;
+        OvTools::Eventing::Event<bool> ValueChangedEvent;
+    };
 }

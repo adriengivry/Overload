@@ -12,5 +12,5 @@ OvAudio::Tracking::SoundStopEventBinder::SoundStopEventBinder(OvTools::Eventing:
 
 void OvAudio::Tracking::SoundStopEventBinder::OnSoundStopped(irrklang::ISound * sound, irrklang::E_STOP_EVENT_CAUSE reason, void * userData)
 {
-	SoundFinishedEvent.Invoke();
+    SoundFinishedEvent.Invoke();
 }

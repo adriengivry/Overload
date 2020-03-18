@@ -14,8 +14,8 @@ int main()
 INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
 #endif
 {
-	OvGame::Core::Application app;
-	app.Run();
+    OvGame::Core::Application app;
+    app.Run();
 
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }

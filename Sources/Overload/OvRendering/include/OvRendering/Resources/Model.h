@@ -12,44 +12,44 @@
 
 namespace OvRendering::Resources
 {
-	namespace Loaders { class ModelLoader; }
+    namespace Loaders { class ModelLoader; }
 
-	/**
-	* A model is a combinaison of meshes
-	*/
-	class API_OVRENDERING Model
-	{
-		friend class Loaders::ModelLoader;
+    /**
+    * A model is a combinaison of meshes
+    */
+    class API_OVRENDERING Model
+    {
+        friend class Loaders::ModelLoader;
 
-	public:
-		/**
-		* Returns the meshes
-		*/
-		const std::vector<Mesh*>& GetMeshes() const;
+    public:
+        /**
+        * Returns the meshes
+        */
+        const std::vector<Mesh*>& GetMeshes() const;
 
-		/**
-		* Returns the material names
-		*/
-		const std::vector<std::string>& GetMaterialNames() const;
+        /**
+        * Returns the material names
+        */
+        const std::vector<std::string>& GetMaterialNames() const;
 
-		/**
-		* Returns the bounding sphere of the model
-		*/
-		const OvRendering::Geometry::BoundingSphere& GetBoundingSphere() const;
+        /**
+        * Returns the bounding sphere of the model
+        */
+        const OvRendering::Geometry::BoundingSphere& GetBoundingSphere() const;
 
-	private:
-		Model(const std::string& p_path);
-		~Model();
+    private:
+        Model(const std::string& p_path);
+        ~Model();
 
-		void ComputeBoundingSphere();
+        void ComputeBoundingSphere();
 
-	public:
-		const std::string path;
+    public:
+        const std::string path;
 
-	private:
-		std::vector<Mesh*> m_meshes;
-		std::vector<std::string> m_materialNames;
+    private:
+        std::vector<Mesh*> m_meshes;
+        std::vector<std::string> m_materialNames;
 
-		Geometry::BoundingSphere m_boundingSphere;
-	};
+        Geometry::BoundingSphere m_boundingSphere;
+    };
 }

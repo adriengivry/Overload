@@ -12,29 +12,29 @@
 
 namespace OvCore::ResourceManagement
 {
-	/**
-	* ResourceManager of textures
-	*/
-	class API_OVCORE TextureManager : public AResourceManager<OvRendering::Resources::Texture>
-	{
-	public:
-		/**
-		* Create the resource identified by the given path
-		* @param p_path
-		*/
-		virtual OvRendering::Resources::Texture* CreateResource(const std::string & p_path) override;
+    /**
+    * ResourceManager of textures
+    */
+    class API_OVCORE TextureManager : public AResourceManager<OvRendering::Resources::Texture>
+    {
+    public:
+        /**
+        * Create the resource identified by the given path
+        * @param p_path
+        */
+        virtual OvRendering::Resources::Texture* CreateResource(const std::string & p_path) override;
 
-		/**
-		* Destroy the given resource
-		* @param p_resource
-		*/
-		virtual void DestroyResource(OvRendering::Resources::Texture* p_resource) override;
+        /**
+        * Destroy the given resource
+        * @param p_resource
+        */
+        virtual void DestroyResource(OvRendering::Resources::Texture* p_resource) override;
 
-		/**
-		* Reload the given resource
-		* @param p_resource
-		* @param p_path
-		*/
-		virtual void ReloadResource(OvRendering::Resources::Texture* p_resource, const std::string& p_path) override;
-	};
+        /**
+        * Reload the given resource
+        * @param p_resource
+        * @param p_path
+        */
+        virtual void ReloadResource(OvRendering::Resources::Texture* p_resource, const std::string& p_path) override;
+    };
 }

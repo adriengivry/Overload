@@ -15,12 +15,12 @@
 
 namespace OvPhysics::Entities
 {
-	/**
-	* Data structure that holds raycast hit information
-	*/
-	struct API_OVPHYSICS RaycastHit
-	{
-		Entities::PhysicalObject* FirstResultObject = nullptr;
-		std::vector<Entities::PhysicalObject*> ResultObjects;
-	};
+    /**
+    * Data structure that holds raycast hit information
+    */
+    struct API_OVPHYSICS RaycastHit
+    {
+        Entities::PhysicalObject* FirstResultObject = nullptr;
+        std::vector<Entities::PhysicalObject*> ResultObjects;
+    };
 }

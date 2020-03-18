@@ -8,5 +8,5 @@
 
 void OvUI::Widgets::Visual::Separator::_Draw_Impl()
 {
-	ImGui::Separator();
+    ImGui::Separator();
 }

@@ -11,34 +11,34 @@
 
 namespace OvGame::Core
 {
-	/**
-	* Entry point of OvGame
-	*/
-	class Application
-	{
-	public:
-		/**
-		* Constructor
-		*/
-		Application();
+    /**
+    * Entry point of OvGame
+    */
+    class Application
+    {
+    public:
+        /**
+        * Constructor
+        */
+        Application();
 
-		/**
-		* Destructor
-		*/
-		~Application();
+        /**
+        * Destructor
+        */
+        ~Application();
 
-		/**
-		* Run the app
-		*/
-		void Run();
+        /**
+        * Run the app
+        */
+        void Run();
 
-		/**
-		* Returns true if the app is running
-		*/
-		bool IsRunning() const;
+        /**
+        * Returns true if the app is running
+        */
+        bool IsRunning() const;
 
-	private:
-		Context m_context;
-		Game m_game;
-	};
+    private:
+        Context m_context;
+        Game m_game;
+    };
 }

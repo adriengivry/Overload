@@ -21,10 +21,10 @@
 */
 void UpdateWorkingDirectory(const std::string& p_executablePath)
 {
-	if (!IsDebuggerPresent())
-	{
-		std::filesystem::current_path(OvTools::Utils::PathParser::GetContainingFolder(p_executablePath));
-	}
+    if (!IsDebuggerPresent())
+    {
+        std::filesystem::current_path(OvTools::Utils::PathParser::GetContainingFolder(p_executablePath));
+    }
 }
 
 int main(int argc, char** argv);
@@ -32,48 +32,48 @@ int main(int argc, char** argv);
 #ifndef _DEBUG
 INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
 {
-	main(__argc, __argv);
+    main(__argc, __argv);
 }
 #endif
 
 int main(int argc, char** argv)
 {
-	UpdateWorkingDirectory(argv[0]);
+    UpdateWorkingDirectory(argv[0]);
 
-	bool ready = false;
-	std::string projectPath;
-	std::string projectName;
+    bool ready = false;
+    std::string projectPath;
+    std::string projectName;
 
-	{
-		OvEditor::Core::ProjectHub hub;
+    {
+        OvEditor::Core::ProjectHub hub;
 
-		if (argc < 2)
-		{
-			// No project file given as argument ==> Open the ProjectHub
-			std::tie(ready, projectPath, projectName) = hub.Run();
-		}
-		else
-		{
-			// Project file given as argument ==> Open the project
-			std::string projectFile = argv[1];
+        if (argc < 2)
+        {
+            // No project file given as argument ==> Open the ProjectHub
+            std::tie(ready, projectPath, projectName) = hub.Run();
+        }
+        else
+        {
+            // Project file given as argument ==> Open the project
+            std::string projectFile = argv[1];
 
-			if (OvTools::Utils::PathParser::GetExtension(projectFile) == "ovproject")
-			{
-				ready = true;
-				projectPath = OvTools::Utils::PathParser::GetContainingFolder(projectFile);
-				projectName = OvTools::Utils::PathParser::GetElementName(projectFile);
-				OvTools::Utils::String::Replace(projectName, ".ovproject", "");
-			}
+            if (OvTools::Utils::PathParser::GetExtension(projectFile) == "ovproject")
+            {
+                ready = true;
+                projectPath = OvTools::Utils::PathParser::GetContainingFolder(projectFile);
+                projectName = OvTools::Utils::PathParser::GetElementName(projectFile);
+                OvTools::Utils::String::Replace(projectName, ".ovproject", "");
+            }
 
-			hub.RegisterProject(projectPath);
-		}
-	}
+            hub.RegisterProject(projectPath);
+        }
+    }
 
-	if (ready)
-	{
-		OvEditor::Core::Application app(projectPath, projectName);
-		app.Run();
-	}
+    if (ready)
+    {
+        OvEditor::Core::Application app(projectPath, projectName);
+        app.Run();
+    }
 
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }

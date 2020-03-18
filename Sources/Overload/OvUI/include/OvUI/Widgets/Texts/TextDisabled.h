@@ -10,19 +10,19 @@
 
 namespace OvUI::Widgets::Texts
 {
-	/**
-	* Widget to display a disabled text on a panel
-	*/
-	class API_OVUI TextDisabled : public Text
-	{
-	public:
-		/**
-		* Constructor
-		* @param p_content
-		*/
-		TextDisabled(const std::string& p_content = "");
+    /**
+    * Widget to display a disabled text on a panel
+    */
+    class API_OVUI TextDisabled : public Text
+    {
+    public:
+        /**
+        * Constructor
+        * @param p_content
+        */
+        TextDisabled(const std::string& p_content = "");
 
-	protected:
-		virtual void _Draw_Impl() override;
-	};
+    protected:
+        virtual void _Draw_Impl() override;
+    };
 }

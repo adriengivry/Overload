@@ -10,12 +10,12 @@
 
 namespace OvRendering::Geometry
 {
-	/**
-	* Data structure that defines a bounding sphere (Position + radius)
-	*/
-	struct BoundingSphere
-	{
-		OvMaths::FVector3 position;
-		float radius;
-	};
+    /**
+    * Data structure that defines a bounding sphere (Position + radius)
+    */
+    struct BoundingSphere
+    {
+        OvMaths::FVector3 position;
+        float radius;
+    };
 }

@@ -8,9 +8,9 @@
 
 std::pair<std::string, std::string> OvEditor::Resources::RawShaders::GetGrid()
 {
-	std::pair<std::string, std::string> source;
+    std::pair<std::string, std::string> source;
 
-	source.first = R"(
+    source.first = R"(
 #version 460 core
 
 layout (location = 0) in vec3 geo_Pos;
@@ -41,7 +41,7 @@ void main()
 }
 )";
 
-	source.second = R"(
+    source.second = R"(
 #version 460 core
 
 out vec4 FRAGMENT_COLOR;
@@ -86,16 +86,16 @@ vec4 Grid(float p_divisions)
 
 void main()
 {
-	float divs;
+    float divs;
 
-	divs = divisions / pow(2, round((abs(ubo_ViewPos.y) - step / subdivisions) / step));
-	vec4 grid1 = Grid(divs) + Grid(divs / subdivisions);
+    divs = divisions / pow(2, round((abs(ubo_ViewPos.y) - step / subdivisions) / step));
+    vec4 grid1 = Grid(divs) + Grid(divs / subdivisions);
 
-	divs = divisions / pow(2, round((abs(ubo_ViewPos.y + 50) - step / subdivisions) / step));
-	vec4 grid2 = Grid(divs) + Grid(divs / subdivisions);
+    divs = divisions / pow(2, round((abs(ubo_ViewPos.y + 50) - step / subdivisions) / step));
+    vec4 grid2 = Grid(divs) + Grid(divs / subdivisions);
 
-	float alpha = mod(abs(ubo_ViewPos.y), step);
-	alpha = 0.0;
+    float alpha = mod(abs(ubo_ViewPos.y), step);
+    alpha = 0.0;
 
     FRAGMENT_COLOR = mix(grid1, grid2, alpha);
 
@@ -112,14 +112,14 @@ void main()
 }
 )";
 
-	return source;
+    return source;
 }
 
 std::pair<std::string, std::string> OvEditor::Resources::RawShaders::GetGizmo()
 {
-	std::pair<std::string, std::string> source;
+    std::pair<std::string, std::string> source;
 
-	source.first = R"(
+    source.first = R"(
 #version 460 core
 
 layout (location = 0) in vec3 geo_Pos;
@@ -171,53 +171,53 @@ void main()
 
     float distanceToCamera = distance(ubo_ViewPos, instanceModel[3].xyz);
 
-	vec3 pos = geo_Pos;
+    vec3 pos = geo_Pos;
 
     vec3 fragPos = vec3(instanceModel * vec4(pos * distanceToCamera * 0.1f, 1.0));
 
-	if (u_IsPickable)
-	{
-		int blueComponent = 0;
+    if (u_IsPickable)
+    {
+        int blueComponent = 0;
 
-		if (gl_InstanceID == 1)
-			blueComponent = 252;
+        if (gl_InstanceID == 1)
+            blueComponent = 252;
 
-		if (gl_InstanceID == 2)
-			blueComponent = 253;
+        if (gl_InstanceID == 2)
+            blueComponent = 253;
 
-		if (gl_InstanceID == 0)
-			blueComponent = 254;
+        if (gl_InstanceID == 0)
+            blueComponent = 254;
 
-		vs_out.Color = vec3(1.0f, 1.0f, blueComponent / 255.0f);
-	}
-	else
-	{
-		if (u_IsBall)
-		{
-			vs_out.Color = vec3(1.0f);
-		}
-		else
-		{
-			float red	= float(gl_InstanceID == 1); // X
-			float green = float(gl_InstanceID == 2); // Y
-			float blue	= float(gl_InstanceID == 0); // Z
+        vs_out.Color = vec3(1.0f, 1.0f, blueComponent / 255.0f);
+    }
+    else
+    {
+        if (u_IsBall)
+        {
+            vs_out.Color = vec3(1.0f);
+        }
+        else
+        {
+            float red    = float(gl_InstanceID == 1); // X
+            float green = float(gl_InstanceID == 2); // Y
+            float blue    = float(gl_InstanceID == 0); // Z
 
-			if (!u_IsPickable && ((gl_InstanceID == 1 && u_HighlightedAxis == 0) || (gl_InstanceID == 2 && u_HighlightedAxis == 1) || (gl_InstanceID == 0 && u_HighlightedAxis == 2)))
-			{
-				vs_out.Color = vec3(1.0f, 1.0f, 0.0f);
-			}	
-			else
-			{
-				vs_out.Color = vec3(red, green, blue);
-			}
-		}
-	}
+            if (!u_IsPickable && ((gl_InstanceID == 1 && u_HighlightedAxis == 0) || (gl_InstanceID == 2 && u_HighlightedAxis == 1) || (gl_InstanceID == 0 && u_HighlightedAxis == 2)))
+            {
+                vs_out.Color = vec3(1.0f, 1.0f, 0.0f);
+            }    
+            else
+            {
+                vs_out.Color = vec3(red, green, blue);
+            }
+        }
+    }
 
     gl_Position = ubo_Projection * ubo_View * vec4(fragPos, 1.0);
 }
 )";
 
-	source.second = R"(
+    source.second = R"(
 #version 460 core
 
 out vec4 FRAGMENT_COLOR;
@@ -231,17 +231,17 @@ uniform bool u_IsPickable;
 
 void main()
 {
-	FRAGMENT_COLOR = vec4(fs_in.Color, 1.0f);
+    FRAGMENT_COLOR = vec4(fs_in.Color, 1.0f);
 })";
 
-	return source;
+    return source;
 }
 
 std::pair<std::string, std::string> OvEditor::Resources::RawShaders::GetBillboard()
 {
-	std::pair<std::string, std::string> source;
+    std::pair<std::string, std::string> source;
 
-	source.first = R"(
+    source.first = R"(
 #version 460 core
 
 layout (location = 0) in vec3 geo_Pos;
@@ -269,7 +269,7 @@ void main()
     vs_out.TexCoords = geo_TexCoords;
 
     mat4 model = ubo_Model;
-	float distanceToCamera = distance(ubo_ViewPos, model[3].xyz);
+    float distanceToCamera = distance(ubo_ViewPos, model[3].xyz);
 
     mat4 modelView = ubo_View * model;
 
@@ -291,7 +291,7 @@ void main()
     gl_Position = ubo_Projection * modelView * vec4(geo_Pos * distanceToCamera * u_Scale, 1.0);
 })";
 
-	source.second = R"(
+    source.second = R"(
 #version 460 core
 
 out vec4 FRAGMENT_COLOR;
@@ -311,5 +311,5 @@ void main()
     FRAGMENT_COLOR = texture(u_DiffuseMap, u_TextureOffset + vec2(mod(fs_in.TexCoords.x * u_TextureTiling.x, 1), mod(fs_in.TexCoords.y * u_TextureTiling.y, 1))) * u_Diffuse;
 })";
 
-	return source;
+    return source;
 }

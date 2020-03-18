@@ -12,22 +12,22 @@
 
 namespace OvUI::Widgets::Layout
 {
-	/**
-	* Dummy widget that takes the given size as space in the panel
-	*/
-	class API_OVUI Dummy : public AWidget
-	{
-	public:
-		/**
-		* Constructor
-		* @param p_size
-		*/
-		Dummy(const OvMaths::FVector2& p_size = { 0.0f, 0.0f });
+    /**
+    * Dummy widget that takes the given size as space in the panel
+    */
+    class API_OVUI Dummy : public AWidget
+    {
+    public:
+        /**
+        * Constructor
+        * @param p_size
+        */
+        Dummy(const OvMaths::FVector2& p_size = { 0.0f, 0.0f });
 
-	protected:
-		void _Draw_Impl() override;
+    protected:
+        void _Draw_Impl() override;
 
-	public:
-		OvMaths::FVector2 size;
-	};
+    public:
+        OvMaths::FVector2 size;
+    };
 }

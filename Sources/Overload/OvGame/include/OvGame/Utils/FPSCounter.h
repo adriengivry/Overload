@@ -13,29 +13,29 @@
 
 namespace OvGame::Utils
 {
-	/**
-	* Panel that display the framerate
-	*/
-	class FPSCounter : public OvUI::Panels::PanelUndecorated
-	{
-	public:
-		/**
-		* Constructor
-		* @param p_window
-		*/
-		FPSCounter(OvWindowing::Window& p_window);
+    /**
+    * Panel that display the framerate
+    */
+    class FPSCounter : public OvUI::Panels::PanelUndecorated
+    {
+    public:
+        /**
+        * Constructor
+        * @param p_window
+        */
+        FPSCounter(OvWindowing::Window& p_window);
 
-		/**
-		* Update the data
-		* @param p_deltaTime
-		*/
-		void Update(float p_deltaTime);
+        /**
+        * Update the data
+        * @param p_deltaTime
+        */
+        void Update(float p_deltaTime);
 
-	private:
-		OvUI::Widgets::Texts::TextColored m_text;
+    private:
+        OvUI::Widgets::Texts::TextColored m_text;
 
-		OvWindowing::Window& m_window;
-		float m_elapsed = 0.0f;
-		uint32_t m_frames = 0;
-	};
+        OvWindowing::Window& m_window;
+        float m_elapsed = 0.0f;
+        uint32_t m_frames = 0;
+    };
 }

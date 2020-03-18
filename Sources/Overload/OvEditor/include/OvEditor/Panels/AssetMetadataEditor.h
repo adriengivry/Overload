@@ -20,46 +20,46 @@
 
 namespace OvEditor::Panels
 {
-	class AssetMetadataEditor : public OvUI::Panels::PanelWindow
-	{
-	public:
-		using EditableAssets = std::variant<OvRendering::Resources::Model*, OvRendering::Resources::Texture*>;
+    class AssetMetadataEditor : public OvUI::Panels::PanelWindow
+    {
+    public:
+        using EditableAssets = std::variant<OvRendering::Resources::Model*, OvRendering::Resources::Texture*>;
 
-		/**
-		* Constructor
-		* @param p_title
-		* @param p_opened
-		* @param p_windowSettings
-		*/
-		AssetMetadataEditor
-		(
-			const std::string& p_title,
-			bool p_opened,
-			const OvUI::Settings::PanelWindowSettings& p_windowSettings
-		);
+        /**
+        * Constructor
+        * @param p_title
+        * @param p_opened
+        * @param p_windowSettings
+        */
+        AssetMetadataEditor
+        (
+            const std::string& p_title,
+            bool p_opened,
+            const OvUI::Settings::PanelWindowSettings& p_windowSettings
+        );
 
-		/**
-		* Defines the target of the asset settings editor
-		* @param p_path
-		*/
-		void SetTarget(const std::string& p_path);
+        /**
+        * Defines the target of the asset settings editor
+        * @param p_path
+        */
+        void SetTarget(const std::string& p_path);
 
-		/**
-		* Launch the preview of the target asset
-		*/
-		void Preview();
+        /**
+        * Launch the preview of the target asset
+        */
+        void Preview();
 
-	private:
-		void CreateHeaderButtons();
-		void CreateSettings();
-		void CreateModelSettings();
-		void CreateTextureSettings();
-		void Apply();
+    private:
+        void CreateHeaderButtons();
+        void CreateSettings();
+        void CreateModelSettings();
+        void CreateTextureSettings();
+        void Apply();
 
-	private:
-		std::string m_resource;
+    private:
+        std::string m_resource;
 
-		OvUI::Widgets::Layout::Columns<2>* m_settings = nullptr;
-		std::unique_ptr<OvTools::Filesystem::IniFile> m_metadata;
-	};
+        OvUI::Widgets::Layout::Columns<2>* m_settings = nullptr;
+        std::unique_ptr<OvTools::Filesystem::IniFile> m_metadata;
+    };
 }

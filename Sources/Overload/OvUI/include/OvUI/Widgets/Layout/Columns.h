@@ -12,54 +12,54 @@
 
 namespace OvUI::Widgets::Layout
 {
-	/**
-	* Widget that allow columnification
-	*/
-	template <size_t _Size>
-	class Columns : public AWidget, public Internal::WidgetContainer
-	{
-	public:
-		/**
-		* Constructor
-		*/
-		Columns()
-		{
-			widths.fill(-1.f);
-		}
+    /**
+    * Widget that allow columnification
+    */
+    template <size_t _Size>
+    class Columns : public AWidget, public Internal::WidgetContainer
+    {
+    public:
+        /**
+        * Constructor
+        */
+        Columns()
+        {
+            widths.fill(-1.f);
+        }
 
-	protected:
-		virtual void _Draw_Impl() override
-		{
-			ImGui::Columns(static_cast<int>(_Size), ("##" + m_widgetID).c_str(), false);
+    protected:
+        virtual void _Draw_Impl() override
+        {
+            ImGui::Columns(static_cast<int>(_Size), ("##" + m_widgetID).c_str(), false);
 
-			int counter = 0;
+            int counter = 0;
 
-			CollectGarbages();
+            CollectGarbages();
 
-			for (auto it = m_widgets.begin(); it != m_widgets.end();)
-			{
-				it->first->Draw();
+            for (auto it = m_widgets.begin(); it != m_widgets.end();)
+            {
+                it->first->Draw();
 
-				++it;
+                ++it;
 
-				if (it != m_widgets.end())
-				{
-					if (widths[counter] != -1.f)
-						ImGui::SetColumnWidth(counter, widths[counter]);
+                if (it != m_widgets.end())
+                {
+                    if (widths[counter] != -1.f)
+                        ImGui::SetColumnWidth(counter, widths[counter]);
 
-					ImGui::NextColumn();
-				}
+                    ImGui::NextColumn();
+                }
 
-				++counter;
+                ++counter;
 
-				if (counter == _Size)
-					counter = 0;
-			}
+                if (counter == _Size)
+                    counter = 0;
+            }
 
-			ImGui::Columns(1); // Necessary to not break the layout for following widget
-		}
+            ImGui::Columns(1); // Necessary to not break the layout for following widget
+        }
 
-	public:
-		std::array<float, _Size> widths;
-	};
+    public:
+        std::array<float, _Size> widths;
+    };
 }

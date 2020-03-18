@@ -14,56 +14,56 @@
 
 namespace OvAudio::Entities
 {
-	/**
-	* Represents the ears of your application.
-	* You can have multiple ones but only the last created will be considered by the AudioEngine
-	*/
-	class API_OVAUDIO AudioListener
-	{
-	public:
-		/**
-		* AudioListener constructor (Internal transform management)
-		*/
-		AudioListener();
+    /**
+    * Represents the ears of your application.
+    * You can have multiple ones but only the last created will be considered by the AudioEngine
+    */
+    class API_OVAUDIO AudioListener
+    {
+    public:
+        /**
+        * AudioListener constructor (Internal transform management)
+        */
+        AudioListener();
 
-		/**
-		* AudioListener constructor (External transform management)
-		* @param p_transform
-		*/
-		AudioListener(OvMaths::FTransform& p_transform);
+        /**
+        * AudioListener constructor (External transform management)
+        * @param p_transform
+        */
+        AudioListener(OvMaths::FTransform& p_transform);
 
-		/**
-		* AudioListener destructor
-		*/
-		~AudioListener();
+        /**
+        * AudioListener destructor
+        */
+        ~AudioListener();
 
-		/**
-		* Returns the AudioListener FTransform
-		*/
-		OvMaths::FTransform& GetTransform();
+        /**
+        * Returns the AudioListener FTransform
+        */
+        OvMaths::FTransform& GetTransform();
 
-		/**
-		* Enable or disable the audio listener
-		* @param p_enable
-		*/
-		void SetEnabled(bool p_enable);
+        /**
+        * Enable or disable the audio listener
+        * @param p_enable
+        */
+        void SetEnabled(bool p_enable);
 
-		/**
-		* Returns true if the audio listener is enabled
-		*/
-		bool IsEnabled() const;
+        /**
+        * Returns true if the audio listener is enabled
+        */
+        bool IsEnabled() const;
 
-	private:
-		void Setup();
+    private:
+        void Setup();
 
-	private:
-		/* Transform stuff */
-		OvMaths::FTransform* const		m_transform;
-		const bool						m_internalTransform;
-		bool							m_enabled = true;
+    private:
+        /* Transform stuff */
+        OvMaths::FTransform* const        m_transform;
+        const bool                        m_internalTransform;
+        bool                            m_enabled = true;
 
-	public:
-		static OvTools::Eventing::Event<AudioListener&>	CreatedEvent;
-		static OvTools::Eventing::Event<AudioListener&>	DestroyedEvent;
-	};
+    public:
+        static OvTools::Eventing::Event<AudioListener&>    CreatedEvent;
+        static OvTools::Eventing::Event<AudioListener&>    DestroyedEvent;
+    };
 }

@@ -14,29 +14,29 @@
 
 namespace OvUI::Widgets::Buttons
 {
-	/**
-	* Button widget with an image
-	*/
-	class API_OVUI ButtonImage : public AButton
-	{
-	public:
-		/**
-		* Constructor
-		* @param p_textureID
-		* @param p_size
-		*/
-		ButtonImage(uint32_t p_textureID, const OvMaths::FVector2& p_size);
+    /**
+    * Button widget with an image
+    */
+    class API_OVUI ButtonImage : public AButton
+    {
+    public:
+        /**
+        * Constructor
+        * @param p_textureID
+        * @param p_size
+        */
+        ButtonImage(uint32_t p_textureID, const OvMaths::FVector2& p_size);
 
-	protected:
-		void _Draw_Impl() override;
+    protected:
+        void _Draw_Impl() override;
 
-	public:
-		bool disabled = false;
+    public:
+        bool disabled = false;
 
-		OvUI::Types::Color background = { 0, 0, 0, 0 };
-		OvUI::Types::Color tint = { 1, 1, 1, 1 };
+        OvUI::Types::Color background = { 0, 0, 0, 0 };
+        OvUI::Types::Color tint = { 1, 1, 1, 1 };
 
-		Internal::TextureID textureID;
-		OvMaths::FVector2 size;
-	};
+        Internal::TextureID textureID;
+        OvMaths::FVector2 size;
+    };
 }

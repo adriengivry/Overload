@@ -12,43 +12,43 @@
 
 namespace OvEditor::Panels
 {
-	class MenuBar : public OvUI::Panels::PanelMenuBar
-	{
-		using PanelMap = std::unordered_map<std::string, std::pair<std::reference_wrapper<OvUI::Panels::PanelWindow>, std::reference_wrapper<OvUI::Widgets::Menu::MenuItem>>>;
+    class MenuBar : public OvUI::Panels::PanelMenuBar
+    {
+        using PanelMap = std::unordered_map<std::string, std::pair<std::reference_wrapper<OvUI::Panels::PanelWindow>, std::reference_wrapper<OvUI::Widgets::Menu::MenuItem>>>;
 
-	public:
-		/**
-		* Constructor
-		*/
-		MenuBar();
-		
-		/**
-		* Check inputs for menubar shortcuts
-		* @param p_deltaTime
-		*/
-		void HandleShortcuts(float p_deltaTime);
+    public:
+        /**
+        * Constructor
+        */
+        MenuBar();
+        
+        /**
+        * Check inputs for menubar shortcuts
+        * @param p_deltaTime
+        */
+        void HandleShortcuts(float p_deltaTime);
 
-		/**
-		* Register a panel to the menu bar window menu
-		*/
-		void RegisterPanel(const std::string& p_name, OvUI::Panels::PanelWindow& p_panel);
+        /**
+        * Register a panel to the menu bar window menu
+        */
+        void RegisterPanel(const std::string& p_name, OvUI::Panels::PanelWindow& p_panel);
 
-	private:
-		void CreateFileMenu();
-		void CreateBuildMenu();
-		void CreateWindowMenu();
-		void CreateActorsMenu();
-		void CreateResourcesMenu();
-		void CreateSettingsMenu();
-		void CreateLayoutMenu();
-		void CreateHelpMenu();
+    private:
+        void CreateFileMenu();
+        void CreateBuildMenu();
+        void CreateWindowMenu();
+        void CreateActorsMenu();
+        void CreateResourcesMenu();
+        void CreateSettingsMenu();
+        void CreateLayoutMenu();
+        void CreateHelpMenu();
 
-		void UpdateToggleableItems();
-		void OpenEveryWindows(bool p_state);
+        void UpdateToggleableItems();
+        void OpenEveryWindows(bool p_state);
 
-	private:
-		PanelMap m_panels;
+    private:
+        PanelMap m_panels;
 
-		OvUI::Widgets::Menu::MenuList* m_windowMenu = nullptr;
-	};
+        OvUI::Widgets::Menu::MenuList* m_windowMenu = nullptr;
+    };
 }

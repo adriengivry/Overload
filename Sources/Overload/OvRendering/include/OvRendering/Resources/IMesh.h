@@ -12,15 +12,15 @@
 
 namespace OvRendering::Resources
 {
-	/**
-	* Interface for any mesh
-	*/
-	class API_OVRENDERING IMesh
-	{
-	public:
-		virtual void Bind() = 0;
-		virtual void Unbind() = 0;
-		virtual uint32_t GetVertexCount() = 0;
-		virtual uint32_t GetIndexCount() = 0;
-	};
+    /**
+    * Interface for any mesh
+    */
+    class API_OVRENDERING IMesh
+    {
+    public:
+        virtual void Bind() = 0;
+        virtual void Unbind() = 0;
+        virtual uint32_t GetVertexCount() = 0;
+        virtual uint32_t GetIndexCount() = 0;
+    };
 }

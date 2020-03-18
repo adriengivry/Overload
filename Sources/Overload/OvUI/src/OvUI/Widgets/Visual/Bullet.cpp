@@ -8,5 +8,5 @@
 
 void OvUI::Widgets::Visual::Bullet::_Draw_Impl()
 {
-	ImGui::Bullet();
+    ImGui::Bullet();
 }

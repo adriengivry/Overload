@@ -17,25 +17,25 @@
 
 namespace OvCore::ECS
 {
-	/**
-	* Simple class that contains wrappers for OvPhysics in an ECS style
-	*/
-	class PhysicsWrapper
-	{
-	public:
-		/**
-		* Simple data structure that wraps the physics RaycastHit with physics components
-		*/
-		struct RaycastHit
-		{
-			Components::CPhysicalObject* FirstResultObject = nullptr;
-			std::vector<Components::CPhysicalObject*> ResultObjects;
-		};
+    /**
+    * Simple class that contains wrappers for OvPhysics in an ECS style
+    */
+    class PhysicsWrapper
+    {
+    public:
+        /**
+        * Simple data structure that wraps the physics RaycastHit with physics components
+        */
+        struct RaycastHit
+        {
+            Components::CPhysicalObject* FirstResultObject = nullptr;
+            std::vector<Components::CPhysicalObject*> ResultObjects;
+        };
 
-		/* Casts a ray against all Physical Object in the Scene and returns information on what was hit
-		 * @param p_origin
-		 * @param p_end
-		 */
-		static std::optional<RaycastHit> Raycast(OvMaths::FVector3 p_origin, OvMaths::FVector3 p_direction, float p_distance);
-	};
+        /* Casts a ray against all Physical Object in the Scene and returns information on what was hit
+         * @param p_origin
+         * @param p_end
+         */
+        static std::optional<RaycastHit> Raycast(OvMaths::FVector3 p_origin, OvMaths::FVector3 p_direction, float p_distance);
+    };
 }

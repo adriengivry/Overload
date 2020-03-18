@@ -13,10 +13,10 @@
 
 void OvCore::Scripting::LuaBinder::CallBinders(sol::state& p_luaState)
 {
-	auto& L = p_luaState;
+    auto& L = p_luaState;
 
-	LuaMathsBinder::BindMaths(L);
-	LuaActorBinder::BindActor(L);
-	LuaComponentBinder::BindComponent(L);
-	LuaGlobalsBinder::BindGlobals(L);
+    LuaMathsBinder::BindMaths(L);
+    LuaActorBinder::BindActor(L);
+    LuaComponentBinder::BindComponent(L);
+    LuaGlobalsBinder::BindGlobals(L);
 }

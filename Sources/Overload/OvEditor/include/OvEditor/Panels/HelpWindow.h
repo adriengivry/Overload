@@ -12,20 +12,20 @@
 
 namespace OvEditor::Panels
 {
-	class HelpWindow : public OvUI::Panels::PanelWindow
-	{
-	public:
-		/**
-		* Constructor
-		* @param p_title
-		* @param p_opened
-		* @param p_windowSettings
-		*/
-		HelpWindow
-		(
-			const std::string& p_title,
-			bool p_opened,
-			const OvUI::Settings::PanelWindowSettings& p_windowSettings
-		);
-	};
+    class HelpWindow : public OvUI::Panels::PanelWindow
+    {
+    public:
+        /**
+        * Constructor
+        * @param p_title
+        * @param p_opened
+        * @param p_windowSettings
+        */
+        HelpWindow
+        (
+            const std::string& p_title,
+            bool p_opened,
+            const OvUI::Settings::PanelWindowSettings& p_windowSettings
+        );
+    };
 }

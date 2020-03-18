@@ -10,12 +10,12 @@
 
 namespace OvUI::Widgets::Layout
 {
-	/**
-	* Widget that adds an empty line to the panel
-	*/
-	class API_OVUI NewLine : public AWidget
-	{
-	protected:
-		void _Draw_Impl() override;
-	};
+    /**
+    * Widget that adds an empty line to the panel
+    */
+    class API_OVUI NewLine : public AWidget
+    {
+    protected:
+        void _Draw_Impl() override;
+    };
 }

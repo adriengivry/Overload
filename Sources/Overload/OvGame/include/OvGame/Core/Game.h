@@ -22,60 +22,60 @@
 
 namespace OvGame::Core
 {
-	/**
-	* Handle the game logic
-	*/
-	class Game
-	{
-	public:
-		/**
-		* Create the game
-		* @param p_context
-		*/
-		Game(Context& p_context);
+    /**
+    * Handle the game logic
+    */
+    class Game
+    {
+    public:
+        /**
+        * Create the game
+        * @param p_context
+        */
+        Game(Context& p_context);
 
-		/**
-		* Destroy the game
-		*/
-		~Game();
+        /**
+        * Destroy the game
+        */
+        ~Game();
 
-		/**
-		* Pre-update of the game logic
-		*/
-		void PreUpdate();
+        /**
+        * Pre-update of the game logic
+        */
+        void PreUpdate();
 
-		/**
-		* Update the game logic
-		* @param p_deltaTime
-		*/
-		void Update(float p_deltaTime);
+        /**
+        * Update the game logic
+        * @param p_deltaTime
+        */
+        void Update(float p_deltaTime);
 
-		/**
-		* Post-update of the game logic
-		*/
-		void PostUpdate();
+        /**
+        * Post-update of the game logic
+        */
+        void PostUpdate();
 
-	private:
-		float m_elapsed = 0.0f;
+    private:
+        float m_elapsed = 0.0f;
 
-		OvGame::Core::Context& m_context;
-		OvUI::Modules::Canvas m_canvas;
+        OvGame::Core::Context& m_context;
+        OvUI::Modules::Canvas m_canvas;
 
-		OvGame::Core::GameRenderer m_gameRenderer;
+        OvGame::Core::GameRenderer m_gameRenderer;
 
-		/* Debug elements */
-		OvGame::Utils::FPSCounter	m_fpsCounter;
+        /* Debug elements */
+        OvGame::Utils::FPSCounter    m_fpsCounter;
 
-		#ifdef _DEBUG
-		OvGame::Debug::DriverInfo	m_driverInfo;
-		OvGame::Debug::GameProfiler m_gameProfiler;
-		OvGame::Debug::FrameInfo	m_frameInfo;
-		#endif
+        #ifdef _DEBUG
+        OvGame::Debug::DriverInfo    m_driverInfo;
+        OvGame::Debug::GameProfiler m_gameProfiler;
+        OvGame::Debug::FrameInfo    m_frameInfo;
+        #endif
 
-		#ifdef _DEBUG
-		bool m_showDebugInformation = true;
-		#else
-		bool m_showDebugInformation = false;
-		#endif
-	};
+        #ifdef _DEBUG
+        bool m_showDebugInformation = true;
+        #else
+        bool m_showDebugInformation = false;
+        #endif
+    };
 }

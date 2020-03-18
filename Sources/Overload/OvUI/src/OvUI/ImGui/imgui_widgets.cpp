@@ -1920,7 +1920,7 @@ bool ImGui::DragBehavior(ImGuiID id, ImGuiDataType data_type, void* v, float v_s
     ImGuiContext& g = *GImGui;
     if (g.ActiveId == id)
     {
-		ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
 
         if (g.ActiveIdSource == ImGuiInputSource_Mouse && !g.IO.MouseDown[0])
             ClearActiveID();
@@ -5451,27 +5451,27 @@ void ImGui::PlotEx(ImGuiPlotType plot_type, const char* label, float (*values_ge
         // Tooltip on hover
         int v_hovered = -1;
 
-		if (force_hover == -1)
-		{
-			if (hovered && inner_bb.Contains(g.IO.MousePos))
-			{
-				const float t = ImClamp((g.IO.MousePos.x - inner_bb.Min.x) / (inner_bb.Max.x - inner_bb.Min.x), 0.0f, 0.9999f);
-				const int v_idx = (int)(t * item_count);
-				IM_ASSERT(v_idx >= 0 && v_idx < values_count);
+        if (force_hover == -1)
+        {
+            if (hovered && inner_bb.Contains(g.IO.MousePos))
+            {
+                const float t = ImClamp((g.IO.MousePos.x - inner_bb.Min.x) / (inner_bb.Max.x - inner_bb.Min.x), 0.0f, 0.9999f);
+                const int v_idx = (int)(t * item_count);
+                IM_ASSERT(v_idx >= 0 && v_idx < values_count);
 
-				const float v0 = values_getter(data, (v_idx + values_offset) % values_count);
-				const float v1 = values_getter(data, (v_idx + 1 + values_offset) % values_count);
-				if (plot_type == ImGuiPlotType_Lines)
-					SetTooltip("%d: %8.4g\n%d: %8.4g", v_idx, v0, v_idx + 1, v1);
-				else if (plot_type == ImGuiPlotType_Histogram)
-					SetTooltip("%d: %8.4g", v_idx, v0);
-				v_hovered = v_idx;
-			}
-		}
-		else
-		{
-			v_hovered = force_hover;
-		}
+                const float v0 = values_getter(data, (v_idx + values_offset) % values_count);
+                const float v1 = values_getter(data, (v_idx + 1 + values_offset) % values_count);
+                if (plot_type == ImGuiPlotType_Lines)
+                    SetTooltip("%d: %8.4g\n%d: %8.4g", v_idx, v0, v_idx + 1, v1);
+                else if (plot_type == ImGuiPlotType_Histogram)
+                    SetTooltip("%d: %8.4g", v_idx, v0);
+                v_hovered = v_idx;
+            }
+        }
+        else
+        {
+            v_hovered = force_hover;
+        }
 
         const float t_step = 1.0f / (float)res_w;
         const float inv_scale = (scale_min == scale_max) ? 0.0f : (1.0f / (scale_max - scale_min));

@@ -12,12 +12,12 @@
 
 namespace OvUI::Widgets::Layout
 {
-	/**
-	* Widget that can contains other widgets
-	*/
-	class API_OVUI Group : public AWidget, public Internal::WidgetContainer
-	{
-	protected:
-		virtual void _Draw_Impl() override;
-	};
+    /**
+    * Widget that can contains other widgets
+    */
+    class API_OVUI Group : public AWidget, public Internal::WidgetContainer
+    {
+    protected:
+        virtual void _Draw_Impl() override;
+    };
 }

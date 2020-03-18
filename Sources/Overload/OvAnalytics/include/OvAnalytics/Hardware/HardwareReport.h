@@ -10,24 +10,24 @@
 
 namespace OvAnalytics::Hardware
 {
-	/**
-	* HardwareReport contains a set of data calculated by HardwareInfo
-	*/
-	struct API_OVANALYTICS HardwareReport final
-	{
-		/* CPU load for every process on the machine (%) */
-		float CPULoad;
+    /**
+    * HardwareReport contains a set of data calculated by HardwareInfo
+    */
+    struct API_OVANALYTICS HardwareReport final
+    {
+        /* CPU load for every process on the machine (%) */
+        float CPULoad;
 
-		/* GPU load for every process on the machine (%) */
-		float GPULoad;
+        /* GPU load for every process on the machine (%) */
+        float GPULoad;
 
-		/* Used RAM on the machine for every process (MB) */
-		float RAMUsed;
+        /* Used RAM on the machine for every process (MB) */
+        float RAMUsed;
 
-		/* Free RAM on the machine (MB) */
-		float RAMFree;
+        /* Free RAM on the machine (MB) */
+        float RAMFree;
 
-		/* Maximum RAM available (MB) */
-		float RAMMax;
-	};
+        /* Maximum RAM available (MB) */
+        float RAMMax;
+    };
 }

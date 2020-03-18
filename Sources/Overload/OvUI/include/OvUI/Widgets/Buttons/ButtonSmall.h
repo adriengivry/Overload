@@ -13,28 +13,28 @@
 
 namespace OvUI::Widgets::Buttons
 {
-	/**
-	* Small button widget
-	*/
-	class API_OVUI ButtonSmall : public AButton
-	{
-	public:
-		/**
-		* Constructor
-		* @param p_label
-		*/
-		ButtonSmall(const std::string& p_label = "");
+    /**
+    * Small button widget
+    */
+    class API_OVUI ButtonSmall : public AButton
+    {
+    public:
+        /**
+        * Constructor
+        * @param p_label
+        */
+        ButtonSmall(const std::string& p_label = "");
 
-	protected:
-		void _Draw_Impl() override;
+    protected:
+        void _Draw_Impl() override;
 
-	public:
-		std::string label;
+    public:
+        std::string label;
 
-		Types::Color idleBackgroundColor;
-		Types::Color hoveredBackgroundColor;
-		Types::Color clickedBackgroundColor;
+        Types::Color idleBackgroundColor;
+        Types::Color hoveredBackgroundColor;
+        Types::Color clickedBackgroundColor;
 
-		Types::Color textColor;
-	};
+        Types::Color textColor;
+    };
 }

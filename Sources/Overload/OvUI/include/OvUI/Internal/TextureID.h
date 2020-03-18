@@ -10,12 +10,12 @@
 
 namespace OvUI::Internal
 {
-	/**
-	* Simple union necessary for imgui textureID
-	*/
-	union TextureID
-	{
-		uint32_t d;
-		void* raw;
-	};
+    /**
+    * Simple union necessary for imgui textureID
+    */
+    union TextureID
+    {
+        uint32_t d;
+        void* raw;
+    };
 }

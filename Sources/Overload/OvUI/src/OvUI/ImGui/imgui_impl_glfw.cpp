@@ -233,8 +233,8 @@ static void ImGui_ImplGlfw_UpdateMousePosAndButtons()
 {
     ImGuiIO& io = ImGui::GetIO();
 
-	if (io.DisableMouseUpdate) // (ADRIENGG)
-		return;
+    if (io.DisableMouseUpdate) // (ADRIENGG)
+        return;
 
     const ImVec2 mouse_pos_backup = io.MousePos;
     io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);

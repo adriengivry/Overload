@@ -10,15 +10,15 @@
 
 namespace OvCore::Scripting
 {
-	/**
-	* Handle lua binding
-	*/
-	class LuaBinder
-	{
-	public:
-		/**
-		* Bind engine features to lua
-		*/
-		static void CallBinders(sol::state& p_luaState);
-	};
+    /**
+    * Handle lua binding
+    */
+    class LuaBinder
+    {
+    public:
+        /**
+        * Bind engine features to lua
+        */
+        static void CallBinders(sol::state& p_luaState);
+    };
 }

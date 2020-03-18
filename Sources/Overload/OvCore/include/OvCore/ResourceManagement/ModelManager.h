@@ -12,29 +12,29 @@
 
 namespace OvCore::ResourceManagement
 {
-	/**
-	* ResourceManager of models
-	*/
-	class API_OVCORE ModelManager : public AResourceManager<OvRendering::Resources::Model>
-	{
-	public:
-		/**
-		* Create the resource identified by the given path
-		* @param p_path
-		*/
-		virtual OvRendering::Resources::Model* CreateResource(const std::string & p_path) override;
+    /**
+    * ResourceManager of models
+    */
+    class API_OVCORE ModelManager : public AResourceManager<OvRendering::Resources::Model>
+    {
+    public:
+        /**
+        * Create the resource identified by the given path
+        * @param p_path
+        */
+        virtual OvRendering::Resources::Model* CreateResource(const std::string & p_path) override;
 
-		/**
-		* Destroy the given resource
-		* @param p_resource
-		*/
-		virtual void DestroyResource(OvRendering::Resources::Model* p_resource) override;
+        /**
+        * Destroy the given resource
+        * @param p_resource
+        */
+        virtual void DestroyResource(OvRendering::Resources::Model* p_resource) override;
 
-		/**
-		* Reload the given resource
-		* @param p_resource
-		* @param p_path
-		*/
-		virtual void ReloadResource(OvRendering::Resources::Model* p_resource, const std::string& p_path) override;
-	};
+        /**
+        * Reload the given resource
+        * @param p_resource
+        * @param p_path
+        */
+        virtual void ReloadResource(OvRendering::Resources::Model* p_resource, const std::string& p_path) override;
+    };
 }

@@ -10,10 +10,10 @@ std::queue<OvDebug::LogData> OvDebug::HistoryHandler::LOG_QUEUE;
 
 void OvDebug::HistoryHandler::Log(const LogData& p_logData)
 {
-	LOG_QUEUE.push(p_logData);
+    LOG_QUEUE.push(p_logData);
 }
 
 std::queue<OvDebug::LogData>& OvDebug::HistoryHandler::GetLogQueue()
 {
-	return LOG_QUEUE;
+    return LOG_QUEUE;
 }

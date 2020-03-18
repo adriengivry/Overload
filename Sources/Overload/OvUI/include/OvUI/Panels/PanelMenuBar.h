@@ -18,12 +18,12 @@
 
 namespace OvUI::Panels
 {
-	/**
-	* A simple panel that will be displayed on the top side of the canvas
-	*/
-	class API_OVUI PanelMenuBar : public APanel
-	{
-	protected:
-		void _Draw_Impl() override;
-	};
+    /**
+    * A simple panel that will be displayed on the top side of the canvas
+    */
+    class API_OVUI PanelMenuBar : public APanel
+    {
+    protected:
+        void _Draw_Impl() override;
+    };
 }

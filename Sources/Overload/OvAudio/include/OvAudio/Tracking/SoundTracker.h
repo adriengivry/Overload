@@ -13,38 +13,38 @@
 
 namespace OvAudio::Tracking
 {
-	/**
-	* Track a playing sound and allow the modification of its settings
-	*/
-	class API_OVAUDIO SoundTracker
-	{
-	public:
-		/**
-		* Constructor
-		* @param p_track
-		*/
-		SoundTracker(irrklang::ISound* p_track);
+    /**
+    * Track a playing sound and allow the modification of its settings
+    */
+    class API_OVAUDIO SoundTracker
+    {
+    public:
+        /**
+        * Constructor
+        * @param p_track
+        */
+        SoundTracker(irrklang::ISound* p_track);
 
-		/**
-		* Destructor
-		*/
-		~SoundTracker();
+        /**
+        * Destructor
+        */
+        ~SoundTracker();
 
-		/**
-		* Returns the tracked sound instance
-		*/
-		irrklang::ISound* GetTrack() const;
+        /**
+        * Returns the tracked sound instance
+        */
+        irrklang::ISound* GetTrack() const;
 
-	public:
-		/**
-		* FinishedEvent is called when the track get stopped/finished
-		*/
-		OvTools::Eventing::Event<> StopEvent;
+    public:
+        /**
+        * FinishedEvent is called when the track get stopped/finished
+        */
+        OvTools::Eventing::Event<> StopEvent;
 
-	private:
-		irrklang::ISound* const m_track = nullptr;
+    private:
+        irrklang::ISound* const m_track = nullptr;
 
-	private:
-		SoundStopEventBinder m_soundStopEventBinder;
-	};
+    private:
+        SoundStopEventBinder m_soundStopEventBinder;
+    };
 }

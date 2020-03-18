@@ -11,36 +11,36 @@
 
 namespace OvEditor::Core
 {
-	/**
-	* Entry point of OvEditor
-	*/
-	class Application
-	{
-	public:
-		/**
-		* Constructor
-		* @param p_projectPath
-		* @param p_projectName
-		*/
-		Application(const std::string& p_projectPath, const std::string& p_projectName);
+    /**
+    * Entry point of OvEditor
+    */
+    class Application
+    {
+    public:
+        /**
+        * Constructor
+        * @param p_projectPath
+        * @param p_projectName
+        */
+        Application(const std::string& p_projectPath, const std::string& p_projectName);
 
-		/**
-		* Destructor
-		*/
-		~Application();
+        /**
+        * Destructor
+        */
+        ~Application();
 
-		/**
-		* Run the app
-		*/
-		void Run();
+        /**
+        * Run the app
+        */
+        void Run();
 
-		/**
-		* Returns true if the app is running
-		*/
-		bool IsRunning() const;
+        /**
+        * Returns true if the app is running
+        */
+        bool IsRunning() const;
 
-	private:
-		Context m_context;
-		Editor m_editor;
-	};
+    private:
+        Context m_context;
+        Editor m_editor;
+    };
 }

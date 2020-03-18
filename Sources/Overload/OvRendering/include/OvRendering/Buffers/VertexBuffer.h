@@ -12,49 +12,49 @@
 
 namespace OvRendering::Buffers
 {
-	/**
-	* Wraps OpenGL VBO
-	*/
-	template <class T>
-	class VertexBuffer
-	{
-	public:
-		/**
-		* Create the VBO using a pointer to the first element and a size (number of elements)
-		* @param p_data
-		* @parma p_elements
-		*/
-		VertexBuffer(T* p_data, size_t p_elements);
+    /**
+    * Wraps OpenGL VBO
+    */
+    template <class T>
+    class VertexBuffer
+    {
+    public:
+        /**
+        * Create the VBO using a pointer to the first element and a size (number of elements)
+        * @param p_data
+        * @parma p_elements
+        */
+        VertexBuffer(T* p_data, size_t p_elements);
 
-		/**
-		* Create the EBO using a vector
-		* @param p_data
-		*/
-		VertexBuffer(std::vector<T>& p_data);
+        /**
+        * Create the EBO using a vector
+        * @param p_data
+        */
+        VertexBuffer(std::vector<T>& p_data);
 
-		/**
-		* Destructor
-		*/
-		~VertexBuffer();
+        /**
+        * Destructor
+        */
+        ~VertexBuffer();
 
-		/**
-		* Bind the buffer
-		*/
-		void Bind();
+        /**
+        * Bind the buffer
+        */
+        void Bind();
 
-		/**
-		* Bind the buffer
-		*/
-		void Unbind();
+        /**
+        * Bind the buffer
+        */
+        void Unbind();
 
-		/**
-		* Returnd the ID of the VBO
-		*/
-		uint32_t GetID();
+        /**
+        * Returnd the ID of the VBO
+        */
+        uint32_t GetID();
 
-	private:
-		uint32_t m_bufferID;
-	};
+    private:
+        uint32_t m_bufferID;
+    };
 }
 
 #include "OvRendering/Buffers/VertexBuffer.inl"

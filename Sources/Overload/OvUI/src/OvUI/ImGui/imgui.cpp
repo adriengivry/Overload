@@ -1188,7 +1188,7 @@ ImGuiIO::ImGuiIO()
     KeyRepeatDelay = 0.250f;
     KeyRepeatRate = 0.050f;
     UserData = NULL;
-	DisableMouseUpdate = false;
+    DisableMouseUpdate = false;
 
     Fonts = NULL;
     FontGlobalScale = 1.0f;
@@ -1368,7 +1368,7 @@ const char* ImStrchrRange(const char* str, const char* str_end, char c)
 
 int ImStrlenW(const ImWchar* str)
 {
-    //return (int)wcslen((const wchar_t*)str);	// FIXME-OPT: Could use this when wchar_t are 16-bits
+    //return (int)wcslen((const wchar_t*)str);    // FIXME-OPT: Could use this when wchar_t are 16-bits
     int n = 0;
     while (*str++) n++;
     return n;
@@ -3643,11 +3643,11 @@ void ImGui::NewFrame()
    
 
     // Update mouse input state (ADRIENGG)
-	if (!g.IO.DisableMouseUpdate)
-	{
-		UpdateMouseInputs();
-		NavUpdate();
-	}
+    if (!g.IO.DisableMouseUpdate)
+    {
+        UpdateMouseInputs();
+        NavUpdate();
+    }
 
     // Calculate frame-rate for the user, as a purely luxurious feature
     g.FramerateSecPerFrameAccum += g.IO.DeltaTime - g.FramerateSecPerFrame[g.FramerateSecPerFrameIdx];
@@ -9896,7 +9896,7 @@ bool ImGui::BeginDragDropSource(ImGuiDragDropFlags flags)
 
     if (source_drag_active)
     {
-		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
         if (!g.DragDropActive)
         {
@@ -11938,14 +11938,14 @@ static void ImGui::DockNodeUpdateTabBar(ImGuiDockNode* node, ImGuiWindow* host_w
     node->IsFocused = is_focused;
 
     // Collapse button changes shape and display a list
-	/*
+    /*
     if (IsPopupOpen("#TabListMenu"))
     {
         if (ImGuiID tab_id = DockNodeUpdateTabListMenu(node, tab_bar))
             focus_tab_id = tab_bar->NextSelectedTabId = tab_id;
         is_focused |= node->IsFocused;
     }
-	*/
+    */
 
     // Title bar
     if (is_focused)
@@ -11955,12 +11955,12 @@ static void ImGui::DockNodeUpdateTabBar(ImGuiDockNode* node, ImGuiWindow* host_w
     host_window->DrawList->AddRectFilled(title_bar_rect.Min, title_bar_rect.Max, title_bar_col, host_window->WindowRounding, ImDrawCornerFlags_Top);
 
     // Collapse button
-	/*
+    /*
     if (CollapseButton(host_window->GetID("#COLLAPSE"), title_bar_rect.Min, node))
         OpenPopup("#TabListMenu");
-	if (IsItemActive())
+    if (IsItemActive())
         focus_tab_id = tab_bar->SelectedTabId;
-	*/
+    */
 
     // Submit new tabs and apply NavWindow focus back to the tab bar. They will be added as Unsorted and sorted below based on relative DockOrder value.
     const int tabs_count_old = tab_bar->Tabs.Size;

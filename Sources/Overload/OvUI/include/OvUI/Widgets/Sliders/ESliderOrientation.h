@@ -8,12 +8,12 @@
 
 namespace OvUI::Widgets::Sliders
 {
-	/**
-	* Defines the slider orientation
-	*/
-	enum class ESliderOrientation
-	{
-		HORIZONTAL,
-		VERTICAL
-	};
+    /**
+    * Defines the slider orientation
+    */
+    enum class ESliderOrientation
+    {
+        HORIZONTAL,
+        VERTICAL
+    };
 }

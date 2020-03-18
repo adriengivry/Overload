@@ -12,19 +12,19 @@
 
 namespace OvAudio::Resources
 {
-	namespace Loaders { class SoundLoader; }
+    namespace Loaders { class SoundLoader; }
 
-	/**
-	* Playable sound
-	*/
-	class API_OVAUDIO Sound
-	{
-		friend class Loaders::SoundLoader;
+    /**
+    * Playable sound
+    */
+    class API_OVAUDIO Sound
+    {
+        friend class Loaders::SoundLoader;
 
-	private:
-		Sound(const std::string& p_path);
+    private:
+        Sound(const std::string& p_path);
 
-	public:
-		const std::string path;
-	};
+    public:
+        const std::string path;
+    };
 }

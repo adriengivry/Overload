@@ -10,12 +10,12 @@
 
 namespace OvUI::Widgets::Visual
 {
-	/**
-	* Simple widget that display a bullet point
-	*/
-	class API_OVUI Bullet : public AWidget
-	{
-	protected:
-		virtual void _Draw_Impl() override;
-	};
+    /**
+    * Simple widget that display a bullet point
+    */
+    class API_OVUI Bullet : public AWidget
+    {
+    protected:
+        virtual void _Draw_Impl() override;
+    };
 }

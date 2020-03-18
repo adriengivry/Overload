@@ -8,5 +8,5 @@
 
 void OvUI::Widgets::Layout::NewLine::_Draw_Impl()
 {
-	ImGui::NewLine();
+    ImGui::NewLine();
 }
