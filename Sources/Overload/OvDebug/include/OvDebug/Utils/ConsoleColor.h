@@ -7,7 +7,10 @@
 #pragma once
 
 #include <iostream>
+
+#ifdef PLATFORM_WINDOWS
 #include <windows.h>
+#endif
 
 #define COLOR_BLUE OvDebug::blue
 #define COLOR_RED OvDebug::red
@@ -18,6 +21,7 @@
 
 namespace OvDebug
 {
+#ifdef PLATFORM_WINDOWS
 	inline std::ostream& blue(std::ostream& s)
 	{
 		HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -87,4 +91,37 @@ namespace OvDebug
 		SetConsoleTextAttribute(hStdout, c.m_color);
 		return i;
 	}
+#else
+
+    inline std::ostream &blue(std::ostream &s) {
+        s << "\033[34m";
+        return s;
+    }
+
+    inline std::ostream &red(std::ostream &s) {
+        s << "\033[31m";
+        return s;
+    }
+
+    inline std::ostream &green(std::ostream &s) {
+        s << "\033[32m";
+        return s;
+    }
+
+    inline std::ostream &yellow(std::ostream &s) {
+        s << "\033[43m";
+        return s;
+    }
+
+    inline std::ostream &white(std::ostream &s) {
+        s << "\033[37m";
+        return s;
+    }
+
+    inline std::ostream &grey(std::ostream &s) {
+        s << "\033[30m";
+        return s;
+    }
+
+#endif // PLATFORM_WINDOWS
 }

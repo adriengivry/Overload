@@ -1,0 +1,12 @@
+target_sources(OvMaths
+        PUBLIC
+        FMatrix3.h
+        FMatrix4.h
+        FQuaternion.h
+        FTransform.h
+        FVector2.h
+        FVector3.h
+        FVector4.h
+        PRIVATE
+        Internal/TransformNotifier.h
+        )

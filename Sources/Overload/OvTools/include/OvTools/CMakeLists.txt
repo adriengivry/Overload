@@ -1,0 +1,16 @@
+target_sources(OvTools
+        PUBLIC
+        Eventing/Event.h
+        Eventing/Event.inl
+        Filesystem/IniFile.h
+        Filesystem/IniFile.inl
+        Filesystem/tinyxml2.h
+        Time/Clock.h
+        Time/Date.h
+        Utils/PathParser.h
+        Utils/Random.h
+        Utils/ReferenceOrValue.h
+        Utils/String.h
+        Utils/SystemCalls.h
+        API/Export.h
+        )

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "OvMaths/API/export.h"
+#include "OvMaths/API/Export.h"
 #include "OvMaths/FVector3.h"
 #include "OvMaths/FMatrix3.h"
 #include "OvMaths/FMatrix4.h"

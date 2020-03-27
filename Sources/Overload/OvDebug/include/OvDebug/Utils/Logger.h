@@ -38,27 +38,27 @@ namespace OvDebug
 		/**
 		* Disabled constructor
 		*/
-		Logger() = delete;
+    Logger() = delete;
 
-		/**
-		* Display error massage to target destination
-		* @param p_message
-		* @param p_logLevel
-		* @param p_logMode
-		* @param p_handlerID
-		*/
-		static void Log(const std::string& p_message, ELogLevel p_logLevel = ELogLevel::LOG_DEFAULT, ELogMode p_logMode = ELogMode::DEFAULT, std::string p_handlerId = "default");
+    /**
+    * Display error massage to target destination
+    * @param p_message
+    * @param p_logLevel
+    * @param p_logMode
+    * @param p_handlerID
+    */
+    static void Log(const std::string& p_message, ELogLevel p_logLevel = ELogLevel::LOG_DEFAULT, ELogMode p_logMode = ELogMode::DEFAULT, const std::string& p_handlerId = "default");
 
-		/**
-		* Create console handler
-		* @param p_id
-		*/
-		static ConsoleHandler& CreateConsoleHandler(std::string p_id);
+    /**
+    * Create console handler
+    * @param p_id
+    */
+    static ConsoleHandler& CreateConsoleHandler(std::string p_id);
 
-		/**
-		* Create console handler
-		* @param p_id
-		*/
+    /**
+    * Create console handler
+    * @param p_id
+    */
 		static FileHandler& CreateFileHandler(std::string p_id);
 
 		/**

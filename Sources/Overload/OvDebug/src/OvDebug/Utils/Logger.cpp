@@ -13,17 +13,22 @@ std::map<std::string, OvDebug::ConsoleHandler>	OvDebug::Logger::CONSOLE_HANDLER_
 std::map<std::string, OvDebug::FileHandler>		OvDebug::Logger::FILE_HANDLER_MAP;
 std::map<std::string, OvDebug::HistoryHandler>	OvDebug::Logger::HISTORY_HANDLER_MAP;
 
-void OvDebug::Logger::Log(const std::string& p_message, ELogLevel p_logLevel, ELogMode p_logMode, std::string p_handlerId)
-{
-	LogData logData{ p_message, p_logLevel, OvTools::Time::Date::GetDateAsString() };
+void OvDebug::Logger::Log(const std::string &p_message, ELogLevel p_logLevel, ELogMode p_logMode,
+                          const std::string &p_handlerId) {
+    LogData logData{p_message, p_logLevel, OvTools::Time::Date::GetDateAsString()};
 
-	switch (p_logMode)
-	{
-	case ELogMode::DEFAULT:
-	case ELogMode::CONSOLE: LogToHandlerMap<ConsoleHandler>(CONSOLE_HANDLER_MAP, logData, p_handlerId); break;
-	case ELogMode::FILE:	LogToHandlerMap<FileHandler>(FILE_HANDLER_MAP, logData, p_handlerId);		break;
-	case ELogMode::HISTORY: LogToHandlerMap<HistoryHandler>(HISTORY_HANDLER_MAP, logData, p_handlerId);	break;
-	case ELogMode::ALL:
+    switch (p_logMode) {
+        case ELogMode::DEFAULT:
+        case ELogMode::CONSOLE:
+            LogToHandlerMap<ConsoleHandler>(CONSOLE_HANDLER_MAP, logData, p_handlerId);
+            break;
+        case ELogMode::FILE:
+            LogToHandlerMap<FileHandler>(FILE_HANDLER_MAP, logData, p_handlerId);
+            break;
+        case ELogMode::HISTORY:
+            LogToHandlerMap<HistoryHandler>(HISTORY_HANDLER_MAP, logData, p_handlerId);
+            break;
+        case ELogMode::ALL:
 		LogToHandlerMap<ConsoleHandler>(CONSOLE_HANDLER_MAP, logData, p_handlerId);
 		LogToHandlerMap<FileHandler>(FILE_HANDLER_MAP, logData, p_handlerId);
 		LogToHandlerMap<HistoryHandler>(HISTORY_HANDLER_MAP, logData, p_handlerId);

@@ -8,7 +8,7 @@
 
 #include <functional>
 
-#include "OvMaths/API/export.h"
+#include "OvMaths/API/Export.h"
 
 namespace OvMaths::Internal
 {

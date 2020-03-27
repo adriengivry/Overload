@@ -7,14 +7,15 @@
 #include <utility>
 #include <stdexcept>
 
+#include <cmath>
+
 #include "OvMaths/FVector2.h"
 
 const OvMaths::FVector2 OvMaths::FVector2::One(1.0f, 1.0f);
 const OvMaths::FVector2 OvMaths::FVector2::Zero(0.0f, 0.0f);
 
 OvMaths::FVector2::FVector2(float p_x, float p_y) :
-	x(p_x), y(p_y)
-{
+        x(p_x), y(p_y) {
 }
 
 OvMaths::FVector2::FVector2(const FVector2& p_toCopy) :

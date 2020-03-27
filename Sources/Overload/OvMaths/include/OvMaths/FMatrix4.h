@@ -10,9 +10,9 @@
 #define PI 3.14159265359f
 #define EPSILON 0.00001f
 
-#include <stdint.h>
+#include <cstdint>
 
-#include "OvMaths/API/export.h"
+#include "OvMaths/API/Export.h"
 #include "OvMaths/FVector3.h"
 #include "OvMaths/FVector4.h"
 

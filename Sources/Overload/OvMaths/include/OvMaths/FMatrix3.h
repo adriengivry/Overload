@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
-#include "OvMaths/API/export.h"
+#include "OvMaths/API/Export.h"
 #include "OvMaths/FVector3.h"
-#include "OvMAths/FVector2.h"
+#include "OvMaths/FVector2.h"
 
 namespace OvMaths
 {

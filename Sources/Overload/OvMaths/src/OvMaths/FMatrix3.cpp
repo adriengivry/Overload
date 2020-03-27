@@ -8,14 +8,15 @@
 #include <stdexcept>
 #include <cmath>
 
+#include <cstring> // TODO: Move memcpy to utils
+
 #include "OvMaths/FMatrix3.h"
 
 const OvMaths::FMatrix3 OvMaths::FMatrix3::Identity = OvMaths::FMatrix3(1.0f, 0.0f, 0.0f,
-	0.0f, 1.0f, 0.0f,
-	0.0f, 0.0f, 1.0f);
+																		0.0f, 1.0f, 0.0f,
+																		0.0f, 0.0f, 1.0f);
 
-OvMaths::FMatrix3::FMatrix3()
-{
+OvMaths::FMatrix3::FMatrix3() {
 	memcpy(data, Identity.data, 9 * sizeof(float));
 }
 

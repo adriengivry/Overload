@@ -7,16 +7,17 @@
 #include <utility>
 #include <stdexcept>
 
+#include <cmath>
+
 #include "OvMaths/FVector4.h"
 
 const OvMaths::FVector4 OvMaths::FVector4::One(1.0f, 1.0f, 1.0f, 1.0f);
 const OvMaths::FVector4 OvMaths::FVector4::Zero(0.0f, 0.0f, 0.0f, 0.0f);
 
-OvMaths::FVector4::FVector4(float p_x, float p_y, float p_z, float p_w) : x(p_x), y(p_y), z(p_z), w(p_w)
-{
+OvMaths::FVector4::FVector4(float p_x, float p_y, float p_z, float p_w) : x(p_x), y(p_y), z(p_z), w(p_w) {
 }
 
-OvMaths::FVector4::FVector4(const FVector4& p_toCopy) : x(p_toCopy.x), y(p_toCopy.y), z(p_toCopy.z), w(p_toCopy.w)
+OvMaths::FVector4::FVector4(const FVector4 &p_toCopy) : x(p_toCopy.x), y(p_toCopy.y), z(p_toCopy.z), w(p_toCopy.w)
 {
 }
 

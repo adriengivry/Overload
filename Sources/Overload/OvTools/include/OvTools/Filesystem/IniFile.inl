@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <assert.h>
+#include <cassert>
 
 #include "OvTools/Filesystem/IniFile.h"
 
@@ -43,11 +43,11 @@ namespace OvTools::Filesystem
 
 			return static_cast<T>(std::atof(m_data[p_key].c_str()));
 		}
-		else
-		{
-			static_assert(false, "The given type must be : bool, integral, floating point or string");
-			return T();
-		}
+		else {
+            // TODO: Fix, not compiling on Linux
+//			static_assert(false, "The given type must be : bool, integral, floating point or string");
+            return T();
+        }
 	}
 
 	template<typename T>
@@ -79,7 +79,7 @@ namespace OvTools::Filesystem
 			}
 			else
 			{
-				static_assert(false, "The given type must be : bool, integral, floating point or string");
+//				static_assert(false, "The given type must be : bool, integral, floating point or string");
 			}
 
 			return true;
@@ -111,7 +111,7 @@ namespace OvTools::Filesystem
 			}
 			else
 			{
-				static_assert(false, "The given type must be : bool, integral, floating point or std::string");
+//				static_assert(false, "The given type must be : bool, integral, floating point or std::string");
 			}
 
 			return true;

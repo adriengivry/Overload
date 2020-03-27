@@ -7,6 +7,7 @@
 #include "OvTools/Utils/PathParser.h"
 #include "OvTools/Utils/SystemCalls.h"
 
+#ifdef PLATFORM_WINDOWS
 #include <Windows.h>
 
 void OvTools::Utils::SystemCalls::ShowInExplorer(const std::string & p_path)
@@ -30,3 +31,22 @@ void OvTools::Utils::SystemCalls::OpenURL(const std::string& p_url)
 {
 	ShellExecute(0, 0, p_url.c_str(), 0, 0, SW_SHOW);
 }
+#else
+
+void OvTools::Utils::SystemCalls::ShowInExplorer(const std::string &p_path) {
+    // TODO
+}
+
+void OvTools::Utils::SystemCalls::OpenFile(const std::string &p_file, const std::string &p_workingDir) {
+    // TODO
+}
+
+void OvTools::Utils::SystemCalls::EditFile(const std::string &p_file) {
+    // TODO
+}
+
+void OvTools::Utils::SystemCalls::OpenURL(const std::string &p_url) {
+    // TODO
+}
+
+#endif
