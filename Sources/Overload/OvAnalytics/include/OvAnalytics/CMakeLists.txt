@@ -1,0 +1,12 @@
+target_sources(OvAnalytics
+        PUBLIC
+        Hardware/CPUInfo.h
+        Hardware/GPUInfo.h
+        Hardware/HardwareInfo.h
+        Hardware/HardwareReport.h
+        Hardware/RAMInfo.h
+        Profiling/Profiler.h
+        Profiling/ProfilerReport.h
+        Profiling/ProfilerSpy.h
+        API/Export.h
+        )

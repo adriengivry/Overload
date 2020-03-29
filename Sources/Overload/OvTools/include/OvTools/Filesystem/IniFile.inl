@@ -45,7 +45,7 @@ namespace OvTools::Filesystem
 		}
 		else {
             // TODO: Fix, not compiling on Linux
-//			static_assert(false, "The given type must be : bool, integral, floating point or string");
+			static_assert(false, "The given type must be : bool, integral, floating point or string");
             return T();
         }
 	}
@@ -79,7 +79,7 @@ namespace OvTools::Filesystem
 			}
 			else
 			{
-//				static_assert(false, "The given type must be : bool, integral, floating point or string");
+				static_assert(false, "The given type must be : bool, integral, floating point or string");
 			}
 
 			return true;
@@ -111,7 +111,7 @@ namespace OvTools::Filesystem
 			}
 			else
 			{
-//				static_assert(false, "The given type must be : bool, integral, floating point or std::string");
+				static_assert(false, "The given type must be : bool, integral, floating point or std::string");
 			}
 
 			return true;

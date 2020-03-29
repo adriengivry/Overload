@@ -1,0 +1,9 @@
+target_sources(OvAnalytics
+        PRIVATE
+        Hardware/CPUInfo.cpp
+        Hardware/GPUInfo.cpp
+        Hardware/HardwareInfo.cpp
+        Hardware/RAMInfo.cpp
+        Profiling/Profiler.cpp
+        Profiling/ProfilerSpy.cpp
+        )

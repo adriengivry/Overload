@@ -1,0 +1,9 @@
+target_sources(OvPhysics
+        PRIVATE
+        Core/PhysicsEngine.cpp
+        Entities/PhysicalBox.cpp
+        Entities/PhysicalCapsule.cpp
+        Entities/PhysicalObject.cpp
+        Entities/PhysicalSphere.cpp
+        Tools/Conversion.cpp
+        )
