@@ -6,7 +6,7 @@ add_library(OvWindowing SHARED "")
 
 target_link_libraries(OvWindowing stb_image glfw OvTools)
 target_include_directories(OvWindowing PUBLIC include)
-target_compile_definitions(OvWindowing PRIVATE OVWINDOWING_EXPORT PUBLIC PLATFORM_WINDOWS)
+set_property(TARGET OvWindowing PROPERTY DEFINE_SYMBOL "OVWINDOWING_EXPORT")
 
 add_subdirectory(src/OvWindowing)
 add_subdirectory(include/OvWindowing)

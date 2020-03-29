@@ -13,6 +13,8 @@ include(${OVERLOAD_CMAKE_DIR}/bullet3.cmake)
 include(${OVERLOAD_CMAKE_DIR}/irrKlang.cmake)
 include(${OVERLOAD_CMAKE_DIR}/lua.cmake)
 
+add_compile_definitions(PLATFORM_WINDOWS)
+
 add_subdirectory(OvAnalytics)
 add_subdirectory(OvAudio)
 add_subdirectory(OvCore)

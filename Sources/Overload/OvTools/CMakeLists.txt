@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_library(OvTools SHARED "")
 
 target_include_directories(OvTools PUBLIC include)
-target_compile_definitions(OvTools PRIVATE OVTOOLS_EXPORT PUBLIC PLATFORM_WINDOWS)
+set_property(TARGET OvTools PROPERTY DEFINE_SYMBOL "OVTOOLS_EXPORT")
 
 add_subdirectory(src/OvTools)
 add_subdirectory(include/OvTools)

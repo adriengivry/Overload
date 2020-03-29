@@ -6,7 +6,7 @@ add_library(OvAudio SHARED "")
 
 target_link_libraries(OvAudio irrKlang OvMaths OvTools OvDebug)
 target_include_directories(OvAudio PUBLIC include)
-target_compile_definitions(OvAudio PRIVATE OVAUDIO_EXPORT PUBLIC PLATFORM_WINDOWS)
+set_property(TARGET OvAudio PROPERTY DEFINE_SYMBOL "OVAUDIO_EXPORT")
 
 add_subdirectory(src/OvAudio)
 add_subdirectory(include/OvAudio)

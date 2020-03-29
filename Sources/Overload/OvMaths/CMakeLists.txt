@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_library(OvMaths SHARED "")
 
 target_include_directories(OvMaths PUBLIC include)
-target_compile_definitions(OvMaths PRIVATE OVMATHS_EXPORT PUBLIC PLATFORM_WINDOWS)
+set_property(TARGET OvMaths PROPERTY DEFINE_SYMBOL "OVMATHS_EXPORT")
 
 add_subdirectory(src/OvMaths)
 add_subdirectory(include/OvMaths)

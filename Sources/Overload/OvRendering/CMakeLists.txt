@@ -6,7 +6,7 @@ add_library(OvRendering SHARED "")
 
 target_link_libraries(OvRendering PUBLIC opengl32 glew PRIVATE stb_image assimp OvMaths OvDebug)
 target_include_directories(OvRendering PUBLIC include)
-target_compile_definitions(OvRendering PRIVATE OVRENDERING_EXPORT PUBLIC PLATFORM_WINDOWS)
+set_property(TARGET OvRendering PROPERTY DEFINE_SYMBOL "OVRENDERING_EXPORT")
 
 add_subdirectory(src/OvRendering)
 add_subdirectory(include/OvRendering)

@@ -10,7 +10,6 @@ endif()
 
 target_link_libraries(OvGame OvAnalytics OvDebug OvCore OvAudio OvRendering OvWindowing OvTools OvMaths OvUI OvPhysics)
 target_include_directories(OvGame PUBLIC include)
-target_compile_definitions(OvGame PRIVATE OVGAME_EXPORT PUBLIC PLATFORM_WINDOWS)
 
 add_subdirectory(src/OvGame)
 add_subdirectory(include/OvGame)

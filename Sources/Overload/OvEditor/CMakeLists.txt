@@ -6,7 +6,6 @@ add_executable(OvEditor "")
 
 target_link_libraries(OvEditor OvAnalytics OvDebug OvCore OvAudio OvRendering OvWindowing OvTools OvMaths OvUI OvPhysics)
 target_include_directories(OvEditor PUBLIC include)
-target_compile_definitions(OvEditor PRIVATE OVEDITOR_EXPORT PUBLIC PLATFORM_WINDOWS)
 
 add_subdirectory(src/OvEditor)
 add_subdirectory(include/OvEditor)
