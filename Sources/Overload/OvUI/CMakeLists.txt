@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.13)
 project(OvUI)
 set(CMAKE_CXX_STANDARD 17)
 
-include(${OVERLOAD_CMAKE_DIR}/glew.cmake)
-include(${OVERLOAD_CMAKE_DIR}/glfw.cmake)
-
 add_library(OvUI SHARED "")
 
 target_link_libraries(OvUI glew glfw opengl32 OvTools OvMaths)

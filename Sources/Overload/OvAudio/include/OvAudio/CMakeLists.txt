@@ -1,0 +1,12 @@
+target_sources(OvAudio
+	PUBLIC
+	Core/AudioEngine.h
+	Core/AudioPlayer.h
+	Entities/AudioListener.h
+	Entities/AudioSource.h
+	Resources/Sound.h
+	Resources/Loaders/SoundLoader.h
+	Tracking/SoundStopEventBinder.h
+	Tracking/SoundTracker.h
+	API/Export.h
+	)

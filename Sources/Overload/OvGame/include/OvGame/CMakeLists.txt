@@ -1,0 +1,11 @@
+target_sources(OvGame
+	PUBLIC
+	Core/Application.h
+	Core/Context.h
+	Core/Game.h
+	Core/GameRenderer.h
+	Debug/DriverInfo.h
+	Debug/FrameInfo.h
+	Debug/GameProfiler.h
+	Utils/FPSCounter.h
+	)

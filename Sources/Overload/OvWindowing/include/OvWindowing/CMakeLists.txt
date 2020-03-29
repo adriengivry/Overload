@@ -1,0 +1,20 @@
+target_sources(OvWindowing
+	PUBLIC
+	Window.h
+	Context/Device.h
+	Context/EDeviceError.h
+	Cursor/ECursorMode.h
+	Cursor/ECursorShape.h
+	Dialogs/FileDialog.h
+	Dialogs/MessageBox.h
+	Dialogs/OpenFileDialog.h
+	Dialogs/SaveFileDialog.h
+	Inputs/EKey.h
+	Inputs/EKeyState.h
+	Inputs/EMouseButton.h
+	Inputs/EMouseButtonState.h
+	Inputs/InputManager.h
+	Settings/DeviceSettings.h
+	Settings/WindowSettings.h
+	API/Export.h
+	)
