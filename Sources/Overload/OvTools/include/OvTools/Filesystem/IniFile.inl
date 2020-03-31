@@ -43,11 +43,12 @@ namespace OvTools::Filesystem
 
 			return static_cast<T>(std::atof(m_data[p_key].c_str()));
 		}
-		else {
-            // TODO: Fix, not compiling on Linux
+		else
+		{
+			// TODO: Fix, not compiling on Linux
 			static_assert(false, "The given type must be : bool, integral, floating point or string");
-            return T();
-        }
+			return T();
+		}
 	}
 
 	template<typename T>
@@ -89,7 +90,7 @@ namespace OvTools::Filesystem
 	}
 
 	template<typename T>
-	inline bool IniFile::Add(const std::string & p_key, const T & p_value)
+	inline bool IniFile::Add(const std::string& p_key, const T& p_value)
 	{
 		if (!IsKeyExisting(p_key))
 		{

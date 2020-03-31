@@ -14,10 +14,11 @@
 const OvMaths::FVector4 OvMaths::FVector4::One(1.0f, 1.0f, 1.0f, 1.0f);
 const OvMaths::FVector4 OvMaths::FVector4::Zero(0.0f, 0.0f, 0.0f, 0.0f);
 
-OvMaths::FVector4::FVector4(float p_x, float p_y, float p_z, float p_w) : x(p_x), y(p_y), z(p_z), w(p_w) {
+OvMaths::FVector4::FVector4(float p_x, float p_y, float p_z, float p_w) : x(p_x), y(p_y), z(p_z), w(p_w)
+{
 }
 
-OvMaths::FVector4::FVector4(const FVector4 &p_toCopy) : x(p_toCopy.x), y(p_toCopy.y), z(p_toCopy.z), w(p_toCopy.w)
+OvMaths::FVector4::FVector4(const FVector4& p_toCopy) : x(p_toCopy.x), y(p_toCopy.y), z(p_toCopy.z), w(p_toCopy.w)
 {
 }
 
@@ -80,7 +81,7 @@ OvMaths::FVector4& OvMaths::FVector4::operator/=(float p_scalar)
 	return *this;
 }
 
-bool OvMaths::FVector4::operator==(const FVector4 & p_other)
+bool OvMaths::FVector4::operator==(const FVector4& p_other)
 {
 	return
 		this->x == p_other.x &&
@@ -89,7 +90,7 @@ bool OvMaths::FVector4::operator==(const FVector4 & p_other)
 		this->w == p_other.w;
 }
 
-bool OvMaths::FVector4::operator!=(const FVector4 & p_other)
+bool OvMaths::FVector4::operator!=(const FVector4& p_other)
 {
 	return !operator==(p_other);
 }
@@ -102,7 +103,7 @@ OvMaths::FVector4 OvMaths::FVector4::Add(const FVector4& p_left, const FVector4&
 		p_left.y + p_right.y,
 		p_left.z + p_right.z,
 		p_left.w + p_right.w
-	);
+		);
 }
 
 OvMaths::FVector4 OvMaths::FVector4::Substract(const FVector4& p_left, const FVector4& p_right)
@@ -113,7 +114,7 @@ OvMaths::FVector4 OvMaths::FVector4::Substract(const FVector4& p_left, const FVe
 		p_left.y - p_right.y,
 		p_left.z - p_right.z,
 		p_left.w - p_right.w
-	);
+		);
 }
 
 OvMaths::FVector4 OvMaths::FVector4::Multiply(const FVector4& p_target, float p_scalar)
@@ -124,7 +125,7 @@ OvMaths::FVector4 OvMaths::FVector4::Multiply(const FVector4& p_target, float p_
 		p_target.y * p_scalar,
 		p_target.z * p_scalar,
 		p_target.w * p_scalar
-	);
+		);
 }
 
 OvMaths::FVector4 OvMaths::FVector4::Divide(const FVector4& p_left, float p_scalar)
@@ -166,7 +167,7 @@ OvMaths::FVector4 OvMaths::FVector4::Normalize(const FVector4& p_target)
 			p_target.y * targetLength,
 			p_target.z * targetLength,
 			p_target.w * targetLength
-		);
+			);
 	}
 	else
 	{

@@ -13,10 +13,11 @@
 #include "OvMaths/FMatrix3.h"
 
 const OvMaths::FMatrix3 OvMaths::FMatrix3::Identity = OvMaths::FMatrix3(1.0f, 0.0f, 0.0f,
-																		0.0f, 1.0f, 0.0f,
-																		0.0f, 0.0f, 1.0f);
+	0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 1.0f);
 
-OvMaths::FMatrix3::FMatrix3() {
+OvMaths::FMatrix3::FMatrix3()
+{
 	memcpy(data, Identity.data, 9 * sizeof(float));
 }
 
@@ -66,7 +67,7 @@ OvMaths::FMatrix3& OvMaths::FMatrix3::operator+=(const OvMaths::FMatrix3& p_othe
 	return *this;
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::operator-(const OvMaths::FMatrix3& p_other) const
+OvMaths::FMatrix3 OvMaths::FMatrix3::operator-(const OvMaths::FMatrix3& p_other) const
 {
 	return Subtract(*this, p_other);
 }
@@ -139,7 +140,7 @@ bool OvMaths::FMatrix3::AreEquals(const OvMaths::FMatrix3& p_left, const OvMaths
 	return memcmp(&p_left, &p_right, 9 * sizeof(float)) == 0;
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Add(const OvMaths::FMatrix3 & p_left, float p_scalar)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Add(const OvMaths::FMatrix3& p_left, float p_scalar)
 {
 	FMatrix3 result(p_left);
 	for (uint8_t i = 0; i < 9; ++i)
@@ -147,7 +148,7 @@ OvMaths::FMatrix3 OvMaths ::FMatrix3::Add(const OvMaths::FMatrix3 & p_left, floa
 	return result;
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Add(const OvMaths::FMatrix3& p_left, const OvMaths::FMatrix3 & p_right)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Add(const OvMaths::FMatrix3& p_left, const OvMaths::FMatrix3& p_right)
 {
 	FMatrix3 result(p_left);
 	for (uint8_t i = 0; i < 9; ++i)
@@ -165,7 +166,7 @@ OvMaths::FMatrix3 OvMaths::FMatrix3::Subtract(const OvMaths::FMatrix3& p_left, f
 	return result;
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Subtract(const OvMaths::FMatrix3& p_left, const OvMaths::FMatrix3& p_right)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Subtract(const OvMaths::FMatrix3& p_left, const OvMaths::FMatrix3& p_right)
 {
 	FMatrix3 result(p_left);
 	for (uint8_t i = 0; i < 9; ++i)
@@ -199,8 +200,8 @@ OvMaths::FVector3 OvMaths::FMatrix3::Multiply(const OvMaths::FMatrix3& p_matrix,
 OvMaths::FMatrix3 OvMaths::FMatrix3::Multiply(const OvMaths::FMatrix3& p_left, const OvMaths::FMatrix3& p_right)
 {
 	return FMatrix3(
-		(p_left.data[0] * p_right.data[0]) + (p_left.data[1] * p_right.data[3]) + (p_left.data[2
-		] * p_right.data[6]),
+	(p_left.data[0] * p_right.data[0]) + (p_left.data[1] * p_right.data[3]) + (p_left.data[2
+	] * p_right.data[6]),
 		(p_left.data[0] * p_right.data[1]) + (p_left.data[1] * p_right.data[4]) + (p_left.data[2
 		] * p_right.data[7]),
 		(p_left.data[0] * p_right.data[2]) + (p_left.data[1] * p_right.data[5]) + (p_left.data[2
@@ -221,7 +222,7 @@ OvMaths::FMatrix3 OvMaths::FMatrix3::Multiply(const OvMaths::FMatrix3& p_left, c
 		] * p_right.data[8]));
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Divide(const OvMaths::FMatrix3& p_left, float p_scalar)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Divide(const OvMaths::FMatrix3& p_left, float p_scalar)
 {
 	FMatrix3 result(p_left);
 	for (float& element : result.data)
@@ -231,13 +232,13 @@ OvMaths::FMatrix3 OvMaths ::FMatrix3::Divide(const OvMaths::FMatrix3& p_left, fl
 	return result;
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Divide(const OvMaths::FMatrix3& p_left, const OvMaths::FMatrix3 & p_right)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Divide(const OvMaths::FMatrix3& p_left, const OvMaths::FMatrix3& p_right)
 {
 	return p_left * Inverse(p_right);
 }
 
 bool OvMaths::FMatrix3::IsIdentity(const OvMaths::FMatrix3& p_matrix)
-{ 
+{
 	return memcmp(Identity.data, p_matrix.data, 9 * sizeof(float)) == 0;
 }
 
@@ -248,7 +249,7 @@ float OvMaths::FMatrix3::Determinant(const OvMaths::FMatrix3& p_matrix)
 		+ p_matrix.data[6] * (p_matrix.data[1] * p_matrix.data[5] - p_matrix.data[2] * p_matrix.data[4]);
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Transpose(const OvMaths::FMatrix3& p_matrix)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Transpose(const OvMaths::FMatrix3& p_matrix)
 {
 	FMatrix3 result;
 
@@ -265,12 +266,12 @@ OvMaths::FMatrix3 OvMaths ::FMatrix3::Transpose(const OvMaths::FMatrix3& p_matri
 	result.data[8] = p_matrix.data[8];
 
 	return result;
-} 
+}
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Cofactor(const OvMaths::FMatrix3& p_matrix)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Cofactor(const OvMaths::FMatrix3& p_matrix)
 {
 	return FMatrix3(
-		((p_matrix.data[4] * p_matrix.data[8]) - (p_matrix.data[5] * p_matrix.data[7])), //0
+	((p_matrix.data[4] * p_matrix.data[8]) - (p_matrix.data[5] * p_matrix.data[7])), //0
 		-((p_matrix.data[3] * p_matrix.data[8]) - (p_matrix.data[5] * p_matrix.data[6])), //1
 		((p_matrix.data[3] * p_matrix.data[7]) - (p_matrix.data[4] * p_matrix.data[6])), //2
 		-((p_matrix.data[1] * p_matrix.data[8]) - (p_matrix.data[2] * p_matrix.data[7])), //3
@@ -281,10 +282,10 @@ OvMaths::FMatrix3 OvMaths ::FMatrix3::Cofactor(const OvMaths::FMatrix3& p_matrix
 		((p_matrix.data[0] * p_matrix.data[4]) - (p_matrix.data[1] * p_matrix.data[3]))); //8
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Minor(const OvMaths::FMatrix3& p_matrix)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Minor(const OvMaths::FMatrix3& p_matrix)
 {
 	return FMatrix3(
-		((p_matrix.data[4] * p_matrix.data[8]) - (p_matrix.data[5] * p_matrix.data[7])), //0
+	((p_matrix.data[4] * p_matrix.data[8]) - (p_matrix.data[5] * p_matrix.data[7])), //0
 		((p_matrix.data[3] * p_matrix.data[8]) - (p_matrix.data[5] * p_matrix.data[6])), //1
 		((p_matrix.data[3] * p_matrix.data[7]) - (p_matrix.data[4] * p_matrix.data[6])), //2
 		((p_matrix.data[1] * p_matrix.data[8]) - (p_matrix.data[2] * p_matrix.data[7])), //3
@@ -295,12 +296,12 @@ OvMaths::FMatrix3 OvMaths ::FMatrix3::Minor(const OvMaths::FMatrix3& p_matrix)
 		((p_matrix.data[0] * p_matrix.data[4]) - (p_matrix.data[1] * p_matrix.data[3]))); //8
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Adjoint(const OvMaths::FMatrix3& p_other)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Adjoint(const OvMaths::FMatrix3& p_other)
 {
 	return Transpose(Cofactor(p_other));
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Inverse(const OvMaths::FMatrix3& p_matrix)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Inverse(const OvMaths::FMatrix3& p_matrix)
 {
 	const float determinant = Determinant(p_matrix);
 	if (determinant == 0)
@@ -312,11 +313,11 @@ OvMaths::FMatrix3 OvMaths ::FMatrix3::Inverse(const OvMaths::FMatrix3& p_matrix)
 OvMaths::FMatrix3 OvMaths::FMatrix3::Translation(const FVector2& p_translation)
 {
 	return FMatrix3(1, 0, p_translation.x,
-					0, 1, p_translation.y,
-					0, 0, 1);
+		0, 1, p_translation.y,
+		0, 0, 1);
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Translate(const OvMaths::FMatrix3& p_matrix, const FVector2& p_translation)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Translate(const OvMaths::FMatrix3& p_matrix, const FVector2& p_translation)
 {
 	return p_matrix * Translation(p_translation);
 }
@@ -324,28 +325,28 @@ OvMaths::FMatrix3 OvMaths ::FMatrix3::Translate(const OvMaths::FMatrix3& p_matri
 OvMaths::FMatrix3 OvMaths::FMatrix3::Rotation(float p_rotation)
 {
 	return FMatrix3(std::cos(p_rotation), -std::sin(p_rotation), 0,
-					std::sin(p_rotation), std::cos(p_rotation), 0,
-					0, 0, 1);
+		std::sin(p_rotation), std::cos(p_rotation), 0,
+		0, 0, 1);
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Rotate(const OvMaths::FMatrix3& p_matrix, float p_rotation)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Rotate(const OvMaths::FMatrix3& p_matrix, float p_rotation)
 {
 	return p_matrix * Rotation(p_rotation);
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Scaling(const FVector2 & p_scale)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Scaling(const FVector2& p_scale)
 {
 	return FMatrix3(p_scale.x, 0, 0,
-					0, p_scale.y, 0,
-					0, 0, 1);
+		0, p_scale.y, 0,
+		0, 0, 1);
 }
 
-OvMaths::FMatrix3 OvMaths ::FMatrix3::Scale(const OvMaths::FMatrix3 & p_matrix, const FVector2 & p_scale)
+OvMaths::FMatrix3 OvMaths::FMatrix3::Scale(const OvMaths::FMatrix3& p_matrix, const FVector2& p_scale)
 {
 	return p_matrix * Scaling(p_scale);
 }
 
-OvMaths::FVector3 OvMaths::FMatrix3::GetRow(const FMatrix3& p_matrix, uint8_t p_row) 
+OvMaths::FVector3 OvMaths::FMatrix3::GetRow(const FMatrix3& p_matrix, uint8_t p_row)
 {
 	if (p_row >= 3)
 		throw std::out_of_range("Invalid index : " + std::to_string(p_row) + " is out of range");

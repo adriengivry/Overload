@@ -92,36 +92,40 @@ namespace OvDebug
 		return i;
 	}
 #else
+	inline std::ostream& blue(std::ostream& s)
+	{
+		s << "\033[34m";
+		return s;
+	}
 
-    inline std::ostream &blue(std::ostream &s) {
-        s << "\033[34m";
-        return s;
-    }
+	inline std::ostream& red(std::ostream& s)
+	{
+		s << "\033[31m";
+		return s;
+	}
 
-    inline std::ostream &red(std::ostream &s) {
-        s << "\033[31m";
-        return s;
-    }
+	inline std::ostream& green(std::ostream& s)
+	{
+		s << "\033[32m";
+		return s;
+	}
 
-    inline std::ostream &green(std::ostream &s) {
-        s << "\033[32m";
-        return s;
-    }
+	inline std::ostream& yellow(std::ostream& s)
+	{
+		s << "\033[43m";
+		return s;
+	}
 
-    inline std::ostream &yellow(std::ostream &s) {
-        s << "\033[43m";
-        return s;
-    }
+	inline std::ostream& white(std::ostream& s)
+	{
+		s << "\033[37m";
+		return s;
+	}
 
-    inline std::ostream &white(std::ostream &s) {
-        s << "\033[37m";
-        return s;
-    }
-
-    inline std::ostream &grey(std::ostream &s) {
-        s << "\033[30m";
-        return s;
-    }
-
+	inline std::ostream& grey(std::ostream& s)
+	{
+		s << "\033[30m";
+		return s;
+	}
 #endif // PLATFORM_WINDOWS
 }
