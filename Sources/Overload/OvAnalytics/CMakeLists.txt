@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_library(OvAnalytics SHARED "")
 
+target_link_libraries(OvAnalytics OvTools)
 target_include_directories(OvAnalytics PUBLIC include)
 set_property(TARGET OvAnalytics PROPERTY DEFINE_SYMBOL "OVANALYTICS_EXPORT")
 

@@ -6,19 +6,17 @@
 
 #pragma once
 
+#include "OvTools/Utils/Platform.h"
+
 #pragma warning(disable : 4251)
 #pragma warning(disable : 4275)
 
-#ifdef OVTOOLS_EXPORT
 #ifdef PLATFORM_WINDOWS
+#ifdef OVTOOLS_EXPORT
 #define API_OVTOOLS __declspec(dllexport)
 #else
-#define API_OVTOOLS
-#endif // PLATFORM_WINDOWS
-#else
-#ifdef PLATFORM_WINDOWS
 #define API_OVTOOLS __declspec(dllimport)
-#else
+#endif // OVTOOLS_EXPORT
+#elif PLATFORM_LINUX
 #define API_OVTOOLS
 #endif // PLATFORM_WINDOWS
-#endif // OVTOOLS_EXPORT

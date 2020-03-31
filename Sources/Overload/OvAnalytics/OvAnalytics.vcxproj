@@ -45,13 +45,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Build\OvTools\include\;$(IncludePath)</IncludePath>
     <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Build\OvTools\include\;$(IncludePath)</IncludePath>
     <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

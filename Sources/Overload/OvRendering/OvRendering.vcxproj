@@ -45,14 +45,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Dependencies\glew\include\;$(SolutionDir)..\..\Dependencies\stb_image\include\;$(SolutionDir)..\..\Dependencies\assimp\include\;$(SolutionDir)..\..\Build\OvMaths\include\;$(SolutionDir)..\..\Build\OvDebug\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Dependencies\glew\include\;$(SolutionDir)..\..\Dependencies\stb_image\include\;$(SolutionDir)..\..\Dependencies\assimp\include\;$(SolutionDir)..\..\Build\OvMaths\include\;$(SolutionDir)..\..\Build\OvDebug\include\;$(SolutionDir)..\..\Build\OvTools\include\;$(IncludePath)</IncludePath>
     <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
     <LibraryPath>$(SolutionDir)..\..\Dependencies\glew\lib\;$(SolutionDir)..\..\Dependencies\assimp\lib\;$(SolutionDir)..\..\Build\OvMaths\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvDebug\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Dependencies\glew\include\;$(SolutionDir)..\..\Dependencies\stb_image\include\;$(SolutionDir)..\..\Dependencies\assimp\include\;$(SolutionDir)..\..\Build\OvMaths\include\;$(SolutionDir)..\..\Build\OvDebug\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Dependencies\glew\include\;$(SolutionDir)..\..\Dependencies\stb_image\include\;$(SolutionDir)..\..\Dependencies\assimp\include\;$(SolutionDir)..\..\Build\OvMaths\include\;$(SolutionDir)..\..\Build\OvDebug\include\;$(SolutionDir)..\..\Build\OvTools\include\;$(IncludePath)</IncludePath>
     <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
     <LibraryPath>$(SolutionDir)..\..\Dependencies\glew\lib\;$(SolutionDir)..\..\Dependencies\assimp\lib\;$(SolutionDir)..\..\Build\OvMaths\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvDebug\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
