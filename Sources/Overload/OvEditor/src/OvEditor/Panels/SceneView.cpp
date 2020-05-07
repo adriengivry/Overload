@@ -100,7 +100,7 @@ void OvEditor::Panels::SceneView::RenderScene(uint8_t p_defaultRenderState)
 	m_editorRenderer.RenderCameras();
 
 	// If the game is playing, and ShowGeometryFrustumCullingInSceneView is true, apply the game view frustum culling to the scene view (For debugging purposes)
-	if (auto gameViewFrustum = gameView.GetActiveFrustum(); gameViewFrustum.has_value() && gameView.GetCamera().HasFrustumLightCulling() && Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView)
+	if (auto gameViewFrustum = gameView.GetActiveFrustum(); gameViewFrustum.has_value() && gameView.GetCamera().HasFrustumGeometryCulling() && Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView)
 	{
 		m_camera.SetFrustumGeometryCulling(gameView.HasCamera() ? gameView.GetCamera().HasFrustumGeometryCulling() : false);
 		m_editorRenderer.RenderScene(m_cameraPosition, m_camera, &gameViewFrustum.value());
