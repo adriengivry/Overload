@@ -121,7 +121,7 @@ namespace OvEditor::Core
 	private:
 		bool m_firstMouse = true;
 		float m_distanceToActor = 0.0f;
-		OvCore::ECS::Actor* m_target;
+		OvCore::ECS::Actor* m_target = nullptr;
 		EGizmoOperation m_currentOperation;
 		EDirection m_direction;
 		OvMaths::FTransform m_originalTransform;

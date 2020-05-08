@@ -38,7 +38,7 @@ namespace OvEditor::Core
 			if constexpr (std::is_base_of<OvUI::Panels::PanelWindow, T>::value)
 			{
 				m_panels.emplace(p_id, std::make_unique<T>(p_id, std::forward<Args>(p_args)...));
-				T& instance = *reinterpret_cast<T*>(m_panels.at(p_id).get());
+				T& instance = *static_cast<T*>(m_panels.at(p_id).get());
 				GetPanelAs<OvEditor::Panels::MenuBar>("Menu Bar").RegisterPanel(instance.name, instance);
 			}
 			else
@@ -56,7 +56,7 @@ namespace OvEditor::Core
 		template<typename T>
 		T& GetPanelAs(const std::string& p_id)
 		{
-			return *reinterpret_cast<T*>(m_panels[p_id].get());
+			return *static_cast<T*>(m_panels[p_id].get());
 		}
 
 	private:
