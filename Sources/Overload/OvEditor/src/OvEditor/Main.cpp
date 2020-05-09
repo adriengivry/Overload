@@ -14,6 +14,11 @@
 #undef APIENTRY
 #include "Windows.h"
 
+extern "C"
+{
+	__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
+}
+
 /**
 * When Overload is launched from a project file, we should consider the executable path as
 * the current working directory
