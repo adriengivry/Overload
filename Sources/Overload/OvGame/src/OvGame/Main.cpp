@@ -4,12 +4,11 @@
 * @licence: MIT
 */
 
+#include <OvRendering/Utils/Defines.h>
+
 #include "OvGame/Core/Application.h"
 
-extern "C"
-{
-	__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
-}
+FORCE_DEDICATED_GPU
 
 #ifdef _DEBUG
 int main()

@@ -165,6 +165,7 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
     <ClInclude Include="include\OvRendering\Settings\ERenderingCapability.h" />
     <ClInclude Include="include\OvRendering\Settings\EComparaisonAlgorithm.h" />
     <ClInclude Include="include\OvRendering\Settings\ETextureFilteringMode.h" />
+    <ClInclude Include="include\OvRendering\Utils\Defines.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OvRendering\Buffers\Framebuffer.cpp" />

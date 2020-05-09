@@ -8,16 +8,15 @@
 
 #include <OvTools/Utils/String.h>
 
+#include <OvRendering/Utils/Defines.h>
+
 #include "OvEditor/Core/ProjectHub.h"
 #include "OvEditor/Core/Application.h"
 
 #undef APIENTRY
 #include "Windows.h"
 
-extern "C"
-{
-	__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
-}
+FORCE_DEDICATED_GPU
 
 /**
 * When Overload is launched from a project file, we should consider the executable path as
