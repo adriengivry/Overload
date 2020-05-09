@@ -4,7 +4,11 @@
 * @licence: MIT
 */
 
+#include <OvRendering/Utils/Defines.h>
+
 #include "OvGame/Core/Application.h"
+
+FORCE_DEDICATED_GPU
 
 #ifdef _DEBUG
 int main()
