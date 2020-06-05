@@ -52,6 +52,11 @@ namespace OvUI::Internal
 		*/
 		void DrawWidgets();
 
+        /**
+        * Allow the user to reverse the draw order of this widget container
+        */
+        void ReverseDrawOrder(bool reversed = true);
+
 		/**
 		* Create a widget
 		* @param p_args
@@ -72,5 +77,6 @@ namespace OvUI::Internal
 
 	protected:
 		std::vector<std::pair<OvUI::Widgets::AWidget*, Internal::EMemoryMode>> m_widgets;
+        bool m_reversedDrawOrder = false;
 	};
 }
