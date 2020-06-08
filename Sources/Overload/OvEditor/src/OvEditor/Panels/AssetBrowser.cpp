@@ -509,9 +509,12 @@ public:
 
 		if (message.GetUserAction() == MessageBox::EUserAction::YES)
 		{
-			EDITOR_EXEC(PropagateFolderDestruction(filePath));
-			std::filesystem::remove_all(filePath);
-			DestroyedEvent.Invoke(filePath);
+			if (std::filesystem::exists(filePath) == true)
+			{
+				EDITOR_EXEC(PropagateFolderDestruction(filePath));
+				std::filesystem::remove_all(filePath);
+				DestroyedEvent.Invoke(filePath);
+			}
 		}
 	}
 
