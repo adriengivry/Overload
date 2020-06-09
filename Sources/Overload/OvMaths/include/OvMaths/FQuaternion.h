@@ -29,7 +29,7 @@ namespace OvMaths
 		/**
 		* Return an identity quaternion
 		*/
-		static FQuaternion Identity();
+		static const FQuaternion Identity;
 
 		/**
 		* Default Quaternion constructor (Create an identity quaternion with 1 as w)

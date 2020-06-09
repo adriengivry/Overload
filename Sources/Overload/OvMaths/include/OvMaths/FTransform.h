@@ -26,7 +26,7 @@ namespace OvMaths
 		* @param p_localRotation
 		* @param p_localScale
 		*/
-		FTransform(FVector3 p_localPosition = FVector3(0.0f, 0.0f, 0.0f), FQuaternion p_localRotation = FQuaternion::Identity(), FVector3 p_localScale = FVector3(1.0f, 1.0f, 1.0f));
+		FTransform(FVector3 p_localPosition = FVector3(0.0f, 0.0f, 0.0f), FQuaternion p_localRotation = FQuaternion::Identity, FVector3 p_localScale = FVector3(1.0f, 1.0f, 1.0f));
 
 		/**
 		* Destructor of the transform.
