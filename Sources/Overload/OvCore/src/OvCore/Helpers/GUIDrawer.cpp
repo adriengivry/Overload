@@ -155,7 +155,7 @@ OvUI::Widgets::Visual::Image& OvCore::Helpers::GUIDrawer::DrawTexture(OvUI::Inte
 			if (auto resource = OVSERVICE(OvCore::ResourceManagement::TextureManager).GetResource(p_receivedData.first); resource)
 			{
 				p_data = resource;
-				widget.textureID.d = resource->id;
+				widget.textureID.id = resource->id;
 				if (p_updateNotifier)
 					p_updateNotifier->Invoke();
 			}
@@ -169,7 +169,7 @@ OvUI::Widgets::Visual::Image& OvCore::Helpers::GUIDrawer::DrawTexture(OvUI::Inte
 	resetButton.ClickedEvent += [&widget, &p_data, p_updateNotifier]
 	{
 		p_data = nullptr;
-		widget.textureID.d = (__EMPTY_TEXTURE ? __EMPTY_TEXTURE->id : 0);
+		widget.textureID.id = (__EMPTY_TEXTURE ? __EMPTY_TEXTURE->id : 0);
 		if (p_updateNotifier)
 			p_updateNotifier->Invoke();
 	};

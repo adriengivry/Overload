@@ -93,7 +93,7 @@ public:
 		if (ImGui::IsItemHovered())
 		{
 			if (texture)
-				image.textureID.d = texture->id;
+				image.textureID.id = texture->id;
 
 			ImGui::BeginTooltip();
 			image.Draw();

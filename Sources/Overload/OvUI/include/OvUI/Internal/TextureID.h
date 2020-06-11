@@ -15,7 +15,7 @@ namespace OvUI::Internal
 	*/
 	union TextureID
 	{
-		uint32_t d;
+		uint32_t id;
 		void* raw;
 	};
 }
