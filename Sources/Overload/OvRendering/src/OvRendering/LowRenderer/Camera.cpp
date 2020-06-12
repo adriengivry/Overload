@@ -9,7 +9,7 @@
 #include "OvRendering/LowRenderer/Camera.h"
 #include "OvMaths/FMatrix4.h"
 
-OvRendering::LowRenderer::Camera::Camera(OvMaths::FTransform* p_transform) :
+OvRendering::LowRenderer::Camera::Camera() :
 	m_fov(45.0f),
 	m_near(0.1f),
 	m_far(100.f),
