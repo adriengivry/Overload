@@ -439,73 +439,131 @@ void OvEditor::Core::EditorRenderer::RenderActorOutlinePass(OvCore::ECS::Actor& 
 	}
 }
 
+void DrawFrustumLines(OvRendering::Core::ShapeDrawer& p_drawer,
+                      const OvMaths::FVector3& pos,
+                      const OvMaths::FVector3& forward,
+                      float near,
+                      const float far,
+                      const OvMaths::FVector3& a,
+                      const OvMaths::FVector3& b,
+                      const OvMaths::FVector3& c,
+                      const OvMaths::FVector3& d,
+                      const OvMaths::FVector3& e,
+                      const OvMaths::FVector3& f,
+                      const OvMaths::FVector3& g,
+                      const OvMaths::FVector3& h)
+{
+    // Convenient lambda to draw a frustum line
+    auto draw = [&](const FVector3& p_start, const FVector3& p_end, const float planeDistance)
+    {
+        auto offset = pos + forward * planeDistance;
+        auto start = offset + p_start;
+        auto end = offset + p_end;
+        p_drawer.DrawLine(start, end, FRUSTUM_COLOR);
+    };
+
+    // Draw near plane
+    draw(a, b, near);
+    draw(b, d, near);
+    draw(d, c, near);
+    draw(c, a, near);
+
+    // Draw far plane
+    draw(e, f, far);
+    draw(f, h, far);
+    draw(h, g, far);
+    draw(g, e, far);
+
+    // Draw lines between near and far planes
+    draw(a + forward * near, e + forward * far, 0);
+    draw(b + forward * near, f + forward * far, 0);
+    draw(c + forward * near, g + forward * far, 0);
+    draw(d + forward * near, h + forward * far, 0);
+}
+
+void OvEditor::Core::EditorRenderer::RenderCameraPerspectiveFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera)
+{
+    const auto& owner = p_camera.owner;
+    auto& camera = p_camera.GetCamera();
+
+    const auto& cameraPos = owner.transform.GetWorldPosition();
+    const auto& cameraRotation = owner.transform.GetWorldRotation();
+    const auto& cameraForward = owner.transform.GetWorldForward();
+
+    camera.CacheMatrices(p_size.first, p_size.second, cameraPos, cameraRotation);
+    const auto proj = FMatrix4::Transpose(camera.GetProjectionMatrix());
+    const auto near = camera.GetNear();
+    const auto far = camera.GetFar();
+
+    const auto nLeft = near * (proj.data[2] - 1.0f) / proj.data[0];
+    const auto nRight = near * (1.0f + proj.data[2]) / proj.data[0];
+    const auto nTop = near * (1.0f + proj.data[6]) / proj.data[5];
+    const auto nBottom = near * (proj.data[6] - 1.0f) / proj.data[5];
+
+    const auto fLeft = far * (proj.data[2] - 1.0f) / proj.data[0];
+    const auto fRight = far * (1.0f + proj.data[2]) / proj.data[0];
+    const auto fTop = far * (1.0f + proj.data[6]) / proj.data[5];
+    const auto fBottom = far * (proj.data[6] - 1.0f) / proj.data[5];
+
+    auto a = cameraRotation * FVector3{ nLeft, nTop, 0 };
+    auto b = cameraRotation * FVector3{ nRight, nTop, 0 };
+    auto c = cameraRotation * FVector3{ nLeft, nBottom, 0 };
+    auto d = cameraRotation * FVector3{ nRight, nBottom, 0 };
+    auto e = cameraRotation * FVector3{ fLeft, fTop, 0 };
+    auto f = cameraRotation * FVector3{ fRight, fTop, 0 };
+    auto g = cameraRotation * FVector3{ fLeft, fBottom, 0 };
+    auto h = cameraRotation * FVector3{ fRight, fBottom, 0 };
+
+    DrawFrustumLines(*m_context.shapeDrawer, cameraPos, cameraForward, near, far, a, b, c, d, e, f, g, h);
+}
+
+void OvEditor::Core::EditorRenderer::RenderCameraOrthographicFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera)
+{
+    auto& owner = p_camera.owner;
+    auto& camera = p_camera.GetCamera();
+    const auto ratio = p_size.first / static_cast<float>(p_size.second);
+
+    const auto& cameraPos = owner.transform.GetWorldPosition();
+    const auto& cameraRotation = owner.transform.GetWorldRotation();
+    const auto& cameraForward = owner.transform.GetWorldForward();
+
+    const auto near = camera.GetNear();
+    const auto far = camera.GetFar();
+    const auto size = p_camera.GetSize();
+
+    const auto right = ratio * size;
+    const auto left = -right;
+    const auto top = size;
+    const auto bottom = -top;
+
+    const auto a = cameraRotation * FVector3{ left, top, 0 };
+    const auto b = cameraRotation * FVector3{ right, top, 0 };
+    const auto c = cameraRotation * FVector3{ left, bottom, 0 };
+    const auto d = cameraRotation * FVector3{ right, bottom, 0 };
+
+    DrawFrustumLines(*m_context.shapeDrawer, cameraPos, cameraForward, near, far, a, b, c, d, a, b, c, d);
+}
+
 void OvEditor::Core::EditorRenderer::RenderCameraFrustum(OvCore::ECS::Components::CCamera& p_camera)
 {
-	auto& gameView = EDITOR_PANEL(Panels::GameView, "Game View");
-	auto gameViewSize = gameView.GetSafeSize();
+    auto& gameView = EDITOR_PANEL(Panels::GameView, "Game View");
+    auto gameViewSize = gameView.GetSafeSize();
 
-	if (gameViewSize.first == 0 || gameViewSize.second == 0)
-	{
-		gameViewSize = { 16, 9 };
-	}
+    if (gameViewSize.first == 0 || gameViewSize.second == 0)
+    {
+        gameViewSize = { 16, 9 };
+    }
 
-	auto& owner = p_camera.owner;
-	auto& camera = p_camera.GetCamera();
-
-	const auto& cameraPos = owner.transform.GetWorldPosition();
-	const auto& cameraRotation = owner.transform.GetWorldRotation();
-	const auto& cameraForward = owner.transform.GetWorldForward();
-
-	auto drawFrustumLine = [&](const FVector3& p_start, const FVector3& p_end, float planeDistance)
-	{
-		auto offset = cameraPos + cameraForward * planeDistance;
-		auto start = offset + p_start;
-		auto end = offset + p_end;
-		m_context.shapeDrawer->DrawLine(start, end, FRUSTUM_COLOR);
-	};
-
-	camera.CacheMatrices(gameViewSize.first, gameViewSize.second, cameraPos, cameraRotation);
-	const auto proj = FMatrix4::Transpose(camera.GetProjectionMatrix());
-	const auto near = camera.GetNear();
-	const auto far = camera.GetFar();
-
-	const auto nLeft	= near * (proj.data[2] - 1.0f) / proj.data[0];
-	const auto nRight	= near * (1.0f + proj.data[2]) / proj.data[0];
-	const auto nTop		= near * (1.0f + proj.data[6]) / proj.data[5];
-	const auto nBottom	= near * (proj.data[6] - 1.0f) / proj.data[5];
-
-	// Get the sides of the far plane.
-	const auto fLeft	= far * (proj.data[2] - 1.0f) / proj.data[0];
-	const auto fRight	= far * (1.0f + proj.data[2]) / proj.data[0];
-	const auto fTop		= far * (1.0f + proj.data[6]) / proj.data[5];
-	const auto fBottom	= far * (proj.data[6] - 1.0f) / proj.data[5];
-
-	auto a = cameraRotation * FVector3{ nLeft, nTop, 0 };
-	auto b = cameraRotation * FVector3{ nRight, nTop, 0 };
-	auto c = cameraRotation * FVector3{ nLeft, nBottom, 0 };
-	auto d = cameraRotation * FVector3{ nRight, nBottom, 0 };
-	auto e = cameraRotation * FVector3{ fLeft, fTop, 0 };
-	auto f = cameraRotation * FVector3{ fRight, fTop, 0 };
-	auto g = cameraRotation * FVector3{ fLeft, fBottom, 0 };
-	auto h = cameraRotation * FVector3{ fRight, fBottom, 0 };
-
-	// Draw near plane
-	drawFrustumLine(a, b, near);
-	drawFrustumLine(b, d, near);
-	drawFrustumLine(d, c, near);
-	drawFrustumLine(c, a, near);
-
-	// Draw far plane
-	drawFrustumLine(e, f, far);
-	drawFrustumLine(f, h, far);
-	drawFrustumLine(h, g, far);
-	drawFrustumLine(g, e, far);
-
-	// Draw lines between near and far planes
-	drawFrustumLine(a + cameraForward * near, e + cameraForward * far, 0);
-	drawFrustumLine(b + cameraForward * near, f + cameraForward * far, 0);
-	drawFrustumLine(c + cameraForward * near, g + cameraForward * far, 0);
-	drawFrustumLine(d + cameraForward * near, h + cameraForward * far, 0);
+    switch (p_camera.GetProjectionMode())
+    {
+    case OvRendering::Settings::EProjectionMode::ORTHOGRAPHIC:
+        RenderCameraOrthographicFrustum(gameViewSize, p_camera);
+        break;
+    
+    case OvRendering::Settings::EProjectionMode::PERSPECTIVE:
+        RenderCameraPerspectiveFrustum(gameViewSize, p_camera);
+        break;
+    }
 }
 
 void OvEditor::Core::EditorRenderer::RenderActorCollider(OvCore::ECS::Actor & p_actor)

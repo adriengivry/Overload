@@ -449,18 +449,27 @@ OvMaths::FMatrix4 OvMaths::FMatrix4::CreatePerspective(const float p_fov, const 
 	const float width = height * p_aspectRatio;
 
 	return CreateFrustum(-width, width, -height, height, p_zNear, p_zFar);
+}
 
-	/*float const rad = p_fov;
-	float const tanHalfFovy = tan(rad / 2);
+OvMaths::FMatrix4 OvMaths::FMatrix4::CreateOrthographic(const float p_size, const float p_aspectRatio, const float p_zNear, const float p_zFar)
+{
+    auto ortho = OvMaths::FMatrix4::Identity;
 
-	OvMaths::FMatrix4 frustum;
-	frustum.data[0] = 1.0f / (p_aspectRatio * tanHalfFovy);
-	frustum.data[5] = 1.0f / (tanHalfFovy);
-	frustum.data[10] = -(p_zFar + p_zNear) / (p_zFar - p_zNear);
-	frustum.data[11] = -1.0f;
-	frustum.data[14] = -(2.0f * p_zFar * p_zNear) / (p_zFar - p_zNear);
-	return frustum;*/
+    const auto right = p_size * p_aspectRatio;
+    const auto left = -right;
 
+    const auto top = p_size;
+    const auto bottom = -top;
+
+    ortho(0, 0) = 2.0f / (right - left);
+    ortho(1, 1) = 2.0f / (top - bottom);
+    ortho(2, 2) = -2.0f / (p_zFar - p_zNear);
+    ortho(0, 3) = -(right + left) / (right - left);
+    ortho(1, 3) = -(top + bottom) / (top - bottom);
+    ortho(2, 3) = -(p_zFar + p_zNear) / (p_zFar - p_zNear);
+    ortho(3, 3) = 1.0f;
+
+    return ortho;
 }
 
 OvMaths::FMatrix4 OvMaths::FMatrix4::CreateView(const float p_eyeX, const float p_eyeY, const float p_eyeZ, const float p_lookX, const float p_lookY, const float p_lookZ, const float p_upX, const float p_upY, const float p_upZ)

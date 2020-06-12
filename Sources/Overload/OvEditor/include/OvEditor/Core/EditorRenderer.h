@@ -110,6 +110,20 @@ namespace OvEditor::Core
 		*/
 		void RenderActorOutlinePass(OvCore::ECS::Actor& p_actor, bool p_toStencil, bool p_isSelected = false);
 
+        /**
+        * Render the camera perspective frustum
+        * @param p_size
+        * @param p_camera
+        */
+        void RenderCameraPerspectiveFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera);
+
+        /**
+        * Render the camera orthographic frustum
+        * @param p_size
+        * @param p_camera
+        */
+        void RenderCameraOrthographicFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera);
+
 		/**
 		* Render the camera frustum
 		*/

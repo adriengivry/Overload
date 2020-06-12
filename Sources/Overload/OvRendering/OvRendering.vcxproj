@@ -161,6 +161,7 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
     <ClInclude Include="include\OvRendering\Settings\ECullingOptions.h" />
     <ClInclude Include="include\OvRendering\Settings\EOperation.h" />
     <ClInclude Include="include\OvRendering\Settings\EPrimitiveMode.h" />
+    <ClInclude Include="include\OvRendering\Settings\EProjectionMode.h" />
     <ClInclude Include="include\OvRendering\Settings\ERasterizationMode.h" />
     <ClInclude Include="include\OvRendering\Settings\ERenderingCapability.h" />
     <ClInclude Include="include\OvRendering\Settings\EComparaisonAlgorithm.h" />

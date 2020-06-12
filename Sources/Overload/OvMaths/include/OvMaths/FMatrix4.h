@@ -350,6 +350,15 @@ namespace OvMaths
 		*/
 		static FMatrix4 CreatePerspective(const float p_fov, const float p_aspectRatio, const float p_zNear, const float p_zFar);
 
+        /**
+        * Returns an orthographic matrix
+        * @param p_size
+        * @param p_aspectRatio
+        * @param p_zNear
+        * @param p_zFar
+        */
+        static FMatrix4 CreateOrthographic(const float p_size, const float p_aspectRatio, const float p_zNear, const float p_zFar);
+
 		/**
 		* Return view matrix
 		* @param p_eyeX

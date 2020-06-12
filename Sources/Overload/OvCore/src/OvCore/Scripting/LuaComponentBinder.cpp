@@ -137,20 +137,30 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"SetHeight", &CPhysicalCapsule::SetHeight
 		);
 
+    p_luaState.new_enum<OvRendering::Settings::EProjectionMode>("ProjectionMode",
+    {
+        {"ORTHOGRAPHIC",	OvRendering::Settings::EProjectionMode::ORTHOGRAPHIC},
+        {"PERSPECTIVE",		OvRendering::Settings::EProjectionMode::PERSPECTIVE}
+    });
+
 	p_luaState.new_usertype<CCamera>("Camera",
 		sol::base_classes, sol::bases<AComponent>(),
 		"GetFov", &CCamera::GetFov,
+		"GetSize", &CCamera::GetSize,
 		"GetNear", &CCamera::GetNear,
 		"GetFar", &CCamera::GetFar,
 		"GetClearColor", &CCamera::GetClearColor,
 		"SetFov", &CCamera::SetFov,
+		"SetSize", &CCamera::SetSize,
 		"SetNear", &CCamera::SetNear,
 		"SetFar", &CCamera::SetFar,
 		"SetClearColor", &CCamera::SetClearColor,
         "HasFrustumGeometryCulling", &CCamera::HasFrustumGeometryCulling,
         "HasFrustumLightCulling", &CCamera::HasFrustumLightCulling,
+        "GetProjectionMode", &CCamera::GetProjectionMode,
         "SetFrustumGeometryCulling", &CCamera::SetFrustumGeometryCulling,
-        "SetFrustumLightCulling", &CCamera::SetFrustumLightCulling
+        "SetFrustumLightCulling", &CCamera::SetFrustumLightCulling,
+        "SetProjectionMode", &CCamera::SetProjectionMode
 		);
 
 	p_luaState.new_usertype<CLight>("Light",
