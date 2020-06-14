@@ -16,10 +16,7 @@
 #define TO_RADIANS(value) value * PI / 180.f
 #define TO_DEGREES(value) value * 180.f / PI
 
-OvMaths::FQuaternion OvMaths::FQuaternion::Identity()
-{
-	return FQuaternion{ 0.0f, 0.0f, 0.0f, 1.0f };
-}
+const OvMaths::FQuaternion OvMaths::FQuaternion::Identity = OvMaths::FQuaternion(0.0f, 0.0f, 0.0f, 1.0f);
 
 OvMaths::FQuaternion::FQuaternion() :
 	x(0.0f), y(0.0f), z(0.0f), w(1.0f)
@@ -188,7 +185,7 @@ OvMaths::FQuaternion OvMaths::FQuaternion::LookAt(const FVector3& p_forward, con
 
 
 	float num8 = (m00 + m11) + m22;
-	auto quaternion = OvMaths::FQuaternion::Identity();
+	auto quaternion = OvMaths::FQuaternion::Identity;
 	if (num8 > 0.f)
 	{
 		auto num = sqrt(num8 + 1.f);
