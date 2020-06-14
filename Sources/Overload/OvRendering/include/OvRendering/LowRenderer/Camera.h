@@ -25,9 +25,8 @@ namespace OvRendering::LowRenderer
 	public:
 		/**
 		* Constructor
-		* @param p_transform
 		*/
-		Camera(OvMaths::FTransform* p_transform = nullptr);
+		Camera();
 
 		/**
 		* Cache the projection, view and frustum matrices
