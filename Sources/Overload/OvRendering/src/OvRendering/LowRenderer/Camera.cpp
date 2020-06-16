@@ -10,7 +10,9 @@
 #include "OvMaths/FMatrix4.h"
 
 OvRendering::LowRenderer::Camera::Camera() :
+    m_projectionMode(Settings::EProjectionMode::PERSPECTIVE),
 	m_fov(45.0f),
+    m_size(5.0f),
 	m_near(0.1f),
 	m_far(100.f),
 	m_clearColor(0.f, 0.f, 0.f),
@@ -44,6 +46,11 @@ void OvRendering::LowRenderer::Camera::CacheFrustum(const OvMaths::FMatrix4& p_v
 float OvRendering::LowRenderer::Camera::GetFov() const
 {
 	return m_fov;
+}
+
+float OvRendering::LowRenderer::Camera::GetSize() const
+{
+    return m_size;
 }
 
 float OvRendering::LowRenderer::Camera::GetNear() const
@@ -86,9 +93,19 @@ bool OvRendering::LowRenderer::Camera::HasFrustumLightCulling() const
 	return m_frustumLightCulling;
 }
 
+OvRendering::Settings::EProjectionMode OvRendering::LowRenderer::Camera::GetProjectionMode() const
+{
+    return m_projectionMode;
+}
+
 void OvRendering::LowRenderer::Camera::SetFov(float p_value)
 {
 	m_fov = p_value;
+}
+
+void OvRendering::LowRenderer::Camera::SetSize(float p_value)
+{
+    m_size = p_value;
 }
 
 void OvRendering::LowRenderer::Camera::SetNear(float p_value)
@@ -116,9 +133,29 @@ void OvRendering::LowRenderer::Camera::SetFrustumLightCulling(bool p_enable)
 	m_frustumLightCulling = p_enable;
 }
 
+void OvRendering::LowRenderer::Camera::SetProjectionMode(OvRendering::Settings::EProjectionMode p_projectionMode)
+{
+    m_projectionMode = p_projectionMode;
+}
+
 OvMaths::FMatrix4 OvRendering::LowRenderer::Camera::CalculateProjectionMatrix(uint16_t p_windowWidth, uint16_t p_windowHeight) const
 {
-	return OvMaths::FMatrix4::CreatePerspective(m_fov, static_cast<float>(p_windowWidth) / static_cast<float>(p_windowHeight), m_near, m_far);
+    using namespace OvMaths;
+    using namespace OvRendering::Settings;
+
+    const auto ratio = p_windowWidth / static_cast<float>(p_windowHeight);
+
+    switch (m_projectionMode)
+    {
+    case EProjectionMode::ORTHOGRAPHIC:
+        return FMatrix4::CreateOrthographic(m_size, ratio, m_near, m_far);
+
+    case EProjectionMode::PERSPECTIVE: 
+        return FMatrix4::CreatePerspective(m_fov, ratio, m_near, m_far);
+
+    default:
+        return FMatrix4::Identity;
+    }
 }
 
 OvMaths::FMatrix4 OvRendering::LowRenderer::Camera::CalculateViewMatrix(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation) const
