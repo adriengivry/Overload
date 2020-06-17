@@ -21,6 +21,7 @@
 #include <OvWindowing/Dialogs/OpenFileDialog.h>
 #include <OvTools/Utils/SystemCalls.h>
 #include <OvTools/Utils/PathParser.h>
+#include <OvTools/Utils/String.h>
 
 #include <OvCore/Global/ServiceLocator.h>
 #include <OvCore/ResourceManagement/ModelManager.h>
@@ -593,12 +594,14 @@ public:
 				if (size_t pos = filePathWithoutExtension.rfind('.'); pos != std::string::npos)
 					filePathWithoutExtension = filePathWithoutExtension.substr(0, pos);
 
-				std::string newNameWithoutExtension = filePathWithoutExtension + " (Copy)";
 				std::string extension = "." + OvTools::Utils::PathParser::GetExtension(filePath);
-				while (std::filesystem::exists(newNameWithoutExtension + extension))
-				{
-					newNameWithoutExtension += " (Copy)";
-				}
+
+                auto filenameAvailable = [&extension](const std::string& target)
+                {
+                    return !std::filesystem::exists(target + extension);
+                };
+
+                const auto newNameWithoutExtension = OvTools::Utils::String::GenerateUnique(filePathWithoutExtension, filenameAvailable);
 
 				std::string finalPath = newNameWithoutExtension + extension;
 				std::filesystem::copy(filePath, finalPath);
