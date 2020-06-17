@@ -3,7 +3,10 @@
 <p align="center">
   <a href="https://github.com/adriengivry/Overload/releases">Releases</a> |
   <a href="#screenshots">Screenshots</a> |
-  <a href="#features">Features</a>
+  <a href="#features">Features</a> |
+  <a href="https://github.com/adriengivry/Overload/wiki">Wiki</a> |
+  <a href="https://github.com/adriengivry/Overload/blob/develop/CONTRIBUTING.md">Contributing</a>
+<br/>
 <br/>
 <br/>
 <a href="https://github.com/adriengivry/Overload/releases"><img alt="platforms" src="https://img.shields.io/badge/platforms-Windows-blue?style=flat-square"/></a>
@@ -16,6 +19,9 @@
 <a href="https://github.com/adriengivry/Overload/blob/develop/LICENSE"><img alt="license" src="https://img.shields.io/github/license/adriengivry/overload?color=green&style=flat-square"/></a>
 <a href="https://github.com/adriengivry/Overload/releases"><img alt="downloads" src="https://img.shields.io/github/downloads/adriengivry/overload/total?color=green&style=flat-square"></a>
 <br/>
+<br/>
+<br/>
+<a href="https://discord.gg/wqe775s"><img src="https://img.shields.io/discord/622075717659656195.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" height=30></img></a>
 </p>
 
 # 1. What is Overload
@@ -126,8 +132,16 @@ https://www.youtube.com/watch?v=ARXSJh-ZMHM
 And join our Discord Server:<br>
 https://discord.gg/wqe775s<br>
 
+# 5. Getting started
+Learn how to create your own games using Overload by visiting our [wiki](https://github.com/adriengivry/Overload/wiki).
+
+# 6. Contributing
+Overload is opened to any contribution. Do not hesitate to open issues (Features or bugs) or create pull requests.
+
+If you want to help us, visit our [CONTRIBUTING.md](https://github.com/adriengivry/Overload/blob/develop/CONTRIBUTING.md) guidelines document.
+
 <span name="screenshots"></span>
-# 5. Screenshots
+# 7. Screenshots
 ![Advanced lighting](Showcase/Advanced_Lighting.jpg)
 ![Standard shaders](Showcase/Standard_Shaders.jpg)
 ![User shaders support](Showcase/Custom_Shaders.jpg)
