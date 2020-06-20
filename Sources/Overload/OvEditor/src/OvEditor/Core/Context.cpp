@@ -75,7 +75,7 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 	uiManager->EnableDocking(true);
 
 	if (!std::filesystem::exists(std::string(getenv("APPDATA")) + "\\OverloadTech\\OvEditor\\layout.ini"))
-		ImGui::LoadIniSettingsFromDisk("Config\\layout.ini");
+		uiManager->ResetLayout("Config\\layout.ini");
 
 	/* Audio */
 	audioEngine = std::make_unique<OvAudio::Core::AudioEngine>(projectAssetsPath);

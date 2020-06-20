@@ -362,8 +362,7 @@ void OvEditor::Core::EditorActions::SetActorSpawnMode(EActorSpawnMode p_value)
 
 void OvEditor::Core::EditorActions::ResetLayout()
 {
-	// TODO
-	std::filesystem::copy_file("default.ini", std::string(getenv("APPDATA")) + "/OverloadTech/OvEditor/layout.ini", std::filesystem::copy_options::overwrite_existing);
+    DelayAction([this]() {m_context.uiManager->ResetLayout("Config\\layout.ini"); });
 }
 
 void OvEditor::Core::EditorActions::SetSceneViewCameraSpeed(int p_speed)
