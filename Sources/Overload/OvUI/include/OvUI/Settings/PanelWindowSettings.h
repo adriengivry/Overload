@@ -19,6 +19,7 @@ namespace OvUI::Settings
 		bool resizable					= true;
 		bool movable					= true;
 		bool dockable					= false;
+		bool scrollable					= true;
 		bool hideBackground				= false;
 		bool forceHorizontalScrollbar	= false;
 		bool forceVerticalScrollbar		= false;

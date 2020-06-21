@@ -14,6 +14,7 @@ OvUI::Panels::PanelWindow::PanelWindow(const std::string& p_name, bool p_opened,
 	resizable(p_floatingPanelSettings.resizable),
 	closable(p_floatingPanelSettings.closable),
 	movable(p_floatingPanelSettings.movable),
+	scrollable(p_floatingPanelSettings.scrollable),
 	dockable(p_floatingPanelSettings.dockable),
 	hideBackground(p_floatingPanelSettings.hideBackground),
 	forceHorizontalScrollbar(p_floatingPanelSettings.forceHorizontalScrollbar),
@@ -102,6 +103,7 @@ void OvUI::Panels::PanelWindow::_Draw_Impl()
 		if (!bringToFrontOnFocus)		windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
 		if (!collapsable)				windowFlags |= ImGuiWindowFlags_NoCollapse;
 		if (!allowInputs)				windowFlags |= ImGuiWindowFlags_NoInputs;
+        if (!scrollable)                windowFlags |= ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar;
 
 		ImVec2 minSizeConstraint = Internal::Converter::ToImVec2(minSize);
 		ImVec2 maxSizeConstraint = Internal::Converter::ToImVec2(maxSize);

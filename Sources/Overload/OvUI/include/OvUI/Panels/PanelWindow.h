@@ -87,6 +87,7 @@ namespace OvUI::Panels
 		bool resizable = true;
 		bool closable = false;
 		bool movable = true;
+		bool scrollable = true;
 		bool dockable = false;
 		bool hideBackground = false;
 		bool forceHorizontalScrollbar = false;
