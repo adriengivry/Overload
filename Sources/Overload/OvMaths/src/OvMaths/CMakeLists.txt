@@ -1,0 +1,11 @@
+target_sources(OvMaths
+        PRIVATE
+        FMatrix3.cpp
+        FMatrix4.cpp
+        FQuaternion.cpp
+        FTransform.cpp
+        FVector2.cpp
+        FVector3.cpp
+        FVector4.cpp
+        Internal/TransformNotifier.cpp
+        )

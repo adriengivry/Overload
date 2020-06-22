@@ -1,0 +1,12 @@
+target_sources(OvGame
+	PRIVATE
+	Main.cpp
+	Core/Application.cpp
+	Core/Context.cpp
+	Core/Game.cpp
+	Core/GameRenderer.cpp
+	Debug/DriverInfo.cpp
+	Debug/FrameInfo.cpp
+	Debug/GameProfiler.cpp
+	Utils/FPSCounter.cpp
+	)

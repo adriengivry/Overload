@@ -1,0 +1,11 @@
+target_sources(OvAudio
+	PRIVATE
+	Core/AudioEngine.cpp
+	Core/AudioPlayer.cpp
+	Entities/AudioListener.cpp
+	Entities/AudioSource.cpp
+	Resources/Sound.cpp
+	Resources/Loaders/SoundLoader.cpp
+	Tracking/SoundStopEventBinder.cpp
+	Tracking/SoundTracker.cpp
+	)

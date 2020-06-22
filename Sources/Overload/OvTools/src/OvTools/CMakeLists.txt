@@ -1,0 +1,11 @@
+target_sources(OvTools
+        PRIVATE
+        Filesystem/IniFile.cpp
+        Filesystem/tinyxml2.cpp
+        Time/Clock.cpp
+        Time/Date.cpp
+        Utils/PathParser.cpp
+        Utils/Random.cpp
+        Utils/String.cpp
+        Utils/SystemCalls.cpp
+        )

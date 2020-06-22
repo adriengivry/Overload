@@ -1,0 +1,13 @@
+target_sources(OvPhysics
+        PUBLIC
+        Core/PhysicsEngine.h
+        Entities/PhysicalBox.h
+        Entities/PhysicalCapsule.h
+        Entities/PhysicalObject.h
+        Entities/PhysicalSphere.h
+        Entities/RaycastHit.h
+        Settings/BodySettings.h
+        Settings/PhysicsSettings.h
+        Tools/Conversion.h
+        API/Export.h
+        )

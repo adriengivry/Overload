@@ -1,0 +1,10 @@
+target_sources(OvWindowing
+	PRIVATE
+	Window.cpp
+	Context/Device.cpp
+	Dialogs/FileDialog.cpp
+	Dialogs/MessageBox.cpp
+	Dialogs/OpenFileDialog.cpp
+	Dialogs/SaveFileDialog.cpp
+	Inputs/InputManager.cpp
+	)

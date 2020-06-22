@@ -1,0 +1,22 @@
+target_sources(OvRendering
+	PRIVATE
+	Buffers/Framebuffer.cpp
+	Buffers/IndexBuffer.cpp
+	Buffers/ShaderStorageBuffer.cpp
+	Buffers/UniformBuffer.cpp
+	Buffers/VertexArray.cpp
+	Context/Driver.cpp
+	Core/Renderer.cpp
+	Core/ShapeDrawer.cpp
+	Data/Frustum.cpp
+	Entities/Light.cpp
+	LowRenderer/Camera.cpp
+	Resources/Mesh.cpp
+	Resources/Model.cpp
+	Resources/Shader.cpp
+	Resources/Texture.cpp
+	Resources/Loaders/ModelLoader.cpp
+	Resources/Loaders/ShaderLoader.cpp
+	Resources/Loaders/TextureLoader.cpp
+	Resources/Parsers/AssimpParser.cpp
+	)

@@ -1,0 +1,12 @@
+target_sources(OvDebug
+        PUBLIC
+        Utils/Assertion.h
+        Utils/ConsoleColor.h
+        Utils/ConsoleHandler.h
+        Utils/FileHandler.h
+        Utils/HistoryHandler.h
+        Utils/ILogHandler.h
+        Utils/Logger.h
+        Utils/Logger.inl
+        API/Export.h
+        )
