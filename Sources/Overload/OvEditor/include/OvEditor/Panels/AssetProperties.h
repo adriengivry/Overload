@@ -9,6 +9,7 @@
 #include <variant>
 
 #include <OvTools/Filesystem/IniFile.h>
+#include <OvTools/Eventing/Event.h>
 
 #include <OvUI/Widgets/Texts/Text.h>
 #include <OvUI/Panels/PanelWindow.h>
@@ -20,7 +21,7 @@
 
 namespace OvEditor::Panels
 {
-	class AssetMetadataEditor : public OvUI::Panels::PanelWindow
+	class AssetProperties : public OvUI::Panels::PanelWindow
 	{
 	public:
 		using EditableAssets = std::variant<OvRendering::Resources::Model*, OvRendering::Resources::Texture*>;
@@ -31,7 +32,7 @@ namespace OvEditor::Panels
 		* @param p_opened
 		* @param p_windowSettings
 		*/
-		AssetMetadataEditor
+		AssetProperties
 		(
 			const std::string& p_title,
 			bool p_opened,
@@ -44,6 +45,11 @@ namespace OvEditor::Panels
 		*/
 		void SetTarget(const std::string& p_path);
 
+        /**
+        * Refresh the panel to show the current target settings
+        */
+        void Refresh();
+
 		/**
 		* Launch the preview of the target asset
 		*/
@@ -51,7 +57,9 @@ namespace OvEditor::Panels
 
 	private:
 		void CreateHeaderButtons();
+        void CreateAssetSelector();
 		void CreateSettings();
+		void CreateInfo();
 		void CreateModelSettings();
 		void CreateTextureSettings();
 		void Apply();
@@ -59,7 +67,18 @@ namespace OvEditor::Panels
 	private:
 		std::string m_resource;
 
-		OvUI::Widgets::Layout::Columns<2>* m_settings = nullptr;
+        OvTools::Eventing::Event<> m_targetChanged;
+        OvUI::Widgets::Layout::Group* m_settings = nullptr;
+        OvUI::Widgets::Layout::Group* m_info = nullptr;
+        OvUI::Widgets::Buttons::Button* m_applyButton = nullptr;
+        OvUI::Widgets::Buttons::Button* m_revertButton = nullptr;
+        OvUI::Widgets::Buttons::Button* m_previewButton = nullptr;
+        OvUI::Widgets::Buttons::Button* m_resetButton = nullptr;
+        OvUI::Widgets::AWidget* m_headerSeparator = nullptr;
+        OvUI::Widgets::AWidget* m_headerLineBreak = nullptr;
+		OvUI::Widgets::Layout::Columns<2>* m_settingsColumns = nullptr;
+		OvUI::Widgets::Layout::Columns<2>* m_infoColumns = nullptr;
+        OvUI::Widgets::Texts::Text* m_assetSelector = nullptr;
 		std::unique_ptr<OvTools::Filesystem::IniFile> m_metadata;
 	};
 }

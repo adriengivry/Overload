@@ -22,7 +22,7 @@
 #include "OvEditor/Panels/Toolbar.h"
 #include "OvEditor/Panels/MaterialEditor.h"
 #include "OvEditor/Panels/ProjectSettings.h"
-#include "OvEditor/Panels/AssetMetadataEditor.h"
+#include "OvEditor/Panels/AssetProperties.h"
 
 using namespace OvCore::ResourceManagement;
 using namespace OvEditor::Panels;
@@ -66,7 +66,7 @@ void OvEditor::Core::Editor::SetupUI()
 	m_panelsManager.CreatePanel<OvEditor::Panels::Toolbar>("Toolbar", true, settings);
 	m_panelsManager.CreatePanel<OvEditor::Panels::MaterialEditor>("Material Editor", false, settings);
 	m_panelsManager.CreatePanel<OvEditor::Panels::ProjectSettings>("Project Settings", false, settings);
-	m_panelsManager.CreatePanel<OvEditor::Panels::AssetMetadataEditor>("Asset Metadata Editor", false, settings);
+	m_panelsManager.CreatePanel<OvEditor::Panels::AssetProperties>("Asset Properties", false, settings);
 
 	m_canvas.MakeDockspace(true);
 	m_context.uiManager->SetCanvas(m_canvas);

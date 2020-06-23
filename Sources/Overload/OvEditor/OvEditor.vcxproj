@@ -146,7 +146,7 @@ xcopy "$(ProjectDir)Layout.ini" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Conf
     <ClCompile Include="src\OvEditor\Core\PanelsManager.cpp" />
     <ClCompile Include="src\OvEditor\Core\ProjectHub.cpp" />
     <ClCompile Include="src\OvEditor\Panels\AssetBrowser.cpp" />
-    <ClCompile Include="src\OvEditor\Panels\AssetMetadataEditor.cpp" />
+    <ClCompile Include="src\OvEditor\Panels\AssetProperties.cpp" />
     <ClCompile Include="src\OvEditor\Panels\AssetView.cpp" />
     <ClCompile Include="src\OvEditor\Panels\AView.cpp" />
     <ClCompile Include="src\OvEditor\Panels\AViewControllable.cpp" />
@@ -177,7 +177,7 @@ xcopy "$(ProjectDir)Layout.ini" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Conf
     <ClInclude Include="include\OvEditor\Core\GizmoBehaviour.h" />
     <ClInclude Include="include\OvEditor\Core\PanelsManager.h" />
     <ClInclude Include="include\OvEditor\Core\ProjectHub.h" />
-    <ClInclude Include="include\OvEditor\Panels\AssetMetadataEditor.h" />
+    <ClInclude Include="include\OvEditor\Panels\AssetProperties.h" />
     <ClInclude Include="include\OvEditor\Resources\RawShaders.h" />
     <ClInclude Include="include\OvEditor\Resources\RawTextures.h" />
     <ClInclude Include="include\OvEditor\Panels\AssetBrowser.h" />

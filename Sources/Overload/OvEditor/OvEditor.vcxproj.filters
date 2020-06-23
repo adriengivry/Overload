@@ -102,7 +102,7 @@
     <ClCompile Include="src\OvEditor\Settings\EditorSettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\OvEditor\Panels\AssetMetadataEditor.cpp">
+    <ClCompile Include="src\OvEditor\Panels\AssetProperties.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -197,7 +197,7 @@
     <ClInclude Include="include\OvEditor\Settings\EditorSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\OvEditor\Panels\AssetMetadataEditor.h">
+    <ClInclude Include="include\OvEditor\Panels\AssetProperties.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

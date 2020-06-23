@@ -32,7 +32,7 @@
 #include "OvEditor/Panels/AssetBrowser.h"
 #include "OvEditor/Panels/AssetView.h"
 #include "OvEditor/Panels/MaterialEditor.h"
-#include "OvEditor/Panels/AssetMetadataEditor.h"
+#include "OvEditor/Panels/AssetProperties.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Core/EditorResources.h"
 
@@ -608,6 +608,18 @@ public:
 		}
 
 		BrowserItemContextualMenu::CreateList();
+
+
+        auto& editMetadata = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Properties");
+
+        editMetadata.ClickedEvent += [this]
+        {
+            auto& panel = EDITOR_PANEL(OvEditor::Panels::AssetProperties, "Asset Properties");
+            std::string resourcePath = EDITOR_EXEC(GetResourcePath(filePath, m_protected));
+            panel.SetTarget(resourcePath);
+            panel.Open();
+            panel.Focus();
+        };
 	}
 
 	virtual void DeleteItem() override
@@ -699,16 +711,6 @@ public:
 			{
 				modelManager.AResourceManager::ReloadResource(resourcePath);
 			}
-		};
-
-		auto& editMetadata = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Edit metadata");
-
-		editMetadata.ClickedEvent += [this]
-		{
-			auto& panel = EDITOR_PANEL(OvEditor::Panels::AssetMetadataEditor, "Asset Metadata Editor");
-			panel.SetTarget(filePath);
-			panel.Open();
-			panel.Focus();
 		};
 
 		if (!m_protected)
@@ -851,16 +853,6 @@ public:
 				textureManager.AResourceManager::ReloadResource(resourcePath);
 				EDITOR_PANEL(OvEditor::Panels::MaterialEditor, "Material Editor").Refresh();
 			}
-		};
-
-		auto& editMetadata = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Edit metadata");
-
-		editMetadata.ClickedEvent += [this]
-		{
-			auto& panel = EDITOR_PANEL(OvEditor::Panels::AssetMetadataEditor, "Asset Metadata Editor");
-			panel.SetTarget(filePath);
-			panel.Open();
-			panel.Focus();
 		};
 
 		PreviewableContextualMenu::CreateList();
