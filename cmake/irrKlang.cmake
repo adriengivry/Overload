@@ -1,5 +1,4 @@
 set(IRRKLANG_LOCATION "${CMAKE_SOURCE_DIR}/../../Dependencies/irrklang")
-message(${IRRKLANG_LOCATION})
 
 find_library(IRRKLANG_LIB NAMES irrklang PATHS "${IRRKLANG_LOCATION}/lib/")
 set(IRRKLANG_DLL "${IRRKLANG_LOCATION}/bin/irrklang.dll")
