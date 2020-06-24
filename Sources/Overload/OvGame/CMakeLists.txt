@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.13)
 project(OvGame)
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(OvGame "")
+if(WIN32)
+	add_executable(OvGame OvGame.rc)
+else()
+	add_executable(OvGame "")
+endif()
 
 # Build OvGame with a console when in debug.
 if(WIN32)

@@ -2,7 +2,12 @@ cmake_minimum_required(VERSION 3.13)
 project(OvEditor)
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(OvEditor "")
+if(WIN32)
+	add_executable(OvEditor OvEditor.rc)
+else()
+	add_executable(OvEditor "")
+endif()
+
 
 target_link_libraries(OvEditor OvAnalytics OvDebug OvCore OvAudio OvRendering OvWindowing OvTools OvMaths OvUI OvPhysics)
 target_include_directories(OvEditor PUBLIC include)
