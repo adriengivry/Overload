@@ -44,5 +44,7 @@ copy_to_output_dir_post_build(OvGame $<TARGET_FILE:OvWindowing>		$<TARGET_FILE_D
 
 # Coocking directory temporarly created here. Probably should be moved to OvEditor.
 add_custom_command(TARGET OvGame POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:OvEditor>/Builder")
-# Super hacky, copies the _entire_ build directory.
-add_custom_command(TARGET OvGame POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "$<TARGET_FILE_DIR:OvGame>" "$<TARGET_FILE_DIR:OvEditor>/Builder/Development")
+add_custom_command(TARGET OvGame POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:OvEditor>/Builder/Development")
+
+add_custom_command(TARGET OvGame POST_BUILD COMMAND cmd /C "xcopy \"$<TARGET_FILE_DIR:OvGame>\\*.dll\" \"$<TARGET_FILE_DIR:OvEditor>/Builder/Development\" /y /i /c" COMMAND_EXPAND_LISTS)
+add_custom_command(TARGET OvGame POST_BUILD COMMAND cmd /C "xcopy \"$<TARGET_FILE_DIR:OvGame>\\OvGame.exe\" \"$<TARGET_FILE_DIR:OvEditor>/Builder/Development\" /y /i /c" COMMAND_EXPAND_LISTS)
