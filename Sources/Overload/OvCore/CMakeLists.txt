@@ -12,3 +12,12 @@ target_compile_options(OvCore PRIVATE /bigobj)
 
 add_subdirectory(src/OvCore)
 add_subdirectory(include/OvCore)
+
+if(OVERLOAD_BUILD)
+	install(DIRECTORY											DESTINATION ${OVERLOAD_BUILD_DIR}/OvCore/bin)
+	install(DIRECTORY											DESTINATION ${OVERLOAD_BUILD_DIR}/OvCore/lib)
+
+	install(FILES "$<TARGET_FILE:OvCore>"						DESTINATION ${OVERLOAD_BUILD_DIR}/OvCore/bin)
+	install(DIRECTORY ./include									DESTINATION ${OVERLOAD_BUILD_DIR}/OvCore)
+	install(FILES "$<TARGET_FILE_DIR:OvCore>/OvCore.lib"		DESTINATION ${OVERLOAD_BUILD_DIR}/OvCore/lib)
+endif()

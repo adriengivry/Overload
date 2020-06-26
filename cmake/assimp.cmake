@@ -7,5 +7,3 @@ add_library(assimp SHARED IMPORTED)
 set_property(TARGET assimp PROPERTY IMPORTED_LOCATION "${ASSIMP_DLL}")
 set_property(TARGET assimp PROPERTY IMPORTED_IMPLIB "${ASSIMP_LIB}")
 target_include_directories(assimp INTERFACE "${ASSIMP_LOCATION}/include")
-
-install(FILES ${ASSIMP_DLL} DESTINATION "${OVERLOAD_BUILD_DIR}")

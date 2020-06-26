@@ -15,9 +15,6 @@ target_include_directories(OvEditor PUBLIC include)
 add_subdirectory(src/OvEditor)
 add_subdirectory(include/OvEditor)
 
-install(FILES layout.ini DESTINATION "${OVERLOAD_BUILD_DIR}/Config")
-install(DIRECTORY "${OVERLOAD_RESOURCES_DIR}/" DESTINATION "${OVERLOAD_BUILD_DIR}/Data")
-
 function(copy_to_output_dir_post_build target what where)
 	add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${what} ${where})
 endfunction()
@@ -42,3 +39,15 @@ copy_to_output_dir_post_build(OvEditor $<TARGET_FILE:OvRendering>	$<TARGET_FILE_
 copy_to_output_dir_post_build(OvEditor $<TARGET_FILE:OvTools>		$<TARGET_FILE_DIR:OvEditor>)
 copy_to_output_dir_post_build(OvEditor $<TARGET_FILE:OvUI>			$<TARGET_FILE_DIR:OvEditor>)
 copy_to_output_dir_post_build(OvEditor $<TARGET_FILE:OvWindowing>	$<TARGET_FILE_DIR:OvEditor>)
+
+install(DIRECTORY								DESTINATION ${OVERLOAD_BUILD_DIR}/OvEditor)
+install(TARGETS OvAnalytics OvAudio OvCore OvDebug OvEditor OvMaths OvPhysics OvRendering OvTools OvUI OvWindowing RUNTIME DESTINATION ${OVERLOAD_BUILD_DIR}/OvEditor)
+
+install(FILES ${GLEW_DLL}						DESTINATION ${OVERLOAD_BUILD_DIR}/OvEditor)
+install(FILES ${ASSIMP_DLL}						DESTINATION ${OVERLOAD_BUILD_DIR}/OvEditor)
+install(FILES ${LUA_DLL}						DESTINATION ${OVERLOAD_BUILD_DIR}/OvEditor)
+install(FILES ${IRRKLANG_DLLS}					DESTINATION ${OVERLOAD_BUILD_DIR}/OvEditor)
+install(FILES ${GLFW_DLL}						DESTINATION ${OVERLOAD_BUILD_DIR}/OvEditor)
+
+install(FILES layout.ini						DESTINATION ${OVERLOAD_BUILD_DIR}/OvEditor/Config)
+install(DIRECTORY ${OVERLOAD_RESOURCES_DIR}		DESTINATION ${OVERLOAD_BUILD_DIR}/OvEditor/Data)

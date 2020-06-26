@@ -7,5 +7,3 @@ add_library(glew SHARED IMPORTED)
 set_property(TARGET glew PROPERTY IMPORTED_LOCATION "${GLEW_DLL}")
 set_property(TARGET glew PROPERTY IMPORTED_IMPLIB "${GLEW_LIB}")
 target_include_directories(glew INTERFACE "${GLEW_LOCATION}/include")
-
-install(FILES "${GLEW_DLL}" DESTINATION "${OVERLOAD_BUILD_DIR}")
