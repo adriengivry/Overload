@@ -1,6 +1,4 @@
 cmake_minimum_required(VERSION 3.13)
-project(OvEditor)
-set(CMAKE_CXX_STANDARD 17)
 
 if(WIN32)
 	add_executable(OvEditor OvEditor.rc)
