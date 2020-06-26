@@ -17,8 +17,8 @@ function(copy_to_output_dir_post_build target what where)
 	add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${what} ${where})
 endfunction()
 
-file(GLOB FILES_TO_REMOVE "$<TARGET_FILE_DIR:OvGame>/*.dll")
-file(REMOVE FILES_TO_REMOVE)
+add_custom_command(TARGET OvEditor POST_BUILD COMMAND cmd /C "del \"$<TARGET_FILE_DIR:OvEditor>\\*.dll\"" COMMAND_EXPAND_LISTS)
+
 add_custom_command(TARGET OvEditor POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:OvEditor>/Config")
 copy_to_output_dir_post_build(OvEditor "${CMAKE_CURRENT_LIST_DIR}/layout.ini" "$<TARGET_FILE_DIR:OvEditor>/Config/layout.ini")
 add_custom_command(TARGET OvEditor POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${OVERLOAD_RESOURCES_DIR}" "$<TARGET_FILE_DIR:OvEditor>/Data")

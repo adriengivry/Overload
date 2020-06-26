@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.13)
 project(Overload)
 
+set(CMAKE_CXX_STANDARD 17)
+
 set(OVERLOAD_CMAKE_DIR "${CMAKE_SOURCE_DIR}/../../cmake")
 set(OVERLOAD_BUILD_DIR "${CMAKE_SOURCE_DIR}/../../Build")
 set(OVERLOAD_RESOURCES_DIR "${CMAKE_SOURCE_DIR}/../../Resources")

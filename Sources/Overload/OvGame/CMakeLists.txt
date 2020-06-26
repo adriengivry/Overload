@@ -22,8 +22,8 @@ target_include_directories(OvGame PUBLIC include)
 add_subdirectory(src/OvGame)
 add_subdirectory(include/OvGame)
 
-file(GLOB FILES_TO_REMOVE "$<TARGET_FILE_DIR:OvGame>/*.dll")
-file(REMOVE FILES_TO_REMOVE)
+add_custom_command(TARGET OvGame POST_BUILD COMMAND cmd /C "del \"$<TARGET_FILE_DIR:OvGame>\\*.dll\"" COMMAND_EXPAND_LISTS)
+
 copy_to_output_dir_post_build(OvGame ${GLFW_DLL}					$<TARGET_FILE_DIR:OvGame>)
 copy_to_output_dir_post_build(OvGame ${GLEW_DLL}					$<TARGET_FILE_DIR:OvGame>)
 copy_to_output_dir_post_build(OvGame ${IRRKLANG_DLL}				$<TARGET_FILE_DIR:OvGame>)
