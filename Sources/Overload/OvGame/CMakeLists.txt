@@ -22,25 +22,16 @@ target_include_directories(OvGame PUBLIC include)
 add_subdirectory(src/OvGame)
 add_subdirectory(include/OvGame)
 
-add_custom_command(TARGET OvGame POST_BUILD COMMAND cmd /C "del \"$<TARGET_FILE_DIR:OvGame>\\*.dll\"" COMMAND_EXPAND_LISTS)
-
 copy_to_output_dir_post_build(OvGame ${GLFW_DLL}					$<TARGET_FILE_DIR:OvGame>)
 copy_to_output_dir_post_build(OvGame ${GLEW_DLL}					$<TARGET_FILE_DIR:OvGame>)
-copy_to_output_dir_post_build(OvGame ${IRRKLANG_DLL}				$<TARGET_FILE_DIR:OvGame>)
 copy_to_output_dir_post_build(OvGame ${LUA_DLL}						$<TARGET_FILE_DIR:OvGame>)
 copy_to_output_dir_post_build(OvGame ${ASSIMP_DLL}					$<TARGET_FILE_DIR:OvGame>)
-copy_to_output_dir_post_build(OvGame $<TARGET_FILE:OvAnalytics>		$<TARGET_FILE_DIR:OvGame>)
-copy_to_output_dir_post_build(OvGame $<TARGET_FILE:OvAudio>			$<TARGET_FILE_DIR:OvGame>)
-copy_to_output_dir_post_build(OvGame $<TARGET_FILE:OvCore>			$<TARGET_FILE_DIR:OvGame>)
-copy_to_output_dir_post_build(OvGame $<TARGET_FILE:OvDebug>			$<TARGET_FILE_DIR:OvGame>)
-copy_to_output_dir_post_build(OvGame $<TARGET_FILE:OvMaths>			$<TARGET_FILE_DIR:OvGame>)
-copy_to_output_dir_post_build(OvGame $<TARGET_FILE:OvPhysics>		$<TARGET_FILE_DIR:OvGame>)
-copy_to_output_dir_post_build(OvGame $<TARGET_FILE:OvRendering>		$<TARGET_FILE_DIR:OvGame>)
-copy_to_output_dir_post_build(OvGame $<TARGET_FILE:OvTools>			$<TARGET_FILE_DIR:OvGame>)
-copy_to_output_dir_post_build(OvGame $<TARGET_FILE:OvUI>			$<TARGET_FILE_DIR:OvGame>)
-copy_to_output_dir_post_build(OvGame $<TARGET_FILE:OvWindowing>		$<TARGET_FILE_DIR:OvGame>)
+foreach(IRRKLANGDLL ${IRRKLANG_DLLS})
+	copy_to_output_dir_post_build(OvGame ${IRRKLANGDLL}				$<TARGET_FILE_DIR:OvGame>)
+endforeach()
 
-# Coocking directory temporarly created here. Probably should be moved to OvEditor.
+
+# Cooking directory temporarly created here. Probably should be moved to OvEditor.
 add_custom_command(TARGET OvGame POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:OvEditor>/Builder")
 add_custom_command(TARGET OvGame POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:OvEditor>/Builder/Development")
 

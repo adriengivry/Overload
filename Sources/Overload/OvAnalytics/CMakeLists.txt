@@ -9,6 +9,8 @@ set_property(TARGET OvAnalytics PROPERTY DEFINE_SYMBOL "OVANALYTICS_EXPORT")
 add_subdirectory(src/OvAnalytics)
 add_subdirectory(include/OvAnalytics)
 
+
+
 if(OVERLOAD_BUILD)
 	install(DIRECTORY												DESTINATION ${OVERLOAD_BUILD_DIR}/OvAnalytics/bin)
 	install(DIRECTORY												DESTINATION ${OVERLOAD_BUILD_DIR}/OvAnalytics/lib)
