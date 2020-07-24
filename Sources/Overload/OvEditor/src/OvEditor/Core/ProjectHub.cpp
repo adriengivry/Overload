@@ -301,7 +301,7 @@ void OvEditor::Core::ProjectHub::SetupContext()
 	m_renderer = std::make_unique<OvRendering::Core::Renderer>(*m_driver);
 	m_renderer->SetCapability(OvRendering::Settings::ERenderingCapability::MULTISAMPLE, true);
 
-	m_uiManager = std::make_unique<OvUI::Core::UIManager>(m_window->GetGlfwWindow(), OvUI::Styling::EStyle::DUNE_DARK);
+	m_uiManager = std::make_unique<OvUI::Core::UIManager>(m_window->GetGlfwWindow(), OvUI::Styling::EStyle::ALTERNATIVE_DARK);
 	m_uiManager->LoadFont("Ruda_Big", "Data\\Editor\\Fonts\\Ruda-Bold.ttf", 18);
 	m_uiManager->UseFont("Ruda_Big");
 	m_uiManager->EnableEditorLayoutSave(false);

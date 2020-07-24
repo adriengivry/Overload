@@ -20,6 +20,8 @@ OvEditor::Panels::AView::AView
 	m_cameraRotation = OvMaths::FQuaternion({0.0f, 135.0f, 0.0f});
 
 	m_image = &CreateWidget<OvUI::Widgets::Visual::Image>(m_fbo.GetTextureID(), OvMaths::FVector2{ 0.f, 0.f });
+
+    scrollable = false;
 }
 
 void OvEditor::Panels::AView::Update(float p_deltaTime)
