@@ -27,6 +27,7 @@ namespace OvUI::Settings
 		bool bringToFrontOnFocus		= true;
 		bool collapsable				= false;
 		bool allowInputs				= true;
+		bool titleBar					= true;
 		bool autoSize					= false;
 	};
 }
