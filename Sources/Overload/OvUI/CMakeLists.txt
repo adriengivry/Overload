@@ -8,12 +8,3 @@ set_property(TARGET OvUI PROPERTY DEFINE_SYMBOL "OVUI_EXPORT")
 
 add_subdirectory(src/OvUI)
 add_subdirectory(include/OvUI)
-
-if(OVERLOAD_BUILD)
-	install(DIRECTORY									DESTINATION ${OVERLOAD_BUILD_DIR}/OvUI/bin)
-	install(DIRECTORY									DESTINATION ${OVERLOAD_BUILD_DIR}/OvUI/lib)
-
-	install(FILES "$<TARGET_FILE:OvUI>"					DESTINATION ${OVERLOAD_BUILD_DIR}/OvUI/bin)
-	install(DIRECTORY ./include							DESTINATION ${OVERLOAD_BUILD_DIR}/OvUI)
-	install(FILES "$<TARGET_FILE_DIR:OvUI>/OvUI.lib"	DESTINATION ${OVERLOAD_BUILD_DIR}/OvUI/lib)
-endif()

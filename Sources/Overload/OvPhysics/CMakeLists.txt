@@ -8,12 +8,3 @@ set_property(TARGET OvPhysics PROPERTY DEFINE_SYMBOL "OVPHYSICS_EXPORT")
 
 add_subdirectory(src/OvPhysics)
 add_subdirectory(include/OvPhysics)
-
-if(OVERLOAD_BUILD)
-	install(DIRECTORY												DESTINATION ${OVERLOAD_BUILD_DIR}/OvPhysics/bin)
-	install(DIRECTORY												DESTINATION ${OVERLOAD_BUILD_DIR}/OvPhysics/lib)
-
-	install(FILES "$<TARGET_FILE:OvPhysics>"						DESTINATION ${OVERLOAD_BUILD_DIR}/OvPhysics/bin)
-	install(DIRECTORY ./include										DESTINATION ${OVERLOAD_BUILD_DIR}/OvPhysics)
-	install(FILES "$<TARGET_FILE_DIR:OvPhysics>/OvPhysics.lib"		DESTINATION ${OVERLOAD_BUILD_DIR}/OvPhysics/lib)
-endif()
