@@ -96,6 +96,7 @@ namespace OvUI::Panels
 		bool bringToFrontOnFocus = true;
 		bool collapsable = false;
 		bool allowInputs = true;
+		bool titleBar = true;
 
 		OvTools::Eventing::Event<> OpenEvent;
 		OvTools::Eventing::Event<> CloseEvent;

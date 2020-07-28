@@ -104,6 +104,7 @@ void OvUI::Panels::PanelWindow::_Draw_Impl()
 		if (!collapsable)				windowFlags |= ImGuiWindowFlags_NoCollapse;
 		if (!allowInputs)				windowFlags |= ImGuiWindowFlags_NoInputs;
         if (!scrollable)                windowFlags |= ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar;
+		if (!titleBar)					windowFlags |= ImGuiWindowFlags_NoTitleBar;
 
 		ImVec2 minSizeConstraint = Internal::Converter::ToImVec2(minSize);
 		ImVec2 maxSizeConstraint = Internal::Converter::ToImVec2(maxSize);

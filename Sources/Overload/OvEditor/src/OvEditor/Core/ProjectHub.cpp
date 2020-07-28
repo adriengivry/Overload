@@ -37,9 +37,8 @@ public:
 		m_projectName(p_projectName)
 	{
 		resizable = false;
-		closable = true;
-		collapsable = false;
 		movable = false;
+		titleBar = false;
 
 		std::filesystem::create_directories(std::string(getenv("APPDATA")) + "\\OverloadTech\\OvEditor\\");
 
@@ -285,7 +284,7 @@ void OvEditor::Core::ProjectHub::SetupContext()
 	windowSettings.height = 580;
 	windowSettings.maximized = false;
 	windowSettings.resizable = false;
-	windowSettings.decorated = false;
+	windowSettings.decorated = true;
 
 	/* Window creation */
 	m_device = std::make_unique<OvWindowing::Context::Device>(deviceSettings);
