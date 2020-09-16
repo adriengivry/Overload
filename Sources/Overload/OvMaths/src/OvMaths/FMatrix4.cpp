@@ -442,6 +442,16 @@ OvMaths::FMatrix4 OvMaths::FMatrix4::Scale(const FMatrix4& p_matrix, const FVect
 	return p_matrix * Scaling(p_scale);
 }
 
+OvMaths::FMatrix4 OvMaths::FMatrix4::Rotation(const FQuaternion& p_quaternion)
+{
+	return OvMaths::FQuaternion::ToMatrix4(p_quaternion);
+}
+
+OvMaths::FMatrix4 OvMaths::FMatrix4::Rotate(const FMatrix4& p_matrix, const FQuaternion& p_quaternion)
+{
+	return p_matrix * Rotation(p_quaternion);
+}
+
 OvMaths::FMatrix4 OvMaths::FMatrix4::CreatePerspective(const float p_fov, const float p_aspectRatio, const float p_zNear, const float p_zFar)
 {
 	const float tangent = tanf(p_fov / 2.0f * PI / 180.0f);

@@ -16,6 +16,11 @@
 namespace OvMaths
 {
 	/**
+	* Forward declaration due to circular reference
+	*/
+	struct FMatrix4;
+
+	/**
 	* Mathematic representation of a Quaternion with float precision
 	*/
 	struct API_OVMATHS FQuaternion
