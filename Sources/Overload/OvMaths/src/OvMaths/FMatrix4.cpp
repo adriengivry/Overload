@@ -11,6 +11,7 @@
 
 #include "OvMaths/FMatrix4.h"
 #include "OvMaths/FVector3.h"
+#include "OvMaths/FQuaternion.h"
 
 const OvMaths::FMatrix4 OvMaths::FMatrix4::Identity = FMatrix4(1.f, 0.f, 0.f, 0.f,
 															   0.f, 1.f, 0.f, 0.f,
