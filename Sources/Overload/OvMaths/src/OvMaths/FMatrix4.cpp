@@ -11,6 +11,7 @@
 
 #include "OvMaths/FMatrix4.h"
 #include "OvMaths/FVector3.h"
+#include "OvMaths/FQuaternion.h"
 
 const OvMaths::FMatrix4 OvMaths::FMatrix4::Identity = FMatrix4(1.f, 0.f, 0.f, 0.f,
 															   0.f, 1.f, 0.f, 0.f,
@@ -440,6 +441,16 @@ OvMaths::FMatrix4 OvMaths::FMatrix4::Scaling(const FVector3& p_scale)
 OvMaths::FMatrix4 OvMaths::FMatrix4::Scale(const FMatrix4& p_matrix, const FVector3& p_scale)
 {
 	return p_matrix * Scaling(p_scale);
+}
+
+OvMaths::FMatrix4 OvMaths::FMatrix4::Rotation(const FQuaternion& p_quaternion)
+{
+	return OvMaths::FQuaternion::ToMatrix4(p_quaternion);
+}
+
+OvMaths::FMatrix4 OvMaths::FMatrix4::Rotate(const FMatrix4& p_matrix, const FQuaternion& p_quaternion)
+{
+	return p_matrix * Rotation(p_quaternion);
 }
 
 OvMaths::FMatrix4 OvMaths::FMatrix4::CreatePerspective(const float p_fov, const float p_aspectRatio, const float p_zNear, const float p_zFar)
