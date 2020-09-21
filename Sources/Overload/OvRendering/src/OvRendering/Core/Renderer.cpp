@@ -102,6 +102,11 @@ void OvRendering::Core::Renderer::SetColorWriting(bool p_enable)
 	glColorMask(p_enable, p_enable, p_enable, p_enable);
 }
 
+void OvRendering::Core::Renderer::SetViewPort(uint16_t x, uint16_t y, uint16_t width, uint16_t height)
+{
+	glViewport(x, y, width, height);
+}
+
 bool OvRendering::Core::Renderer::GetBool(GLenum p_parameter)
 {
 	GLboolean result;
