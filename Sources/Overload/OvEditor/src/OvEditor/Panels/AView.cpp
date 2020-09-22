@@ -50,9 +50,9 @@ void OvEditor::Panels::AView::Render()
 
 	EDITOR_CONTEXT(shapeDrawer)->SetViewProjection(m_camera.GetProjectionMatrix() * m_camera.GetViewMatrix());
 
-	auto renderer = EDITOR_CONTEXT(renderer).get();
+	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
 
-	renderer->SetViewPort(0, 0, winWidth, winHeight);
+	baseRenderer.SetViewPort(0, 0, winWidth, winHeight);
 
 	_Render_Impl();
 }

@@ -102,9 +102,14 @@ void OvRendering::Core::Renderer::SetColorWriting(bool p_enable)
 	glColorMask(p_enable, p_enable, p_enable, p_enable);
 }
 
-void OvRendering::Core::Renderer::SetViewPort(uint16_t x, uint16_t y, uint16_t width, uint16_t height)
+void OvRendering::Core::Renderer::SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 {
 	glViewport(x, y, width, height);
+}
+
+void OvRendering::Core::Renderer::ReadPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height, Settings::EPixelDataFormat format, Settings::EPixelDataType type, void* data)
+{
+	glReadPixels(x, y, width, height, static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 
 bool OvRendering::Core::Renderer::GetBool(GLenum p_parameter)
