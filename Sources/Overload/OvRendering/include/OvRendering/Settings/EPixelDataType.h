@@ -11,7 +11,7 @@
 namespace OvRendering::Settings
 {
 	/**
-	* OpenGL rendering capability enum wrapper
+	* OpenGL pixel data type enum wrapper
 	*/
 	enum class EPixelDataType
 	{
