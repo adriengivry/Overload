@@ -135,6 +135,12 @@
     <ClInclude Include="include\OvRendering\Settings\EProjectionMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\OvRendering\Settings\EPixelDataFormat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OvRendering\Settings\EPixelDataType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OvRendering\Context\Driver.cpp">
