@@ -50,9 +50,7 @@ void OvEditor::Panels::AView::Render()
 
 	EDITOR_CONTEXT(shapeDrawer)->SetViewProjection(m_camera.GetProjectionMatrix() * m_camera.GetViewMatrix());
 
-	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
-
-	baseRenderer.SetViewPort(0, 0, winWidth, winHeight);
+	EDITOR_CONTEXT(renderer)->SetViewPort(0, 0, winWidth, winHeight);
 
 	_Render_Impl();
 }
@@ -115,4 +113,3 @@ void OvEditor::Panels::AView::PrepareCamera()
 	auto [winWidth, winHeight] = GetSafeSize();
 	m_camera.CacheMatrices(winWidth, winHeight, m_cameraPosition, m_cameraRotation);
 }
-
