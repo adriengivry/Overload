@@ -204,8 +204,7 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 
 		m_actorPickingFramebuffer.Bind();
 		uint8_t pixel[3];
-		auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
-		baseRenderer.ReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, OvRendering::Settings::EPixelDataFormat::RGB,OvRendering::Settings::EPixelDataType::UNSIGNED_BYTE,pixel);
+		EDITOR_CONTEXT(renderer)->ReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, OvRendering::Settings::EPixelDataFormat::RGB, OvRendering::Settings::EPixelDataType::UNSIGNED_BYTE, pixel);
 		m_actorPickingFramebuffer.Unbind();
 
 		uint32_t actorID = (0 << 24) | (pixel[2] << 16) | (pixel[1] << 8) | (pixel[0] << 0);
