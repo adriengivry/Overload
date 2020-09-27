@@ -1,4 +1,4 @@
-![Overload Logo](Showcase/logo.png)
+![Overload Logo](https://user-images.githubusercontent.com/33324216/94352497-cc8c2200-0033-11eb-93e1-1a30386133b9.png)
 
 <p align="center">
   <a href="https://github.com/adriengivry/Overload/releases">Releases</a> |
@@ -54,8 +54,7 @@ We designed theses libraries with reusability in mind. They are extremely modula
 - `OvGame`: Uses OvCore, asset dependent, generic executable for any game built with Overload
 - `OvEditor`: Uses OvCore, expose game development to the end-user (From creation to building)
 
-![Editor](Showcase/Masthead.jpg)
-*Preview of Overload Game Editor for its first release (v.1.0.0)*
+![Editor](https://user-images.githubusercontent.com/33324216/94352908-fd228a80-0038-11eb-849a-c076bde4c7c6.PNG)
 
 # 2. History of Overload
 ## 2.1. Context
@@ -126,7 +125,10 @@ Overload is licenced under an MIT licence.
 If you are interested in Overload, you can download our engine and the demo game we made with it on our website:<br>
 http://overloadengine.org
 
-You can also watch our features reel on YouTube:<br>
+Learn about Overload (Tutorials and Scripting API) by visiting our Wiki:<br>
+https://github.com/adriengivry/Overload/wiki
+
+You can also watch our features reel (Overload v1.0.0) on YouTube:<br>
 https://www.youtube.com/watch?v=ARXSJh-ZMHM
 
 And join our Discord Server:<br>
@@ -142,9 +144,11 @@ If you want to help us, visit our [CONTRIBUTING.md](https://github.com/adriengiv
 
 <span name="screenshots"></span>
 # 7. Screenshots
-![Advanced lighting](Showcase/Advanced_Lighting.jpg)
-![Standard shaders](Showcase/Standard_Shaders.jpg)
-![User shaders support](Showcase/Custom_Shaders.jpg)
-![Material editor](Showcase/Material_Editor.jpg)
-![PBR shading](Showcase/PBR_Shading.jpg)
-![Scene edition](Showcase/Scene_Edition.jpg)
+![PBR Shading](https://user-images.githubusercontent.com/33324216/94352806-96e93800-0037-11eb-8d7f-9c9a318ca2c7.PNG)
+![Material Editor](https://user-images.githubusercontent.com/33324216/94352805-96e93800-0037-11eb-883b-fdd8818b93a6.PNG)
+![Standard Shader Library](https://user-images.githubusercontent.com/33324216/94352810-9781ce80-0037-11eb-8788-095794711b2c.PNG)
+![Custom Shaders](https://user-images.githubusercontent.com/33324216/94352802-9650a180-0037-11eb-8931-c6b2163c0ef1.PNG)
+![Realtime Lighting](https://user-images.githubusercontent.com/33324216/94352808-9781ce80-0037-11eb-8b91-3ec0ab06db45.PNG)
+![Scene Edition](https://user-images.githubusercontent.com/33324216/94352809-9781ce80-0037-11eb-9adf-d216eb4d963e.PNG)
+![Build System](https://user-images.githubusercontent.com/33324216/94352926-5db1c780-0039-11eb-88ef-7ca14a8bc821.PNG)
+![Project Hub](https://user-images.githubusercontent.com/33324216/94352807-9781ce80-0037-11eb-911b-7e3d0d00ce41.png)
