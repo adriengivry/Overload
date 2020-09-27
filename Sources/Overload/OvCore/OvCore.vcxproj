@@ -15,6 +15,7 @@
     <ProjectGuid>{C1D2EBB7-EE2A-4D42-858B-F14F5A47B867}</ProjectGuid>
     <RootNamespace>OvCore</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
