@@ -228,25 +228,15 @@ void OvEditor::Panels::MenuBar::CreateLayoutMenu()
 
 void OvEditor::Panels::MenuBar::CreateHelpMenu()
 {
-	auto& helpMenu = CreateWidget<MenuList>("Help");
-	helpMenu.CreateWidget<MenuItem>("Overload Documentation").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org/doc/1.1/annotated.html"); };
-	helpMenu.CreateWidget<MenuItem>("Scripting Documentation").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org/api/1.1"); };
-	helpMenu.CreateWidget<MenuItem>("Overload Website").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://overloadengine.org"); };
-
-	helpMenu.CreateWidget<Visual::Separator>();
-	auto& creditsMenu = helpMenu.CreateWidget<MenuList>("Credits");
-	auto& max = creditsMenu.CreateWidget<MenuList>("Max BRUN");
-	auto& adrien = creditsMenu.CreateWidget<MenuList>("Adrien GIVRY");
-	auto& benji = creditsMenu.CreateWidget<MenuList>("Benjamin VIRANIN");
-
-	helpMenu.CreateWidget<Visual::Separator>();
-	helpMenu.CreateWidget<Texts::Text>("Current version: 1.1.1");
-
-	max.CreateWidget<MenuItem>("Website").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("https://maxbrun.wixsite.com/maxbrundevelopment"); };
-	max.CreateWidget<MenuItem>("GitHub").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("https://github.com/maxbrundev"); };
-	adrien.CreateWidget<MenuItem>("Website").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("http://adrien-givry.com/"); };
-	adrien.CreateWidget<MenuItem>("GitHub").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("https://github.com/adriengivry"); };
-	benji.CreateWidget<MenuItem>("GitHub").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("https://github.com/BenjaminViranin"); };
+    auto& helpMenu = CreateWidget<MenuList>("Help");
+    helpMenu.CreateWidget<MenuItem>("GitHub").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("https://github.com/adriengivry/Overload"); };
+    helpMenu.CreateWidget<MenuItem>("Tutorials").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("https://github.com/adriengivry/Overload/wiki/Tutorials"); };
+    helpMenu.CreateWidget<MenuItem>("Scripting API").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("https://github.com/adriengivry/Overload/wiki/Scripting-API"); };
+    helpMenu.CreateWidget<Visual::Separator>();
+    helpMenu.CreateWidget<MenuItem>("Bug Report").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("https://github.com/adriengivry/Overload/issues/new?assignees=&labels=Bug&template=bug_report.md&title="); };
+    helpMenu.CreateWidget<MenuItem>("Feature Request").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("https://github.com/adriengivry/Overload/issues/new?assignees=&labels=Feature&template=feature_request.md&title="); };
+    helpMenu.CreateWidget<Visual::Separator>();
+    helpMenu.CreateWidget<Texts::Text>("Version: 1.3.0");
 }
 
 void OvEditor::Panels::MenuBar::RegisterPanel(const std::string& p_name, OvUI::Panels::PanelWindow& p_panel)
