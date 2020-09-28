@@ -153,7 +153,7 @@ OvMaths::FMatrix4 OvEditor::Core::EditorRenderer::CalculateCameraModelMatrix(OvC
 {
 	auto translation = FMatrix4::Translation(p_actor.transform.GetWorldPosition());
 	auto rotation = FQuaternion::ToMatrix4(p_actor.transform.GetWorldRotation());
-	auto scale = FMatrix4::Scaling({ 0.4f, 0.4f, 0.4f });
+	auto scale = FMatrix4::Scaling({ 0.5f, 0.5f, 0.5f });
 
 	return translation * rotation * scale;
 }
@@ -391,7 +391,7 @@ void OvEditor::Core::EditorRenderer::RenderActorOutlinePass(OvCore::ECS::Actor& 
 		/* Render camera component outline */
 		if (auto cameraComponent = p_actor.GetComponent<OvCore::ECS::Components::CCamera>(); cameraComponent)
 		{
-			auto model = FMatrix4::Translation(p_actor.transform.GetWorldPosition()) * FQuaternion::ToMatrix4(FQuaternion::Normalize(p_actor.transform.GetWorldRotation())) * FMatrix4::Scaling({ 0.4f, 0.4f, 0.4f });
+			auto model = CalculateCameraModelMatrix(p_actor);
 
 			if (p_toStencil)
 				RenderModelToStencil(model, *m_context.editorResources->GetModel("Camera"));
