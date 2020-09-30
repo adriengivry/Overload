@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include "OvUI/Modules/Canvas.h"
@@ -26,7 +26,7 @@ void OvUI::Modules::Canvas::Draw()
 
 			ImGui::Begin("##dockspace", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking);
 			ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
-			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruDockspace);
+			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 			ImGui::SetWindowPos({ 0.f, 0.f });
 			ImVec2 displaySize = ImGui::GetIO().DisplaySize;
 			ImGui::SetWindowSize({ (float)displaySize.x, (float)displaySize.y });

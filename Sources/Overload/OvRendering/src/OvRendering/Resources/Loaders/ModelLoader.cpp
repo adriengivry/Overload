@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include "OvRendering/Resources/Loaders/ModelLoader.h"
@@ -21,6 +21,19 @@ OvRendering::Resources::Model* OvRendering::Resources::Loaders::ModelLoader::Cre
 	delete result;
 
 	return nullptr;
+}
+
+void OvRendering::Resources::Loaders::ModelLoader::Reload(Model& p_model, const std::string& p_filePath, Parsers::EModelParserFlags p_parserFlags)
+{
+	Model* newModel = Create(p_filePath, p_parserFlags);
+
+	if (newModel)
+	{
+		p_model.m_meshes = newModel->m_meshes;
+		p_model.m_materialNames = newModel->m_materialNames;
+		newModel->m_meshes.clear();
+		delete newModel;
+	}
 }
 
 bool OvRendering::Resources::Loaders::ModelLoader::Destroy(Model*& p_modelInstance)

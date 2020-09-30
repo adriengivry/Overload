@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -16,8 +16,15 @@
 #include "OvMaths/FVector3.h"
 #include "OvMaths/FVector4.h"
 
+
 namespace OvMaths
 {
+
+	/**
+	* Forward declaration due to circular reference
+	*/
+	struct FQuaternion;
+
 	/**
 	* Mathematic representation of a 4x4 Matrix of floats
 	*/
@@ -342,6 +349,19 @@ namespace OvMaths
 		static FMatrix4 Scale(const FMatrix4& p_matrix, const FVector3& p_scale);
 
 		/**
+		* Return rotation matrix from quaternion
+		* @param p_quaternion
+		*/
+		static FMatrix4 Rotation(const FQuaternion& p_quaternion);
+
+		/**
+		* Return rotate matrix in 3D on quaternion
+		* @param p_matrix
+		* @param p_quaternion
+		*/
+		static FMatrix4 Rotate(const FMatrix4& p_matrix, const FQuaternion& p_quaternion);
+
+		/**
 		* Return perspective matrix
 		* @param p_fov
 		* @param p_aspectRatio
@@ -349,6 +369,15 @@ namespace OvMaths
 		* @param p_zFar
 		*/
 		static FMatrix4 CreatePerspective(const float p_fov, const float p_aspectRatio, const float p_zNear, const float p_zFar);
+
+        /**
+        * Returns an orthographic matrix
+        * @param p_size
+        * @param p_aspectRatio
+        * @param p_zNear
+        * @param p_zFar
+        */
+        static FMatrix4 CreateOrthographic(const float p_size, const float p_aspectRatio, const float p_zNear, const float p_zFar);
 
 		/**
 		* Return view matrix

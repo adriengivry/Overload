@@ -48,6 +48,9 @@
     <ClInclude Include="include\OvTools\Utils\ReferenceOrValue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\OvTools\Utils\SizeConverter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OvTools\Utils\Random.cpp">
@@ -72,6 +75,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\OvTools\Utils\String.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OvTools\Utils\SizeConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

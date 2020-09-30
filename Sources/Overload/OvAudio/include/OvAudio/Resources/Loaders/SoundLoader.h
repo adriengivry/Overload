@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -28,6 +28,13 @@ namespace OvAudio::Resources::Loaders
 		* @param p_filepath
 		*/
 		static Sound* Create(const std::string& p_filepath);
+
+		/**
+		* Reload a sound
+		* @param p_sound
+		* @param p_path
+		*/
+		static void Reload(Sound& p_sound, const std::string& p_path);
 
 		/**
 		* Destroy a sound

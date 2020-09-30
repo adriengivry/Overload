@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include "OvCore/Scripting/LuaComponentBinder.h"
@@ -61,12 +61,22 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"GetWorldUp", &CTransform::GetWorldUp,
 		"GetWorldRight", &CTransform::GetWorldRight
 		);
+    
+    p_luaState.new_enum<OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour>("FrustumBehaviour",
+        {
+            {"DISABLED",		OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::DISABLED},
+            {"CULL_MODEL",		OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::CULL_MODEL},
+            {"CULL_MESHES",		OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::CULL_MESHES},
+            {"CULL_CUSTOM",		OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::CULL_CUSTOM}
+        });
 
 	p_luaState.new_usertype<CModelRenderer>("ModelRenderer",
 		sol::base_classes, sol::bases<AComponent>(),
 		"GetModel", &CModelRenderer::GetModel,
-		"SetModel", &CModelRenderer::SetModel
-		);
+		"SetModel", &CModelRenderer::SetModel,
+		"GetFrustumBehaviour", &CModelRenderer::GetFrustumBehaviour,
+		"SetFrustumBehaviour", &CModelRenderer::SetFrustumBehaviour
+	);
 
 	p_luaState.new_usertype<CMaterialRenderer>("MaterialRenderer",
 		sol::base_classes, sol::bases<AComponent>(),
@@ -124,19 +134,33 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"GetRadius", &CPhysicalCapsule::GetRadius,
 		"SetRadius", &CPhysicalCapsule::SetRadius,
 		"GetHeight", &CPhysicalCapsule::GetHeight,
-		"GetHeight", &CPhysicalCapsule::SetHeight
+		"SetHeight", &CPhysicalCapsule::SetHeight
 		);
+
+    p_luaState.new_enum<OvRendering::Settings::EProjectionMode>("ProjectionMode",
+    {
+        {"ORTHOGRAPHIC",	OvRendering::Settings::EProjectionMode::ORTHOGRAPHIC},
+        {"PERSPECTIVE",		OvRendering::Settings::EProjectionMode::PERSPECTIVE}
+    });
 
 	p_luaState.new_usertype<CCamera>("Camera",
 		sol::base_classes, sol::bases<AComponent>(),
 		"GetFov", &CCamera::GetFov,
+		"GetSize", &CCamera::GetSize,
 		"GetNear", &CCamera::GetNear,
 		"GetFar", &CCamera::GetFar,
 		"GetClearColor", &CCamera::GetClearColor,
 		"SetFov", &CCamera::SetFov,
+		"SetSize", &CCamera::SetSize,
 		"SetNear", &CCamera::SetNear,
 		"SetFar", &CCamera::SetFar,
-		"SetClearColor", &CCamera::SetClearColor
+		"SetClearColor", &CCamera::SetClearColor,
+        "HasFrustumGeometryCulling", &CCamera::HasFrustumGeometryCulling,
+        "HasFrustumLightCulling", &CCamera::HasFrustumLightCulling,
+        "GetProjectionMode", &CCamera::GetProjectionMode,
+        "SetFrustumGeometryCulling", &CCamera::SetFrustumGeometryCulling,
+        "SetFrustumLightCulling", &CCamera::SetFrustumLightCulling,
+        "SetProjectionMode", &CCamera::SetProjectionMode
 		);
 
 	p_luaState.new_usertype<CLight>("Light",

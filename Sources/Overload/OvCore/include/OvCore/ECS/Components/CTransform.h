@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -30,7 +30,7 @@ namespace OvCore::ECS::Components
 		* @param p_localRotation
 		* @param p_localScale
 		*/
-		CTransform(ECS::Actor& p_owner, struct OvMaths::FVector3 p_localPosition = OvMaths::FVector3(0.0f, 0.0f, 0.0f), OvMaths::FQuaternion p_localRotation = OvMaths::FQuaternion::Identity(), struct OvMaths::FVector3 p_localScale = OvMaths::FVector3(1.0f, 1.0f, 1.0f));
+		CTransform(ECS::Actor& p_owner, struct OvMaths::FVector3 p_localPosition = OvMaths::FVector3(0.0f, 0.0f, 0.0f), OvMaths::FQuaternion p_localRotation = OvMaths::FQuaternion::Identity, struct OvMaths::FVector3 p_localScale = OvMaths::FVector3(1.0f, 1.0f, 1.0f));
 
 		/**
 		* Returns the name of the component

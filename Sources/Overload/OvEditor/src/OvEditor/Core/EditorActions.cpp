@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include <filesystem>
@@ -362,8 +362,7 @@ void OvEditor::Core::EditorActions::SetActorSpawnMode(EActorSpawnMode p_value)
 
 void OvEditor::Core::EditorActions::ResetLayout()
 {
-	// TODO
-	std::filesystem::copy_file("default.ini", std::string(getenv("APPDATA")) + "/OverloadTech/OvEditor/layout.ini", std::filesystem::copy_options::overwrite_existing);
+    DelayAction([this]() {m_context.uiManager->ResetLayout("Config\\layout.ini"); });
 }
 
 void OvEditor::Core::EditorActions::SetSceneViewCameraSpeed(int p_speed)
@@ -389,17 +388,19 @@ int OvEditor::Core::EditorActions::GetAssetViewCameraSpeed()
 void OvEditor::Core::EditorActions::ResetSceneViewCameraPosition()
 {
 	EDITOR_PANEL(Panels::SceneView, "Scene View").GetCameraController().SetPosition({ -10.0f, 4.0f, 10.0f });
-	EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetPitch(-10.0f);
-	EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetYaw(-45.0f);
-	EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetRoll(0.0f);
+	// TODO
+	// EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetPitch(-10.0f);
+	// EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetYaw(-45.0f);
+	// EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetRoll(0.0f);
 }
 
 void OvEditor::Core::EditorActions::ResetAssetViewCameraPosition()
 {
 	EDITOR_PANEL(Panels::AssetView, "Asset View").GetCameraController().SetPosition({ -10.0f, 4.0f, 10.0f });
-	EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetPitch(-10.0f);
-	EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetYaw(-45.0f);
-	EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetRoll(0.0f);
+	// TODO
+	// EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetPitch(-10.0f);
+	// EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetYaw(-45.0f);
+	// EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetRoll(0.0f);
 }
 
 OvEditor::Core::EditorActions::EEditorMode OvEditor::Core::EditorActions::GetCurrentEditorMode() const
@@ -479,7 +480,7 @@ void OvEditor::Core::EditorActions::NextFrame()
 OvMaths::FVector3 OvEditor::Core::EditorActions::CalculateActorSpawnPoint(float p_distanceToCamera)
 {
 	auto& sceneView = m_panelsManager.GetPanelAs<OvEditor::Panels::SceneView>("Scene View");
-	return sceneView.GetCameraPosition() + sceneView.GetCamera().GetForward() * p_distanceToCamera;
+	return sceneView.GetCameraPosition() + sceneView.GetCameraRotation() * OvMaths::FVector3::Forward * p_distanceToCamera;
 }
 
 OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreateEmptyActor(bool p_focusOnCreation, OvCore::ECS::Actor* p_parent)
@@ -564,6 +565,20 @@ bool OvEditor::Core::EditorActions::DestroyActor(OvCore::ECS::Actor & p_actor)
 	return true;
 }
 
+std::string FindDuplicatedActorUniqueName(OvCore::ECS::Actor& p_duplicated, OvCore::ECS::Actor& p_newActor, OvCore::SceneSystem::Scene& p_scene)
+{
+    const auto parent = p_newActor.GetParent();
+    const auto adjacentActors = parent ? parent->GetChildren() : p_scene.GetActors();
+
+    auto availabilityChecker = [&parent, &adjacentActors](std::string target) -> bool
+    {
+        const auto isActorNameTaken = [&target, parent](auto actor) { return (parent || !actor->GetParent()) && actor->GetName() == target; };
+        return std::find_if(adjacentActors.begin(), adjacentActors.end(), isActorNameTaken) == adjacentActors.end();
+    };
+
+    return OvTools::Utils::String::GenerateUnique(p_duplicated.GetName(), availabilityChecker);
+}
+
 void OvEditor::Core::EditorActions::DuplicateActor(OvCore::ECS::Actor & p_toDuplicate, OvCore::ECS::Actor* p_forcedParent, bool p_focus)
 {
 	tinyxml2::XMLDocument doc;
@@ -580,12 +595,18 @@ void OvEditor::Core::EditorActions::DuplicateActor(OvCore::ECS::Actor & p_toDupl
 		newActor.SetParent(*p_forcedParent);
 	else
 	{
-		newActor.SetName(p_toDuplicate.GetName() + " (Copy)"); // Dont overload the name if it has a forced parent
-		if (newActor.GetParentID() > 0)
-		{
-			if (auto found = m_context.sceneManager.GetCurrentScene()->FindActorByID(newActor.GetParentID()); found)
-				newActor.SetParent(*found);
-		}
+        auto currentScene = m_context.sceneManager.GetCurrentScene();
+
+        if (newActor.GetParentID() > 0)
+        {
+            if (auto found = currentScene->FindActorByID(newActor.GetParentID()); found)
+            {
+                newActor.SetParent(*found);
+            }
+        }
+
+        const auto uniqueName = FindDuplicatedActorUniqueName(p_toDuplicate, newActor, *currentScene);
+        newActor.SetName(uniqueName);
 	}
 
 	if (p_focus)

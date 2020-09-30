@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include <GL/glew.h>
@@ -16,11 +16,12 @@ OvEditor::Panels::AView::AView
 	const OvUI::Settings::PanelWindowSettings& p_windowSettings
 ) : PanelWindow(p_title, p_opened, p_windowSettings), m_editorRenderer(EDITOR_RENDERER())
 {
-	m_cameraPosition = { -10.0f, 4.0f, 10.0f };
-	m_camera.SetPitch(-10.0f);
-	m_camera.SetYaw(-45.f);
+	m_cameraPosition = { -10.0f, 3.0f, 10.0f };
+	m_cameraRotation = OvMaths::FQuaternion({0.0f, 135.0f, 0.0f});
 
 	m_image = &CreateWidget<OvUI::Widgets::Visual::Image>(m_fbo.GetTextureID(), OvMaths::FVector2{ 0.f, 0.f });
+
+    scrollable = false;
 }
 
 void OvEditor::Panels::AView::Update(float p_deltaTime)
@@ -49,7 +50,7 @@ void OvEditor::Panels::AView::Render()
 
 	EDITOR_CONTEXT(shapeDrawer)->SetViewProjection(m_camera.GetProjectionMatrix() * m_camera.GetViewMatrix());
 
-	glViewport(0, 0, winWidth, winHeight); // TODO: Move this OpenGL call to OvRendering
+	EDITOR_CONTEXT(renderer)->SetViewPort(0, 0, winWidth, winHeight);
 
 	_Render_Impl();
 }
@@ -59,9 +60,19 @@ void OvEditor::Panels::AView::SetCameraPosition(const OvMaths::FVector3 & p_posi
 	m_cameraPosition = p_position;
 }
 
+void OvEditor::Panels::AView::SetCameraRotation(const OvMaths::FQuaternion& p_rotation)
+{
+	m_cameraRotation = p_rotation;
+}
+
 const OvMaths::FVector3 & OvEditor::Panels::AView::GetCameraPosition() const
 {
 	return m_cameraPosition;
+}
+
+const OvMaths::FQuaternion& OvEditor::Panels::AView::GetCameraRotation() const
+{
+	return m_cameraRotation;
 }
 
 OvRendering::LowRenderer::Camera & OvEditor::Panels::AView::GetCamera()
@@ -100,6 +111,5 @@ void OvEditor::Panels::AView::FillEngineUBO()
 void OvEditor::Panels::AView::PrepareCamera()
 {
 	auto [winWidth, winHeight] = GetSafeSize();
-	m_camera.CacheMatrices(winWidth, winHeight, m_cameraPosition);
+	m_camera.CacheMatrices(winWidth, winHeight, m_cameraPosition, m_cameraRotation);
 }
-

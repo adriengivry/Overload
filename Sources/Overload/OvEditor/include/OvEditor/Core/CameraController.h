@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -28,6 +28,7 @@ namespace OvEditor::Core
 		* @param p_view
 		* @param p_camera
 		* @param p_position
+		* @param p_rotation
 		* @param p_enableFocusInputs
 		*/
 		CameraController
@@ -35,6 +36,7 @@ namespace OvEditor::Core
 			OvEditor::Panels::AView& p_view,
 			OvRendering::LowRenderer::Camera& p_camera,
 			OvMaths::FVector3& p_position,
+			OvMaths::FQuaternion& p_rotation,
 			bool p_enableFocusInputs = false
 		);
 
@@ -76,7 +78,12 @@ namespace OvEditor::Core
 		/**
 		* Returns the position of the camera
 		*/
-		OvMaths::FVector3 GetPosition() const;
+		const OvMaths::FVector3& GetPosition() const;
+
+		/**
+		* Returns the position of the camera
+		*/
+		const OvMaths::FQuaternion& GetRotation() const;
 
 		/**
 		* Returns true if the right mouse click is being pressed
@@ -84,10 +91,12 @@ namespace OvEditor::Core
 		bool IsRightMousePressed() const;
 
 	private:
-		void HandleCameraXYMovement(float p_deltaTime);
-		void HandleCameraZMovement(float p_deltaTime);
-		void HandleCameraRotation(float p_deltaTime);
-		void HandleKeyboardMovement(float p_deltaTime);
+		void HandleCameraPanning(const OvMaths::FVector2& p_mouseOffset, bool p_firstMouse);
+		void HandleCameraOrbit(const OvMaths::FVector2& p_mouseOffset, bool p_firstMouse);
+		void HandleCameraFPSMouse(const OvMaths::FVector2& p_mouseOffset, bool p_firstMouse);
+
+		void HandleCameraZoom();
+		void HandleCameraFPSKeyboard(float p_deltaTime);
 		void UpdateMouseState();
 
 	private:
@@ -96,8 +105,9 @@ namespace OvEditor::Core
 		OvEditor::Panels::AView& m_view;
 		OvRendering::LowRenderer::Camera& m_camera;
 		OvMaths::FVector3& m_cameraPosition;
+		OvMaths::FQuaternion& m_cameraRotation;
 
-		std::queue<std::tuple<OvMaths::FVector3, float, float>> m_cameraDestinations;
+		std::queue<std::tuple<OvMaths::FVector3, OvMaths::FQuaternion>> m_cameraDestinations;
 
 		bool m_enableFocusInputs;
 
@@ -108,13 +118,17 @@ namespace OvEditor::Core
 		OvMaths::FVector3 m_targetSpeed;
 		OvMaths::FVector3 m_currentMovementSpeed;
 
+		OvMaths::FTransform* m_orbitTarget = nullptr;
+		OvMaths::FVector3 m_orbitStartOffset;
 		bool m_firstMouse = true;
 		double m_lastMousePosX = 0.0;
 		double m_lastMousePosY = 0.0;
+		OvMaths::FVector3 m_ypr;
 		float m_mouseSensitivity = 0.05f;
 		float m_cameraDragSpeed = 0.01f;
+		float m_cameraOrbitSpeed = 0.5f;
 		float m_cameraMoveSpeed = 5.0f;
 		float m_focusDistance = 15.0f;
-		float m_focusLerpCoefficient = 6.0f;
+		float m_focusLerpCoefficient = 8.0f;
 	};
 }

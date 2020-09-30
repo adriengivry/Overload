@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -97,9 +97,9 @@ OvRendering::Resources::Texture* OvRendering::Resources::Loaders::TextureLoader:
 	return new Texture("", textureID, 1, 1, 32, p_firstFilter, p_secondFilter, p_generateMipmap);
 }
 
-void OvRendering::Resources::Loaders::TextureLoader::Reload(Texture & p_texture, const std::string & p_filePath)
+void OvRendering::Resources::Loaders::TextureLoader::Reload(Texture& p_texture, const std::string& p_filePath, OvRendering::Settings::ETextureFilteringMode p_firstFilter, OvRendering::Settings::ETextureFilteringMode p_secondFilter, bool p_generateMipmap)
 {
-	Texture* newTexture = Create(p_filePath, p_texture.firstFilter, p_texture.secondFilter, p_texture.isMimapped);
+	Texture* newTexture = Create(p_filePath, p_firstFilter, p_secondFilter, p_generateMipmap);
 
 	if (newTexture)
 	{

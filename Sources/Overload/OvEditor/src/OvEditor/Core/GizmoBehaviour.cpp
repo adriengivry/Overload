@@ -1,10 +1,11 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include "OvEditor/Core/GizmoBehaviour.h"
+#include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Settings/EditorSettings.h"
 
 float SnapValue(float p_value, float p_step)
@@ -204,4 +205,9 @@ void OvEditor::Core::GizmoBehaviour::SetCurrentMouse(const OvMaths::FVector2& p_
 bool OvEditor::Core::GizmoBehaviour::IsPicking() const
 {
 	return m_target;
+}
+
+OvEditor::Core::GizmoBehaviour::EDirection OvEditor::Core::GizmoBehaviour::GetDirection() const
+{
+	return m_direction;
 }

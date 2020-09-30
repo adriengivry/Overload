@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include "OvCore/ResourceManagement/MaterialManager.h"
@@ -22,4 +22,9 @@ OvCore::Resources::Material * OvCore::ResourceManagement::MaterialManager::Creat
 void OvCore::ResourceManagement::MaterialManager::DestroyResource(OvCore::Resources::Material * p_resource)
 {
 	OvCore::Resources::Loaders::MaterialLoader::Destroy(p_resource);
+}
+
+void OvCore::ResourceManagement::MaterialManager::ReloadResource(OvCore::Resources::Material* p_resource, const std::string& p_path)
+{
+	OvCore::Resources::Loaders::MaterialLoader::Reload(*p_resource, p_path);
 }

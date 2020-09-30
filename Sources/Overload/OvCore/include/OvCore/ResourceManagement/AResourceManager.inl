@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -49,6 +49,15 @@ namespace OvCore::ResourceManagement
 		}
 
 		return false;
+	}
+
+	template<typename T>
+	inline void AResourceManager<T>::ReloadResource(const std::string& p_path)
+	{
+		if (auto resource = GetResource(p_path, false); resource)
+		{
+			ReloadResource(resource, p_path);
+		}
 	}
 
 	template<typename T>

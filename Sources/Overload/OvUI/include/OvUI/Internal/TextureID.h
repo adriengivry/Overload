@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -15,7 +15,7 @@ namespace OvUI::Internal
 	*/
 	union TextureID
 	{
-		uint32_t d;
+		uint32_t id;
 		void* raw;
 	};
 }

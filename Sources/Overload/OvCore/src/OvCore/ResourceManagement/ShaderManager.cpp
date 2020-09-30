@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include "OvCore/ResourceManagement/ShaderManager.h"
@@ -19,4 +19,9 @@ OvRendering::Resources::Shader* OvCore::ResourceManagement::ShaderManager::Creat
 void OvCore::ResourceManagement::ShaderManager::DestroyResource(OvRendering::Resources::Shader* p_resource)
 {
 	OvRendering::Resources::Loaders::ShaderLoader::Destroy(p_resource);
+}
+
+void OvCore::ResourceManagement::ShaderManager::ReloadResource(OvRendering::Resources::Shader* p_resource, const std::string& p_path)
+{
+	OvRendering::Resources::Loaders::ShaderLoader::Recompile(*p_resource, p_path);
 }

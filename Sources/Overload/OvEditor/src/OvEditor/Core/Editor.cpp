@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include <OvAnalytics/Profiling/ProfilerSpy.h>
@@ -22,6 +22,7 @@
 #include "OvEditor/Panels/Toolbar.h"
 #include "OvEditor/Panels/MaterialEditor.h"
 #include "OvEditor/Panels/ProjectSettings.h"
+#include "OvEditor/Panels/AssetProperties.h"
 
 using namespace OvCore::ResourceManagement;
 using namespace OvEditor::Panels;
@@ -65,6 +66,7 @@ void OvEditor::Core::Editor::SetupUI()
 	m_panelsManager.CreatePanel<OvEditor::Panels::Toolbar>("Toolbar", true, settings);
 	m_panelsManager.CreatePanel<OvEditor::Panels::MaterialEditor>("Material Editor", false, settings);
 	m_panelsManager.CreatePanel<OvEditor::Panels::ProjectSettings>("Project Settings", false, settings);
+	m_panelsManager.CreatePanel<OvEditor::Panels::AssetProperties>("Asset Properties", false, settings);
 
 	m_canvas.MakeDockspace(true);
 	m_context.uiManager->SetCanvas(m_canvas);
@@ -81,12 +83,22 @@ void OvEditor::Core::Editor::PreUpdate()
 
 void OvEditor::Core::Editor::Update(float p_deltaTime)
 {
+	HandleGlobalShortcuts();
 	UpdateCurrentEditorMode(p_deltaTime);
 	PrepareRendering(p_deltaTime);
 	UpdateEditorPanels(p_deltaTime);
 	RenderViews(p_deltaTime);
 	RenderEditorUI(p_deltaTime);
 	m_editorActions.ExecuteDelayedActions();
+}
+
+void OvEditor::Core::Editor::HandleGlobalShortcuts()
+{
+	// If the [Del] key is pressed while an actor is selected and the Scene View or Hierarchy is focused
+	if (m_context.inputManager->IsKeyPressed(OvWindowing::Inputs::EKey::KEY_DELETE) && EDITOR_EXEC(IsAnyActorSelected()) && (EDITOR_PANEL(SceneView, "Scene View").IsFocused() || EDITOR_PANEL(Hierarchy, "Hierarchy").IsFocused()))
+	{
+		EDITOR_EXEC(DestroyActor(EDITOR_EXEC(GetSelectedActor())));
+	}
 }
 
 void OvEditor::Core::Editor::UpdateCurrentEditorMode(float p_deltaTime)

@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include <functional>
@@ -100,6 +100,16 @@ void OvRendering::Core::Renderer::SetColorWriting(bool p_enableRed, bool p_enabl
 void OvRendering::Core::Renderer::SetColorWriting(bool p_enable)
 {
 	glColorMask(p_enable, p_enable, p_enable, p_enable);
+}
+
+void OvRendering::Core::Renderer::SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+	glViewport(x, y, width, height);
+}
+
+void OvRendering::Core::Renderer::ReadPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height, Settings::EPixelDataFormat format, Settings::EPixelDataType type, void* data)
+{
+	glReadPixels(x, y, width, height, static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 
 bool OvRendering::Core::Renderer::GetBool(GLenum p_parameter)

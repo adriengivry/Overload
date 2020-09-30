@@ -15,6 +15,7 @@
     <ProjectGuid>{677CDBA0-43A9-4A7C-9A7C-3C38C73D1D50}</ProjectGuid>
     <RootNamespace>OvRendering</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -160,11 +161,15 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
     <ClInclude Include="include\OvRendering\Settings\ECullFace.h" />
     <ClInclude Include="include\OvRendering\Settings\ECullingOptions.h" />
     <ClInclude Include="include\OvRendering\Settings\EOperation.h" />
+    <ClInclude Include="include\OvRendering\Settings\EPixelDataFormat.h" />
+    <ClInclude Include="include\OvRendering\Settings\EPixelDataType.h" />
     <ClInclude Include="include\OvRendering\Settings\EPrimitiveMode.h" />
+    <ClInclude Include="include\OvRendering\Settings\EProjectionMode.h" />
     <ClInclude Include="include\OvRendering\Settings\ERasterizationMode.h" />
     <ClInclude Include="include\OvRendering\Settings\ERenderingCapability.h" />
     <ClInclude Include="include\OvRendering\Settings\EComparaisonAlgorithm.h" />
     <ClInclude Include="include\OvRendering\Settings\ETextureFilteringMode.h" />
+    <ClInclude Include="include\OvRendering\Utils\Defines.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OvRendering\Buffers\Framebuffer.cpp" />

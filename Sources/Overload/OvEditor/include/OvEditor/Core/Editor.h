@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -53,6 +53,11 @@ namespace OvEditor::Core
 		* @param p_deltaTime
 		*/
 		void Update(float p_deltaTime);
+
+		/**
+		* Handle editor global shortcuts
+		*/
+		void HandleGlobalShortcuts();
 
 		/**
 		* Update the current editor mode

@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -28,7 +28,7 @@ namespace OvCore::ECS::Components
 		/**
 		* Destructor
 		*/
-		~CCamera();
+		~CCamera() = default;
 
 		/**
 		* Returns the name of the component
@@ -40,6 +40,12 @@ namespace OvCore::ECS::Components
 		* @param p_value
 		*/
 		void SetFov(float p_value);
+
+        /**
+        * Sets the size of the camera to the given value
+        * @param p_value
+        */
+        void SetSize(float p_value);
 
 		/**
 		* Sets the near of the camera to the given value
@@ -71,10 +77,21 @@ namespace OvCore::ECS::Components
 		*/
 		void SetFrustumLightCulling(bool p_enable);
 
+        /**
+        * Defines the projection mode the camera should adopt
+        * @param p_projectionMode
+        */
+        void SetProjectionMode(OvRendering::Settings::EProjectionMode p_projectionMode);
+
 		/**
 		* Returns the fov of the camera
 		*/
 		float GetFov() const;
+
+        /**
+        * Returns the size of the camera
+        */
+        float GetSize() const;
 
 		/**
 		* Returns the near of the camera
@@ -100,6 +117,11 @@ namespace OvCore::ECS::Components
 		* Returns true if the frustum light culling is enabled
 		*/
 		bool HasFrustumLightCulling() const;
+
+        /**
+        * Returns the current projection mode
+        */
+        OvRendering::Settings::EProjectionMode GetProjectionMode() const;
 
 		/**
 		* Returns the OvRendering camera instance attached to this component
@@ -128,6 +150,5 @@ namespace OvCore::ECS::Components
 
 	private:
 		OvRendering::LowRenderer::Camera m_camera;
-		OvTools::Eventing::ListenerID m_transformNotificationHandlerID;
 	};
 }

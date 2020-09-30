@@ -15,6 +15,7 @@
     <ProjectGuid>{8A618DBA-F8C9-42BF-B94F-29249E677EC9}</ProjectGuid>
     <RootNamespace>OvTools</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -105,6 +106,7 @@ xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configura
     <ClInclude Include="include\OvTools\Filesystem\IniFile.h" />
     <ClInclude Include="include\OvTools\Utils\PathParser.h" />
     <ClInclude Include="include\OvTools\Utils\ReferenceOrValue.h" />
+    <ClInclude Include="include\OvTools\Utils\SizeConverter.h" />
     <ClInclude Include="include\OvTools\Utils\String.h" />
     <ClInclude Include="include\OvTools\Utils\SystemCalls.h" />
     <ClInclude Include="include\OvTools\Utils\Random.h" />
@@ -116,6 +118,7 @@ xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configura
     <ClCompile Include="src\OvTools\Filesystem\IniFile.cpp" />
     <ClCompile Include="src\OvTools\Utils\PathParser.cpp" />
     <ClCompile Include="src\OvTools\Utils\Random.cpp" />
+    <ClCompile Include="src\OvTools\Utils\SizeConverter.cpp" />
     <ClCompile Include="src\OvTools\Utils\String.cpp" />
     <ClCompile Include="src\OvTools\Utils\SystemCalls.cpp" />
   </ItemGroup>

@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include "OvEditor/Panels/AViewControllable.h"
@@ -12,7 +12,7 @@ OvEditor::Panels::AViewControllable::AViewControllable
 	bool p_opened,
 	const OvUI::Settings::PanelWindowSettings& p_windowSettings,
 	bool p_enableFocusInputs
-) : AView(p_title, p_opened, p_windowSettings), m_cameraController(*this, m_camera, m_cameraPosition, p_enableFocusInputs)
+) : AView(p_title, p_opened, p_windowSettings), m_cameraController(*this, m_camera, m_cameraPosition, m_cameraRotation, p_enableFocusInputs)
 {
 
 }

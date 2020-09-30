@@ -15,6 +15,7 @@
     <ProjectGuid>{E76098C7-D1C1-430E-A7B2-527CF45BD853}</ProjectGuid>
     <RootNamespace>OvAudio</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">

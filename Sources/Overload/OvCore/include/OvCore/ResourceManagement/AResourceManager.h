@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -38,6 +38,12 @@ namespace OvCore::ResourceManagement
 		* @param p_newPath
 		*/
 		bool MoveResource(const std::string& p_previousPath, const std::string& p_newPath);
+
+		/**
+		* Reload a resource
+		* @param p_path
+		*/
+		void ReloadResource(const std::string& p_path);
 
 		/**
 		* Return true if the resource exists (= Is registered)
@@ -97,6 +103,7 @@ namespace OvCore::ResourceManagement
 	protected:
 		virtual T* CreateResource(const std::string& p_path) = 0;
 		virtual void DestroyResource(T* p_resource) = 0;
+		virtual void ReloadResource(T* p_resource, const std::string& p_path) = 0;
 		std::string GetRealPath(const std::string& p_path) const;
 
 	private:

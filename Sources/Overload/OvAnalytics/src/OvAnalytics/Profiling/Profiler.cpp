@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include <iostream>
@@ -38,7 +38,7 @@ OvAnalytics::Profiling::ProfilerReport OvAnalytics::Profiling::Profiler::Generat
 	report.elapsedFrames = __ELAPSED_FRAMES;
 	report.elaspedTime = elapsed.count();
 
-	std::multimap<double, std::string> sortedHistory;
+	std::multimap<double, std::string, std::greater<double>> sortedHistory;
 
 	/* Fill the sorted history with the current history (Auto sort) */
 	for (auto& data : __ELPASED_HISTORY)

@@ -1,18 +1,22 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include <filesystem>
 
 #include <OvTools/Utils/String.h>
 
+#include <OvRendering/Utils/Defines.h>
+
 #include "OvEditor/Core/ProjectHub.h"
 #include "OvEditor/Core/Application.h"
 
 #undef APIENTRY
 #include "Windows.h"
+
+FORCE_DEDICATED_GPU
 
 /**
 * When Overload is launched from a project file, we should consider the executable path as

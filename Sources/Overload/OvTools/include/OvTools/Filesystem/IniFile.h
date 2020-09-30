@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -46,6 +46,15 @@ namespace OvTools::Filesystem
 		*/
 		template<typename T>
 		T Get(const std::string& p_key);
+
+		/**
+		* Return the value attached to the given key
+		* If the key doesn't exist, the specified value is returned
+		* @param p_key
+		* @param p_default
+		*/
+		template<typename T>
+		T GetOrDefault(const std::string& p_key, T p_default);
 
 		/**
 		* Set a new value to the given key (Not applied to the real file untill Rewrite() or Save() is called)

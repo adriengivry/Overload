@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -30,6 +30,14 @@ namespace OvRendering::Resources::Loaders
 		* @param p_parserFlags
 		*/
 		static Model* Create(const std::string& p_filepath, Parsers::EModelParserFlags p_parserFlags = Parsers::EModelParserFlags::NONE);
+
+		/**
+		* Reload a model from file
+		* @param p_model
+		* @param p_filePath
+		* @param p_parserFlags
+		*/
+		static void Reload(Model& p_model, const std::string& p_filePath, Parsers::EModelParserFlags p_parserFlags = Parsers::EModelParserFlags::NONE);
 
 		/**
 		* Disabled constructor

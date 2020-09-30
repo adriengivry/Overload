@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include <OvUI/Plugins/DDTarget.h>
@@ -68,10 +68,9 @@ void OvEditor::Panels::SceneView::_Render_Impl()
 
 	uint8_t glState = baseRenderer.FetchGLState();
 	baseRenderer.ApplyStateMask(glState);
-
-	RenderScene(glState);
-	baseRenderer.ApplyStateMask(glState);
 	HandleActorPicking();
+	baseRenderer.ApplyStateMask(glState);
+	RenderScene(glState);
 	baseRenderer.ApplyStateMask(glState);
 }
 
@@ -101,7 +100,7 @@ void OvEditor::Panels::SceneView::RenderScene(uint8_t p_defaultRenderState)
 	m_editorRenderer.RenderCameras();
 
 	// If the game is playing, and ShowGeometryFrustumCullingInSceneView is true, apply the game view frustum culling to the scene view (For debugging purposes)
-	if (auto gameViewFrustum = gameView.GetActiveFrustum(); gameViewFrustum.has_value() && gameView.GetCamera().HasFrustumLightCulling() && Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView)
+	if (auto gameViewFrustum = gameView.GetActiveFrustum(); gameViewFrustum.has_value() && gameView.GetCamera().HasFrustumGeometryCulling() && Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView)
 	{
 		m_camera.SetFrustumGeometryCulling(gameView.HasCamera() ? gameView.GetCamera().HasFrustumGeometryCulling() : false);
 		m_editorRenderer.RenderScene(m_cameraPosition, m_camera, &gameViewFrustum.value());
@@ -120,14 +119,29 @@ void OvEditor::Panels::SceneView::RenderScene(uint8_t p_defaultRenderState)
 
 		if (selectedActor.IsActive())
 		{
-			m_editorRenderer.RenderActorAsSelected(selectedActor, true);
+			m_editorRenderer.RenderActorOutlinePass(selectedActor, true, true);
 			baseRenderer.ApplyStateMask(p_defaultRenderState);
-			m_editorRenderer.RenderActorAsSelected(selectedActor, false);
+			m_editorRenderer.RenderActorOutlinePass(selectedActor, false, true);
 		}
 
 		baseRenderer.ApplyStateMask(p_defaultRenderState);
 		baseRenderer.Clear(false, true, false);
-		m_editorRenderer.RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation);
+
+		int highlightedAxis = -1;
+
+		if (m_highlightedGizmoDirection.has_value())
+		{
+			highlightedAxis = static_cast<int>(m_highlightedGizmoDirection.value());
+		}
+
+		m_editorRenderer.RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation, false, highlightedAxis);
+	}
+
+	if (m_highlightedActor.has_value())
+	{
+		m_editorRenderer.RenderActorOutlinePass(m_highlightedActor.value().get(), true, false);
+		baseRenderer.ApplyStateMask(p_defaultRenderState);
+		m_editorRenderer.RenderActorOutlinePass(m_highlightedActor.value().get(), false, false);
 	}
 
 	m_fbo.Unbind();
@@ -178,7 +192,7 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 		m_gizmoOperations.StopPicking();
 	}
 
-	if (IsHovered() && !IsResizing() && inputManager.IsMouseButtonPressed(EMouseButton::MOUSE_BUTTON_LEFT) && !m_cameraController.IsRightMousePressed())
+	if (IsHovered() && !IsResizing())
 	{
 		RenderSceneForActorPicking();
 
@@ -190,27 +204,49 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 
 		m_actorPickingFramebuffer.Bind();
 		uint8_t pixel[3];
-		glReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+		EDITOR_CONTEXT(renderer)->ReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, OvRendering::Settings::EPixelDataFormat::RGB, OvRendering::Settings::EPixelDataType::UNSIGNED_BYTE, pixel);
 		m_actorPickingFramebuffer.Unbind();
 
-		/* Gizmo picking */
-		if (EDITOR_EXEC(IsAnyActorSelected()) && pixel[0] == 255 && pixel[1] == 255 && pixel[2] >= 252 && pixel[2] <= 254)
-		{
-			auto direction = static_cast<OvEditor::Core::GizmoBehaviour::EDirection>(pixel[2] - 252);
-			m_gizmoOperations.StartPicking(EDITOR_EXEC(GetSelectedActor()), m_cameraPosition, m_currentOperation, direction);
-		}
-		/* Actor picking */
-		else
-		{
-			uint32_t actorID = (0 << 24) | (pixel[2] << 16) | (pixel[1] << 8) | (pixel[0] << 0);
+		uint32_t actorID = (0 << 24) | (pixel[2] << 16) | (pixel[1] << 8) | (pixel[0] << 0);
+		auto actorUnderMouse = EDITOR_CONTEXT(sceneManager).GetCurrentScene()->FindActorByID(actorID);
+		auto direction = m_gizmoOperations.IsPicking() ? m_gizmoOperations.GetDirection() : EDITOR_EXEC(IsAnyActorSelected()) && pixel[0] == 255 && pixel[1] == 255 && pixel[2] >= 252 && pixel[2] <= 254 ? static_cast<OvEditor::Core::GizmoBehaviour::EDirection>(pixel[2] - 252) : std::optional<Core::GizmoBehaviour::EDirection>{};
 
-			if (auto actor = EDITOR_CONTEXT(sceneManager).GetCurrentScene()->FindActorByID(actorID))
+		m_highlightedActor = {};
+		m_highlightedGizmoDirection = {};
+
+		if (!m_cameraController.IsRightMousePressed())
+		{
+			if (direction.has_value())
 			{
-				EDITOR_EXEC(SelectActor(*actor));
+				m_highlightedGizmoDirection = direction;
+
 			}
+			else if (actorUnderMouse != nullptr)
+			{
+				m_highlightedActor = std::ref(*actorUnderMouse);
+			}
+		}
+
+		/* Click */
+		if (inputManager.IsMouseButtonPressed(EMouseButton::MOUSE_BUTTON_LEFT) && !m_cameraController.IsRightMousePressed())
+		{
+			/* Gizmo picking */
+			if (direction.has_value())
+			{
+				m_gizmoOperations.StartPicking(EDITOR_EXEC(GetSelectedActor()), m_cameraPosition, m_currentOperation, direction.value());
+			}
+			/* Actor picking */
 			else
 			{
-				EDITOR_EXEC(UnselectActor());
+
+				if (actorUnderMouse)
+				{
+					EDITOR_EXEC(SelectActor(*actorUnderMouse));
+				}
+				else
+				{
+					EDITOR_EXEC(UnselectActor());
+				}
 			}
 		}
 	}

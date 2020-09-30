@@ -1,12 +1,15 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
 
-#include <OvEditor/Core/EditorActions.h>
+#include <OvMaths/FTransform.h>
+#include <OvMaths/FVector2.h>
+
+#include <OvCore/ECS/Actor.h>
 
 namespace OvEditor::Core
 {
@@ -66,6 +69,11 @@ namespace OvEditor::Core
 		*/
 		bool IsPicking() const;
 
+		/**
+		* Returns the current operation direction
+		*/
+		EDirection GetDirection() const;
+
 	private:
 		/**
 		* Returns the global direction matching with the current m_direction
@@ -113,7 +121,7 @@ namespace OvEditor::Core
 	private:
 		bool m_firstMouse = true;
 		float m_distanceToActor = 0.0f;
-		OvCore::ECS::Actor* m_target;
+		OvCore::ECS::Actor* m_target = nullptr;
 		EGizmoOperation m_currentOperation;
 		EDirection m_direction;
 		OvMaths::FTransform m_originalTransform;

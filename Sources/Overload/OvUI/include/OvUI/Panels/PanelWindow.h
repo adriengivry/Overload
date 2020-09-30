@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -87,6 +87,7 @@ namespace OvUI::Panels
 		bool resizable = true;
 		bool closable = false;
 		bool movable = true;
+		bool scrollable = true;
 		bool dockable = false;
 		bool hideBackground = false;
 		bool forceHorizontalScrollbar = false;
@@ -95,6 +96,7 @@ namespace OvUI::Panels
 		bool bringToFrontOnFocus = true;
 		bool collapsable = false;
 		bool allowInputs = true;
+		bool titleBar = true;
 
 		OvTools::Eventing::Event<> OpenEvent;
 		OvTools::Eventing::Event<> CloseEvent;

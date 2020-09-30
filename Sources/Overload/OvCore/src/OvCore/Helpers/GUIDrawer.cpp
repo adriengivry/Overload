@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include <array>
@@ -155,7 +155,7 @@ OvUI::Widgets::Visual::Image& OvCore::Helpers::GUIDrawer::DrawTexture(OvUI::Inte
 			if (auto resource = OVSERVICE(OvCore::ResourceManagement::TextureManager).GetResource(p_receivedData.first); resource)
 			{
 				p_data = resource;
-				widget.textureID.d = resource->id;
+				widget.textureID.id = resource->id;
 				if (p_updateNotifier)
 					p_updateNotifier->Invoke();
 			}
@@ -169,7 +169,7 @@ OvUI::Widgets::Visual::Image& OvCore::Helpers::GUIDrawer::DrawTexture(OvUI::Inte
 	resetButton.ClickedEvent += [&widget, &p_data, p_updateNotifier]
 	{
 		p_data = nullptr;
-		widget.textureID.d = (__EMPTY_TEXTURE ? __EMPTY_TEXTURE->id : 0);
+		widget.textureID.id = (__EMPTY_TEXTURE ? __EMPTY_TEXTURE->id : 0);
 		if (p_updateNotifier)
 			p_updateNotifier->Invoke();
 	};
@@ -289,6 +289,38 @@ OvUI::Widgets::Texts::Text& OvCore::Helpers::GUIDrawer::DrawSound(OvUI::Internal
 	};
 
 	return widget;
+}
+
+OvUI::Widgets::Texts::Text& OvCore::Helpers::GUIDrawer::DrawAsset(OvUI::Internal::WidgetContainer& p_root, const std::string& p_name, std::string& p_data, OvTools::Eventing::Event<>* p_updateNotifier)
+{
+    CreateTitle(p_root, p_name);
+
+    const std::string displayedText = (p_data.empty() ? std::string("Empty") : p_data);
+    auto& rightSide = p_root.CreateWidget<OvUI::Widgets::Layout::Group>();
+
+    auto& widget = rightSide.CreateWidget<OvUI::Widgets::Texts::Text>(displayedText);
+
+    widget.AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, OvUI::Widgets::Layout::Group*>>>("File").DataReceivedEvent += [&widget, &p_data, p_updateNotifier](auto p_receivedData)
+    {
+        p_data = p_receivedData.first;
+        widget.content = p_receivedData.first;
+        if (p_updateNotifier)
+            p_updateNotifier->Invoke();
+    };
+
+    widget.lineBreak = false;
+
+    auto& resetButton = rightSide.CreateWidget<OvUI::Widgets::Buttons::ButtonSmall>("Clear");
+    resetButton.idleBackgroundColor = ClearButtonColor;
+    resetButton.ClickedEvent += [&widget, &p_data, p_updateNotifier]
+    {
+        p_data = "";
+        widget.content = "Empty";
+        if (p_updateNotifier)
+            p_updateNotifier->Invoke();
+    };
+
+    return widget;
 }
 
 void OvCore::Helpers::GUIDrawer::DrawBoolean(OvUI::Internal::WidgetContainer & p_root, const std::string & p_name, std::function<bool(void)> p_gatherer, std::function<void(bool)> p_provider)

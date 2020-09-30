@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include <OvTools/Time/Clock.h>
@@ -12,7 +12,6 @@ OvEditor::Core::Application::Application(const std::string& p_projectPath, const
 	m_context(p_projectPath, p_projectName),
 	m_editor(m_context)
 {
-
 }
 
 OvEditor::Core::Application::~Application()

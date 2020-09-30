@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include <OvUI/Widgets/Layout/Spacing.h>
@@ -30,7 +30,6 @@ OvEditor::Panels::Toolbar::Toolbar
 
 	CreateWidget<OvUI::Widgets::Layout::Spacing>(0).lineBreak = false;
 	auto& refreshButton	= CreateWidget<OvUI::Widgets::Buttons::ButtonImage>(EDITOR_CONTEXT(editorResources)->GetTexture("Button_Refresh")->id, OvMaths::FVector2{ 20, 20 });
-	refreshButton.tint = OvUI::Types::Color{ .85f, .65f, 0.f };
 
 	m_playButton->lineBreak		= false;
 	m_pauseButton->lineBreak	= false;
@@ -49,7 +48,7 @@ OvEditor::Panels::Toolbar::Toolbar
 		auto enable = [](OvUI::Widgets::Buttons::ButtonImage* p_button, bool p_enable)
 		{
 			p_button->disabled = !p_enable;
-			p_button->tint = p_enable ? OvUI::Types::Color{ 1.0f, 1.0f, 1.0f, 1.0f} : OvUI::Types::Color{0.2f, 0.2f, 0.2f, 1.0f};
+			p_button->tint = p_enable ? OvUI::Types::Color{ 1.0f, 1.0f, 1.0f, 1.0f} : OvUI::Types::Color{1.0f, 1.0f, 1.0f, 0.15f};
 		};
 
 		switch (p_newMode)

@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -15,6 +15,7 @@
 
 namespace OvMaths
 {
+
 	/**
 	* Mathematic representation of a Quaternion with float precision
 	*/
@@ -29,7 +30,7 @@ namespace OvMaths
 		/**
 		* Return an identity quaternion
 		*/
-		static FQuaternion Identity();
+		static const FQuaternion Identity;
 
 		/**
 		* Default Quaternion constructor (Create an identity quaternion with 1 as w)
@@ -75,6 +76,13 @@ namespace OvMaths
 		* @param p_euler
 		*/
 		FQuaternion(const FVector3& p_euler);
+
+		/**
+		* Create a quaternion from a forward and up vector
+		* @param p_forward
+		* @param p_up
+		*/
+		static FQuaternion LookAt(const FVector3& p_forward, const FVector3& p_up);
 
 		/**
 		* Check if the quaternion is Identity

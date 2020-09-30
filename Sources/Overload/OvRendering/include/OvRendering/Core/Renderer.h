@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -19,6 +19,8 @@
 #include "OvRendering/Settings/EOperation.h"
 #include "OvRendering/Settings/ECullFace.h"
 #include "OvRendering/Settings/ECullingOptions.h"
+#include "OvRendering/Settings/EPixelDataFormat.h"
+#include "OvRendering/Settings/EPixelDataType.h"
 
 namespace OvRendering::Core
 {
@@ -156,6 +158,28 @@ namespace OvRendering::Core
 		* @param p_enable
 		*/
 		void SetColorWriting(bool p_enable);
+
+
+		/**
+		 * Set the viewport parameters.
+		 * @param x
+		 * @param y
+		 * @param width
+		 * @param height
+		 */
+		void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+
+		/**
+		 * Read a block of pixels from the frame buffer.
+		 * @param x
+		 * @param y
+		 * @param width
+		 * @param height
+		 * @param format
+		 * @param type
+		 * @param data
+		 */
+		void ReadPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height, Settings::EPixelDataFormat format,Settings::EPixelDataType type, void* data);
 
 		/**
 		* Return the value associated to the given GLenum

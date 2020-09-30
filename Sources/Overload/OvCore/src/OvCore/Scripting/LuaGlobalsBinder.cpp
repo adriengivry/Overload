@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include "OvCore/Scripting/LuaGlobalsBinder.h"
@@ -56,16 +56,16 @@ void OvCore::Scripting::LuaGlobalsBinder::BindGlobals(sol::state & p_luaState)
 			{"MINUS",			EKey::KEY_MINUS},
 			{"PERIOD",			EKey::KEY_PERIOD},
 			{"SLASH",			EKey::KEY_SLASH},
-			{"0",				EKey::KEY_0},
-			{"1",				EKey::KEY_1},
-			{"2",				EKey::KEY_2},
-			{"3",				EKey::KEY_3},
-			{"4",				EKey::KEY_4},
-			{"5",				EKey::KEY_5},
-			{"6",				EKey::KEY_6},
-			{"7",				EKey::KEY_7},
-			{"8",				EKey::KEY_8},
-			{"9",				EKey::KEY_9},
+			{"ALPHA_0",			EKey::KEY_0},
+			{"ALPHA_1",			EKey::KEY_1},
+			{"ALPHA_2",			EKey::KEY_2},
+			{"ALPHA_3",			EKey::KEY_3},
+			{"ALPHA_4",			EKey::KEY_4},
+			{"ALPHA_5",			EKey::KEY_5},
+			{"ALPHA_6",			EKey::KEY_6},
+			{"ALPHA_7",			EKey::KEY_7},
+			{"ALPHA_8",			EKey::KEY_8},
+			{"ALPHA_9",			EKey::KEY_9},
 			{"SEMICOLON",		EKey::KEY_SEMICOLON},
 			{"EQUAL",			EKey::KEY_EQUAL},
 			{"A",				EKey::KEY_A},

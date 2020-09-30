@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -29,5 +29,12 @@ namespace OvCore::ResourceManagement
 		* @param p_resource
 		*/
 		virtual void DestroyResource(OvRendering::Resources::Shader* p_resource) override;
+
+		/**
+		* Reload the given resource
+		* @param p_resource
+		* @param p_path
+		*/
+		virtual void ReloadResource(OvRendering::Resources::Shader* p_resource, const std::string& p_path) override;
 	};
 }

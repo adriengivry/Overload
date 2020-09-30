@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include "OvCore/ResourceManagement/SoundManager.h"
@@ -19,4 +19,8 @@ OvAudio::Resources::Sound* OvCore::ResourceManagement::SoundManager::CreateResou
 void OvCore::ResourceManagement::SoundManager::DestroyResource(OvAudio::Resources::Sound* p_resource)
 {
 	OvAudio::Resources::Loaders::SoundLoader::Destroy(p_resource);
+}
+
+void OvCore::ResourceManagement::SoundManager::ReloadResource(OvAudio::Resources::Sound* p_resource, const std::string& p_path)
+{
 }

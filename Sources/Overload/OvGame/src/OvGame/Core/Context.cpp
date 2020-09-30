@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include <filesystem>
@@ -57,7 +57,7 @@ OvGame::Core::Context::Context() :
 
 	renderer->SetCapability(OvRendering::Settings::ERenderingCapability::MULTISAMPLE, projectSettings.Get<bool>("multisampling"));
 
-	uiManager = std::make_unique<OvUI::Core::UIManager>(window->GetGlfwWindow(), OvUI::Styling::EStyle::DUNE_DARK);
+	uiManager = std::make_unique<OvUI::Core::UIManager>(window->GetGlfwWindow(), OvUI::Styling::EStyle::ALTERNATIVE_DARK);
 	uiManager->LoadFont("Ruda_Big", engineAssetsPath + "Fonts\\Ruda-Bold.ttf", 16);
 	uiManager->LoadFont("Ruda_Small", engineAssetsPath + "Fonts\\Ruda-Bold.ttf", 12);
 	uiManager->LoadFont("Ruda_Medium", engineAssetsPath + "Fonts\\Ruda-Bold.ttf", 14);

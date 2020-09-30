@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #include <filesystem>
@@ -54,6 +54,8 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 	inputManager = std::make_unique<OvWindowing::Inputs::InputManager>(*window);
 	window->MakeCurrentContext();
 
+	device->SetVsync(true);
+
 	/* Graphics context creation */
 	driver = std::make_unique<OvRendering::Context::Driver>(OvRendering::Settings::DriverSettings{ true });
 	renderer = std::make_unique<OvCore::ECS::Renderer>(*driver);
@@ -62,7 +64,7 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 
 	std::filesystem::create_directories(std::string(getenv("APPDATA")) + "\\OverloadTech\\OvEditor\\");
 
-	uiManager = std::make_unique<OvUI::Core::UIManager>(window->GetGlfwWindow(), OvUI::Styling::EStyle::DUNE_DARK);
+	uiManager = std::make_unique<OvUI::Core::UIManager>(window->GetGlfwWindow(), OvUI::Styling::EStyle::ALTERNATIVE_DARK);
 	uiManager->LoadFont("Ruda_Big", editorAssetsPath + "\\Fonts\\Ruda-Bold.ttf", 16);
 	uiManager->LoadFont("Ruda_Small", editorAssetsPath + "\\Fonts\\Ruda-Bold.ttf", 12);
 	uiManager->LoadFont("Ruda_Medium", editorAssetsPath + "\\Fonts\\Ruda-Bold.ttf", 14);
@@ -73,7 +75,7 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 	uiManager->EnableDocking(true);
 
 	if (!std::filesystem::exists(std::string(getenv("APPDATA")) + "\\OverloadTech\\OvEditor\\layout.ini"))
-		ImGui::LoadIniSettingsFromDisk("Config\\layout.ini");
+		uiManager->ResetLayout("Config\\layout.ini");
 
 	/* Audio */
 	audioEngine = std::make_unique<OvAudio::Core::AudioEngine>(projectAssetsPath);

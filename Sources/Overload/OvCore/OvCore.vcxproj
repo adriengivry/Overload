@@ -15,6 +15,7 @@
     <ProjectGuid>{C1D2EBB7-EE2A-4D42-858B-F14F5A47B867}</ProjectGuid>
     <RootNamespace>OvCore</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -279,7 +280,9 @@ xcopy "$(SolutionDir)..\..\Build\OvWindowing\lib\$(Configuration)\*.lib" "$(Solu
     <ClCompile Include="src\OvCore\Resources\Loaders\MaterialLoader.cpp" />
     <ClCompile Include="src\OvCore\SceneSystem\Scene.cpp" />
     <ClCompile Include="src\OvCore\SceneSystem\SceneManager.cpp" />
-    <ClCompile Include="src\OvCore\Scripting\LuaActorBinder.cpp" />
+    <ClCompile Include="src\OvCore\Scripting\LuaActorBinder.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="src\OvCore\Scripting\LuaBinder.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -292,8 +295,12 @@ xcopy "$(SolutionDir)..\..\Build\OvWindowing\lib\$(Configuration)\*.lib" "$(Solu
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="src\OvCore\Scripting\LuaGlobalsBinder.cpp" />
-    <ClCompile Include="src\OvCore\Scripting\LuaMathsBinder.cpp" />
+    <ClCompile Include="src\OvCore\Scripting\LuaGlobalsBinder.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="src\OvCore\Scripting\LuaMathsBinder.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="src\OvCore\Scripting\ScriptInterpreter.cpp" />
   </ItemGroup>
   <ItemGroup>

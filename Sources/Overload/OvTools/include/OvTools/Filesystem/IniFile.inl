@@ -1,7 +1,7 @@
 /**
 * @project: Overload
 * @author: Overload Tech.
-* @restrictions: This software may not be resold, redistributed or otherwise conveyed to a third party.
+* @licence: MIT
 */
 
 #pragma once
@@ -48,6 +48,12 @@ namespace OvTools::Filesystem
 			static_assert(false, "The given type must be : bool, integral, floating point or string");
 			return T();
 		}
+	}
+
+	template<typename T>
+	inline T IniFile::GetOrDefault(const std::string& p_key, T p_default)
+	{
+		return IsKeyExisting(p_key) ? Get<T>(p_key) : p_default;
 	}
 
 	template<typename T>
