@@ -10,6 +10,7 @@
 #include <GL/glew.h>
 
 #include <OvDebug/Utils/Logger.h>
+#include <OvTools/Utils/PathParser.h>
 
 #include "OvRendering/Resources/Loaders/ShaderLoader.h"
 
@@ -82,11 +83,42 @@ bool OvRendering::Resources::Loaders::ShaderLoader::Destroy(Shader*& p_shader)
 	return false;
 }
 
+std::string AddIncludes(const std::string& p_source, const std::string& p_folder)
+{
+    std::string output = "";
+
+    const std::string includeToken = "#include \"";
+    const size_t includeTokenLength = includeToken.length();
+
+    std::string line;
+    std::stringstream sourceStream(p_source);
+    while (std::getline(sourceStream, line))
+    {
+        if (line.find("#include \"") == 0)
+        {
+            const std::string includePath = line.substr(includeTokenLength, line.length() - (includeTokenLength + 1));
+            std::ifstream includeStream(p_folder + includePath);
+            std::string includeString((std::istreambuf_iterator<char>(includeStream)), std::istreambuf_iterator<char>());
+            output += AddIncludes(includeString, p_folder);
+        }
+        else
+        {
+            output += line + '\n';
+        }
+    }
+
+    return output;
+}
+
+
 std::pair<std::string, std::string> OvRendering::Resources::Loaders::ShaderLoader::ParseShader(const std::string& p_filePath)
 {
 	std::ifstream stream(p_filePath);
 
+    const std::string folder = OvTools::Utils::PathParser::GetContainingFolder(p_filePath);
+
 	enum class ShaderType { NONE = -1, VERTEX = 0, FRAGMENT = 1 };
+
 
 	std::string line;
 
@@ -103,14 +135,14 @@ std::pair<std::string, std::string> OvRendering::Resources::Loaders::ShaderLoade
 		}
 		else if (type != ShaderType::NONE)
 		{
-			ss[static_cast<int>(type)] << line << '\n';
+            ss[static_cast<int>(type)] << line << '\n';
 		}
 	}
 
 	return 
 	{ 
-		ss[static_cast<int>(ShaderType::VERTEX)].str(),
-		ss[static_cast<int>(ShaderType::FRAGMENT)].str()
+        AddIncludes(ss[static_cast<int>(ShaderType::VERTEX)].str(), folder),
+        AddIncludes(ss[static_cast<int>(ShaderType::FRAGMENT)].str(), folder)
 	};
 }
 

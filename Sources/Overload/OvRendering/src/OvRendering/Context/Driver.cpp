@@ -101,4 +101,9 @@ void OvRendering::Context::Driver::InitGlew()
 		std::string glewError = reinterpret_cast<const char*>(glewGetErrorString(error));
 		OVLOG_INFO(message + glewError);
 	}
+
+    if (GLEW_ARB_shading_language_include)
+    {
+        OVLOG_INFO("ARB_shading_language_include is available");
+    }
 }
