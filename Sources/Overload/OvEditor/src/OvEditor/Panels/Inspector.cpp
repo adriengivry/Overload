@@ -147,45 +147,21 @@ OvEditor::Panels::Inspector::Inspector
 
 	/* Script selector + button */
 	{
-		m_scriptSelectorWidget = &m_inspectorHeader->CreateWidget<OvUI::Widgets::InputFields::InputText>("");
-        m_scriptSelectorWidget->lineBreak = false;
-		auto& ddTarget = m_scriptSelectorWidget->AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, Layout::Group*>>>("File");
+		auto& scriptSelectorWidget = m_inspectorHeader->CreateWidget<OvUI::Widgets::InputFields::InputText>("");
+		scriptSelectorWidget.lineBreak = false;
+		auto& ddTarget = scriptSelectorWidget.AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, Layout::Group*>>>("File");
+		ddTarget.DataReceivedEvent += [&scriptSelectorWidget](std::pair<std::string, Layout::Group*> p_data)
+		{
+			scriptSelectorWidget.content = EDITOR_EXEC(GetScriptPath(p_data.first));
+		};
 		
 		auto& addScriptButton = m_inspectorHeader->CreateWidget<OvUI::Widgets::Buttons::Button>("Add Script", OvMaths::FVector2{ 100.f, 0 });
 		addScriptButton.idleBackgroundColor = OvUI::Types::Color{ 0.7f, 0.5f, 0.f };
 		addScriptButton.textColor = OvUI::Types::Color::White;
-
-        // Add script button state updater
-        const auto updateAddScriptButton = [&addScriptButton, this](const std::string& p_script)
-        {
-            const std::string realScriptPath = EDITOR_CONTEXT(projectScriptsPath) + p_script + ".lua";
-
-            const auto targetActor = GetTargetActor();
-            const bool isScriptValid = std::filesystem::exists(realScriptPath) && targetActor && !targetActor->GetBehaviour(p_script);
-
-            addScriptButton.disabled = !isScriptValid;
-            addScriptButton.idleBackgroundColor = isScriptValid ? OvUI::Types::Color{ 0.7f, 0.5f, 0.f } : OvUI::Types::Color{ 0.1f, 0.1f, 0.1f };
-        };
-
-        m_scriptSelectorWidget->ContentChangedEvent += updateAddScriptButton;
-
-		addScriptButton.ClickedEvent += [updateAddScriptButton, this]
+		addScriptButton.ClickedEvent += [&scriptSelectorWidget, this]
 		{
-            const std::string realScriptPath = EDITOR_CONTEXT(projectScriptsPath) + m_scriptSelectorWidget->content + ".lua";
-
-            // Ensure that the script is a valid one
-            if (std::filesystem::exists(realScriptPath))
-            {
-                GetTargetActor()->AddBehaviour(m_scriptSelectorWidget->content);
-                updateAddScriptButton(m_scriptSelectorWidget->content);
-            }
+			GetTargetActor()->AddBehaviour(scriptSelectorWidget.content);
 		};
-
-        ddTarget.DataReceivedEvent += [updateAddScriptButton, this](std::pair<std::string, Layout::Group*> p_data)
-        {
-            m_scriptSelectorWidget->content = EDITOR_EXEC(GetScriptPath(p_data.first));
-            updateAddScriptButton(m_scriptSelectorWidget->content);
-        };
 	}
 
 	m_inspectorHeader->CreateWidget<OvUI::Widgets::Visual::Separator>();
@@ -222,9 +198,7 @@ void OvEditor::Panels::Inspector::FocusActor(OvCore::ECS::Actor& p_target)
 
 	CreateActorInspector(p_target);
 
-    // Force component and script selectors to trigger their ChangedEvent to update button states
 	m_componentSelectorWidget->ValueChangedEvent.Invoke(m_componentSelectorWidget->currentChoice);
-    m_scriptSelectorWidget->ContentChangedEvent.Invoke(m_scriptSelectorWidget->content);
 
 	EDITOR_EVENT(ActorSelectedEvent).Invoke(*m_targetActor);
 }

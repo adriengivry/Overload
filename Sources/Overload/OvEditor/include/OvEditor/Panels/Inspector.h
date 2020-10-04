@@ -88,7 +88,6 @@ namespace OvEditor::Panels
 		OvUI::Widgets::Layout::Group* m_actorInfo;
 		OvUI::Widgets::Layout::Group* m_inspectorHeader;
 		OvUI::Widgets::Selection::ComboBox* m_componentSelectorWidget;
-        OvUI::Widgets::InputFields::InputText* m_scriptSelectorWidget;
 
 		uint64_t m_componentAddedListener	= 0;
 		uint64_t m_componentRemovedListener = 0;
