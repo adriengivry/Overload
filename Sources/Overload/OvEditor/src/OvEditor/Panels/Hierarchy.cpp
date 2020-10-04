@@ -31,136 +31,43 @@
 
 #include <OvUI/Plugins/ContextualMenu.h>
 
-class HierarchyActorContextualMenu : public OvUI::Plugins::ContextualMenu
+#include "OvEditor/Utils/ActorCreationMenu.h"
+
+class HierarchyContextualMenu : public OvUI::Plugins::ContextualMenu
 {
 public:
-	HierarchyActorContextualMenu(OvCore::ECS::Actor& p_target, OvUI::Widgets::Layout::TreeNode& p_treeNode) :
-		m_target(p_target), m_treeNode(p_treeNode)
-	{
-		using namespace OvUI::Panels;
-		using namespace OvUI::Widgets;
-		using namespace OvUI::Widgets::Menu;
-		using namespace OvCore::ECS::Components;
+    HierarchyContextualMenu(OvCore::ECS::Actor* p_target, OvUI::Widgets::Layout::TreeNode& p_treeNode, bool p_panelMenu = false) :
+        m_target(p_target),
+        m_treeNode(p_treeNode)
+    {
+        using namespace OvUI::Panels;
+        using namespace OvUI::Widgets;
+        using namespace OvUI::Widgets::Menu;
+        using namespace OvCore::ECS::Components;
 
-		auto& focusButton = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Focus");
-		focusButton.ClickedEvent += [this]
-		{
-			EDITOR_EXEC(MoveToTarget(m_target));
-		};
+        if (m_target)
+        {
+            auto& focusButton = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Focus");
+            focusButton.ClickedEvent += [this]
+            {
+                EDITOR_EXEC(MoveToTarget(*m_target));
+            };
 
-		auto& duplicateButton = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Duplicate");
-		duplicateButton.ClickedEvent += [this]
-		{
-			EDITOR_EXEC(DelayAction(EDITOR_BIND(DuplicateActor, std::ref(m_target), nullptr, true), 0));
-		};
+            auto& duplicateButton = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Duplicate");
+            duplicateButton.ClickedEvent += [this]
+            {
+                EDITOR_EXEC(DelayAction(EDITOR_BIND(DuplicateActor, std::ref(*m_target), nullptr, true), 0));
+            };
 
-		auto& deleteButton = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Delete");
-		deleteButton.ClickedEvent += [this]
-		{
-			EDITOR_EXEC(DestroyActor(std::ref(m_target)));
-		};
+            auto& deleteButton = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Delete");
+            deleteButton.ClickedEvent += [this]
+            {
+                EDITOR_EXEC(DestroyActor(std::ref(*m_target)));
+            };
+        }
 
 		auto& createActor = CreateWidget<OvUI::Widgets::Menu::MenuList>("Create...");
-
-		auto openParent = [this] {m_treeNode.Open(); };
-
-		auto& createEmpty = createActor.CreateWidget<MenuItem>("Create Empty");
-		createEmpty.ClickedEvent += EDITOR_BIND(CreateEmptyActor, true, &m_target);
-		createEmpty.ClickedEvent += openParent;
-
-		auto& primitives = createActor.CreateWidget<MenuList>("Primitives");
-		std::string modelsPath = ":Models\\";
-		auto& createCube = primitives.CreateWidget<MenuItem>("Cube");
-		createCube.ClickedEvent += EDITOR_BIND(CreateActorWithModel, modelsPath + "Cube.fbx", true, &m_target);
-		createCube.ClickedEvent += openParent;
-
-		auto& createSphere = primitives.CreateWidget<MenuItem>("Sphere");
-		createSphere.ClickedEvent += EDITOR_BIND(CreateActorWithModel, modelsPath + "Sphere.fbx", true, &m_target);
-		createSphere.ClickedEvent += openParent;
-
-		auto& createCone = primitives.CreateWidget<MenuItem>("Cone");
-		createCone.ClickedEvent += EDITOR_BIND(CreateActorWithModel, modelsPath + "Cone.fbx", true, &m_target);
-		createCone.ClickedEvent += openParent;
-
-		auto& createCylinder = primitives.CreateWidget<MenuItem>("Cylinder");
-		createCylinder.ClickedEvent += EDITOR_BIND(CreateActorWithModel, modelsPath + "Cylinder.fbx", true, &m_target);
-		createCylinder.ClickedEvent += openParent;
-
-		auto& createPlane = primitives.CreateWidget<MenuItem>("Plane");
-		createPlane.ClickedEvent += EDITOR_BIND(CreateActorWithModel, modelsPath + "Plane.fbx", true, &m_target);
-		createPlane.ClickedEvent += openParent;
-
-		auto& createGear = primitives.CreateWidget<MenuItem>("Gear");
-		createGear.ClickedEvent += EDITOR_BIND(CreateActorWithModel, modelsPath + "Gear.fbx", true, &m_target);
-		createGear.ClickedEvent += openParent;
-
-		auto& createHelix = primitives.CreateWidget<MenuItem>("Helix");
-		createHelix.ClickedEvent += EDITOR_BIND(CreateActorWithModel, modelsPath + "Helix.fbx", true, &m_target);
-		createHelix.ClickedEvent += openParent;
-
-		auto& createPipe = primitives.CreateWidget<MenuItem>("Pipe");
-		createPipe.ClickedEvent += EDITOR_BIND(CreateActorWithModel, modelsPath + "Pipe.fbx", true, &m_target);
-		createPipe.ClickedEvent += openParent;
-
-		auto& createPyramid = primitives.CreateWidget<MenuItem>("Pyramid");
-		createPyramid.ClickedEvent += EDITOR_BIND(CreateActorWithModel, modelsPath + "Pyramid.fbx", true, &m_target);
-		createPyramid.ClickedEvent += openParent;
-
-		auto& createTorus = primitives.CreateWidget<MenuItem>("Torus");
-		createTorus.ClickedEvent += EDITOR_BIND(CreateActorWithModel, modelsPath + "Torus.fbx", true, &m_target);
-		createTorus.ClickedEvent += openParent;
-
-		auto& physicals = createActor.CreateWidget<MenuList>("Physicals");
-
-		auto& createPhysicalBox = physicals.CreateWidget<MenuItem>("Physical Box");
-		createPhysicalBox.ClickedEvent += EDITOR_BIND(CreatePhysicalBox, true, &m_target);
-		createPhysicalBox.ClickedEvent += openParent;
-
-		auto& createPhysicalSphere = physicals.CreateWidget<MenuItem>("Physical Sphere");
-		createPhysicalSphere.ClickedEvent += EDITOR_BIND(CreatePhysicalSphere, true, &m_target);
-		createPhysicalSphere.ClickedEvent += openParent;
-
-		auto& createPhysicalCapsule = physicals.CreateWidget<MenuItem>("Physical Capsule");
-		createPhysicalCapsule.ClickedEvent += EDITOR_BIND(CreatePhysicalCapsule, true, &m_target);
-		createPhysicalCapsule.ClickedEvent += openParent;
-
-		auto& lights = createActor.CreateWidget<MenuList>("Lights");
-
-		auto& createPoint = lights.CreateWidget<MenuItem>("Point");
-		createPoint.ClickedEvent += EDITOR_BIND(CreateMonoComponentActor<CPointLight>, true, &m_target);
-		createPoint.ClickedEvent += openParent;
-
-		auto& createDirectional = lights.CreateWidget<MenuItem>("Directional");
-		createDirectional.ClickedEvent += EDITOR_BIND(CreateMonoComponentActor<CDirectionalLight>, true, &m_target);
-		createDirectional.ClickedEvent += openParent;
-
-		auto& createSpot = lights.CreateWidget<MenuItem>("Spot");
-		createSpot.ClickedEvent += EDITOR_BIND(CreateMonoComponentActor<CSpotLight>, true, &m_target);
-		createSpot.ClickedEvent += openParent;
-
-		auto& createAmbientBox = lights.CreateWidget<MenuItem>("Ambient Box");
-		createAmbientBox.ClickedEvent += EDITOR_BIND(CreateMonoComponentActor<CAmbientBoxLight>, true, &m_target);
-		createAmbientBox.ClickedEvent += openParent;
-
-		auto& createAmbientSphere = lights.CreateWidget<MenuItem>("Ambient Sphere");
-		createAmbientSphere.ClickedEvent += EDITOR_BIND(CreateMonoComponentActor<CAmbientSphereLight>, true, &m_target);
-		createAmbientSphere.ClickedEvent += openParent;
-
-		auto& audio = createActor.CreateWidget<MenuList>("Audio");
-
-		auto& createAudioSource = audio.CreateWidget<MenuItem>("Audio Source");
-		createAudioSource.ClickedEvent += EDITOR_BIND(CreateMonoComponentActor<CAudioSource>, true, &m_target);
-		createAudioSource.ClickedEvent += openParent;
-
-		auto& createAudioListener = audio.CreateWidget<MenuItem>("Audio Listener");
-		createAudioListener.ClickedEvent += EDITOR_BIND(CreateMonoComponentActor<CAudioListener>, true, &m_target);
-		createAudioListener.ClickedEvent += openParent;
-
-		auto& others = createActor.CreateWidget<MenuList>("Others");
-
-		auto& createCamera = others.CreateWidget<MenuItem>("Camera");
-		createCamera.ClickedEvent += EDITOR_BIND(CreateMonoComponentActor<CCamera>, true, &m_target);
-		createCamera.ClickedEvent += openParent;
+        OvEditor::Utils::ActorCreationMenu::GenerateActorCreationMenu(createActor, m_target, std::bind(&OvUI::Widgets::Layout::TreeNode::Open, &m_treeNode));
 	}
 
 	virtual void Execute() override
@@ -170,7 +77,7 @@ public:
 	}
 
 private:
-	OvCore::ECS::Actor& m_target;
+	OvCore::ECS::Actor* m_target;
 	OvUI::Widgets::Layout::TreeNode& m_treeNode;
 };
 
@@ -269,6 +176,7 @@ OvEditor::Panels::Hierarchy::Hierarchy
 
 		p_element.first->DetachFromParent();
 	};
+    m_sceneRoot->AddPlugin<HierarchyContextualMenu>(nullptr, *m_sceneRoot);
 
 	EDITOR_EVENT(ActorUnselectedEvent) += std::bind(&Hierarchy::UnselectActorsWidgets, this);
 	EDITOR_CONTEXT(sceneManager).SceneUnloadEvent += std::bind(&Hierarchy::Clear, this);
@@ -370,7 +278,7 @@ void OvEditor::Panels::Hierarchy::AddActorByInstance(OvCore::ECS::Actor & p_acto
 {
 	auto& textSelectable = m_sceneRoot->CreateWidget<OvUI::Widgets::Layout::TreeNode>(p_actor.GetName(), true);
 	textSelectable.leaf = true;
-	textSelectable.AddPlugin<HierarchyActorContextualMenu>(p_actor, textSelectable);
+	textSelectable.AddPlugin<HierarchyContextualMenu>(&p_actor, textSelectable);
 	textSelectable.AddPlugin<OvUI::Plugins::DDSource<std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*>>>("Actor", "Attach to...", std::make_pair(&p_actor, &textSelectable));
 	textSelectable.AddPlugin<OvUI::Plugins::DDTarget<std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*>>>("Actor").DataReceivedEvent += [&p_actor, &textSelectable](std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*> p_element)
 	{

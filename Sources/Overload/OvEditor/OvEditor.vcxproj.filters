@@ -105,6 +105,9 @@
     <ClCompile Include="src\OvEditor\Panels\AssetProperties.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\OvEditor\Utils\ActorCreationMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\OvEditor\Panels\AssetBrowser.h">
@@ -198,6 +201,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\OvEditor\Panels\AssetProperties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OvEditor\Utils\ActorCreationMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

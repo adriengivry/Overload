@@ -29,6 +29,7 @@
 #include "OvEditor/Panels/AssetView.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Settings/EditorSettings.h"
+#include "OvEditor/Utils/ActorCreationMenu.h"
 
 using namespace OvUI::Panels;
 using namespace OvUI::Widgets;
@@ -98,40 +99,7 @@ void OvEditor::Panels::MenuBar::CreateWindowMenu()
 void OvEditor::Panels::MenuBar::CreateActorsMenu()
 {
 	auto& actorsMenu = CreateWidget<MenuList>("Actors");
-
-	actorsMenu.CreateWidget<MenuItem>("Create Empty").ClickedEvent += EDITOR_BIND(CreateEmptyActor, true, nullptr);
-
-	auto& primitives = actorsMenu.CreateWidget<MenuList>("Primitives");
-	std::string modelsPath = ":Models\\";
-	primitives.CreateWidget<MenuItem>("Cube").ClickedEvent		+= EDITOR_BIND(CreateActorWithModel, modelsPath + "Cube.fbx", true, nullptr);
-	primitives.CreateWidget<MenuItem>("Sphere").ClickedEvent	+= EDITOR_BIND(CreateActorWithModel, modelsPath + "Sphere.fbx", true, nullptr);
-	primitives.CreateWidget<MenuItem>("Cone").ClickedEvent		+= EDITOR_BIND(CreateActorWithModel, modelsPath + "Cone.fbx", true, nullptr);
-	primitives.CreateWidget<MenuItem>("Cylinder").ClickedEvent	+= EDITOR_BIND(CreateActorWithModel, modelsPath + "Cylinder.fbx", true, nullptr);
-	primitives.CreateWidget<MenuItem>("Plane").ClickedEvent		+= EDITOR_BIND(CreateActorWithModel, modelsPath + "Plane.fbx", true, nullptr);
-	primitives.CreateWidget<MenuItem>("Gear").ClickedEvent		+= EDITOR_BIND(CreateActorWithModel, modelsPath + "Gear.fbx", true, nullptr);
-	primitives.CreateWidget<MenuItem>("Helix").ClickedEvent		+= EDITOR_BIND(CreateActorWithModel, modelsPath + "Helix.fbx", true, nullptr);
-	primitives.CreateWidget<MenuItem>("Pipe").ClickedEvent		+= EDITOR_BIND(CreateActorWithModel, modelsPath + "Pipe.fbx", true, nullptr);
-	primitives.CreateWidget<MenuItem>("Pyramid").ClickedEvent	+= EDITOR_BIND(CreateActorWithModel, modelsPath + "Pyramid.fbx", true, nullptr);
-	primitives.CreateWidget<MenuItem>("Torus").ClickedEvent		+= EDITOR_BIND(CreateActorWithModel, modelsPath + "Torus.fbx", true, nullptr);
-
-	auto& physicals = actorsMenu.CreateWidget<MenuList>("Physicals");
-	physicals.CreateWidget<MenuItem>("Physical Box").ClickedEvent		+= EDITOR_BIND(CreatePhysicalBox, true, nullptr);
-	physicals.CreateWidget<MenuItem>("Physical Sphere").ClickedEvent	+= EDITOR_BIND(CreatePhysicalSphere, true, nullptr);
-	physicals.CreateWidget<MenuItem>("Physical Capsule").ClickedEvent	+= EDITOR_BIND(CreatePhysicalCapsule, true, nullptr);
-
-	auto& lights = actorsMenu.CreateWidget<MenuList>("Lights");
-	lights.CreateWidget<MenuItem>("Point").ClickedEvent				+= EDITOR_BIND(CreateMonoComponentActor<CPointLight>, true, nullptr);
-	lights.CreateWidget<MenuItem>("Directional").ClickedEvent		+= EDITOR_BIND(CreateMonoComponentActor<CDirectionalLight>, true, nullptr);
-	lights.CreateWidget<MenuItem>("Spot").ClickedEvent				+= EDITOR_BIND(CreateMonoComponentActor<CSpotLight>, true, nullptr);
-	lights.CreateWidget<MenuItem>("Ambient Box").ClickedEvent		+= EDITOR_BIND(CreateMonoComponentActor<CAmbientBoxLight>, true, nullptr);
-	lights.CreateWidget<MenuItem>("Ambient Sphere").ClickedEvent	+= EDITOR_BIND(CreateMonoComponentActor<CAmbientSphereLight>, true, nullptr);
-
-	auto& audio = actorsMenu.CreateWidget<MenuList>("Audio");
-	audio.CreateWidget<MenuItem>("Audio Source").ClickedEvent	+= EDITOR_BIND(CreateMonoComponentActor<CAudioSource>, true, nullptr);
-	audio.CreateWidget<MenuItem>("Audio Listener").ClickedEvent += EDITOR_BIND(CreateMonoComponentActor<CAudioListener>, true, nullptr);
-
-	auto& others = actorsMenu.CreateWidget<MenuList>("Others");
-	others.CreateWidget<MenuItem>("Camera").ClickedEvent += EDITOR_BIND(CreateMonoComponentActor<CCamera>, true, nullptr);
+    Utils::ActorCreationMenu::GenerateActorCreationMenu(actorsMenu);
 }
 
 void OvEditor::Panels::MenuBar::CreateResourcesMenu()
