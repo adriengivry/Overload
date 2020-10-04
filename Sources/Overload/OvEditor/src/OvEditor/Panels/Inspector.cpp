@@ -244,10 +244,13 @@ void OvEditor::Panels::Inspector::UnFocus()
 
 void OvEditor::Panels::Inspector::SoftUnFocus()
 {
-	EDITOR_EVENT(ActorUnselectedEvent).Invoke(*m_targetActor);
-	m_inspectorHeader->enabled = false;
-	m_targetActor = nullptr;
-	m_actorInfo->RemoveAllWidgets();
+    if (m_targetActor)
+    {
+        EDITOR_EVENT(ActorUnselectedEvent).Invoke(*m_targetActor);
+        m_inspectorHeader->enabled = false;
+        m_targetActor = nullptr;
+        m_actorInfo->RemoveAllWidgets();
+    }
 }
 
 OvCore::ECS::Actor * OvEditor::Panels::Inspector::GetTargetActor() const
