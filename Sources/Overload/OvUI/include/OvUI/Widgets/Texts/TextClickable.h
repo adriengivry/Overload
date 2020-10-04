@@ -29,5 +29,6 @@ namespace OvUI::Widgets::Texts
 
 	public:
 		OvTools::Eventing::Event<> ClickedEvent;
+		OvTools::Eventing::Event<> DoubleClickedEvent;
 	};
 }

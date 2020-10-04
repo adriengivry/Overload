@@ -389,4 +389,5 @@ void OvEditor::Panels::Hierarchy::AddActorByInstance(OvCore::ECS::Actor & p_acto
 	m_widgetActorLink[targetPtr] = &textSelectable;
 
 	textSelectable.ClickedEvent += EDITOR_BIND(SelectActor, std::ref(p_actor));
+	textSelectable.DoubleClickedEvent += EDITOR_BIND(MoveToTarget, std::ref(p_actor));
 }
