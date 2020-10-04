@@ -37,6 +37,7 @@ OvEditor::Core::EditorResources::EditorResources(const std::string& p_editorAsse
 	modelParserFlags |= OvRendering::Resources::Parsers::EModelParserFlags::IMPROVE_CACHE_LOCALITY;
 	modelParserFlags |= OvRendering::Resources::Parsers::EModelParserFlags::GEN_UV_COORDS;
 	modelParserFlags |= OvRendering::Resources::Parsers::EModelParserFlags::PRE_TRANSFORM_VERTICES;
+	modelParserFlags |= OvRendering::Resources::Parsers::EModelParserFlags::GLOBAL_SCALE;
 
 	OvRendering::Settings::ETextureFilteringMode firstFilterEditor = OvRendering::Settings::ETextureFilteringMode::LINEAR;
 	OvRendering::Settings::ETextureFilteringMode secondFilterEditor = OvRendering::Settings::ETextureFilteringMode::LINEAR;

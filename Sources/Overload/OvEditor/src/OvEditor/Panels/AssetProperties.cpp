@@ -236,6 +236,11 @@ void OvEditor::Panels::AssetProperties::CreateModelSettings()
 	m_metadata->Add("FLIP_WINDING_ORDER", false);
 	m_metadata->Add("SPLIT_BY_BONE_COUNT", false);
 	m_metadata->Add("DEBONE", true);
+	m_metadata->Add("GLOBAL_SCALE", true);
+	m_metadata->Add("EMBED_TEXTURES", false);
+	m_metadata->Add("FORCE_GEN_NORMALS", false);
+	m_metadata->Add("DROP_NORMALS", false);
+	m_metadata->Add("GEN_BOUNDING_BOXES", false);
 
 	MODEL_FLAG_ENTRY("CALC_TANGENT_SPACE");
 	MODEL_FLAG_ENTRY("JOIN_IDENTICAL_VERTICES");
@@ -263,6 +268,11 @@ void OvEditor::Panels::AssetProperties::CreateModelSettings()
 	MODEL_FLAG_ENTRY("FLIP_WINDING_ORDER");
 	MODEL_FLAG_ENTRY("SPLIT_BY_BONE_COUNT");
 	MODEL_FLAG_ENTRY("DEBONE");
+	MODEL_FLAG_ENTRY("GLOBAL_SCALE");
+	MODEL_FLAG_ENTRY("EMBED_TEXTURES");
+	MODEL_FLAG_ENTRY("FORCE_GEN_NORMALS");
+	MODEL_FLAG_ENTRY("DROP_NORMALS");
+	MODEL_FLAG_ENTRY("GEN_BOUNDING_BOXES");
 };
 
 void OvEditor::Panels::AssetProperties::CreateTextureSettings()

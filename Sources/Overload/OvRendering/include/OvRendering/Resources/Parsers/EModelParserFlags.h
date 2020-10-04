@@ -11,7 +11,7 @@ namespace OvRendering::Resources::Parsers
 	/**
 	* Some flags that can be used for model parsing
 	*/
-	enum class EModelParserFlags
+	enum class EModelParserFlags : uint32_t
 	{
 		NONE						= 0x0,
 		CALC_TANGENT_SPACE			= 0x1,
@@ -39,7 +39,12 @@ namespace OvRendering::Resources::Parsers
 		FLIP_UVS					= 0x800000,
 		FLIP_WINDING_ORDER			= 0x1000000,
 		SPLIT_BY_BONE_COUNT			= 0x2000000,
-		DEBONE						= 0x4000000
+		DEBONE						= 0x4000000,
+        GLOBAL_SCALE				= 0x8000000,
+        EMBED_TEXTURES				= 0x10000000,
+        FORCE_GEN_NORMALS			= 0x20000000,
+        DROP_NORMALS				= 0x40000000,
+        GEN_BOUNDING_BOXES			= 0x80000000
 	};
 	
 	inline EModelParserFlags operator~ (EModelParserFlags a) { return (EModelParserFlags)~(int)a; }
