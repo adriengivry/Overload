@@ -153,9 +153,8 @@ OvMaths::FMatrix4 OvEditor::Core::EditorRenderer::CalculateCameraModelMatrix(OvC
 {
 	auto translation = FMatrix4::Translation(p_actor.transform.GetWorldPosition());
 	auto rotation = FQuaternion::ToMatrix4(p_actor.transform.GetWorldRotation());
-	auto scale = FMatrix4::Scaling({ 0.5f, 0.5f, 0.5f });
 
-	return translation * rotation * scale;
+	return translation * rotation;
 }
 
 void OvEditor::Core::EditorRenderer::RenderScene(const OvMaths::FVector3& p_cameraPosition, const OvRendering::LowRenderer::Camera& p_camera, const OvRendering::Data::Frustum* p_customFrustum)
