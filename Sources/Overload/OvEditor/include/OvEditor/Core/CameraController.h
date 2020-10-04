@@ -124,8 +124,8 @@ namespace OvEditor::Core
 		double m_lastMousePosX = 0.0;
 		double m_lastMousePosY = 0.0;
 		OvMaths::FVector3 m_ypr;
-		float m_mouseSensitivity = 0.05f;
-		float m_cameraDragSpeed = 0.01f;
+		float m_mouseSensitivity = 0.12f;
+		float m_cameraDragSpeed = 0.03f;
 		float m_cameraOrbitSpeed = 0.5f;
 		float m_cameraMoveSpeed = 5.0f;
 		float m_focusDistance = 15.0f;

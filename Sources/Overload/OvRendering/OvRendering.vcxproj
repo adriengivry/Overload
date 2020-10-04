@@ -87,7 +87,7 @@ xcopy "$(SolutionDir)..\..\Dependencies\glew\lib\*.lib" "$(SolutionDir)..\..\Bui
 xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r</Command>
     </PostBuildEvent>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;assimp-vc140-mt.lib;OvMaths.lib;OvDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;assimp-vc142-mt.lib;IrrXML.lib;zlibstatic.lib;OvMaths.lib;OvDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -104,7 +104,7 @@ xcopy "$(SolutionDir)..\..\Dependencies\assimp\bin\*.dll" "$(SolutionDir)..\..\B
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;assimp-vc140-mt.lib;OvMaths.lib;OvDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;assimp-vc142-mt.lib;IrrXML.lib;zlibstatic.lib;OvMaths.lib;OvDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\include"

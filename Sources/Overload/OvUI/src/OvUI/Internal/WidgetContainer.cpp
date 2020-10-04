@@ -72,8 +72,21 @@ void OvUI::Internal::WidgetContainer::DrawWidgets()
 {
 	CollectGarbages();
 
-	for (auto& widget : m_widgets)
-		widget.first->Draw();
+    if (m_reversedDrawOrder)
+    {
+        for (auto it = m_widgets.crbegin(); it != m_widgets.crend(); ++it)
+            it->first->Draw();
+    }
+    else
+    {
+        for (const auto& widget : m_widgets)
+            widget.first->Draw();
+    }
+}
+
+void OvUI::Internal::WidgetContainer::ReverseDrawOrder(const bool reversed)
+{
+    m_reversedDrawOrder = reversed;
 }
 
 std::vector<std::pair<OvUI::Widgets::AWidget*, OvUI::Internal::EMemoryMode>>& OvUI::Internal::WidgetContainer::GetWidgets()

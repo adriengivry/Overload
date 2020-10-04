@@ -15,5 +15,8 @@ namespace OvUI::API
 	{
 	public:
 		virtual void Draw() = 0;
+
+	protected:
+		virtual ~IDrawable() = default;
 	};
 }

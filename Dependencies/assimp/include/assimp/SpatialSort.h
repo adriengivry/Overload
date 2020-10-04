@@ -2,7 +2,7 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2018, assimp team
+Copyright (c) 2006-2019, assimp team
 
 
 All rights reserved.
@@ -153,7 +153,7 @@ protected:
         aiVector3D mPosition; ///< Position
         ai_real mDistance; ///< Distance of this vertex to the sorting plane
 
-        Entry()
+        Entry() AI_NO_EXCEPT
         : mIndex( 999999999 ), mPosition(), mDistance( 99999. ) {
             // empty        
         }

@@ -87,6 +87,26 @@ bool OvUI::Panels::PanelWindow::IsAppearing() const
 		return false;
 }
 
+void OvUI::Panels::PanelWindow::ScrollToBottom()
+{
+    m_mustScrollToBottom = true;
+}
+
+void OvUI::Panels::PanelWindow::ScrollToTop()
+{
+    m_mustScrollToTop = true;
+}
+
+bool OvUI::Panels::PanelWindow::IsScrolledToBottom() const
+{
+    return m_scrolledToBottom;
+}
+
+bool OvUI::Panels::PanelWindow::IsScrolledToTop() const
+{
+    return m_scrolledToTop;
+}
+
 void OvUI::Panels::PanelWindow::_Draw_Impl()
 {
 	if (m_opened)
@@ -123,10 +143,27 @@ void OvUI::Panels::PanelWindow::_Draw_Impl()
 			m_hovered = ImGui::IsWindowHovered();
 			m_focused = ImGui::IsWindowFocused();
 
+            auto scrollY = ImGui::GetScrollY();
+
+            m_scrolledToBottom = scrollY == ImGui::GetScrollMaxY();
+            m_scrolledToTop = scrollY == 0.0f;
+
 			if (!m_opened)
 				CloseEvent.Invoke();
 
 			Update();
+
+            if (m_mustScrollToBottom)
+            {
+                ImGui::SetScrollY(ImGui::GetScrollMaxY());
+                m_mustScrollToBottom = false;
+            }
+
+            if (m_mustScrollToTop)
+            {
+                ImGui::SetScrollY(0.0f);
+                m_mustScrollToTop = false;
+            }
 
 			DrawWidgets();
 		}

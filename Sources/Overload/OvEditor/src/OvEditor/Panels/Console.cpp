@@ -84,6 +84,7 @@ OvEditor::Panels::Console::Console
 	CreateWidget<Visual::Separator>();
 
 	m_logGroup = &CreateWidget<Layout::Group>();
+    m_logGroup->ReverseDrawOrder();
 
 	EDITOR_EVENT(PlayEvent) += std::bind(&Console::ClearOnPlay, this);
 
