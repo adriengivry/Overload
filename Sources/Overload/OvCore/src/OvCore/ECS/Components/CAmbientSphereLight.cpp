@@ -16,7 +16,7 @@
 OvCore::ECS::Components::CAmbientSphereLight::CAmbientSphereLight(ECS::Actor & p_owner) :
 	CLight(p_owner)
 {
-	m_data.color = { 0.1f, 0.1f, 0.1f };
+    m_data.intensity = 0.1f;
 	m_data.constant = 1.0f;
 
 	m_data.type = static_cast<float>(OvRendering::Entities::Light::Type::AMBIENT_SPHERE);
