@@ -483,9 +483,10 @@ OvMaths::FVector3 OvEditor::Core::EditorActions::CalculateActorSpawnPoint(float 
 	return sceneView.GetCameraPosition() + sceneView.GetCameraRotation() * OvMaths::FVector3::Forward * p_distanceToCamera;
 }
 
-OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreateEmptyActor(bool p_focusOnCreation, OvCore::ECS::Actor* p_parent)
+OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreateEmptyActor(bool p_focusOnCreation, OvCore::ECS::Actor* p_parent, const std::string& p_name)
 {
-	auto& instance = m_context.sceneManager.GetCurrentScene()->CreateActor();
+    const auto currentScene = m_context.sceneManager.GetCurrentScene();
+	auto& instance = p_name.empty() ? currentScene->CreateActor() : currentScene->CreateActor(p_name);
 
 	if (p_parent)
 		instance.SetParent(*p_parent);
@@ -501,56 +502,20 @@ OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreateEmptyActor(bool p_focu
 	return instance;
 }
 
-OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreateActorWithModel(const std::string& p_path, bool p_focusOnCreation, OvCore::ECS::Actor* p_parent)
+OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreateActorWithModel(const std::string& p_path, bool p_focusOnCreation, OvCore::ECS::Actor* p_parent, const std::string& p_name)
 {
-	auto& instance = CreateEmptyActor(false, p_parent);
+	auto& instance = CreateEmptyActor(false, p_parent, p_name);
 
 	auto& modelRenderer = instance.AddComponent<OvCore::ECS::Components::CModelRenderer>();
 
-	auto model = m_context.modelManager[p_path];
+	const auto model = m_context.modelManager[p_path];
 	if (model)
 		modelRenderer.SetModel(model);
 
 	auto& materialRenderer = instance.AddComponent<OvCore::ECS::Components::CMaterialRenderer>();
-	auto material = m_context.materialManager[":Materials\\Default.ovmat"];
+    const auto material = m_context.materialManager[":Materials\\Default.ovmat"];
 	if (material)
 		materialRenderer.FillWithMaterial(*material);
-
-	if (p_focusOnCreation)
-		SelectActor(instance);
-
-	return instance;
-}
-
-OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreatePhysicalBox(bool p_focusOnCreation, OvCore::ECS::Actor* p_parent)
-{
-	auto& instance = CreateEmptyActor(false, p_parent);
-
-	instance.AddComponent<OvCore::ECS::Components::CPhysicalBox>();
-
-	if (p_focusOnCreation)
-		SelectActor(instance);
-
-	return instance;
-}
-
-OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreatePhysicalSphere(bool p_focusOnCreation, OvCore::ECS::Actor* p_parent)
-{
-	auto& instance = CreateEmptyActor(false, p_parent);
-
-	instance.AddComponent<OvCore::ECS::Components::CPhysicalSphere>();
-
-	if (p_focusOnCreation)
-		SelectActor(instance);
-
-	return instance;
-}
-
-OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreatePhysicalCapsule(bool p_focusOnCreation, OvCore::ECS::Actor* p_parent)
-{
-	auto& instance = CreateEmptyActor(false, p_parent);
-
-	instance.AddComponent<OvCore::ECS::Components::CPhysicalCapsule>();
 
 	if (p_focusOnCreation)
 		SelectActor(instance);
