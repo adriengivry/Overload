@@ -20,8 +20,8 @@ OvEditor::Panels::SceneView::SceneView
 ) : AViewControllable(p_title, p_opened, p_windowSettings, true),
 	m_sceneManager(EDITOR_CONTEXT(sceneManager))
 {
-	m_camera.SetClearColor({ 0.278f, 0.278f, 0.278f });
-	m_camera.SetFar(1000.0f);
+	m_camera.SetClearColor({ 0.098f, 0.098f, 0.098f });
+	m_camera.SetFar(5000.0f);
 
 	m_image->AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, OvUI::Widgets::Layout::Group*>>>("File").DataReceivedEvent += [this](auto p_data)
 	{

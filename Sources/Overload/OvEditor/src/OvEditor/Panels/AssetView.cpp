@@ -19,8 +19,8 @@ OvEditor::Panels::AssetView::AssetView
 	const OvUI::Settings::PanelWindowSettings& p_windowSettings
 ) : AViewControllable(p_title, p_opened, p_windowSettings)
 {
-	m_camera.SetClearColor({ 0.278f, 0.278f, 0.278f });
-	m_camera.SetFar(1000.0f);
+	m_camera.SetClearColor({ 0.098f, 0.098f, 0.098f });
+	m_camera.SetFar(5000.0f);
 
 	m_resource = static_cast<OvRendering::Resources::Model*>(nullptr);
 	m_image->AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, OvUI::Widgets::Layout::Group*>>>("File").DataReceivedEvent += [this](auto p_data)
