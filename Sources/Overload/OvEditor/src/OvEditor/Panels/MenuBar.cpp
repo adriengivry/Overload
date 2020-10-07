@@ -123,51 +123,51 @@ void OvEditor::Panels::MenuBar::CreateSettingsMenu()
 
 	auto& viewColors = settingsMenu.CreateWidget<MenuList>("View Colors");
 	auto& sceneViewBackground = viewColors.CreateWidget<MenuList>("Scene View Background");
-	auto& sceneViewBackgroundPicker = sceneViewBackground.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color{ 0.278f, 0.278f, 0.278f });
+	auto& sceneViewBackgroundPicker = sceneViewBackground.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color{ 0.098f, 0.098f, 0.098f });
 	sceneViewBackgroundPicker.ColorChangedEvent += [this](const auto & color)
 	{
 		EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetClearColor({ color.r, color.g, color.b });
 	};
 	sceneViewBackground.CreateWidget<MenuItem>("Reset").ClickedEvent += [this, &sceneViewBackgroundPicker]
 	{
-		EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetClearColor({ 0.278f, 0.278f, 0.278f });
-		sceneViewBackgroundPicker.color = { 0.278f, 0.278f, 0.278f };
+		EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetClearColor({ 0.098f, 0.098f, 0.098f });
+		sceneViewBackgroundPicker.color = { 0.098f, 0.098f, 0.098f };
 	};
 
 	auto& sceneViewGrid = viewColors.CreateWidget<MenuList>("Scene View Grid");
-	auto& sceneViewGridPicker = sceneViewGrid.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color::White);
+    auto& sceneViewGridPicker = sceneViewGrid.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color(0.176f, 0.176f, 0.176f));
 	sceneViewGridPicker.ColorChangedEvent += [this](const auto & color)
 	{
 		EDITOR_PANEL(Panels::SceneView, "Scene View").SetGridColor({ color.r, color.g, color.b });
 	};
 	sceneViewGrid.CreateWidget<MenuItem>("Reset").ClickedEvent += [this, &sceneViewGridPicker]
 	{
-		EDITOR_PANEL(Panels::SceneView, "Scene View").SetGridColor(OvMaths::FVector3::One);
-		sceneViewGridPicker.color = OvUI::Types::Color::White;
+		EDITOR_PANEL(Panels::SceneView, "Scene View").SetGridColor(OvMaths::FVector3(0.176f, 0.176f, 0.176f));
+		sceneViewGridPicker.color = OvUI::Types::Color(0.176f, 0.176f, 0.176f);
 	};
 
 	auto& assetViewBackground = viewColors.CreateWidget<MenuList>("Asset View Background");
-	auto& assetViewBackgroundPicker = assetViewBackground.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color{ 0.278f, 0.278f, 0.278f });
+	auto& assetViewBackgroundPicker = assetViewBackground.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color{ 0.098f, 0.098f, 0.098f });
 	assetViewBackgroundPicker.ColorChangedEvent += [this](const auto & color)
 	{
 		EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetClearColor({ color.r, color.g, color.b });
 	};
 	assetViewBackground.CreateWidget<MenuItem>("Reset").ClickedEvent += [this, &assetViewBackgroundPicker]
 	{
-		EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetClearColor({ 0.278f, 0.278f, 0.278f });
-		assetViewBackgroundPicker.color = { 0.278f, 0.278f, 0.278f };
+		EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetClearColor({ 0.098f, 0.098f, 0.098f });
+		assetViewBackgroundPicker.color = { 0.098f, 0.098f, 0.098f };
 	};
 
 	auto& assetViewGrid = viewColors.CreateWidget<MenuList>("Asset View Grid");
-	auto& assetViewGridPicker = assetViewGrid.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color::White);
+	auto& assetViewGridPicker = assetViewGrid.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color(0.176f, 0.176f, 0.176f));
 	assetViewGridPicker.ColorChangedEvent += [this](const auto & color)
 	{
 		EDITOR_PANEL(Panels::AssetView, "Asset View").SetGridColor({ color.r, color.g, color.b });
 	};
 	assetViewGrid.CreateWidget<MenuItem>("Reset").ClickedEvent += [this, &assetViewGridPicker]
 	{
-		EDITOR_PANEL(Panels::AssetView, "Asset View").SetGridColor(OvMaths::FVector3::One);
-		assetViewGridPicker.color = OvUI::Types::Color::White;
+		EDITOR_PANEL(Panels::AssetView, "Asset View").SetGridColor(OvMaths::FVector3(0.176f, 0.176f, 0.176f));
+		assetViewGridPicker.color = OvUI::Types::Color(0.176f, 0.176f, 0.176f);
 	};
 
 	auto& sceneViewBillboardScaleMenu = settingsMenu.CreateWidget<MenuList>("3D Icons Scales");

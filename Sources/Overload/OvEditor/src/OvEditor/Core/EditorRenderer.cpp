@@ -815,9 +815,15 @@ void OvEditor::Core::EditorRenderer::RenderMaterialAsset(OvCore::Resources::Mate
 
 void OvEditor::Core::EditorRenderer::RenderGrid(const OvMaths::FVector3& p_viewPos, const OvMaths::FVector3& p_color)
 {
-	FMatrix4 model = FMatrix4::Scaling({ 1000.f, 1.f, 1000.f });
+    constexpr float gridSize = 5000.0f;
+
+    FMatrix4 model = FMatrix4::Translation({ p_viewPos.x, 0.0f, p_viewPos.z }) * FMatrix4::Scaling({ gridSize * 2.0f, 1.f, gridSize * 2.0f });
 	m_gridMaterial.Set("u_Color", p_color);
 	m_context.renderer->DrawModelWithSingleMaterial(*m_context.editorResources->GetModel("Plane"), m_gridMaterial, &model);
+
+    m_context.shapeDrawer->DrawLine(OvMaths::FVector3(-gridSize + p_viewPos.x, 0.0f, 0.0f), OvMaths::FVector3(gridSize + p_viewPos.x, 0.0f, 0.0f), OvMaths::FVector3(1.0f, 0.0f, 0.0f), 1.0f);
+    m_context.shapeDrawer->DrawLine(OvMaths::FVector3(0.0f, -gridSize + p_viewPos.y, 0.0f), OvMaths::FVector3(0.0f, gridSize + p_viewPos.y, 0.0f), OvMaths::FVector3(0.0f, 1.0f, 0.0f), 1.0f);
+    m_context.shapeDrawer->DrawLine(OvMaths::FVector3(0.0f, 0.0f, -gridSize + p_viewPos.z), OvMaths::FVector3(0.0f, 0.0f, gridSize + p_viewPos.z), OvMaths::FVector3(0.0f, 0.0f, 1.0f), 1.0f);
 }
 
 void OvEditor::Core::EditorRenderer::UpdateLights(OvCore::SceneSystem::Scene& p_scene)

@@ -118,7 +118,7 @@ namespace OvEditor::Panels
 		OvMaths::FQuaternion m_cameraRotation;
 		OvUI::Widgets::Visual::Image* m_image;
 
-		OvMaths::FVector3 m_gridColor = OvMaths::FVector3::One;
+        OvMaths::FVector3 m_gridColor = OvMaths::FVector3 { 0.176f, 0.176f, 0.176f };
 
 		OvRendering::Buffers::Framebuffer m_fbo;
 	};
