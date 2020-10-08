@@ -25,14 +25,14 @@ namespace OvEditor::Core
 	/**
 	* Handle the rendering of the editor
 	*/
-	class EditorRenderer
+	class EditorRenderPipeline
 	{
 	public:
 		/**
 		* Create the EditorRenderer
 		* @param p_context
 		*/
-		EditorRenderer(Context& p_context);
+		EditorRenderPipeline(Context& p_context);
 
 		/**
 		* Initialize custom materials

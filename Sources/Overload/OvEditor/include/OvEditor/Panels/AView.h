@@ -13,7 +13,7 @@
 #include <OvRendering/Buffers/Framebuffer.h>
 #include <OvRendering/LowRenderer/Camera.h>
 
-namespace OvEditor::Core { class EditorRenderer; }
+namespace OvEditor::Core { class EditorRenderPipeline; }
 
 namespace OvEditor::Panels
 {
@@ -112,7 +112,7 @@ namespace OvEditor::Panels
 		void PrepareCamera();
 
 	protected:
-		OvEditor::Core::EditorRenderer& m_editorRenderer;
+		OvEditor::Core::EditorRenderPipeline& m_editorRenderer;
 		OvRendering::LowRenderer::Camera m_camera;
 		OvMaths::FVector3 m_cameraPosition;
 		OvMaths::FQuaternion m_cameraRotation;

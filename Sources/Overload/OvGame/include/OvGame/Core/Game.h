@@ -10,7 +10,7 @@
 #include <OvCore/ECS/Components/CCamera.h>
 
 #include "OvGame/Core/Context.h"
-#include "OvGame/Core/GameRenderer.h"
+#include "OvGame/Core/GameRenderPipeline.h"
 
 #include "OvGame/Utils/FPSCounter.h"
 
@@ -61,7 +61,7 @@ namespace OvGame::Core
 		OvGame::Core::Context& m_context;
 		OvUI::Modules::Canvas m_canvas;
 
-		OvGame::Core::GameRenderer m_gameRenderer;
+		OvGame::Core::GameRenderPipeline m_gameRenderPipeline;
 
 		/* Debug elements */
 		OvGame::Utils::FPSCounter	m_fpsCounter;

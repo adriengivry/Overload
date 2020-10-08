@@ -31,9 +31,9 @@ using namespace OvRendering::Resources::Parsers;
 
 OvEditor::Core::Editor::Editor(Context& p_context) : 
 	m_context(p_context),
-	m_editorRenderer(p_context),
+	m_editorRenderPipeline(p_context),
 	m_panelsManager(m_canvas),
-	m_editorActions(m_context, m_editorRenderer, m_panelsManager)
+	m_editorActions(m_context, m_editorRenderPipeline, m_panelsManager)
 {
 	SetupUI();
 

@@ -6,7 +6,7 @@
 
 #include <OvCore/ECS/Components/CCamera.h>
 
-#include "OvEditor/Core/EditorRenderer.h"
+#include "OvEditor/Core/EditorRenderPipeline.h"
 #include "OvEditor/Panels/GameView.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Settings/EditorSettings.h"

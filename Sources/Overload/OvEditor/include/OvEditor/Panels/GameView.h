@@ -10,7 +10,7 @@
 
 #include "OvEditor/Panels/AView.h"
 
-namespace OvEditor::Core { class EditorRenderer; }
+namespace OvEditor::Core { class EditorRenderPipeline; }
 
 namespace OvEditor::Panels
 {

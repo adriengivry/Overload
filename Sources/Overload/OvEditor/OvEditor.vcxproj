@@ -141,7 +141,7 @@ xcopy "$(ProjectDir)Layout.ini" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Conf
     <ClCompile Include="src\OvEditor\Core\Context.cpp" />
     <ClCompile Include="src\OvEditor\Core\Editor.cpp" />
     <ClCompile Include="src\OvEditor\Core\EditorActions.cpp" />
-    <ClCompile Include="src\OvEditor\Core\EditorRenderer.cpp" />
+    <ClCompile Include="src\OvEditor\Core\EditorRenderPipeline.cpp" />
     <ClCompile Include="src\OvEditor\Core\EditorResources.cpp" />
     <ClCompile Include="src\OvEditor\Core\GizmoBehaviour.cpp" />
     <ClCompile Include="src\OvEditor\Core\PanelsManager.cpp" />
@@ -174,7 +174,7 @@ xcopy "$(ProjectDir)Layout.ini" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Conf
     <ClInclude Include="include\OvEditor\Core\Context.h" />
     <ClInclude Include="include\OvEditor\Core\Editor.h" />
     <ClInclude Include="include\OvEditor\Core\EditorActions.h" />
-    <ClInclude Include="include\OvEditor\Core\EditorRenderer.h" />
+    <ClInclude Include="include\OvEditor\Core\EditorRenderPipeline.h" />
     <ClInclude Include="include\OvEditor\Core\EditorResources.h" />
     <ClInclude Include="include\OvEditor\Core\GizmoBehaviour.h" />
     <ClInclude Include="include\OvEditor\Core\PanelsManager.h" />

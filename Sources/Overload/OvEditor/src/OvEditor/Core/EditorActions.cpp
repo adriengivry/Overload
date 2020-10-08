@@ -33,7 +33,7 @@
 #include "OvEditor/Panels/ProjectSettings.h"
 #include "OvEditor/Panels/MaterialEditor.h"
 
-OvEditor::Core::EditorActions::EditorActions(Context& p_context, EditorRenderer& p_editorRenderer, PanelsManager& p_panelsManager) :
+OvEditor::Core::EditorActions::EditorActions(Context& p_context, EditorRenderPipeline& p_editorRenderer, PanelsManager& p_panelsManager) :
 	m_context(p_context), 
 	m_renderer(p_editorRenderer),
 	m_panelsManager(p_panelsManager)
@@ -337,7 +337,7 @@ OvEditor::Core::Context& OvEditor::Core::EditorActions::GetContext()
 	return m_context;
 }
 
-OvEditor::Core::EditorRenderer & OvEditor::Core::EditorActions::GetRenderer()
+OvEditor::Core::EditorRenderPipeline & OvEditor::Core::EditorActions::GetRenderer()
 {
 	return m_renderer;
 }

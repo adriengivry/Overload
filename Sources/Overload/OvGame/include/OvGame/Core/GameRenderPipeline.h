@@ -17,14 +17,14 @@ namespace OvGame::Core
 	/**
 	* Handle the rendering of the game scene
 	*/
-	class GameRenderer
+	class GameRenderPipeline
 	{
 	public:
 		/**
 		* Create the EditorRenderer
 		* @param p_context
 		*/
-		GameRenderer(Context& p_context);
+		GameRenderPipeline(Context& p_context);
 
 		/**
 		* Render the scene

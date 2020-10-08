@@ -8,7 +8,7 @@
 
 #include <OvRendering/LowRenderer/Camera.h>
 
-#include "OvEditor/Core/EditorRenderer.h"
+#include "OvEditor/Core/EditorRenderPipeline.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Core/PanelsManager.h"
 
@@ -112,7 +112,7 @@ namespace OvEditor::Core
 		uint64_t m_elapsedFrames = 0;
 		OvUI::Modules::Canvas			m_canvas;
 		OvEditor::Core::Context&		m_context;
-		OvEditor::Core::EditorRenderer	m_editorRenderer;
+		OvEditor::Core::EditorRenderPipeline	m_editorRenderPipeline;
 		OvEditor::Core::PanelsManager	m_panelsManager;
 		OvEditor::Core::EditorActions	m_editorActions;
 	};

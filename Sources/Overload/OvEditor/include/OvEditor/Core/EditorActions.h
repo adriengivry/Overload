@@ -11,7 +11,7 @@
 #include <OvTools/Utils/PathParser.h>
 
 #include "OvEditor/Core/Context.h"
-#include "OvEditor/Core/EditorRenderer.h"
+#include "OvEditor/Core/EditorRenderPipeline.h"
 #include "OvEditor/Core/PanelsManager.h"
 
 #define EDITOR_EXEC(action)					OvCore::Global::ServiceLocator::Get<OvEditor::Core::EditorActions>().action
@@ -35,7 +35,7 @@ namespace OvEditor::Core
 		* @param p_editorRenderer
 		* @param p_panelsManager
 		*/
-		EditorActions(Context& p_context, EditorRenderer& p_editorRenderer, PanelsManager& p_panelsManager);
+		EditorActions(Context& p_context, EditorRenderPipeline& p_editorRenderer, PanelsManager& p_panelsManager);
 
 		#pragma region TOOLS
 		/**
@@ -46,7 +46,7 @@ namespace OvEditor::Core
 		/**
 		* Returns the renderer
 		*/
-		EditorRenderer& GetRenderer();
+		EditorRenderPipeline& GetRenderer();
 
 		/**
 		* Returns the panels manager
@@ -390,7 +390,7 @@ namespace OvEditor::Core
 	private:
 		Context& m_context;
 		PanelsManager& m_panelsManager;
-		EditorRenderer& m_renderer;
+		EditorRenderPipeline& m_renderer;
 
 		EActorSpawnMode m_actorSpawnMode = EActorSpawnMode::ORIGIN;
 		EEditorMode m_editorMode = EEditorMode::EDIT;

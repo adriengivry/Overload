@@ -4,7 +4,7 @@
 * @licence: MIT
 */
 
-#include "OvGame/Core/GameRenderer.h"
+#include "OvGame/Core/GameRenderPipeline.h"
 
 #include <OvAnalytics/Profiling/ProfilerSpy.h>
 
@@ -20,7 +20,7 @@ using namespace OvMaths;
 using namespace OvRendering::Resources;
 using namespace OvCore::Resources;
 
-OvGame::Core::GameRenderer::GameRenderer(Context & p_context) :
+OvGame::Core::GameRenderPipeline::GameRenderPipeline(Context & p_context) :
 	m_context(p_context)
 {
 	/* Empty Material */
@@ -49,7 +49,7 @@ OvGame::Core::GameRenderer::GameRenderer(Context & p_context) :
 	});
 }
 
-void OvGame::Core::GameRenderer::RenderScene()
+void OvGame::Core::GameRenderPipeline::RenderScene()
 {
 	if (auto currentScene = m_context.sceneManager.GetCurrentScene())
 	{
@@ -88,7 +88,7 @@ void OvGame::Core::GameRenderer::RenderScene()
 	}
 }
 
-void OvGame::Core::GameRenderer::UpdateEngineUBO(OvCore::ECS::Components::CCamera& p_mainCamera)
+void OvGame::Core::GameRenderPipeline::UpdateEngineUBO(OvCore::ECS::Components::CCamera& p_mainCamera)
 {
 	size_t offset = sizeof(OvMaths::FMatrix4); // We skip the model matrix (Which is a special case, modified every draw calls)
 	auto& camera = p_mainCamera.GetCamera();
@@ -98,14 +98,14 @@ void OvGame::Core::GameRenderer::UpdateEngineUBO(OvCore::ECS::Components::CCamer
 	m_context.engineUBO->SetSubData(p_mainCamera.owner.transform.GetWorldPosition(), std::ref(offset));
 }
 
-void OvGame::Core::GameRenderer::UpdateLights(OvCore::SceneSystem::Scene& p_scene)
+void OvGame::Core::GameRenderPipeline::UpdateLights(OvCore::SceneSystem::Scene& p_scene)
 {
 	PROFILER_SPY("Light SSBO Update");
 	auto lightMatrices = m_context.renderer->FindLightMatrices(p_scene);
 	m_context.lightSSBO->SendBlocks<FMatrix4>(lightMatrices.data(), lightMatrices.size() * sizeof(FMatrix4));
 }
 
-void OvGame::Core::GameRenderer::UpdateLightsInFrustum(OvCore::SceneSystem::Scene& p_scene, const OvRendering::Data::Frustum& p_frustum)
+void OvGame::Core::GameRenderPipeline::UpdateLightsInFrustum(OvCore::SceneSystem::Scene& p_scene, const OvRendering::Data::Frustum& p_frustum)
 {
 	PROFILER_SPY("Light SSBO Update (Frustum culled)");
 	auto lightMatrices = m_context.renderer->FindLightMatricesInFrustum(p_scene, p_frustum);

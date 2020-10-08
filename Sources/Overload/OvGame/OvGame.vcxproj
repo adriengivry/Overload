@@ -109,7 +109,7 @@ xcopy "$(OutDir)*.exe" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration
     <ClCompile Include="src\OvGame\Core\Application.cpp" />
     <ClCompile Include="src\OvGame\Core\Context.cpp" />
     <ClCompile Include="src\OvGame\Core\Game.cpp" />
-    <ClCompile Include="src\OvGame\Core\GameRenderer.cpp" />
+    <ClCompile Include="src\OvGame\Core\GameRenderPipeline.cpp" />
     <ClCompile Include="src\OvGame\Debug\DriverInfo.cpp" />
     <ClCompile Include="src\OvGame\Utils\FPSCounter.cpp" />
     <ClCompile Include="src\OvGame\Debug\FrameInfo.cpp" />
@@ -120,7 +120,7 @@ xcopy "$(OutDir)*.exe" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration
     <ClInclude Include="include\OvGame\Core\Application.h" />
     <ClInclude Include="include\OvGame\Core\Context.h" />
     <ClInclude Include="include\OvGame\Core\Game.h" />
-    <ClInclude Include="include\OvGame\Core\GameRenderer.h" />
+    <ClInclude Include="include\OvGame\Core\GameRenderPipeline.h" />
     <ClInclude Include="include\OvGame\Debug\DriverInfo.h" />
     <ClInclude Include="include\OvGame\Utils\FPSCounter.h" />
     <ClInclude Include="include\OvGame\Debug\FrameInfo.h" />

@@ -57,9 +57,6 @@
     <ClCompile Include="src\OvEditor\Panels\SceneView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\OvEditor\Core\EditorRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\OvEditor\Panels\AView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -108,6 +105,9 @@
     <ClCompile Include="src\OvEditor\Utils\ActorCreationMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\OvEditor\Core\EditorRenderPipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\OvEditor\Panels\AssetBrowser.h">
@@ -147,9 +147,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\OvEditor\Panels\SceneView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\OvEditor\Core\EditorRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\OvEditor\Panels\AView.h">
@@ -204,6 +201,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\OvEditor\Utils\ActorCreationMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OvEditor\Core\EditorRenderPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

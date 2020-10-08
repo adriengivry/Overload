@@ -13,7 +13,7 @@
 
 OvGame::Core::Game::Game(Context & p_context) :
 	m_context(p_context),
-	m_gameRenderer(p_context),
+	m_gameRenderPipeline(p_context),
 	m_fpsCounter(*p_context.window)
 	#ifdef _DEBUG
 	,
@@ -85,7 +85,7 @@ void OvGame::Core::Game::Update(float p_deltaTime)
 			#ifdef _DEBUG
 			PROFILER_SPY("Render Scene");
 			#endif
-			m_gameRenderer.RenderScene();
+			m_gameRenderPipeline.RenderScene();
 		}
 	}
 

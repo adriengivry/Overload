@@ -7,7 +7,7 @@
 #include <OvTools/Utils/PathParser.h>
 #include <OvUI/Plugins/DDTarget.h>
 
-#include "OvEditor/Core/EditorRenderer.h"
+#include "OvEditor/Core/EditorRenderPipeline.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Panels/AssetView.h"
 
