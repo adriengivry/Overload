@@ -167,9 +167,6 @@
     <ClCompile Include="src\OvCore\ResourceManagement\TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\OvCore\Global\ServiceLocator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\OvCore\ResourceManagement\ShaderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

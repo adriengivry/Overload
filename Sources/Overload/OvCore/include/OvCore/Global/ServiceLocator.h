@@ -6,15 +6,48 @@
 
 #pragma once
 
-#include <any>
-#include <unordered_map>
-
 #include "OvCore/API/Export.h"
 
 #define OVSERVICE(Type) OvCore::Global::ServiceLocator::Get<Type>()
 
 namespace OvCore::Global
 {
+	namespace Details
+	{
+		/**
+		 * Helper for service locating provides:
+		 *     1. Real O(1) access time
+		 *     2. Type-safe
+		 *     3. No RTTI required for service identification
+		 *     4. No key-value container required for service storage
+		 *     5. No type casting required for service retrieving
+		 */
+		template<typename T>
+		class Locator
+		{
+		public:
+			/**
+			 * Set new instance of service
+			 * @param p_service
+			 */
+			static void Set(T& p_service)
+			{
+				_SERVICE = &p_service;
+			}
+
+			/**
+			 * Returns a provided service
+			 */
+			static T& Get()
+			{
+				return *_SERVICE;
+			}
+
+		private:
+			static inline T* _SERVICE = nullptr;
+		};
+	}
+
 	/**
 	* Provide a way to access to core services
 	*/
@@ -28,7 +61,7 @@ namespace OvCore::Global
 		template<typename T>
 		static void Provide(T& p_service)
 		{
-			__SERVICES[typeid(T).hash_code()] = std::any(&p_service);
+			Details::Locator<T>::Set(p_service);
 		}
 		
 		/**
@@ -37,10 +70,7 @@ namespace OvCore::Global
 		template<typename T>
 		static T& Get()
 		{
-			return *std::any_cast<T*>(__SERVICES[typeid(T).hash_code()]);
+			return Details::Locator<T>::Get();
 		}
-
-	private:
-		static std::unordered_map<size_t, std::any> __SERVICES;
 	};
 }
