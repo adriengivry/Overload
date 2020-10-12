@@ -277,5 +277,8 @@
     <None Include="include\OvCore\ECS\Components\Behaviour.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="include\OvCore\Global\ServiceLocator.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

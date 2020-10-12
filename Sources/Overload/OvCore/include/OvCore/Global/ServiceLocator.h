@@ -30,18 +30,12 @@ namespace OvCore::Global
 			 * Set new instance of service
 			 * @param p_service
 			 */
-			static void Set(T& p_service)
-			{
-				_SERVICE = &p_service;
-			}
+			static void Set(T& p_service);
 
 			/**
 			 * Returns a provided service
 			 */
-			static T& Get()
-			{
-				return *_SERVICE;
-			}
+			static T& Get();
 
 		private:
 			static inline T* _SERVICE = nullptr;
@@ -59,18 +53,14 @@ namespace OvCore::Global
 		* @param p_service
 		*/
 		template<typename T>
-		static void Provide(T& p_service)
-		{
-			Details::Locator<T>::Set(p_service);
-		}
+		static void Provide(T& p_service);
 		
 		/**
 		* Returns a service of the given type (Make sure that your provided the service before calling this method)
 		*/
 		template<typename T>
-		static T& Get()
-		{
-			return Details::Locator<T>::Get();
-		}
+		static T& Get();
 	};
 }
+
+#include <OvCore/Global/ServiceLocator.inl>

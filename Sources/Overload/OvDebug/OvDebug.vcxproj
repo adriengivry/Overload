@@ -120,7 +120,6 @@ xcopy "$(SolutionDir)..\..\Build\OvTools\bin\*.dll" "$(SolutionDir)..\..\Build\$
     <ClInclude Include="include\OvDebug\Utils\Logger.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\OvDebug\Utils\Assertion.cpp" />
     <ClCompile Include="src\OvDebug\Utils\ConsoleHandler.cpp" />
     <ClCompile Include="src\OvDebug\Utils\FileHandler.cpp" />
     <ClCompile Include="src\OvDebug\Utils\HistoryHandler.cpp" />

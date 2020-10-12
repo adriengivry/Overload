@@ -305,6 +305,7 @@ xcopy "$(SolutionDir)..\..\Build\OvWindowing\lib\$(Configuration)\*.lib" "$(Solu
   <ItemGroup>
     <None Include="include\OvCore\ECS\Actor.inl" />
     <None Include="include\OvCore\ECS\Components\Behaviour.inl" />
+    <None Include="include\OvCore\Global\ServiceLocator.inl" />
     <None Include="include\OvCore\Helpers\GUIDrawer.inl" />
     <None Include="include\OvCore\ResourceManagement\AResourceManager.inl" />
     <None Include="include\OvCore\Resources\Material.inl" />
