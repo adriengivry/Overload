@@ -6,7 +6,7 @@ namespace OvCore::Global {
 	template<typename T>
 	void Details::Locator<T>::Set(T& p_service) 
 	{
-		OVASSERT(_SERVICE, "Service is already provided");
+		OVASSERT(!_SERVICE, "Service is already provided");
 		_SERVICE = &p_service;
 	}
 
