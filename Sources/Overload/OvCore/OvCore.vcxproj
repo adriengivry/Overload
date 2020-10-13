@@ -268,7 +268,6 @@ xcopy "$(SolutionDir)..\..\Build\OvWindowing\lib\$(Configuration)\*.lib" "$(Solu
     <ClCompile Include="src\OvCore\ECS\Components\CTransform.cpp" />
     <ClCompile Include="src\OvCore\ECS\PhysicsWrapper.cpp" />
     <ClCompile Include="src\OvCore\ECS\Renderer.cpp" />
-    <ClCompile Include="src\OvCore\Global\ServiceLocator.cpp" />
     <ClCompile Include="src\OvCore\Helpers\GUIDrawer.cpp" />
     <ClCompile Include="src\OvCore\Helpers\Serializer.cpp" />
     <ClCompile Include="src\OvCore\ResourceManagement\MaterialManager.cpp" />
@@ -306,6 +305,7 @@ xcopy "$(SolutionDir)..\..\Build\OvWindowing\lib\$(Configuration)\*.lib" "$(Solu
   <ItemGroup>
     <None Include="include\OvCore\ECS\Actor.inl" />
     <None Include="include\OvCore\ECS\Components\Behaviour.inl" />
+    <None Include="include\OvCore\Global\ServiceLocator.inl" />
     <None Include="include\OvCore\Helpers\GUIDrawer.inl" />
     <None Include="include\OvCore\ResourceManagement\AResourceManager.inl" />
     <None Include="include\OvCore\Resources\Material.inl" />

@@ -41,9 +41,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\OvDebug\Utils\Assertion.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\OvDebug\Utils\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
