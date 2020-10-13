@@ -34,7 +34,7 @@ OvRendering::Buffers::Framebuffer::~Framebuffer()
 	/* Destroy OpenGL objects */
 	glDeleteBuffers(1, &m_bufferID);
 	glDeleteTextures(1, &m_renderTexture);
-	glGenRenderbuffers(1, &m_depthStencilBuffer);
+	glDeleteRenderbuffers(1, &m_depthStencilBuffer);
 }
 
 void OvRendering::Buffers::Framebuffer::Bind()

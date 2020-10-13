@@ -18,7 +18,7 @@ OvRendering::Buffers::ShaderStorageBuffer::ShaderStorageBuffer(EAccessSpecifier 
 
 OvRendering::Buffers::ShaderStorageBuffer::~ShaderStorageBuffer()
 {
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	glDeleteBuffers(1, &m_bufferID);
 }
 
 void OvRendering::Buffers::ShaderStorageBuffer::Bind(uint32_t p_bindingPoint)
