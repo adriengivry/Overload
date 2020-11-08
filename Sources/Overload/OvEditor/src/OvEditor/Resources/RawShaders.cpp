@@ -136,7 +136,7 @@ layout (std140) uniform EngineUBO
 
 out VS_OUT
 {
-    flat vec3   Color;
+    vec3 Color;
 } vs_out;
 
 uniform bool u_IsBall;
