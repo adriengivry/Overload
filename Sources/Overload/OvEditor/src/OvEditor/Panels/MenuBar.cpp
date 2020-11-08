@@ -115,8 +115,8 @@ void OvEditor::Panels::MenuBar::CreateSettingsMenu()
 	settingsMenu.CreateWidget<MenuItem>("Spawn actors at origin", "", true, true).ValueChangedEvent		+= EDITOR_BIND(SetActorSpawnAtOrigin, std::placeholders::_1);
 	settingsMenu.CreateWidget<MenuItem>("Vertical Synchronization", "", true, true).ValueChangedEvent	+= [this](bool p_value) { EDITOR_CONTEXT(device)->SetVsync(p_value); };
 	auto& cameraSpeedMenu = settingsMenu.CreateWidget<MenuList>("Camera Speed");
-	cameraSpeedMenu.CreateWidget<OvUI::Widgets::Sliders::SliderInt>(1, 20, 5, OvUI::Widgets::Sliders::ESliderOrientation::HORIZONTAL, "Scene View").ValueChangedEvent += EDITOR_BIND(SetSceneViewCameraSpeed, std::placeholders::_1);
-	cameraSpeedMenu.CreateWidget<OvUI::Widgets::Sliders::SliderInt>(1, 20, 5, OvUI::Widgets::Sliders::ESliderOrientation::HORIZONTAL, "Asset View").ValueChangedEvent += EDITOR_BIND(SetAssetViewCameraSpeed, std::placeholders::_1);
+	cameraSpeedMenu.CreateWidget<OvUI::Widgets::Sliders::SliderInt>(1, 50, 15, OvUI::Widgets::Sliders::ESliderOrientation::HORIZONTAL, "Scene View").ValueChangedEvent += EDITOR_BIND(SetSceneViewCameraSpeed, std::placeholders::_1);
+	cameraSpeedMenu.CreateWidget<OvUI::Widgets::Sliders::SliderInt>(1, 50, 15, OvUI::Widgets::Sliders::ESliderOrientation::HORIZONTAL, "Asset View").ValueChangedEvent += EDITOR_BIND(SetAssetViewCameraSpeed, std::placeholders::_1);
 	auto& cameraPositionMenu = settingsMenu.CreateWidget<MenuList>("Reset Camera");
 	cameraPositionMenu.CreateWidget<MenuItem>("Scene View").ClickedEvent += EDITOR_BIND(ResetSceneViewCameraPosition);
 	cameraPositionMenu.CreateWidget<MenuItem>("Asset View").ClickedEvent += EDITOR_BIND(ResetAssetViewCameraPosition);
