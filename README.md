@@ -114,14 +114,20 @@ Again, a non-exhaustive list of Overload in-coming features:
 - SOL2 (Lua binder)
 - imGui (GUI)
 
-## 4.3. Compiling sources
+## 4.3. Requirements
+Overload requires:
+- RAM: 100MB
+- OS: Windows 7
+- GPU: Graphics card supporting OpenGL 4.3
+
+## 4.4. Compiling sources
 We made this project using Visual Studio 2019. If you want to compile Overload, you should consider using this IDE.<br>
 Overload only targets Windows x64.
 
-## 4.4. Licence
+## 4.5. Licence
 Overload is licenced under an MIT licence.
 
-## 4.5. More information
+## 4.6. More information
 If you are interested in Overload, you can download our engine and the demo game we made with it on our website:<br>
 http://overloadengine.org
 
