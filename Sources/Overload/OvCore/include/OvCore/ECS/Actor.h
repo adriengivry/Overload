@@ -39,7 +39,7 @@ namespace OvCore::ECS
 		* Destructor of the actor instance. Force invoke ComponentRemovedEvent and BehaviourRemovedEvent
 		* for every components and behaviours
 		*/
-		~Actor();
+		virtual ~Actor() override;
 
 		/**
 		* Return the current name of the actor
@@ -306,6 +306,12 @@ namespace OvCore::ECS
 		virtual void OnDeserialize(tinyxml2::XMLDocument& p_doc, tinyxml2::XMLNode* p_actorsRoot) override;
 
 	private:
+		/**
+		 * @brief Deleted copy constructor
+		 * @param p_actor
+		 */
+		Actor(const Actor& p_actor) = delete;
+
 		void RecursiveActiveUpdate();
 		void RecursiveWasActiveUpdate();
 

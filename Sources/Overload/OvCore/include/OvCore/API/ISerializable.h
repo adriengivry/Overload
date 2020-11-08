@@ -32,5 +32,10 @@ namespace OvCore::API
 		* @param p_node
 		*/
 		virtual void OnDeserialize(tinyxml2::XMLDocument& p_doc, tinyxml2::XMLNode* p_node) = 0;
+
+		/**
+		* Default polymorphic destructor
+		*/
+		virtual ~ISerializable() = default;
 	};
 }
