@@ -362,8 +362,7 @@ void OvEditor::Core::EditorActions::SetActorSpawnMode(EActorSpawnMode p_value)
 
 void OvEditor::Core::EditorActions::ResetLayout()
 {
-	// TODO
-	std::filesystem::copy_file("default.ini", std::string(getenv("APPDATA")) + "/OverloadTech/OvEditor/layout.ini", std::filesystem::copy_options::overwrite_existing);
+    DelayAction([this]() {m_context.uiManager->ResetLayout("Config\\layout.ini"); });
 }
 
 void OvEditor::Core::EditorActions::SetSceneViewCameraSpeed(int p_speed)
@@ -484,9 +483,10 @@ OvMaths::FVector3 OvEditor::Core::EditorActions::CalculateActorSpawnPoint(float 
 	return sceneView.GetCameraPosition() + sceneView.GetCameraRotation() * OvMaths::FVector3::Forward * p_distanceToCamera;
 }
 
-OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreateEmptyActor(bool p_focusOnCreation, OvCore::ECS::Actor* p_parent)
+OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreateEmptyActor(bool p_focusOnCreation, OvCore::ECS::Actor* p_parent, const std::string& p_name)
 {
-	auto& instance = m_context.sceneManager.GetCurrentScene()->CreateActor();
+    const auto currentScene = m_context.sceneManager.GetCurrentScene();
+	auto& instance = p_name.empty() ? currentScene->CreateActor() : currentScene->CreateActor(p_name);
 
 	if (p_parent)
 		instance.SetParent(*p_parent);
@@ -502,56 +502,20 @@ OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreateEmptyActor(bool p_focu
 	return instance;
 }
 
-OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreateActorWithModel(const std::string& p_path, bool p_focusOnCreation, OvCore::ECS::Actor* p_parent)
+OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreateActorWithModel(const std::string& p_path, bool p_focusOnCreation, OvCore::ECS::Actor* p_parent, const std::string& p_name)
 {
-	auto& instance = CreateEmptyActor(false, p_parent);
+	auto& instance = CreateEmptyActor(false, p_parent, p_name);
 
 	auto& modelRenderer = instance.AddComponent<OvCore::ECS::Components::CModelRenderer>();
 
-	auto model = m_context.modelManager[p_path];
+	const auto model = m_context.modelManager[p_path];
 	if (model)
 		modelRenderer.SetModel(model);
 
 	auto& materialRenderer = instance.AddComponent<OvCore::ECS::Components::CMaterialRenderer>();
-	auto material = m_context.materialManager[":Materials\\Default.ovmat"];
+    const auto material = m_context.materialManager[":Materials\\Default.ovmat"];
 	if (material)
 		materialRenderer.FillWithMaterial(*material);
-
-	if (p_focusOnCreation)
-		SelectActor(instance);
-
-	return instance;
-}
-
-OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreatePhysicalBox(bool p_focusOnCreation, OvCore::ECS::Actor* p_parent)
-{
-	auto& instance = CreateEmptyActor(false, p_parent);
-
-	instance.AddComponent<OvCore::ECS::Components::CPhysicalBox>();
-
-	if (p_focusOnCreation)
-		SelectActor(instance);
-
-	return instance;
-}
-
-OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreatePhysicalSphere(bool p_focusOnCreation, OvCore::ECS::Actor* p_parent)
-{
-	auto& instance = CreateEmptyActor(false, p_parent);
-
-	instance.AddComponent<OvCore::ECS::Components::CPhysicalSphere>();
-
-	if (p_focusOnCreation)
-		SelectActor(instance);
-
-	return instance;
-}
-
-OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreatePhysicalCapsule(bool p_focusOnCreation, OvCore::ECS::Actor* p_parent)
-{
-	auto& instance = CreateEmptyActor(false, p_parent);
-
-	instance.AddComponent<OvCore::ECS::Components::CPhysicalCapsule>();
 
 	if (p_focusOnCreation)
 		SelectActor(instance);
@@ -568,58 +532,16 @@ bool OvEditor::Core::EditorActions::DestroyActor(OvCore::ECS::Actor & p_actor)
 
 std::string FindDuplicatedActorUniqueName(OvCore::ECS::Actor& p_duplicated, OvCore::ECS::Actor& p_newActor, OvCore::SceneSystem::Scene& p_scene)
 {
-    const auto sourceName = p_duplicated.GetName();
-    auto sourceNameWithoutSuffix = sourceName;
-
-    auto suffixOpeningParenthesisPos = std::string::npos;
-    auto suffixClosingParenthesisPos = std::string::npos;
-
-    // Keep track of the current character position when iterating onto `sourceName`
-    auto currentPos = decltype(std::string::npos){sourceName.length() - 1};
-
-    // Here we search for `(` and `)` positions. (Needed to extract the number between those parenthesis)
-    for (auto it = sourceName.rbegin(); it < sourceName.rend(); ++it, --currentPos)
-    {
-        auto c = *it;
-
-        if (suffixClosingParenthesisPos == std::string::npos && c == ')') suffixClosingParenthesisPos = currentPos;
-        if (suffixClosingParenthesisPos != std::string::npos && c == '(') suffixOpeningParenthesisPos = currentPos;
-    }
-
-    // We need to declare our `duplicationCounter` here to store the number between found parenthesis OR 1 (In the case no parenthesis, AKA, suffix, has been found)
-    auto duplicationCounter = uint32_t{ 1 };
-
-    // If the two parenthis have been found AND the closing parenthesis is the last character AND there is a space before the opening parenthesis
-    if (suffixOpeningParenthesisPos != std::string::npos && suffixClosingParenthesisPos == sourceName.length() - 1 && suffixOpeningParenthesisPos > 0 && sourceName[suffixOpeningParenthesisPos - 1] == ' ')
-    {
-        // Extract the string between those parenthesis
-        const auto between = sourceName.substr(suffixOpeningParenthesisPos + 1, suffixClosingParenthesisPos - suffixOpeningParenthesisPos - 1);
-
-        // If the `between` string is composed of digits (AKA, `between` is a number)
-        if (!between.empty() && std::find_if(between.begin(), between.end(), [](unsigned char c) { return !std::isdigit(c); }) == between.end())
-        {
-            duplicationCounter = static_cast<uint32_t>(std::atoi(between.c_str()));
-            sourceNameWithoutSuffix = sourceName.substr(0, suffixOpeningParenthesisPos - 1);
-        }
-    }
-
     const auto parent = p_newActor.GetParent();
     const auto adjacentActors = parent ? parent->GetChildren() : p_scene.GetActors();
 
-    auto foundName = sourceNameWithoutSuffix;
-
-    // Lambda that checks if the current `foundName` is used by the actor given in parameter (Also ensure that the given actor is adjacent to our new actor)
-    // We call "adjacent" two actors that shares the same hierarchical level. (Ex: If [A] and [B] are both direction children of [C], then, they are adjacents)
-    const auto isActorNameTaken = [&foundName, parent](auto actor) { return (parent || !actor->GetParent()) && actor->GetName() == foundName; };
-
-    // While there is an adjacent actor with the current `foundName`, we keep generating new names
-    while (std::find_if(adjacentActors.begin(), adjacentActors.end(), isActorNameTaken) != adjacentActors.end())
+    auto availabilityChecker = [&parent, &adjacentActors](std::string target) -> bool
     {
-        // New names are composed of the `sourceNameWithoutSuffix` (Ex: "Cube (1)" name without suffix is "Cube")
-        foundName = sourceNameWithoutSuffix + " (" + std::to_string(duplicationCounter++) + ")";
-    }
+        const auto isActorNameTaken = [&target, parent](auto actor) { return (parent || !actor->GetParent()) && actor->GetName() == target; };
+        return std::find_if(adjacentActors.begin(), adjacentActors.end(), isActorNameTaken) == adjacentActors.end();
+    };
 
-    return foundName;
+    return OvTools::Utils::String::GenerateUnique(p_duplicated.GetName(), availabilityChecker);
 }
 
 void OvEditor::Core::EditorActions::DuplicateActor(OvCore::ECS::Actor & p_toDuplicate, OvCore::ECS::Actor* p_forcedParent, bool p_focus)

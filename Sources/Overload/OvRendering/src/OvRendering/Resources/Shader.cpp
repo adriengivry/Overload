@@ -78,28 +78,28 @@ float OvRendering::Resources::Shader::GetUniformFloat(const std::string& p_name)
 OvMaths::FVector2 OvRendering::Resources::Shader::GetUniformVec2(const std::string& p_name)
 {
 	GLfloat values[2];
-	glGetnUniformfv(id, GetUniformLocation(p_name), 2 * sizeof(float), values);
+	glGetUniformfv(id, GetUniformLocation(p_name), values);
 	return reinterpret_cast<OvMaths::FVector2&>(values);
 }
 
 OvMaths::FVector3 OvRendering::Resources::Shader::GetUniformVec3(const std::string& p_name)
 {
 	GLfloat values[3];
-	glGetnUniformfv(id, GetUniformLocation(p_name), 3 * sizeof(float), values);
+	glGetUniformfv(id, GetUniformLocation(p_name), values);
 	return reinterpret_cast<OvMaths::FVector3&>(values);
 }
 
 OvMaths::FVector4 OvRendering::Resources::Shader::GetUniformVec4(const std::string& p_name)
 {
 	GLfloat values[4];
-	glGetnUniformfv(id, GetUniformLocation(p_name), 4 * sizeof(float), values);
+	glGetUniformfv(id, GetUniformLocation(p_name), values);
 	return reinterpret_cast<OvMaths::FVector4&>(values);
 }
 
 OvMaths::FMatrix4 OvRendering::Resources::Shader::GetUniformMat4(const std::string& p_name)
 {
 	GLfloat values[16];
-	glGetnUniformfv(id, GetUniformLocation(p_name), 16 * sizeof(float), values);
+	glGetUniformfv(id, GetUniformLocation(p_name), values);
 	return reinterpret_cast<OvMaths::FMatrix4&>(values);
 }
 

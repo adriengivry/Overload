@@ -166,8 +166,9 @@ namespace OvEditor::Core
 		* Create an empty actor
 		* @param p_focusOnCreation
 		* @param p_parent
+        * @param p_name
 		*/
-		OvCore::ECS::Actor&	CreateEmptyActor(bool p_focusOnCreation = true, OvCore::ECS::Actor* p_parent = nullptr);
+		OvCore::ECS::Actor&	CreateEmptyActor(bool p_focusOnCreation = true, OvCore::ECS::Actor* p_parent = nullptr, const std::string& p_name = "");
 
 		/**
 		* Create an actor with a model renderer and a material renderer. The model renderer with use the model identified
@@ -175,29 +176,9 @@ namespace OvEditor::Core
 		* @param p_path
 		* @param p_focusOnCreation
 		* @param p_parent
+        * @param p_name
 		*/
-		OvCore::ECS::Actor&	CreateActorWithModel(const std::string& p_path, bool p_focusOnCreation = true, OvCore::ECS::Actor* p_parent = nullptr);
-
-		/**
-		* Create an actor whith a physical box
-		* @param p_focusOnCreation
-		* @param p_parent
-		*/
-		OvCore::ECS::Actor&	CreatePhysicalBox(bool p_focusOnCreation = true, OvCore::ECS::Actor* p_parent = nullptr);
-
-		/**
-		* Create an actor whith a physical sphere
-		* @param p_focusOnCreation
-		* @param p_parent
-		*/
-		OvCore::ECS::Actor&	CreatePhysicalSphere(bool p_focusOnCreation = true, OvCore::ECS::Actor* p_parent = nullptr);
-
-		/**
-		* Create an actor whith a physical capsule
-		* @param p_focusOnCreation
-		* @param p_parent
-		*/
-		OvCore::ECS::Actor& CreatePhysicalCapsule(bool p_focusOnCreation = true, OvCore::ECS::Actor* p_parent = nullptr);
+		OvCore::ECS::Actor&	CreateActorWithModel(const std::string& p_path, bool p_focusOnCreation = true, OvCore::ECS::Actor* p_parent = nullptr, const std::string& p_name = "");
 
 		/**
 		* Destroy an actor from his scene

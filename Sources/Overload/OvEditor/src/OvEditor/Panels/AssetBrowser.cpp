@@ -21,6 +21,7 @@
 #include <OvWindowing/Dialogs/OpenFileDialog.h>
 #include <OvTools/Utils/SystemCalls.h>
 #include <OvTools/Utils/PathParser.h>
+#include <OvTools/Utils/String.h>
 
 #include <OvCore/Global/ServiceLocator.h>
 #include <OvCore/ResourceManagement/ModelManager.h>
@@ -32,7 +33,7 @@
 #include "OvEditor/Panels/AssetBrowser.h"
 #include "OvEditor/Panels/AssetView.h"
 #include "OvEditor/Panels/MaterialEditor.h"
-#include "OvEditor/Panels/AssetMetadataEditor.h"
+#include "OvEditor/Panels/AssetProperties.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Core/EditorResources.h"
 
@@ -273,7 +274,7 @@ public:
 				} while (std::filesystem::exists(finalPath));
 
 				std::ofstream outfile(finalPath);
-				outfile << "<root><scene><actors><actor><name>Directional Light</name><tag></tag><active>true</active><id>1</id><parent>0</parent><components><component><type>class OvCore::ECS::Components::CDirectionalLight</type><data><diffuse><x>1</x><y>1</y><z>1</z></diffuse><specular><x>1</x><y>1</y><z>1</z></specular><intensity>0.75</intensity></data></component><component><type>class OvCore::ECS::Components::CTransform</type><data><position><x>0</x><y>10</y><z>0</z></position><rotation><x>0.81379771</x><y>-0.17101006</y><z>0.29619816</z><w>0.46984628</w></rotation><scale><x>1</x><y>1</y><z>1</z></scale></data></component></components><behaviours/></actor><actor><name>Ambient Light</name><tag></tag><active>true</active><id>2</id><parent>0</parent><components><component><type>class OvCore::ECS::Components::CAmbientSphereLight</type><data><ambient><x>0.1</x><y>0.1</y><z>0.1</z></ambient><intensity>1</intensity><radius>10000</radius></data></component><component><type>class OvCore::ECS::Components::CTransform</type><data><position><x>0</x><y>0</y><z>0</z></position><rotation><x>0</x><y>0</y><z>0</z><w>1</w></rotation><scale><x>1</x><y>1</y><z>1</z></scale></data></component></components><behaviours/></actor><actor><name>Main Camera</name><tag></tag><active>true</active><id>3</id><parent>0</parent><components><component><type>class OvCore::ECS::Components::CCamera</type><data><fov>45</fov><near>0.1</near><far>1000</far><clear_color><x>0.1921569</x><y>0.3019608</y><z>0.47450981</z></clear_color></data></component><component><type>class OvCore::ECS::Components::CTransform</type><data><position><x>0</x><y>3</y><z>8</z></position><rotation><x>-7.5904039e-09</x><y>0.98480773</y><z>-0.17364819</z><w>-4.3047311e-08</w></rotation><scale><x>1</x><y>1</y><z>1</z></scale></data></component></components><behaviours/></actor></actors></scene></root>" << std::endl; // Empty scene content
+				outfile << "<root><scene><actors><actor><name>Directional Light</name><tag></tag><active>true</active><id>1</id><parent>0</parent><components><component><type>class OvCore::ECS::Components::CDirectionalLight</type><data><diffuse><x>1</x><y>1</y><z>1</z></diffuse><specular><x>1</x><y>1</y><z>1</z></specular><intensity>0.75</intensity></data></component><component><type>class OvCore::ECS::Components::CTransform</type><data><position><x>0</x><y>10</y><z>0</z></position><rotation><x>0.81379771</x><y>-0.17101006</y><z>0.29619816</z><w>0.46984628</w></rotation><scale><x>1</x><y>1</y><z>1</z></scale></data></component></components><behaviours/></actor><actor><name>Ambient Light</name><tag></tag><active>true</active><id>2</id><parent>0</parent><components><component><type>class OvCore::ECS::Components::CAmbientSphereLight</type><data><ambient><x>1</x><y>1</y><z>1</z></ambient><intensity>0.1</intensity><radius>10000</radius></data></component><component><type>class OvCore::ECS::Components::CTransform</type><data><position><x>0</x><y>0</y><z>0</z></position><rotation><x>0</x><y>0</y><z>0</z><w>1</w></rotation><scale><x>1</x><y>1</y><z>1</z></scale></data></component></components><behaviours/></actor><actor><name>Main Camera</name><tag></tag><active>true</active><id>3</id><parent>0</parent><components><component><type>class OvCore::ECS::Components::CCamera</type><data><fov>45</fov><near>0.1</near><far>1000</far><clear_color><x>0.1921569</x><y>0.3019608</y><z>0.47450981</z></clear_color></data></component><component><type>class OvCore::ECS::Components::CTransform</type><data><position><x>0</x><y>3</y><z>8</z></position><rotation><x>-7.5904039e-09</x><y>0.98480773</y><z>-0.17364819</z><w>-4.3047311e-08</w></rotation><scale><x>1</x><y>1</y><z>1</z></scale></data></component></components><behaviours/></actor></actors></scene></root>" << std::endl; // Empty scene content
 
 				ItemAddedEvent.Invoke(finalPath);
 				Close();
@@ -593,12 +594,14 @@ public:
 				if (size_t pos = filePathWithoutExtension.rfind('.'); pos != std::string::npos)
 					filePathWithoutExtension = filePathWithoutExtension.substr(0, pos);
 
-				std::string newNameWithoutExtension = filePathWithoutExtension + " (Copy)";
 				std::string extension = "." + OvTools::Utils::PathParser::GetExtension(filePath);
-				while (std::filesystem::exists(newNameWithoutExtension + extension))
-				{
-					newNameWithoutExtension += " (Copy)";
-				}
+
+                auto filenameAvailable = [&extension](const std::string& target)
+                {
+                    return !std::filesystem::exists(target + extension);
+                };
+
+                const auto newNameWithoutExtension = OvTools::Utils::String::GenerateUnique(filePathWithoutExtension, filenameAvailable);
 
 				std::string finalPath = newNameWithoutExtension + extension;
 				std::filesystem::copy(filePath, finalPath);
@@ -608,6 +611,18 @@ public:
 		}
 
 		BrowserItemContextualMenu::CreateList();
+
+
+        auto& editMetadata = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Properties");
+
+        editMetadata.ClickedEvent += [this]
+        {
+            auto& panel = EDITOR_PANEL(OvEditor::Panels::AssetProperties, "Asset Properties");
+            std::string resourcePath = EDITOR_EXEC(GetResourcePath(filePath, m_protected));
+            panel.SetTarget(resourcePath);
+            panel.Open();
+            panel.Focus();
+        };
 	}
 
 	virtual void DeleteItem() override
@@ -699,16 +714,6 @@ public:
 			{
 				modelManager.AResourceManager::ReloadResource(resourcePath);
 			}
-		};
-
-		auto& editMetadata = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Edit metadata");
-
-		editMetadata.ClickedEvent += [this]
-		{
-			auto& panel = EDITOR_PANEL(OvEditor::Panels::AssetMetadataEditor, "Asset Metadata Editor");
-			panel.SetTarget(filePath);
-			panel.Open();
-			panel.Focus();
 		};
 
 		if (!m_protected)
@@ -851,16 +856,6 @@ public:
 				textureManager.AResourceManager::ReloadResource(resourcePath);
 				EDITOR_PANEL(OvEditor::Panels::MaterialEditor, "Material Editor").Refresh();
 			}
-		};
-
-		auto& editMetadata = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Edit metadata");
-
-		editMetadata.ClickedEvent += [this]
-		{
-			auto& panel = EDITOR_PANEL(OvEditor::Panels::AssetMetadataEditor, "Asset Metadata Editor");
-			panel.SetTarget(filePath);
-			panel.Open();
-			panel.Focus();
 		};
 
 		PreviewableContextualMenu::CreateList();

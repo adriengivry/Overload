@@ -31,6 +31,7 @@ void OvRendering::Resources::Loaders::ModelLoader::Reload(Model& p_model, const 
 	{
 		p_model.m_meshes = newModel->m_meshes;
 		p_model.m_materialNames = newModel->m_materialNames;
+        p_model.m_boundingSphere = newModel->m_boundingSphere;
 		newModel->m_meshes.clear();
 		delete newModel;
 	}

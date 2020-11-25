@@ -53,8 +53,15 @@ void OvUI::Widgets::Layout::TreeNode::_Draw_Impl()
 
 	bool opened = ImGui::TreeNodeEx((name + m_widgetID).c_str(), flags);
 
-	if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-		ClickedEvent.Invoke();
+    if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+    {
+        ClickedEvent.Invoke();
+
+        if (ImGui::IsMouseDoubleClicked(0))
+        {
+            DoubleClickedEvent.Invoke();
+        }
+    }
 
 	if (opened)
 	{

@@ -16,8 +16,15 @@
 #include "OvMaths/FVector3.h"
 #include "OvMaths/FVector4.h"
 
+
 namespace OvMaths
 {
+
+	/**
+	* Forward declaration due to circular reference
+	*/
+	struct FQuaternion;
+
 	/**
 	* Mathematic representation of a 4x4 Matrix of floats
 	*/
@@ -340,6 +347,19 @@ namespace OvMaths
 		* @param p_scale
 		*/
 		static FMatrix4 Scale(const FMatrix4& p_matrix, const FVector3& p_scale);
+
+		/**
+		* Return rotation matrix from quaternion
+		* @param p_quaternion
+		*/
+		static FMatrix4 Rotation(const FQuaternion& p_quaternion);
+
+		/**
+		* Return rotate matrix in 3D on quaternion
+		* @param p_matrix
+		* @param p_quaternion
+		*/
+		static FMatrix4 Rotate(const FMatrix4& p_matrix, const FQuaternion& p_quaternion);
 
 		/**
 		* Return perspective matrix

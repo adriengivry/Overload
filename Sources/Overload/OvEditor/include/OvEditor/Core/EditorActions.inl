@@ -15,7 +15,9 @@ namespace OvEditor::Core
 	{
 		auto& instance = CreateEmptyActor(false, p_parent);
 
-		instance.AddComponent<T>();
+		T& component = instance.AddComponent<T>();
+
+        instance.SetName(component.GetName());
 
 		if (p_focusOnCreation)
 			SelectActor(instance);

@@ -40,6 +40,11 @@ OvRendering::Resources::Parsers::EModelParserFlags GetAssetMetadata(const std::s
 	if (metaFile.GetOrDefault("FLIP_WINDING_ORDER",			false))	flags |= OvRendering::Resources::Parsers::EModelParserFlags::FLIP_WINDING_ORDER;
 	if (metaFile.GetOrDefault("SPLIT_BY_BONE_COUNT",		false))	flags |= OvRendering::Resources::Parsers::EModelParserFlags::SPLIT_BY_BONE_COUNT;
 	if (metaFile.GetOrDefault("DEBONE",						true))	flags |= OvRendering::Resources::Parsers::EModelParserFlags::DEBONE;
+	if (metaFile.GetOrDefault("GLOBAL_SCALE",				true))	flags |= OvRendering::Resources::Parsers::EModelParserFlags::GLOBAL_SCALE;
+	if (metaFile.GetOrDefault("EMBED_TEXTURES",				false))	flags |= OvRendering::Resources::Parsers::EModelParserFlags::EMBED_TEXTURES;
+	if (metaFile.GetOrDefault("FORCE_GEN_NORMALS",			false))	flags |= OvRendering::Resources::Parsers::EModelParserFlags::FORCE_GEN_NORMALS;
+	if (metaFile.GetOrDefault("DROP_NORMALS",				false))	flags |= OvRendering::Resources::Parsers::EModelParserFlags::DROP_NORMALS;
+	if (metaFile.GetOrDefault("GEN_BOUNDING_BOXES",			false))	flags |= OvRendering::Resources::Parsers::EModelParserFlags::GEN_BOUNDING_BOXES;
 
 	return { flags };
 }

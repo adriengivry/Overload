@@ -15,6 +15,7 @@
 
 namespace OvMaths
 {
+
 	/**
 	* Mathematic representation of a Quaternion with float precision
 	*/

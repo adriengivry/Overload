@@ -2,7 +2,7 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2018, assimp team
+Copyright (c) 2006-2019, assimp team
 
 
 All rights reserved.
@@ -161,7 +161,7 @@ protected:
     /**
      *  Default constructor
      */
-    Logger();
+    Logger() AI_NO_EXCEPT;
 
     /**
      *  Construction with a given log severity
@@ -215,8 +215,9 @@ protected:
 // ----------------------------------------------------------------------------------
 //  Default constructor
 inline
-Logger::Logger() {
-    setLogSeverity(NORMAL);
+Logger::Logger() AI_NO_EXCEPT
+: m_Severity(NORMAL) {
+    // empty
 }
 
 // ----------------------------------------------------------------------------------
@@ -229,8 +230,9 @@ Logger::~Logger() {
 // ----------------------------------------------------------------------------------
 // Construction with given logging severity
 inline
-Logger::Logger(LogSeverity severity) {
-    setLogSeverity(severity);
+Logger::Logger(LogSeverity severity)
+: m_Severity(severity) {
+    // empty
 }
 
 // ----------------------------------------------------------------------------------

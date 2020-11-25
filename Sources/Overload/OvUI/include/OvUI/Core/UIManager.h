@@ -96,6 +96,12 @@ namespace OvUI::Core
 		*/
 		void EnableDocking(bool p_value);
 
+        /**
+        * Reset the UI layout to the given configuration file
+        * @param p_config
+        */
+        void ResetLayout(const std::string & p_config) const;
+
 		/**
 		* Return true if the docking system is enabled
 		*/

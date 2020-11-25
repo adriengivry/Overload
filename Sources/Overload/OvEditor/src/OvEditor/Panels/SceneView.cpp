@@ -20,8 +20,8 @@ OvEditor::Panels::SceneView::SceneView
 ) : AViewControllable(p_title, p_opened, p_windowSettings, true),
 	m_sceneManager(EDITOR_CONTEXT(sceneManager))
 {
-	m_camera.SetClearColor({ 0.278f, 0.278f, 0.278f });
-	m_camera.SetFar(1000.0f);
+	m_camera.SetClearColor({ 0.098f, 0.098f, 0.098f });
+	m_camera.SetFar(5000.0f);
 
 	m_image->AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, OvUI::Widgets::Layout::Group*>>>("File").DataReceivedEvent += [this](auto p_data)
 	{
@@ -204,7 +204,7 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 
 		m_actorPickingFramebuffer.Bind();
 		uint8_t pixel[3];
-		glReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+		EDITOR_CONTEXT(renderer)->ReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, OvRendering::Settings::EPixelDataFormat::RGB, OvRendering::Settings::EPixelDataType::UNSIGNED_BYTE, pixel);
 		m_actorPickingFramebuffer.Unbind();
 
 		uint32_t actorID = (0 << 24) | (pixel[2] << 16) | (pixel[1] << 8) | (pixel[0] << 0);

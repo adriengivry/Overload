@@ -11,7 +11,7 @@ std::pair<std::string, std::string> OvEditor::Resources::RawShaders::GetGrid()
 	std::pair<std::string, std::string> source;
 
 	source.first = R"(
-#version 460 core
+#version 430 core
 
 layout (location = 0) in vec3 geo_Pos;
 layout (location = 1) in vec2 geo_TexCoords;
@@ -35,14 +35,14 @@ out VS_OUT
 void main()
 {
     vs_out.FragPos      = vec3(ubo_Model * vec4(geo_Pos, 1.0));
-    vs_out.TexCoords    = geo_TexCoords;
+    vs_out.TexCoords    = vs_out.FragPos.xz;
 
     gl_Position = ubo_Projection * ubo_View * vec4(vs_out.FragPos, 1.0);
 }
 )";
 
 	source.second = R"(
-#version 460 core
+#version 430 core
 
 out vec4 FRAGMENT_COLOR;
 
@@ -63,52 +63,51 @@ in VS_OUT
 
 uniform vec3 u_Color;
 
-const float divisions = 1000.0f;
-const float lineWidth = 1.0f;
-const float step = 100.0f;
-const float subdivisions = 4.0f;
-
-vec4 Grid(float p_divisions)
+float MAG(float p_lp)
 {
-    // Pick a coordinate to visualize in a grid
-    vec2 coord = fs_in.TexCoords.xy * p_divisions;
+  const float lineWidth = 1.0f;
 
-    // Compute anti-aliased world-space grid lines
-    vec2 grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
-    float line = min(grid.x, grid.y);
-    float lineResult = lineWidth - min(line, lineWidth);
+  const vec2 coord       = fs_in.TexCoords / p_lp;
+  const vec2 grid        = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
+  const float line       = min(grid.x, grid.y);
+  const float lineResult = lineWidth - min(line, lineWidth);
 
-    // Just visualize the grid lines directly
-    vec3 fakeViewPos = ubo_ViewPos;
-    fakeViewPos.y = 0.0f;
-    return vec4(vec3(lineResult) * u_Color, 0.05 * lineResult);
+  return lineResult;
+}
+
+float Grid(float height, float a, float b, float c)
+{
+  const float cl   = MAG(a);
+  const float ml   = MAG(b);
+  const float fl   = MAG(c);
+
+  const float cmit =  10.0f;
+  const float cmet =  40.0f;
+  const float mfit =  80.0f;
+  const float mfet =  160.0f;
+
+  const float df   = clamp((height - cmit) / (cmet - cmit), 0.0f, 1.0f);
+  const float dff  = clamp((height - mfit) / (mfet - mfit), 0.0f, 1.0f);
+
+  const float inl  = mix(cl, ml, df);
+  const float fnl  = mix(inl, fl, dff);
+
+  return fnl;
 }
 
 void main()
 {
-	float divs;
+  const float height = distance(ubo_ViewPos.y, fs_in.FragPos.y);
 
-	divs = divisions / pow(2, round((abs(ubo_ViewPos.y) - step / subdivisions) / step));
-	vec4 grid1 = Grid(divs) + Grid(divs / subdivisions);
+  const float gridA = Grid(height, 1.0f, 4.0f, 8.0f);
+  const float gridB = Grid(height, 4.0f, 16.0f, 32.0f);
 
-	divs = divisions / pow(2, round((abs(ubo_ViewPos.y + 50) - step / subdivisions) / step));
-	vec4 grid2 = Grid(divs) + Grid(divs / subdivisions);
+  const float grid  = gridA * 0.5f + gridB;
 
-	float alpha = mod(abs(ubo_ViewPos.y), step);
-	alpha = 0.0;
-
-    FRAGMENT_COLOR = mix(grid1, grid2, alpha);
-
-    vec3 pseudoViewPos = vec3(ubo_ViewPos.x, fs_in.FragPos.y, ubo_ViewPos.z);
-    float distanceToCamera = max(distance(fs_in.FragPos, pseudoViewPos) - abs(ubo_ViewPos.y), 0);
-    
-    float alphaDecreaseDistance = 20.0f;
-    float decreaseDistance = 30.0f;
-    if (distanceToCamera > alphaDecreaseDistance)
-    {
-        float normalizedDistanceToCamera = clamp(distanceToCamera - alphaDecreaseDistance, 0.0f, decreaseDistance) / decreaseDistance;
-        FRAGMENT_COLOR.a *= clamp(1.0f - normalizedDistanceToCamera, 0.0f, 1.0f);
-    }
+  const vec2  viewdirW    = ubo_ViewPos.xz - fs_in.FragPos.xz;
+  const float viewdist    = length(viewdirW);
+  
+  FRAGMENT_COLOR = vec4(u_Color, grid);
 }
 )";
 
@@ -120,7 +119,7 @@ std::pair<std::string, std::string> OvEditor::Resources::RawShaders::GetGizmo()
 	std::pair<std::string, std::string> source;
 
 	source.first = R"(
-#version 460 core
+#version 430 core
 
 layout (location = 0) in vec3 geo_Pos;
 layout (location = 2) in vec3 geo_Normal;
@@ -137,7 +136,7 @@ layout (std140) uniform EngineUBO
 
 out VS_OUT
 {
-    flat vec3   Color;
+    vec3 Color;
 } vs_out;
 
 uniform bool u_IsBall;
@@ -218,7 +217,7 @@ void main()
 )";
 
 	source.second = R"(
-#version 460 core
+#version 430 core
 
 out vec4 FRAGMENT_COLOR;
 
@@ -242,7 +241,7 @@ std::pair<std::string, std::string> OvEditor::Resources::RawShaders::GetBillboar
 	std::pair<std::string, std::string> source;
 
 	source.first = R"(
-#version 460 core
+#version 430 core
 
 layout (location = 0) in vec3 geo_Pos;
 layout (location = 1) in vec2 geo_TexCoords;
@@ -292,7 +291,7 @@ void main()
 })";
 
 	source.second = R"(
-#version 460 core
+#version 430 core
 
 out vec4 FRAGMENT_COLOR;
 

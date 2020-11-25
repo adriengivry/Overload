@@ -52,6 +52,7 @@ namespace OvUI::Widgets::Layout
 		bool leaf = false;
 
 		OvTools::Eventing::Event<> ClickedEvent;
+		OvTools::Eventing::Event<> DoubleClickedEvent;
 		OvTools::Eventing::Event<> OpenedEvent;
 		OvTools::Eventing::Event<> ClosedEvent;
 

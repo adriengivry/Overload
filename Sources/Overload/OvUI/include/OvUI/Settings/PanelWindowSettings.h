@@ -19,6 +19,7 @@ namespace OvUI::Settings
 		bool resizable					= true;
 		bool movable					= true;
 		bool dockable					= false;
+		bool scrollable					= true;
 		bool hideBackground				= false;
 		bool forceHorizontalScrollbar	= false;
 		bool forceVerticalScrollbar		= false;
@@ -26,6 +27,7 @@ namespace OvUI::Settings
 		bool bringToFrontOnFocus		= true;
 		bool collapsable				= false;
 		bool allowInputs				= true;
+		bool titleBar					= true;
 		bool autoSize					= false;
 	};
 }

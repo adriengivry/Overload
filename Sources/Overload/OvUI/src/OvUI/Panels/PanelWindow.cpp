@@ -14,6 +14,7 @@ OvUI::Panels::PanelWindow::PanelWindow(const std::string& p_name, bool p_opened,
 	resizable(p_floatingPanelSettings.resizable),
 	closable(p_floatingPanelSettings.closable),
 	movable(p_floatingPanelSettings.movable),
+	scrollable(p_floatingPanelSettings.scrollable),
 	dockable(p_floatingPanelSettings.dockable),
 	hideBackground(p_floatingPanelSettings.hideBackground),
 	forceHorizontalScrollbar(p_floatingPanelSettings.forceHorizontalScrollbar),
@@ -86,6 +87,26 @@ bool OvUI::Panels::PanelWindow::IsAppearing() const
 		return false;
 }
 
+void OvUI::Panels::PanelWindow::ScrollToBottom()
+{
+    m_mustScrollToBottom = true;
+}
+
+void OvUI::Panels::PanelWindow::ScrollToTop()
+{
+    m_mustScrollToTop = true;
+}
+
+bool OvUI::Panels::PanelWindow::IsScrolledToBottom() const
+{
+    return m_scrolledToBottom;
+}
+
+bool OvUI::Panels::PanelWindow::IsScrolledToTop() const
+{
+    return m_scrolledToTop;
+}
+
 void OvUI::Panels::PanelWindow::_Draw_Impl()
 {
 	if (m_opened)
@@ -102,6 +123,8 @@ void OvUI::Panels::PanelWindow::_Draw_Impl()
 		if (!bringToFrontOnFocus)		windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
 		if (!collapsable)				windowFlags |= ImGuiWindowFlags_NoCollapse;
 		if (!allowInputs)				windowFlags |= ImGuiWindowFlags_NoInputs;
+        if (!scrollable)                windowFlags |= ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar;
+		if (!titleBar)					windowFlags |= ImGuiWindowFlags_NoTitleBar;
 
 		ImVec2 minSizeConstraint = Internal::Converter::ToImVec2(minSize);
 		ImVec2 maxSizeConstraint = Internal::Converter::ToImVec2(maxSize);
@@ -120,10 +143,27 @@ void OvUI::Panels::PanelWindow::_Draw_Impl()
 			m_hovered = ImGui::IsWindowHovered();
 			m_focused = ImGui::IsWindowFocused();
 
+            auto scrollY = ImGui::GetScrollY();
+
+            m_scrolledToBottom = scrollY == ImGui::GetScrollMaxY();
+            m_scrolledToTop = scrollY == 0.0f;
+
 			if (!m_opened)
 				CloseEvent.Invoke();
 
 			Update();
+
+            if (m_mustScrollToBottom)
+            {
+                ImGui::SetScrollY(ImGui::GetScrollMaxY());
+                m_mustScrollToBottom = false;
+            }
+
+            if (m_mustScrollToTop)
+            {
+                ImGui::SetScrollY(0.0f);
+                m_mustScrollToTop = false;
+            }
 
 			DrawWidgets();
 		}
