@@ -15,7 +15,7 @@ namespace OvCore::ECS::Components
 	/**
 	* A light that is localized, has attenuation and has a direction
 	*/
-	class API_OVCORE CSpotLight : public CLight
+	class CSpotLight : public CLight
 	{
 	public:
 		/**

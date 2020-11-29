@@ -15,7 +15,7 @@ namespace OvCore::ECS::Components
 	/**
 	* A simple light that has no attenuation and that has a direction
 	*/
-	class API_OVCORE CDirectionalLight : public CLight
+	class CDirectionalLight : public CLight
 	{
 	public:
 		/**

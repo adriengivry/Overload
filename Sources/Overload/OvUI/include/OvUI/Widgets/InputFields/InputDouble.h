@@ -13,7 +13,7 @@ namespace OvUI::Widgets::InputFields
 	/**
 	* Input widget of type double
 	*/
-	class API_OVUI InputDouble : public InputSingleScalar<double>
+	class InputDouble : public InputSingleScalar<double>
 	{
 	public:
 		/**

@@ -6,14 +6,12 @@
 
 #pragma once
 
-#include "OvMaths/API/export.h"
-
 namespace OvMaths
 {
 	/**
 	* Mathematic representation of a 2D vector of floats
 	*/
-	struct API_OVMATHS FVector2
+	struct FVector2
 	{
 		static const FVector2 One;
 		static const FVector2 Zero;

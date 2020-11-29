@@ -8,7 +8,7 @@
 
 #include <OvTools/Filesystem/tinyxml2.h>
 
-#include "OvCore/API/Export.h"
+
 #include "OvCore/Helpers/Serializer.h"
 
 namespace OvCore::API
@@ -16,7 +16,7 @@ namespace OvCore::API
 	/**
 	* ISerializable is an interface for any class that can be serialized
 	*/
-	class API_OVCORE ISerializable
+	class ISerializable
 	{
 	public:
 		/**

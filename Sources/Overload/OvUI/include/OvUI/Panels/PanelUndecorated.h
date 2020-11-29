@@ -13,7 +13,7 @@ namespace OvUI::Panels
 	/**
 	* A simple panel that is transformable and without decorations (No background)
 	*/
-	class API_OVUI PanelUndecorated : public APanelTransformable
+	class PanelUndecorated : public APanelTransformable
 	{
 	public:
 		void _Draw_Impl() override;

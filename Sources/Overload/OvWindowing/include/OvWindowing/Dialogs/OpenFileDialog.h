@@ -13,7 +13,7 @@ namespace OvWindowing::Dialogs
 	/**
 	* Dialog window that asks the user to select a file from the disk
 	*/
-	class API_OVWINDOWING OpenFileDialog : public FileDialog
+	class OpenFileDialog : public FileDialog
 	{
 	public:
 		/**

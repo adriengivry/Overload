@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -46,14 +46,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)include\;$(IncludePath)</IncludePath>
-    <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
+    <PublicIncludeDirectories>$(ProjectDir)include;$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)include\;$(IncludePath)</IncludePath>
-    <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
+    <PublicIncludeDirectories>$(ProjectDir)include;$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -63,14 +61,11 @@
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>OVMATHS_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
-      <Command>RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\include"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)"
-xcopy "$(ProjectDir)include\$(ProjectName)" "$(SolutionDir)..\..\Build\$(ProjectName)\include\$(ProjectName)" /e /y /i /r
-xcopy "$(OutDir)*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /y /i
-xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Link />
   </ItemDefinitionGroup>
@@ -84,22 +79,18 @@ xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configura
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>OVMATHS_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\include"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)"
-xcopy "$(ProjectDir)include\$(ProjectName)" "$(SolutionDir)..\..\Build\$(ProjectName)\include\$(ProjectName)" /e /y /i /r
-xcopy "$(OutDir)*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /y /i
-xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\OvMaths\API\Export.h" />
     <ClInclude Include="include\OvMaths\FMatrix3.h" />
     <ClInclude Include="include\OvMaths\FMatrix4.h" />
     <ClInclude Include="include\OvMaths\FQuaternion.h" />

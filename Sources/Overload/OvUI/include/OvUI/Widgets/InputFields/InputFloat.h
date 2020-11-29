@@ -13,7 +13,7 @@ namespace OvUI::Widgets::InputFields
 	/**
 	* Input widget of type float
 	*/
-	class API_OVUI InputFloat : public InputSingleScalar<float>
+	class InputFloat : public InputSingleScalar<float>
 	{
 	public:
 		/**

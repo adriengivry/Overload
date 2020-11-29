@@ -8,7 +8,8 @@
 
 #include "OvWindowing/Window.h"
 
-#define STB_IMAGE_IMPLEMENTATION
+// Conflicts with OvRendering.lib(TextureLoader.obj).
+// #define STB_IMAGE_IMPLEMENTATION
 
 #include <stb_image/stb_image.h>
 

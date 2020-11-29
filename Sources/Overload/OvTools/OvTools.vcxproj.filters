@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\OvTools\API\Export.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\OvTools\Utils\Random.h">
       <Filter>Header Files</Filter>
     </ClInclude>

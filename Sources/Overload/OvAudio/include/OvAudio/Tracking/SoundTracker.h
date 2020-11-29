@@ -8,7 +8,6 @@
 
 #include <irrklang/irrKlang.h>
 
-#include "OvAudio/API/Export.h"
 #include "OvAudio/Tracking/SoundStopEventBinder.h"
 
 namespace OvAudio::Tracking
@@ -16,7 +15,7 @@ namespace OvAudio::Tracking
 	/**
 	* Track a playing sound and allow the modification of its settings
 	*/
-	class API_OVAUDIO SoundTracker
+	class SoundTracker
 	{
 	public:
 		/**

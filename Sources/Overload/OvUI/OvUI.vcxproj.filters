@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\OvUI\API\Export.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\OvUI\ImGui\imconfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>

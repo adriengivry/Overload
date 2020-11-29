@@ -17,7 +17,7 @@ namespace OvUI::Widgets::Buttons
 	/**
 	* Button widget with an image
 	*/
-	class API_OVUI ButtonImage : public AButton
+	class ButtonImage : public AButton
 	{
 	public:
 		/**

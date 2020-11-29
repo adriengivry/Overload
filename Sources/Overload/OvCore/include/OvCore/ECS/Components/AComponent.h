@@ -18,7 +18,7 @@ namespace OvCore::ECS::Components
 	* AComponent is the base class for any component.
 	* A component is a set of data and behaviours (Entity-Component without systems) that is interpreted by the engine (Or the user)
 	*/
-	class API_OVCORE AComponent : public API::IInspectorItem
+	class AComponent : public API::IInspectorItem
 	{
 	public:
 		/**

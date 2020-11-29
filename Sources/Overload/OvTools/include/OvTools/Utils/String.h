@@ -9,14 +9,12 @@
 #include <string>
 #include <functional>
 
-#include "OvTools/API/Export.h"
-
 namespace OvTools::Utils
 {
 	/*
 	* Handle random numbers generation
 	*/
-	class API_OVTOOLS String
+	class String
 	{
 	public:
 		/**

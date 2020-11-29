@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\OvAudio\API\Export.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\OvAudio\Core\AudioEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>

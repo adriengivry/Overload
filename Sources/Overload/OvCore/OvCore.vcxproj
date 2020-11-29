@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -46,16 +46,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Dependencies\lua\include\;$(SolutionDir)..\..\Build\OvAnalytics\include\;$(SolutionDir)..\..\Build\OvAudio\include\;$(SolutionDir)..\..\Build\OvDebug\include\;$(SolutionDir)..\..\Build\OvMaths\include\;$(SolutionDir)..\..\Build\OvPhysics\include\;$(SolutionDir)..\..\Build\OvRendering\include\;$(SolutionDir)..\..\Build\OvTools\include\;$(SolutionDir)..\..\Build\OvUI\include\;$(SolutionDir)..\..\Build\OvWindowing\include\;$(IncludePath)</IncludePath>
-    <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
-    <LibraryPath>$(SolutionDir)..\..\Dependencies\lua\lib\;$(SolutionDir)..\..\Build\OvAnalytics\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvAudio\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvDebug\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvMaths\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvPhysics\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvRendering\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvTools\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvUI\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvWindowing\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <PublicIncludeDirectories>$(ProjectDir)include;$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Dependencies\lua\include\;$(SolutionDir)..\..\Build\OvAnalytics\include\;$(SolutionDir)..\..\Build\OvAudio\include\;$(SolutionDir)..\..\Build\OvDebug\include\;$(SolutionDir)..\..\Build\OvMaths\include\;$(SolutionDir)..\..\Build\OvPhysics\include\;$(SolutionDir)..\..\Build\OvRendering\include\;$(SolutionDir)..\..\Build\OvTools\include\;$(SolutionDir)..\..\Build\OvUI\include\;$(SolutionDir)..\..\Build\OvWindowing\include\;$(IncludePath)</IncludePath>
-    <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
-    <LibraryPath>$(SolutionDir)..\..\Dependencies\lua\lib\;$(SolutionDir)..\..\Build\OvAnalytics\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvAudio\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvDebug\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvMaths\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvPhysics\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvRendering\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvTools\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvUI\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvWindowing\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <PublicIncludeDirectories>$(ProjectDir)include;$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -65,63 +61,11 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>OVCORE_EXPORT;_DISABLE_EXTENDED_ALIGNED_STORAGE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)..\..\Dependencies\lua\include;$(SolutionDir)..\..\Dependencies\glew\include;$(SolutionDir)..\..\Dependencies\bullet3\include;$(SolutionDir)..\..\Dependencies\irrklang\include;$(SolutionDir)..\..\Dependencies\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
-      <Command>RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\include"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)"
-xcopy "$(ProjectDir)include\$(ProjectName)" "$(SolutionDir)..\..\Build\$(ProjectName)\include\$(ProjectName)" /e /y /i /r
-xcopy "$(OutDir)*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /y /i
-xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-:: Add Lua to OvCore build ::
-xcopy "$(SolutionDir)..\..\Dependencies\lua\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Dependencies\lua\bin\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-
-:: Add OvAnalytics to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvAnalytics\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvAnalytics\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvAnalytics\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvAudio to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvAudio\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvAudio\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvAudio\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvDebug to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvDebug\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvDebug\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvDebug\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvMaths to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvMaths\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvMaths\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvMaths\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvPhysics to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvPhysics\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvPhysics\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvPhysics\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvRendering to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvRendering\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvRendering\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvRendering\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvTools to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvTools\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvTools\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvTools\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvUI to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvUI\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvUI\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvUI\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvWindowing to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvWindowing\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvWindowing\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvWindowing\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>liblua53.a;OvMaths.lib;OvPhysics.lib;OvRendering.lib;OvTools.lib;OvUI.lib;OvAudio.lib;OvDebug.lib;OvWindowing.lib;OvAnalytics.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -137,6 +81,7 @@ xcopy "$(SolutionDir)..\..\Build\OvWindowing\lib\$(Configuration)\*.lib" "$(Solu
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>OVCORE_EXPORT;_DISABLE_EXTENDED_ALIGNED_STORAGE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)..\..\Dependencies\lua\include;$(SolutionDir)..\..\Dependencies\glew\include;$(SolutionDir)..\..\Dependencies\bullet3\include;$(SolutionDir)..\..\Dependencies\irrklang\include;$(SolutionDir)..\..\Dependencies\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -144,65 +89,11 @@ xcopy "$(SolutionDir)..\..\Build\OvWindowing\lib\$(Configuration)\*.lib" "$(Solu
       <AdditionalDependencies>liblua53.a;OvMaths.lib;OvPhysics.lib;OvRendering.lib;OvTools.lib;OvUI.lib;OvAudio.lib;OvDebug.lib;OvWindowing.lib;OvAnalytics.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\include"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)"
-xcopy "$(ProjectDir)include\$(ProjectName)" "$(SolutionDir)..\..\Build\$(ProjectName)\include\$(ProjectName)" /e /y /i /r
-xcopy "$(OutDir)*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /y /i
-xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-:: Add Lua to OvCore build ::
-xcopy "$(SolutionDir)..\..\Dependencies\lua\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Dependencies\lua\bin\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-
-:: Add OvAnalytics to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvAnalytics\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvAnalytics\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvAnalytics\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvAudio to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvAudio\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvAudio\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvAudio\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvDebug to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvDebug\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvDebug\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvDebug\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvMaths to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvMaths\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvMaths\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvMaths\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvPhysics to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvPhysics\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvPhysics\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvPhysics\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvRendering to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvRendering\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvRendering\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvRendering\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvTools to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvTools\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvTools\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvTools\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvUI to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvUI\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvUI\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvUI\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r
-
-:: Add OvWindowing to OvCore build ::
-xcopy "$(SolutionDir)..\..\Build\OvWindowing\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvWindowing\bin\$(Configuration)\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvWindowing\lib\$(Configuration)\*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /e /y /i /r</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\OvCore\API\Export.h" />
     <ClInclude Include="include\OvCore\API\IInspectorItem.h" />
     <ClInclude Include="include\OvCore\API\ISerializable.h" />
     <ClInclude Include="include\OvCore\ECS\Actor.h" />
@@ -288,10 +179,6 @@ xcopy "$(SolutionDir)..\..\Build\OvWindowing\lib\$(Configuration)\*.lib" "$(Solu
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="src\OvCore\Scripting\LuaComponentBinder.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </AdditionalIncludeDirectories>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -309,6 +196,35 @@ xcopy "$(SolutionDir)..\..\Build\OvWindowing\lib\$(Configuration)\*.lib" "$(Solu
     <None Include="include\OvCore\Helpers\GUIDrawer.inl" />
     <None Include="include\OvCore\ResourceManagement\AResourceManager.inl" />
     <None Include="include\OvCore\Resources\Material.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OvAnalytics\OvAnalytics.vcxproj">
+      <Project>{45bfdd00-877f-42ed-a0e4-92e56f7d3c0e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OvAudio\OvAudio.vcxproj">
+      <Project>{e76098c7-d1c1-430e-a7b2-527cf45bd853}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OvDebug\OvDebug.vcxproj">
+      <Project>{03a0ca9a-2bb6-4284-8d8e-f6f0f9e6dd32}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OvMaths\OvMaths.vcxproj">
+      <Project>{4186cb5d-5e99-43fb-8562-42e8f24ac436}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OvPhysics\OvPhysics.vcxproj">
+      <Project>{9de77393-ccfb-4085-986c-5d37e2b5b54b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OvRendering\OvRendering.vcxproj">
+      <Project>{677cdba0-43a9-4a7c-9a7c-3c38c73d1d50}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OvTools\OvTools.vcxproj">
+      <Project>{8a618dba-f8c9-42bf-b94f-29249e677ec9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OvUI\OvUI.vcxproj">
+      <Project>{a5ada180-ba29-4ec8-acfd-7dcbfd065967}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OvWindowing\OvWindowing.vcxproj">
+      <Project>{54a2b9eb-6984-49c8-a080-481504343a19}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

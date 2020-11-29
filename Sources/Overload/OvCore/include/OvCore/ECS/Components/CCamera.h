@@ -16,7 +16,7 @@ namespace OvCore::ECS::Components
 	/**
 	* Represents a camera entity. Its position will determine its view matrix
 	*/
-	class API_OVCORE CCamera : public AComponent
+	class CCamera : public AComponent
 	{
 	public:
 		/**

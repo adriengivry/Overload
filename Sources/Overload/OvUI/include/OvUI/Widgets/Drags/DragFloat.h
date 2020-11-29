@@ -13,7 +13,7 @@ namespace OvUI::Widgets::Drags
 	/**
 	* Drag widget of type float
 	*/
-	class API_OVUI DragFloat : public DragSingleScalar<float>
+	class DragFloat : public DragSingleScalar<float>
 	{
 	public:
 		/**

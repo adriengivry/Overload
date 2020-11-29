@@ -18,7 +18,7 @@ namespace OvUI::Panels
 	/**
 	* A PanelWindow is a panel that is localized and behave like a window (Movable, resizable...)
 	*/
-	class API_OVUI PanelWindow : public APanelTransformable
+	class PanelWindow : public APanelTransformable
 	{
 	public:
 		/**

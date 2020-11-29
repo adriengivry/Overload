@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "OvRendering/API/Export.h"
-
 namespace OvRendering::Settings
 {
 	/**

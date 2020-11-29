@@ -8,11 +8,9 @@
 
 #include <string>
 
-#include "OvTools/API/Export.h"
-
 namespace OvTools::Utils
 {
-	class API_OVTOOLS SystemCalls
+	class SystemCalls
 	{
 	public:
 		/**

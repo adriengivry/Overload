@@ -17,7 +17,7 @@ namespace OvRendering::Resources
 	/**
 	* A model is a combinaison of meshes
 	*/
-	class API_OVRENDERING Model
+	class Model
 	{
 		friend class Loaders::ModelLoader;
 

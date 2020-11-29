@@ -17,7 +17,7 @@ namespace OvUI::Widgets::Buttons
 	/**
 	* Base class for any button widget
 	*/
-	class API_OVUI AButton : public AWidget
+	class AButton : public AWidget
 	{
 	protected:
 		void _Draw_Impl() override = 0;

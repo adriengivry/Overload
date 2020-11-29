@@ -17,7 +17,7 @@ namespace OvUI::Widgets::Layout
 	/**
 	* Widget that can contains other widgets and is collapsable
 	*/
-	class API_OVUI GroupCollapsable : public Group
+	class GroupCollapsable : public Group
 	{
 	public:
 		/**

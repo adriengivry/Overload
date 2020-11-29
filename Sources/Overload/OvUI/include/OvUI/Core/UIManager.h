@@ -17,7 +17,7 @@ namespace OvUI::Core
 	/**
 	* Handle the creation and drawing of the UI
 	*/
-	class API_OVUI UIManager
+	class UIManager
 	{
 	public:
 		/**

@@ -15,7 +15,7 @@ namespace OvUI::Widgets::Texts
 	/**
 	* Widget to display text on a panel that is also clickable
 	*/
-	class API_OVUI TextClickable : public Text
+	class TextClickable : public Text
 	{
 	public:
 		/**

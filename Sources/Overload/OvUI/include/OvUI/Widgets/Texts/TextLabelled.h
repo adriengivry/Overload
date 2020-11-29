@@ -13,7 +13,7 @@ namespace OvUI::Widgets::Texts
 	/**
 	* Simple widget to display a labelled text on a panel
 	*/
-	class API_OVUI TextLabelled : public Text
+	class TextLabelled : public Text
 	{
 	public:
 		/**

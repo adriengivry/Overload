@@ -18,9 +18,6 @@
     <ClInclude Include="include\OvPhysics\Tools\Conversion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\OvPhysics\API\Export.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\OvPhysics\Core\PhysicsEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>

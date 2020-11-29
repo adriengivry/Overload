@@ -9,8 +9,6 @@
 #include <string>
 #include <functional>
 
-#include "OvWindowing/API/Export.h"
-
 struct tagOFNA;
 
 namespace OvWindowing::Dialogs
@@ -59,7 +57,7 @@ namespace OvWindowing::Dialogs
 	/**
 	* FileDialog is the base class for any dialog window that asks the user to select/save a file from/to the disk
 	*/
-	class API_OVWINDOWING FileDialog
+	class FileDialog
 	{
 	public:
 		/**

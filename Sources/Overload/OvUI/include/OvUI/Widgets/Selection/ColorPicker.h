@@ -16,7 +16,7 @@ namespace OvUI::Widgets::Selection
 	/**
 	* Widget that allow the selection of a color with a color picker
 	*/
-	class API_OVUI ColorPicker : public DataWidget<Types::Color>
+	class ColorPicker : public DataWidget<Types::Color>
 	{
 	public:
 		/**

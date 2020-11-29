@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\OvDebug\API\Export.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\OvDebug\Utils\Assertion.h">
       <Filter>Header Files</Filter>
     </ClInclude>

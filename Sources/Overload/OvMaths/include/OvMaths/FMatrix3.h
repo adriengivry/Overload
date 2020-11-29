@@ -8,7 +8,6 @@
 
 #include <stdint.h>
 
-#include "OvMaths/API/export.h"
 #include "OvMaths/FVector3.h"
 #include "OvMAths/FVector2.h"
 
@@ -17,7 +16,7 @@ namespace OvMaths
 	/**
 	* Mathematic representation of a 3x3 Matrix of floats
 	*/
-	struct API_OVMATHS FMatrix3
+	struct FMatrix3
 	{
 		float data[9];
 		static const FMatrix3 Identity;

@@ -17,7 +17,7 @@ namespace OvCore::ECS::Components
 	/**
 	* A light that is localized and has attenuation
 	*/
-	class API_OVCORE CPointLight : public CLight
+	class CPointLight : public CLight
 	{
 	public:
 		/**

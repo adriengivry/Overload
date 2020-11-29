@@ -13,7 +13,7 @@ namespace OvUI::Widgets::Drags
 	/**
 	* Drag widget of type double
 	*/
-	class API_OVUI DragDouble : public DragSingleScalar<double>
+	class DragDouble : public DragSingleScalar<double>
 	{
 	public:
 		/**

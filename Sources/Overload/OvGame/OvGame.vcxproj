@@ -44,16 +44,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Build\OvCore\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\..\Build\OvCore\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Build\OvCore\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\..\Build\OvCore\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -64,19 +58,19 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)..\..\Dependencies\lua\include;$(SolutionDir)..\..\Dependencies\glew\include;$(SolutionDir)..\..\Dependencies\bullet3\include;$(SolutionDir)..\..\Dependencies\irrklang\include;$(SolutionDir)..\..\Dependencies\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
-      <Command>del "$(OutDir)*.dll"
-xcopy "$(SolutionDir)..\..\Build\OvCore\bin\$(Configuration)\*.dll" "$(OutDir)"  /e /y /i /r
+      <Command>:: Copy required dependencies to OutDir ::
+for /f %%i in ('dir /B /S $(SolutionDir)..\..\Dependencies\*.dll') do xcopy /Q /Y %%i  $(OutDir)
 
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)"
-
-xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)" /y /i
-xcopy "$(OutDir)*.exe" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)" /y /i</Command>
+xcopy "$(OutDir)*.exe" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)" /y /i /q
+xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)" /y /i /q</Command>
     </PostBuildEvent>
     <Link>
-      <AdditionalDependencies>OvAudio.lib;OvAnalytics.lib;OvDebug.lib;OvCore.lib;OvRendering.lib;OvWindowing.lib;OvTools.lib;OvMaths.lib;OvUI.lib;OvPhysics.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Bullet3Collision.lib;Bullet3Common.lib;Bullet3Dynamics.lib;Bullet3Geometry.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;glfw3dll.lib;irrKlang.lib;liblua53.a;assimp-vc142-mt.lib;IrrXML.lib;zlibstatic.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\Dependencies\lua\lib;$(SolutionDir)..\..\Dependencies\glew\lib;$(SolutionDir)..\..\Dependencies\bullet3\lib\$(Configuration);$(SolutionDir)..\..\Dependencies\irrklang\lib;$(SolutionDir)..\..\Dependencies\glfw\lib;$(SolutionDir)..\..\Dependencies\assimp\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -88,21 +82,21 @@ xcopy "$(OutDir)*.exe" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)..\..\Dependencies\lua\include;$(SolutionDir)..\..\Dependencies\glew\include;$(SolutionDir)..\..\Dependencies\bullet3\include;$(SolutionDir)..\..\Dependencies\irrklang\include;$(SolutionDir)..\..\Dependencies\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OvAudio.lib;OvAnalytics.lib;OvDebug.lib;OvCore.lib;OvRendering.lib;OvWindowing.lib;OvTools.lib;OvMaths.lib;OvUI.lib;OvPhysics.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Bullet3Collision.lib;Bullet3Common.lib;Bullet3Dynamics.lib;Bullet3Geometry.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;glfw3dll.lib;irrKlang.lib;liblua53.a;assimp-vc142-mt.lib;IrrXML.lib;zlibstatic.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\Dependencies\lua\lib;$(SolutionDir)..\..\Dependencies\glew\lib;$(SolutionDir)..\..\Dependencies\bullet3\lib\$(Configuration);$(SolutionDir)..\..\Dependencies\irrklang\lib;$(SolutionDir)..\..\Dependencies\glfw\lib;$(SolutionDir)..\..\Dependencies\assimp\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>del "$(OutDir)*.dll"
-xcopy "$(SolutionDir)..\..\Build\OvCore\bin\$(Configuration)\*.dll" "$(OutDir)"  /e /y /i /r
+      <Command>:: Copy required dependencies to OutDir ::
+for /f %%i in ('dir /B /S $(SolutionDir)..\..\Dependencies\*.dll') do xcopy /Q /Y %%i  $(OutDir)
 
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)"
-
-xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)" /y /i
-xcopy "$(OutDir)*.exe" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)" /y /i</Command>
+xcopy "$(OutDir)*.exe" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)" /y /i /q
+xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration)" /y /i /q</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -132,6 +126,47 @@ xcopy "$(OutDir)*.exe" "$(SolutionDir)..\..\Build\$(ProjectName)\$(Configuration
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OvAnalytics\OvAnalytics.vcxproj">
+      <Project>{45bfdd00-877f-42ed-a0e4-92e56f7d3c0e}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\OvAudio\OvAudio.vcxproj">
+      <Project>{e76098c7-d1c1-430e-a7b2-527cf45bd853}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\OvCore\OvCore.vcxproj">
+      <Project>{c1d2ebb7-ee2a-4d42-858b-f14f5a47b867}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OvDebug\OvDebug.vcxproj">
+      <Project>{03a0ca9a-2bb6-4284-8d8e-f6f0f9e6dd32}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\OvMaths\OvMaths.vcxproj">
+      <Project>{4186cb5d-5e99-43fb-8562-42e8f24ac436}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\OvPhysics\OvPhysics.vcxproj">
+      <Project>{9de77393-ccfb-4085-986c-5d37e2b5b54b}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\OvRendering\OvRendering.vcxproj">
+      <Project>{677cdba0-43a9-4a7c-9a7c-3c38c73d1d50}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\OvTools\OvTools.vcxproj">
+      <Project>{8a618dba-f8c9-42bf-b94f-29249e677ec9}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\OvUI\OvUI.vcxproj">
+      <Project>{a5ada180-ba29-4ec8-acfd-7dcbfd065967}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\OvWindowing\OvWindowing.vcxproj">
+      <Project>{54a2b9eb-6984-49c8-a080-481504343a19}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

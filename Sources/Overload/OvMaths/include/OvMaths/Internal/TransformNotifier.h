@@ -8,14 +8,12 @@
 
 #include <functional>
 
-#include "OvMaths/API/export.h"
-
 namespace OvMaths::Internal
 {
 	/**
 	* The TransformNotifier is a simple notification system used by transform to send notifications to his children
 	*/
-	class API_OVMATHS TransformNotifier
+	class TransformNotifier
 	{
 	public:
 		/**

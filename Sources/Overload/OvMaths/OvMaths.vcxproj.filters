@@ -27,9 +27,6 @@
     <ClInclude Include="include\OvMaths\FVector4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\OvMaths\API\Export.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\OvMaths\FMatrix4.h">
       <Filter>Header Files</Filter>
     </ClInclude>

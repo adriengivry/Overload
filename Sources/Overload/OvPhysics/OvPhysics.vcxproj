@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -46,16 +46,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Build\OvDebug\include\;$(SolutionDir)..\..\Build\OvMaths\include\;$(SolutionDir)..\..\Build\OvTools\include\;$(SolutionDir)..\..\Dependencies\bullet3\include;$(IncludePath)</IncludePath>
-    <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
-    <LibraryPath>$(SolutionDir)..\..\Build\OvMaths\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvDebug\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvTools\lib\$(Configuration)\;$(SolutionDir)..\..\Dependencies\bullet3\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <PublicIncludeDirectories>$(ProjectDir)include;$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Build\OvDebug\include\;$(SolutionDir)..\..\Build\OvMaths\include\;$(SolutionDir)..\..\Build\OvTools\include\;$(SolutionDir)..\..\Dependencies\bullet3\include;$(IncludePath)</IncludePath>
-    <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
-    <LibraryPath>$(SolutionDir)..\..\Build\OvMaths\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvDebug\lib\$(Configuration)\;$(SolutionDir)..\..\Build\OvTools\lib\$(Configuration)\;$(SolutionDir)..\..\Dependencies\bullet3\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <PublicIncludeDirectories>$(ProjectDir)include;$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -65,25 +61,11 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>OVPHYSICS_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)..\..\Dependencies\bullet3\include</AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
-      <Command>RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\include"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)"
-xcopy "$(ProjectDir)include\$(ProjectName)" "$(SolutionDir)..\..\Build\$(ProjectName)\include\$(ProjectName)" /e /y /i /r
-xcopy "$(OutDir)*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /y /i
-xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-xcopy "$(SolutionDir)..\..\Build\OvMaths\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvMaths\bin\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-xcopy "$(SolutionDir)..\..\Build\OvTools\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvTools\bin\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-xcopy "$(SolutionDir)..\..\Build\OvDebug\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvDebug\bin\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-xcopy "$(SolutionDir)..\..\Dependencies\bullet3\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;OvMaths.lib;OvTools.lib;OvDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -99,6 +81,7 @@ xcopy "$(SolutionDir)..\..\Dependencies\bullet3\include\*" "$(SolutionDir)..\..\
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>OVPHYSICS_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)..\..\Dependencies\bullet3\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -106,27 +89,11 @@ xcopy "$(SolutionDir)..\..\Dependencies\bullet3\include\*" "$(SolutionDir)..\..\
       <AdditionalDependencies>BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;OvMaths.lib;OvTools.lib;OvDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\include"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)"
-xcopy "$(ProjectDir)include\$(ProjectName)" "$(SolutionDir)..\..\Build\$(ProjectName)\include\$(ProjectName)" /e /y /i /r
-xcopy "$(OutDir)*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /y /i
-xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-xcopy "$(SolutionDir)..\..\Build\OvMaths\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvMaths\bin\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-xcopy "$(SolutionDir)..\..\Build\OvTools\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvTools\bin\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-xcopy "$(SolutionDir)..\..\Build\OvDebug\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvDebug\bin\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-xcopy "$(SolutionDir)..\..\Dependencies\bullet3\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\OvPhysics\API\Export.h" />
     <ClInclude Include="include\OvPhysics\Core\PhysicsEngine.h" />
     <ClInclude Include="include\OvPhysics\Entities\PhysicalCapsule.h" />
     <ClInclude Include="include\OvPhysics\Entities\PhysicalBox.h" />
@@ -144,6 +111,17 @@ xcopy "$(SolutionDir)..\..\Dependencies\bullet3\include\*" "$(SolutionDir)..\..\
     <ClCompile Include="src\OvPhysics\Entities\PhysicalCapsule.cpp" />
     <ClCompile Include="src\OvPhysics\Entities\PhysicalObject.cpp" />
     <ClCompile Include="src\OvPhysics\Tools\Conversion.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OvDebug\OvDebug.vcxproj">
+      <Project>{03a0ca9a-2bb6-4284-8d8e-f6f0f9e6dd32}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OvMaths\OvMaths.vcxproj">
+      <Project>{4186cb5d-5e99-43fb-8562-42e8f24ac436}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OvTools\OvTools.vcxproj">
+      <Project>{8a618dba-f8c9-42bf-b94f-29249e677ec9}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

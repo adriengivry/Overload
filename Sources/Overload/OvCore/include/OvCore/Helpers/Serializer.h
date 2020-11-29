@@ -16,7 +16,7 @@
 #include <OvMaths/FQuaternion.h>
 #include <OvTools/Filesystem/tinyxml2.h>
 
-#include "OvCore/API/Export.h"
+
 
 /* Forward declaration */
 namespace OvRendering::Resources
@@ -38,7 +38,7 @@ namespace OvCore::Resources
 
 namespace OvCore::Helpers
 {
-	class API_OVCORE Serializer
+	class Serializer
 	{
 	public:
 		#pragma region SERIALIZATION_HELPERS

@@ -9,14 +9,12 @@
 #include <string>
 #include <chrono>
 
-#include "OvTools/API/Export.h"
-
 namespace OvTools::Time
 {
 	/*
 	* Handle time calculations
 	*/
-	class API_OVTOOLS Clock
+	class Clock
 	{
 	public:
 		/**

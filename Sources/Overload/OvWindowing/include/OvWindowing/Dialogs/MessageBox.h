@@ -8,8 +8,6 @@
 
 #include <string>
 
-#include "OvWindowing/API/Export.h"
-
 /* Prevent enum and class name to be replaced by standard macros */
 #undef MessageBox
 #undef ERROR
@@ -22,7 +20,7 @@ namespace OvWindowing::Dialogs
 	* a set of buttons, and a brief application-specific message,
 	* such as status or error information
 	*/
-	class API_OVWINDOWING MessageBox
+	class MessageBox
 	{
 	public:
 		/**

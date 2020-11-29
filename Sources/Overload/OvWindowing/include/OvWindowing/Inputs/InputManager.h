@@ -8,7 +8,6 @@
 
 #include <unordered_map>
 
-#include "OvWindowing/API/Export.h"
 #include "OvWindowing/Window.h"
 #include "OvWindowing/Inputs/EKey.h"
 #include "OvWindowing/Inputs/EKeyState.h"
@@ -20,7 +19,7 @@ namespace OvWindowing::Inputs
 	/**
 	* Handles inputs (Mouse and keyboard)
 	*/
-	class API_OVWINDOWING InputManager
+	class InputManager
 	{
 	public:
 		/**

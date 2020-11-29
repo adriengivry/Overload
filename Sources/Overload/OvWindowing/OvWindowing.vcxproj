@@ -11,7 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\OvWindowing\API\Export.h" />
     <ClInclude Include="include\OvWindowing\Context\Device.h" />
     <ClInclude Include="include\OvWindowing\Context\EDeviceError.h" />
     <ClInclude Include="include\OvWindowing\Cursor\ECursorMode.h" />
@@ -38,6 +37,11 @@
     <ClCompile Include="src\OvWindowing\Dialogs\MessageBox.cpp" />
     <ClCompile Include="src\OvWindowing\Window.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OvTools\OvTools.vcxproj">
+      <Project>{8a618dba-f8c9-42bf-b94f-29249e677ec9}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{54A2B9EB-6984-49C8-A080-481504343A19}</ProjectGuid>
@@ -47,13 +51,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -74,16 +78,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
-    <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
-    <LibraryPath>$(SolutionDir)..\..\Dependencies\glfw\lib\;$(SolutionDir)..\..\Build\OvTools\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Dependencies\glfw\include;$(SolutionDir)..\..\Dependencies\stb_image\include;$(SolutionDir)..\..\Build\OvTools\include\;$(IncludePath)</IncludePath>
+    <PublicIncludeDirectories>$(ProjectDir)include;$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\..\Bin-Int\$(ProjectName)\$(Configuration)\</IntDir>
-    <SourcePath>$(ProjectDir)src\;$(SourcePath)</SourcePath>
-    <LibraryPath>$(SolutionDir)..\..\Dependencies\glfw\lib\;$(SolutionDir)..\..\Build\OvTools\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)include\;$(SolutionDir)..\..\Dependencies\glfw\include;$(SolutionDir)..\..\Dependencies\stb_image\include;$(SolutionDir)..\..\Build\OvTools\include\;$(IncludePath)</IncludePath>
+    <PublicIncludeDirectories>$(ProjectDir)include;$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -93,21 +93,11 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>OVWINDOWING_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)..\..\Dependencies\stb_image\include;$(SolutionDir)..\..\Dependencies\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
-      <Command>RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\include"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)"
-
-xcopy "$(ProjectDir)include\$(ProjectName)" "$(SolutionDir)..\..\Build\$(ProjectName)\include\$(ProjectName)" /e /y /i /r
-xcopy "$(OutDir)*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /y /i
-xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-xcopy "$(SolutionDir)..\..\Dependencies\glfw\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Dependencies\glfw\bin\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-xcopy "$(SolutionDir)..\..\Build\OvTools\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvTools\bin\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>glfw3dll.lib;OvTools.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -123,6 +113,7 @@ xcopy "$(SolutionDir)..\..\Build\OvTools\bin\*.dll" "$(SolutionDir)..\..\Build\$
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>OVWINDOWING_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)..\..\Dependencies\stb_image\include;$(SolutionDir)..\..\Dependencies\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -130,19 +121,8 @@ xcopy "$(SolutionDir)..\..\Build\OvTools\bin\*.dll" "$(SolutionDir)..\..\Build\$
       <AdditionalDependencies>glfw3dll.lib;OvTools.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\include"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)"
-RD /S /Q "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)"
-
-xcopy "$(ProjectDir)include\$(ProjectName)" "$(SolutionDir)..\..\Build\$(ProjectName)\include\$(ProjectName)" /e /y /i /r
-xcopy "$(OutDir)*.lib" "$(SolutionDir)..\..\Build\$(ProjectName)\lib\$(Configuration)" /y /i
-xcopy "$(OutDir)*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-xcopy "$(SolutionDir)..\..\Dependencies\glfw\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Dependencies\glfw\bin\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i
-
-xcopy "$(SolutionDir)..\..\Build\OvTools\include\*" "$(SolutionDir)..\..\Build\$(ProjectName)\include\"  /e /y /i /r
-xcopy "$(SolutionDir)..\..\Build\OvTools\bin\*.dll" "$(SolutionDir)..\..\Build\$(ProjectName)\bin\$(Configuration)" /y /i</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -13,7 +13,7 @@ namespace OvCore::Resources::Loaders
 	/**
 	* Handle the creation of materials
 	*/
-	class API_OVCORE MaterialLoader
+	class MaterialLoader
 	{
 	public:
 		/**

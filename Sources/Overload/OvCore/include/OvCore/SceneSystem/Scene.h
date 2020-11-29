@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "OvCore/API/Export.h"
+
 #include "OvCore/ECS/Actor.h"
 #include "OvCore/API/ISerializable.h"
 
@@ -19,7 +19,7 @@ namespace OvCore::SceneSystem
 	/**
 	* The scene is a set of actors
 	*/
-	class API_OVCORE Scene : public API::ISerializable
+	class Scene : public API::ISerializable
 	{
 	public:
 		/**

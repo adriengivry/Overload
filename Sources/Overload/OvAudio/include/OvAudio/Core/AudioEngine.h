@@ -9,7 +9,6 @@
 #include <vector>
 #include <optional>
 
-#include "OvAudio/API/Export.h"
 #include "OvAudio/Entities/AudioSource.h"
 #include "OvAudio/Entities/AudioListener.h"
 
@@ -19,7 +18,7 @@ namespace OvAudio::Core
 	* Handle the creation of the Audio context
 	* Will take care of the consideration of AudioSources and AudioListeners
 	*/
-	class API_OVAUDIO AudioEngine
+	class AudioEngine
 	{
 	public:
 		/**

@@ -10,7 +10,6 @@
 #include <chrono>
 #include <mutex>
 
-#include "OvAnalytics/API/Export.h"
 #include "OvAnalytics/Profiling/ProfilerReport.h"
 
 namespace OvAnalytics::Profiling
@@ -21,7 +20,7 @@ namespace OvAnalytics::Profiling
 	/**
 	* The profiler collect data about the running program
 	*/
-	class API_OVANALYTICS Profiler final
+	class Profiler final
 	{
 	public:
 		/**

@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-#include "OvRendering/API/Export.h"
+
 #include "OvRendering/Settings/DriverSettings.h"
 
 namespace OvRendering::Context
@@ -16,7 +16,7 @@ namespace OvRendering::Context
 	/**
 	* The Driver represents the OpenGL context
 	*/
-	class API_OVRENDERING Driver
+	class Driver
 	{
 	public:
 		/**

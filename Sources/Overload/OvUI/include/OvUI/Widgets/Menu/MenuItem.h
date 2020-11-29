@@ -15,7 +15,7 @@ namespace OvUI::Widgets::Menu
 	/**
 	* Widget that can be added to a menu list. It is clickable and can be checkable
 	*/
-	class API_OVUI MenuItem : public DataWidget<bool>
+	class MenuItem : public DataWidget<bool>
 	{
 	public:
 		/**

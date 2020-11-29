@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "OvRendering/API/Export.h"
+
 #include "OvRendering/Geometry/Vertex.h"
 #include "OvRendering/Resources/Mesh.h"
 #include "OvRendering/Resources/Parsers/IModelParser.h"
@@ -18,7 +18,7 @@ namespace OvRendering::Resources::Parsers
 	/**
 	* A simple class to load assimp model data (Vertices only)
 	*/
-	class API_OVRENDERING AssimpParser : public IModelParser
+	class AssimpParser : public IModelParser
 	{
 	public:
 		/**

@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "OvAudio/API/Export.h"
 #include "OvMaths/FVector3.h"
 #include "OvMaths/FTransform.h"
 
@@ -18,7 +17,7 @@ namespace OvAudio::Entities
 	* Represents the ears of your application.
 	* You can have multiple ones but only the last created will be considered by the AudioEngine
 	*/
-	class API_OVAUDIO AudioListener
+	class AudioListener
 	{
 	public:
 		/**

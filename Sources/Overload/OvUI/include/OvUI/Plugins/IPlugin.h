@@ -6,15 +6,13 @@
 
 #pragma once
 
-#include "OvUI/API/Export.h"
-
 namespace OvUI::Plugins
 {
 	/**
 	* Interface to any plugin of OvUI.
 	* A plugin is basically a behaviour that you can plug to a widget
 	*/
-	class API_OVUI IPlugin
+	class IPlugin
 	{
 	public:
 		/**

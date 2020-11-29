@@ -10,7 +10,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include "OvWindowing/API/Export.h"
 #include "OvWindowing/Context/Device.h"
 #include "OvWindowing/Settings/WindowSettings.h"
 #include "OvWindowing/Cursor/ECursorShape.h"
@@ -22,7 +21,7 @@ namespace OvWindowing
 	* A simple OS-based window.
 	* It needs a Device (GLFW) to work
 	*/
-	class API_OVWINDOWING Window
+	class Window
 	{
 	public:
 		/* Inputs relatives */

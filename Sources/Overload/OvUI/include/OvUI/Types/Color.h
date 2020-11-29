@@ -6,14 +6,12 @@
 
 #pragma once
 
-#include "OvUI/API/Export.h"
-
 namespace OvUI::Types
 {
 	/**
 	* Data structur that contains color information in a 0.f to 1.f float format
 	*/
-	struct API_OVUI Color
+	struct Color
 	{
 		Color(float p_r = 1.0f, float p_g = 1.0f, float p_b = 1.0f, float p_a = 1.0f);
 

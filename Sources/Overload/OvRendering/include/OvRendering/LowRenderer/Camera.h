@@ -12,7 +12,7 @@
 
 #include <OvTools/Utils/ReferenceOrValue.h>
 
-#include "OvRendering/API/Export.h"
+
 #include "OvRendering/Data/Frustum.h"
 #include "OvRendering/Settings/EProjectionMode.h"
 
@@ -21,7 +21,7 @@ namespace OvRendering::LowRenderer
 	/**
 	* Represents a camera. Wraps projection and view calculation based on applied rotation and the given positions
 	*/
-	class API_OVRENDERING Camera
+	class Camera
 	{
 	public:
 		/**

@@ -13,7 +13,7 @@ namespace OvUI::Widgets::Sliders
 	/**
 	* Slider widget of type double
 	*/
-	class API_OVUI SliderDouble : public SliderSingleScalar<double>
+	class SliderDouble : public SliderSingleScalar<double>
 	{
 	public:
 		/**

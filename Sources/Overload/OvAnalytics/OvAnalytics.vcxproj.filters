@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\OvAnalytics\API\Export.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\OvAnalytics\Profiling\Profiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>

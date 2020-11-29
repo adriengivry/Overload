@@ -17,7 +17,7 @@ namespace OvCore::ECS::Components
 	/**
 	* Represent a physical object with a sphere shape
 	*/
-	class API_OVCORE CPhysicalSphere : public CPhysicalObject
+	class CPhysicalSphere : public CPhysicalObject
 	{
 	public:
 		/**

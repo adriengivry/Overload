@@ -17,7 +17,7 @@ namespace OvRendering::Resources::Loaders
 	/**
 	* Handle the Texture creation and destruction
 	*/
-	class API_OVRENDERING TextureLoader
+	class TextureLoader
 	{
 	public:
 		/**

@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include "OvPhysics/API/Export.h"
 #include "OvPhysics/Entities/PhysicalObject.h"
 
 namespace OvPhysics::Entities
@@ -18,7 +17,7 @@ namespace OvPhysics::Entities
 	/**
 	* Data structure that holds raycast hit information
 	*/
-	struct API_OVPHYSICS RaycastHit
+	struct RaycastHit
 	{
 		Entities::PhysicalObject* FirstResultObject = nullptr;
 		std::vector<Entities::PhysicalObject*> ResultObjects;

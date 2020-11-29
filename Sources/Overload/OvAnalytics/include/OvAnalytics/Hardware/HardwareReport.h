@@ -6,14 +6,12 @@
 
 #pragma once
 
-#include "OvAnalytics/API/Export.h"
-
 namespace OvAnalytics::Hardware
 {
 	/**
 	* HardwareReport contains a set of data calculated by HardwareInfo
 	*/
-	struct API_OVANALYTICS HardwareReport final
+	struct HardwareReport final
 	{
 		/* CPU load for every process on the machine (%) */
 		float CPULoad;

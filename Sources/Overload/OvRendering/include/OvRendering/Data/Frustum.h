@@ -11,7 +11,7 @@
 #include <OvMaths/FMatrix4.h>
 #include <OvMaths/FTransform.h>
 
-#include "OvRendering/API/Export.h"
+
 #include "OvRendering/Geometry/BoundingSphere.h"
 
 namespace OvRendering::Data
@@ -19,7 +19,7 @@ namespace OvRendering::Data
 	/**
 	* Mathematic representation of a 3D frustum
 	*/
-	class API_OVRENDERING Frustum
+	class Frustum
 	{
 	public:
 		/**

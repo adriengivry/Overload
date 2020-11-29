@@ -15,7 +15,7 @@ namespace OvUI::Widgets::Layout
 	/**
 	* Dummy widget that takes the given size as space in the panel
 	*/
-	class API_OVUI Dummy : public AWidget
+	class Dummy : public AWidget
 	{
 	public:
 		/**

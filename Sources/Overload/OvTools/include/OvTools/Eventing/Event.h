@@ -8,8 +8,6 @@
 
 #include <functional>
 
-#include "OvTools/API/Export.h"
-
 namespace OvTools::Eventing
 {
 	/**

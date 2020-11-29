@@ -13,7 +13,7 @@ namespace OvUI::Widgets::Sliders
 	/**
 	* Slider widget of type float
 	*/
-	class API_OVUI SliderFloat : public SliderSingleScalar<float>
+	class SliderFloat : public SliderSingleScalar<float>
 	{
 	public:
 		/**

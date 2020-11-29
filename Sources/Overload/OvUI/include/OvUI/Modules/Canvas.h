@@ -10,7 +10,6 @@
 
 #include <OvTools/Eventing/Event.h>
 
-#include "OvUI/API/Export.h"
 #include "OvUI/API/IDrawable.h"
 #include "OvUI/Panels/APanel.h"
 #include "OvUI/ImGui/imgui.h"
@@ -22,7 +21,7 @@ namespace OvUI::Modules
 	/**
 	* A Canvas represents the whole frame available for UI drawing
 	*/
-	class API_OVUI Canvas : public API::IDrawable
+	class Canvas : public API::IDrawable
 	{
 	public:
 		/**

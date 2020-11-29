@@ -8,14 +8,12 @@
 
 #include <vector>
 
-#include "OvAnalytics/API/Export.h"
-
 namespace OvAnalytics::Profiling
 {
 	/**
 	* Contains profiling data about a running period
 	*/
-	struct API_OVANALYTICS ProfilerReport final
+	struct ProfilerReport final
 	{
 		/**
 		* Data about an action (Called method)

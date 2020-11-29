@@ -15,7 +15,6 @@
 
 #include <OvTools/Eventing/Event.h>
 
-#include "OvPhysics/API/Export.h"
 #include "OvPhysics/Settings/BodySettings.h"
 
 namespace OvPhysics::Core { class PhysicsEngine; }
@@ -25,7 +24,7 @@ namespace OvPhysics::Entities
 	/**
 	* Base class for any entity that is physical
 	*/
-	class API_OVPHYSICS PhysicalObject
+	class PhysicalObject
 	{
 	public:
 		friend class OvPhysics::Core::PhysicsEngine;
