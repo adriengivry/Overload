@@ -15,7 +15,7 @@ namespace OvCore::ResourceManagement
 	/**
 	* ResourceManager of sounds
 	*/
-	class API_OVCORE SoundManager : public AResourceManager<OvAudio::Resources::Sound>
+	class SoundManager : public AResourceManager<OvAudio::Resources::Sound>
 	{
 	public:
 		/**

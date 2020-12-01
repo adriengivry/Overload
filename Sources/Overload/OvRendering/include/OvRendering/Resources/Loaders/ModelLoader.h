@@ -16,7 +16,7 @@ namespace OvRendering::Resources::Loaders
 	/**
 	* Handle the Model creation and destruction
 	*/
-	class API_OVRENDERING ModelLoader
+	class ModelLoader
 	{
 	public:
 		/**

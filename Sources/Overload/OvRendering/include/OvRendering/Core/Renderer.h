@@ -28,7 +28,7 @@ namespace OvRendering::Core
 	* The renderer is one of the main classes of OvRendering. It is necessary to have one to
 	* send batches to the GPU
 	*/
-	class API_OVRENDERING Renderer
+	class Renderer
 	{
 	public:
 		/**

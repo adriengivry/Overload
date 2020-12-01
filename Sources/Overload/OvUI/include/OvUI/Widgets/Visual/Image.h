@@ -16,7 +16,7 @@ namespace OvUI::Widgets::Visual
 	/**
 	* Simple widget that display an image
 	*/
-	class API_OVUI Image : public AWidget
+	class Image : public AWidget
 	{
 	public:
 		/**

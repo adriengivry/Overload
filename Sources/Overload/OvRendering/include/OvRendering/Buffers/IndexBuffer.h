@@ -15,7 +15,7 @@ namespace OvRendering::Buffers
 	/**
 	* Wraps OpenGL EBO
 	*/
-	class API_OVRENDERING IndexBuffer
+	class IndexBuffer
 	{
 	public:
 		/**

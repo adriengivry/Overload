@@ -18,7 +18,7 @@ namespace OvCore::ECS::Components
 	/**
 	* Represents an audio source. Its position in the world is important if the spatial sound settings is on
 	*/
-	class API_OVCORE CAudioSource : public AComponent
+	class CAudioSource : public AComponent
 	{
 	public:
 		/**

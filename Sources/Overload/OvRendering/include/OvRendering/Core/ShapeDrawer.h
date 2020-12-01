@@ -14,7 +14,7 @@ namespace OvRendering::Core
 	/**
 	* The ShapeDrawer handles the drawing of basic shapes
 	*/
-	class API_OVRENDERING ShapeDrawer
+	class ShapeDrawer
 	{
 	public:
 		/**

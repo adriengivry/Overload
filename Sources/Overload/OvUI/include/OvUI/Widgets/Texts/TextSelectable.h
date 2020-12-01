@@ -15,7 +15,7 @@ namespace OvUI::Widgets::Texts
 	/**
 	* Simple widget to display a selectable text on a panel
 	*/
-	class API_OVUI TextSelectable : public Text
+	class TextSelectable : public Text
 	{
 	public:
 		/**

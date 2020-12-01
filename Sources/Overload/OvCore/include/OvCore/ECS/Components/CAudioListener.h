@@ -20,7 +20,7 @@ namespace OvCore::ECS::Components
 	* Represents an audio listener. The distance between audio sources and audio listener will affect the sound
 	* attenuation of spatialized sounds
 	*/
-	class API_OVCORE CAudioListener : public AComponent
+	class CAudioListener : public AComponent
 	{
 	public:
 		/**

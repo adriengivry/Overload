@@ -18,7 +18,7 @@ namespace OvCore::ECS::Components
 	* ABehaviour is the base class for any behaviour.
 	* A Behaviour is a script that is used to manipulate an actor over time
 	*/
-	class API_OVCORE Behaviour : public AComponent
+	class Behaviour : public AComponent
 	{
 	public:
 		/**

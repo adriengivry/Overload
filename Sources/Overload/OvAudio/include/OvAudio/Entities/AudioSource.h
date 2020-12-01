@@ -13,7 +13,7 @@
 #include <OvMaths/FVector3.h>
 #include <OvMaths/FTransform.h>
 
-#include "OvAudio/API/Export.h"
+
 #include "OvAudio/Tracking/SoundTracker.h"
 #include "OvAudio/Resources/Sound.h"
 
@@ -24,7 +24,7 @@ namespace OvAudio::Entities
 	/**
 	* Wrap Irrklang ISound
 	*/
-	class API_OVAUDIO AudioSource
+	class AudioSource
 	{
 	public:
 		/**

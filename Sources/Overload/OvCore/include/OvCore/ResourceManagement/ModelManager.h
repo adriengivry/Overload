@@ -15,7 +15,7 @@ namespace OvCore::ResourceManagement
 	/**
 	* ResourceManager of models
 	*/
-	class API_OVCORE ModelManager : public AResourceManager<OvRendering::Resources::Model>
+	class ModelManager : public AResourceManager<OvRendering::Resources::Model>
 	{
 	public:
 		/**

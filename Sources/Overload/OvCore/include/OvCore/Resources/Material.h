@@ -12,14 +12,14 @@
 #include <OvRendering/Resources/Shader.h>
 
 #include "OvCore/API/ISerializable.h"
-#include "OvCore/API/Export.h"
+
 
 namespace OvCore::Resources
 {
 	/**
 	* A material is a combination of a shader and some settings (Material settings and shader settings)
 	*/
-	class API_OVCORE Material : public API::ISerializable
+	class Material : public API::ISerializable
 	{
 	public:
 		/**

@@ -18,7 +18,7 @@ namespace OvCore::ECS::Components
 	/**
 	* A ModelRenderer is necessary in combination with a MaterialRenderer to render a model in the world
 	*/
-	class API_OVCORE CModelRenderer : public AComponent
+	class CModelRenderer : public AComponent
 	{
 	public:
 		/**

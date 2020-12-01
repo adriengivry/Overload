@@ -12,7 +12,6 @@
 
 #include <OvTools/Eventing/Event.h>
 
-#include "OvWindowing/API/Export.h"
 #include "OvWindowing/Context/EDeviceError.h"
 #include "OvWindowing/Settings/DeviceSettings.h"
 #include "OvWindowing/Cursor/ECursorShape.h"
@@ -23,7 +22,7 @@ namespace OvWindowing::Context
 	* The Device represents the windowing context. It is necessary to create a device
 	* to create a window
 	*/
-	class API_OVWINDOWING Device
+	class Device
 	{
 	public:
 		/**

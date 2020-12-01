@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "OvAudio/API/Export.h"
+
 #include "OvAudio/Core/AudioEngine.h"
 #include "OvAudio/Resources/Sound.h"
 
@@ -15,7 +15,7 @@ namespace OvAudio::Core
 	/**
 	* Handle sounds playback
 	*/
-	class API_OVAUDIO AudioPlayer
+	class AudioPlayer
 	{
 	public:
 		/**

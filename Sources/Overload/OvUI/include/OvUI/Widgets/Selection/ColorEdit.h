@@ -16,7 +16,7 @@ namespace OvUI::Widgets::Selection
 	/**
 	* Widget that can open a color picker on click
 	*/
-	class API_OVUI ColorEdit : public DataWidget<Types::Color>
+	class ColorEdit : public DataWidget<Types::Color>
 	{
 	public:
 		/**

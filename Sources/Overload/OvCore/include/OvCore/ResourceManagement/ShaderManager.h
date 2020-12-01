@@ -15,7 +15,7 @@ namespace OvCore::ResourceManagement
 	/**
 	* ResourceManager of shaders
 	*/
-	class API_OVCORE ShaderManager : public AResourceManager<OvRendering::Resources::Shader>
+	class ShaderManager : public AResourceManager<OvRendering::Resources::Shader>
 	{
 	public:
 		/**

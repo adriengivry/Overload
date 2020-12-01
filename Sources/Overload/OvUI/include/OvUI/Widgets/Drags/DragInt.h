@@ -13,7 +13,7 @@ namespace OvUI::Widgets::Drags
 	/**
 	* Drag widget of type int
 	*/
-	class API_OVUI DragInt : public DragSingleScalar<int>
+	class DragInt : public DragSingleScalar<int>
 	{
 	public:
 		/**

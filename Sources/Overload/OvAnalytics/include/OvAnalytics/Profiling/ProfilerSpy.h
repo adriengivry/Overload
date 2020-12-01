@@ -9,7 +9,7 @@
 #include <string>
 #include <chrono>
 
-#include "OvAnalytics/API/Export.h"
+
 #include "OvAnalytics/Profiling/Profiler.h"
 #include "OvAnalytics/Profiling/ProfilerSpy.h"
 
@@ -29,7 +29,7 @@ namespace OvAnalytics::Profiling
 	* It helps collecting informations about methods durations for debugging
 	* event in release
 	*/
-	struct API_OVANALYTICS ProfilerSpy final
+	struct ProfilerSpy final
 	{
 		/**
 		* Create the profiler spy with the given name.

@@ -15,7 +15,7 @@ namespace OvUI::Widgets::Plots
 	/**
 	* Plot displayed as an histogram
 	*/
-	class API_OVUI PlotHistogram : public APlot
+	class PlotHistogram : public APlot
 	{
 	public:
 		/**

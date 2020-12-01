@@ -17,7 +17,7 @@ namespace OvUI::Widgets::Selection
 	/**
 	* Widget that can display a list of values that the user can select
 	*/
-	class API_OVUI ComboBox : public DataWidget<int>
+	class ComboBox : public DataWidget<int>
 	{
 	public:
 		/**

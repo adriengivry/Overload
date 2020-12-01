@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "OvCore/API/Export.h"
+
 
 #include "OvCore/SceneSystem/Scene.h"
 
@@ -15,7 +15,7 @@ namespace OvCore::SceneSystem
 	/**
 	* The scene manager of the current scene
 	*/
-	class API_OVCORE SceneManager
+	class SceneManager
 	{
 	public:
 

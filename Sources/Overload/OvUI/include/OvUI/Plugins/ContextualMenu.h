@@ -17,7 +17,7 @@ namespace OvUI::Plugins
 	* A simple plugin that will show a contextual menu on right click
 	* You can add widgets to a contextual menu
 	*/
-	class API_OVUI ContextualMenu : public IPlugin, public Internal::WidgetContainer
+	class ContextualMenu : public IPlugin, public Internal::WidgetContainer
 	{
 	public:
 		/**

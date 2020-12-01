@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "OvDebug/API/Export.h"
 #include "OvDebug/Utils/ILogHandler.h"
 
 namespace OvDebug
@@ -16,7 +15,7 @@ namespace OvDebug
 	/*
 	* Treat the log in the console
 	*/
-	class API_OVDEBUG ConsoleHandler : public ILogHandler
+	class ConsoleHandler : public ILogHandler
 	{
 	public:
 

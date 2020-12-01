@@ -12,7 +12,7 @@
 #include <OvRendering/Resources/Mesh.h>
 #include <OvRendering/Data/Frustum.h>
 
-#include "OvCore/API/Export.h"
+
 #include "OvCore/Resources/Material.h"
 #include "OvCore/ECS/Actor.h"
 #include "OvCore/ECS/Components/CCamera.h"
@@ -24,7 +24,7 @@ namespace OvCore::ECS
 	* A Renderer capable of rendering stuffs linked with the ECS. It is a convenient class that should be used instead of OvRendering::Core::Renderer
 	* when you plan to use the OvCore ECS architecture.
 	*/
-	class API_OVCORE Renderer : public OvRendering::Core::Renderer
+	class Renderer : public OvRendering::Core::Renderer
 	{
 	public:
 		using Drawable				= std::tuple<OvMaths::FMatrix4, OvRendering::Resources::Mesh*, OvCore::Resources::Material*, OvMaths::FMatrix4>;

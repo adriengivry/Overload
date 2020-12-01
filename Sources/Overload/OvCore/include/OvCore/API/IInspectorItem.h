@@ -16,7 +16,7 @@ namespace OvCore::API
 	/**
 	* IInspectorItem is an interface to any class that is serializable and drawable on inspector
 	*/
-	class API_OVCORE IInspectorItem : public ISerializable
+	class IInspectorItem : public ISerializable
 	{
 	public:
 		/**

@@ -11,7 +11,6 @@
 
 #include <OvTools/Eventing/Event.h>
 
-#include "OvCore/API/Export.h"
 #include "OvCore/ECS/Components/AComponent.h"
 #include "OvCore/ECS/Components/CTransform.h"
 #include "OvCore/ECS/Components/Behaviour.h"
@@ -23,7 +22,7 @@ namespace OvCore::ECS
 	* The Actor is the main class of the ECS, it corresponds to the entity and is
 	* composed of componenents and behaviours (scripts)
 	*/
-	class API_OVCORE Actor : public API::ISerializable
+	class Actor : public API::ISerializable
 	{
 	public:
 		/**

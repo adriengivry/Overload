@@ -17,7 +17,7 @@ namespace OvUI::Widgets::Menu
 	/**
 	* Widget that behave like a group with a menu display
 	*/
-	class API_OVUI MenuList : public Layout::Group
+	class MenuList : public Layout::Group
 	{
 	public:
 		/**

@@ -12,7 +12,6 @@
 
 #include <stdint.h>
 
-#include "OvMaths/API/export.h"
 #include "OvMaths/FVector3.h"
 #include "OvMaths/FVector4.h"
 
@@ -28,7 +27,7 @@ namespace OvMaths
 	/**
 	* Mathematic representation of a 4x4 Matrix of floats
 	*/
-	struct API_OVMATHS FMatrix4
+	struct FMatrix4
 	{
 		float data[16];
 		static const FMatrix4 Identity;

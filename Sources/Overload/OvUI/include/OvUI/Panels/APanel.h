@@ -16,7 +16,7 @@ namespace OvUI::Panels
 	/**
 	* A Panel is a component of a canvas. It is a sort of window in the UI
 	*/
-	class API_OVUI APanel : public API::IDrawable, public Internal::WidgetContainer
+	class APanel : public API::IDrawable, public Internal::WidgetContainer
 	{
 	public:
 		/**

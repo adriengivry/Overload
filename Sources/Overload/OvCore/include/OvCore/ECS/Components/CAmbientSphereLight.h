@@ -15,7 +15,7 @@ namespace OvCore::ECS::Components
 	/**
 	* Represents an ambient light with a sphere shape
 	*/
-	class API_OVCORE CAmbientSphereLight : public CLight
+	class CAmbientSphereLight : public CLight
 	{
 	public:
 		/**

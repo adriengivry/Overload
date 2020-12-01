@@ -15,7 +15,7 @@ namespace OvUI::Widgets::Visual
 	/**
 	* Simple widget that display a progress bar
 	*/
-	class API_OVUI ProgressBar : public AWidget
+	class ProgressBar : public AWidget
 	{
 	public:
 		/**

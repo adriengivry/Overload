@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "OvDebug/API/Export.h"
 
 #define OVASSERT(condition, message) OvDebug::Assertion::Assert(condition, message)
 
@@ -17,7 +16,7 @@ namespace OvDebug
 	/**
 	* Wrapper for C++ assert
 	*/
-	class API_OVDEBUG Assertion
+	class Assertion
 	{
 	public:
 

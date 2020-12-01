@@ -13,7 +13,7 @@ namespace OvUI::Widgets::Sliders
 	/**
 	* Slider widget of type int
 	*/
-	class API_OVUI SliderInt : public SliderSingleScalar<int>
+	class SliderInt : public SliderSingleScalar<int>
 	{
 	public:
 		/**

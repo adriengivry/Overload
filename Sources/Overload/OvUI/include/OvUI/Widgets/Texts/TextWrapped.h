@@ -13,7 +13,7 @@ namespace OvUI::Widgets::Texts
 	/**
 	* Simple widget to display a long text with word-wrap on a panel
 	*/
-	class API_OVUI TextWrapped : public Text
+	class TextWrapped : public Text
 	{
 	public:
 		/**

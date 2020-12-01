@@ -17,7 +17,7 @@ namespace OvCore::ECS::Components
 	/**
 	* Base class for any physical object
 	*/
-	class API_OVCORE CPhysicalObject : public AComponent
+	class CPhysicalObject : public AComponent
 	{
 	public:
 		/**

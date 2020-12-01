@@ -20,7 +20,7 @@ namespace OvPhysics::Core
 	* Main class of OvPhysics, it handles the creation of the physical world. It must be created
 	* before any PhysicalObject to ensure PhysicalObject consideration
 	*/
-	class API_OVPHYSICS PhysicsEngine
+	class PhysicsEngine
 	{
 	public:
 		/**

@@ -20,7 +20,7 @@ namespace OvRendering::Resources
 	/**
 	* Standard mesh of OvRendering
 	*/
-	class API_OVRENDERING Mesh : public IMesh
+	class Mesh : public IMesh
 	{
 	public:
 		/**

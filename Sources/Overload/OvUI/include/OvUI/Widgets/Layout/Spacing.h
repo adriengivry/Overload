@@ -13,7 +13,7 @@ namespace OvUI::Widgets::Layout
 	/**
 	* Widget that adds a space to the panel line
 	*/
-	class API_OVUI Spacing : public AWidget
+	class Spacing : public AWidget
 	{
 	public:
 		/**

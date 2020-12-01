@@ -17,7 +17,7 @@ namespace OvCore::ECS::Components
 	/**
 	* Represent a physical object with a box shape
 	*/
-	class API_OVCORE CPhysicalBox : public CPhysicalObject
+	class CPhysicalBox : public CPhysicalObject
 	{
 	public:
 		/**

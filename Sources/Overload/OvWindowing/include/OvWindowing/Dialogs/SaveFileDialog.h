@@ -13,7 +13,7 @@ namespace OvWindowing::Dialogs
 	/**
 	* Dialog window that asks the user to save a file to the disk
 	*/
-	class API_OVWINDOWING SaveFileDialog : public FileDialog
+	class SaveFileDialog : public FileDialog
 	{
 	public:
 		/**

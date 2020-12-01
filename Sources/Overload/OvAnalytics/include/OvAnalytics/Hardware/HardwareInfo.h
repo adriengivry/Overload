@@ -8,7 +8,7 @@
 
 #include <chrono>
 
-#include "OvAnalytics/API/Export.h"
+
 #include "OvAnalytics/Hardware/HardwareReport.h"
 #include "OvAnalytics/Hardware/CPUInfo.h"
 #include "OvAnalytics/Hardware/GPUInfo.h"
@@ -19,7 +19,7 @@ namespace OvAnalytics::Hardware
 	/**
 	* The hardware info class will gather informations about the hardware in real-time (CPU usage, GPU usage, RAM usage...)
 	*/
-	class API_OVANALYTICS HardwareInfo final
+	class HardwareInfo final
 	{
 	public:
 		/**

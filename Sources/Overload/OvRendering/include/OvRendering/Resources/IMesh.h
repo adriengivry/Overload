@@ -15,7 +15,7 @@ namespace OvRendering::Resources
 	/**
 	* Interface for any mesh
 	*/
-	class API_OVRENDERING IMesh
+	class IMesh
 	{
 	public:
 		virtual void Bind() = 0;

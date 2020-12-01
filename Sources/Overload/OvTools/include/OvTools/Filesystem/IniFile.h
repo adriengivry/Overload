@@ -9,14 +9,13 @@
 #include <string>
 #include <unordered_map>
 
-#include "OvTools/API/Export.h"
 
 namespace OvTools::Filesystem
 {
 	/**
 	* The IniFile class represents a file .ini that stores a set of attributes/values that can get read and written
 	*/
-	class API_OVTOOLS IniFile final
+	class IniFile final
 	{
 	public:
 		using AttributePair = std::pair<std::string, std::string>;

@@ -31,7 +31,7 @@ namespace OvDebug
 	/*
 	* Static class to display error messages on console or file
 	*/
-	class API_OVDEBUG Logger
+	class Logger
 	{
 	public:
 

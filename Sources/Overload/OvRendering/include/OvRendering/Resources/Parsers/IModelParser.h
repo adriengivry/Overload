@@ -16,7 +16,7 @@ namespace OvRendering::Resources::Parsers
 	/**
 	* Interface for any model parser
 	*/
-	class API_OVRENDERING IModelParser
+	class IModelParser
 	{
 	public:
 		/**

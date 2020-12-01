@@ -17,7 +17,7 @@ namespace OvCore::ECS::Components
 	/**
 	* Represent a physical object with a capsule hape
 	*/
-	class API_OVCORE CPhysicalCapsule : public CPhysicalObject
+	class CPhysicalCapsule : public CPhysicalObject
 	{
 	public:
 		/**

@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <any>
 
-#include "OvCore/API/Export.h"
+
 
 namespace OvCore::ResourceManagement
 {

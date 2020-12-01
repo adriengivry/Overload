@@ -24,7 +24,7 @@ namespace OvCore::ECS::Components
 	/**
 	* A component that handle a material list, necessary for model rendering
 	*/
-	class API_OVCORE CMaterialRenderer : public AComponent
+	class CMaterialRenderer : public AComponent
 	{
 	public:
 		using MaterialList = std::array<OvCore::Resources::Material*, MAX_MATERIAL_COUNT>;

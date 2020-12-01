@@ -17,7 +17,7 @@ namespace OvCore::Scripting
 	/**
 	* Handles script interpretation
 	*/
-	class API_OVCORE ScriptInterpreter
+	class ScriptInterpreter
 	{
 	public:
 		/**

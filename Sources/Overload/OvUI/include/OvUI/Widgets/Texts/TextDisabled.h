@@ -13,7 +13,7 @@ namespace OvUI::Widgets::Texts
 	/**
 	* Widget to display a disabled text on a panel
 	*/
-	class API_OVUI TextDisabled : public Text
+	class TextDisabled : public Text
 	{
 	public:
 		/**

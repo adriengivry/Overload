@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "OvUI/API/Export.h"
 #include "OvUI/API/IDrawable.h"
 #include "OvUI/Plugins/Pluginable.h"
 #include "OvUI/Plugins/DataDispatcher.h"
@@ -23,7 +22,7 @@ namespace OvUI::Widgets
 	* It is basically a visual element that can be placed into a panel.
 	* It is drawable and can receive plugins
 	*/
-	class API_OVUI AWidget : public API::IDrawable, public Plugins::Pluginable
+	class AWidget : public API::IDrawable, public Plugins::Pluginable
 	{
 	public:
 		/**

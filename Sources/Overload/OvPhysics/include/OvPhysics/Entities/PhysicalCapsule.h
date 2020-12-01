@@ -13,7 +13,7 @@ namespace OvPhysics::Entities
 	/**
 	* PhysicalObject with a capsule shape
 	*/
-	class API_OVPHYSICS PhysicalCapsule : public PhysicalObject
+	class PhysicalCapsule : public PhysicalObject
 	{
 	public:
 		/**
