@@ -1,6 +1,7 @@
 workspace "Overload"
 	configurations { "Debug", "Release" }
 	platforms { "x64" }
+	startproject "OvEditor"
 
 outputdir = "%{wks.location}/../../Bin/"
 objoutdir = "%{wks.location}/../../Bin-Int/"
