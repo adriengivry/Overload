@@ -14,6 +14,7 @@ project "OvEditor"
 	targetdir (outputdir .. "%{cfg.buildcfg}/%{prj.name}")
 	objdir (objoutdir .. "%{cfg.buildcfg}/%{prj.name}")
 	characterset ("MBCS")
+	debugdir "%{wks.location}/../../Build/%{cfg.buildcfg}"
 
 	postbuildcommands {
 		"for /f %%i in ('dir /B /S %{wks.location}..\\..\\Dependencies\\*.dll') do xcopy /Q /Y %%i %{wks.location}..\\..\\Bin\\%{cfg.buildcfg}\\%{prj.name}",
