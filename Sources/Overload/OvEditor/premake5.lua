@@ -9,7 +9,7 @@ project "OvEditor"
 
 	libdirs { dependdir .. "glfw/lib", dependdir .. "bullet3/lib/%{cfg.buildcfg}", dependdir .. "lua/lib", dependdir .. "glew/lib", dependdir .. "irrklang/lib", dependdir .. "assimp/lib" }
 	links { "assimp-vc142-mt", "zlibstatic", "Bullet3Collision", "Bullet3Common", "Bullet3Dynamics", "Bullet3Geometry", "BulletCollision", "BulletDynamics", "BulletSoftBody", "LinearMath", "glew32", "glfw3dll", "irrKlang", "liblua53", 
-	"opengl32", "OvAnalytics", "OvAudio", "OvCore", "OvDebug", "OvMaths", "OvPhysics", "OvRendering", "OvTools", "OvUI", "OvWindowing" }
+	"opengl32", "OvAnalytics", "OvAudio", "OvCore", "OvDebug", "OvMaths", "OvPhysics", "OvRendering", "OvTools", "OvUI", "OvWindowing", "OvGame" }
 
 	targetdir (outputdir .. "%{cfg.buildcfg}/%{prj.name}")
 	objdir (objoutdir .. "%{cfg.buildcfg}/%{prj.name}")
@@ -27,6 +27,9 @@ project "OvEditor"
 		"xcopy /Y /I /Q /D %{wks.location}\\..\\..\\Bin\\Debug\\%{prj.name}\\*.dll %{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\",
 		"xcopy /Y /I /Q /D %{wks.location}\\..\\..\\Bin\\Release\\%{prj.name}\\*.exe %{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\",
 		"xcopy /Y /I /Q /D %{wks.location}\\..\\..\\Bin\\Release\\%{prj.name}\\*.dll %{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\",
+
+		"xcopy %{wks.location}..\\..\\Bin\\Debug\\OvGame %{wks.location}..\\..\\Build\\%{cfg.buildcfg}\\Builder\\Development /y /i /c",
+		"xcopy %{wks.location}..\\..\\Bin\\Release\\OvGame %{wks.location}..\\..\\Build\\%{cfg.buildcfg}\\Builder\\Shipping /y /i /c",
 		"EXIT /B 0"
 	}
 
