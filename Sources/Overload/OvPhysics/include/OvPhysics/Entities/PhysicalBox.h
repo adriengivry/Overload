@@ -13,7 +13,7 @@ namespace OvPhysics::Entities
 	/**
 	* PhysicalObject with a box shape
 	*/
-	class API_OVPHYSICS PhysicalBox : public PhysicalObject
+	class PhysicalBox : public PhysicalObject
 	{
 	public:
 		/**

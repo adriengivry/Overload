@@ -15,7 +15,7 @@ namespace OvUI::Plugins
 	/**
 	* Inherit from this class to make your class "Pluginable" (Able to have plugins)
 	*/
-	class API_OVUI Pluginable
+	class Pluginable
 	{
 	public:
 		/**

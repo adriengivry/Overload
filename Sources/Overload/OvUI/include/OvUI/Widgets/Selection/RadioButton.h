@@ -18,7 +18,7 @@ namespace OvUI::Widgets::Selection
 	* Widget that represent a button that is selectable. Only one radio button can be selected
 	* in the same RadioButtonLinker
 	*/
-	class API_OVUI RadioButton : public DataWidget<bool>
+	class RadioButton : public DataWidget<bool>
 	{
 		friend RadioButtonLinker;
 		

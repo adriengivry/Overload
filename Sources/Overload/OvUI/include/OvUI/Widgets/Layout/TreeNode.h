@@ -18,7 +18,7 @@ namespace OvUI::Widgets::Layout
 	/**
 	* Widget that allow columnification
 	*/
-	class API_OVUI TreeNode : public DataWidget<std::string>, public Internal::WidgetContainer 
+	class TreeNode : public DataWidget<std::string>, public Internal::WidgetContainer 
 	{
 	public:
 		/**

@@ -16,7 +16,7 @@ namespace OvDebug
 	/*
 	* Treat the log in a history queue
 	*/
-	class API_OVDEBUG HistoryHandler : public ILogHandler
+	class HistoryHandler : public ILogHandler
 	{
 	public:
 

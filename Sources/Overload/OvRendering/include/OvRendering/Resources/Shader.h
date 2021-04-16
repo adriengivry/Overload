@@ -15,7 +15,7 @@
 
 #include "OvRendering/Resources/UniformInfo.h"
 
-#include "OvRendering/API/Export.h"
+
 
 namespace OvRendering::Resources
 {
@@ -24,7 +24,7 @@ namespace OvRendering::Resources
 	/**
 	* OpenGL shader program wrapper
 	*/
-	class API_OVRENDERING Shader
+	class Shader
 	{
 	friend class Loaders::ShaderLoader;
 

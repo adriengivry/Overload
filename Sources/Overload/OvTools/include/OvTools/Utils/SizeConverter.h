@@ -10,14 +10,13 @@
 #include <tuple>
 #include <string>
 
-#include "OvTools/API/Export.h"
 
 namespace OvTools::Utils
 {
     /*
     * Handles size conversions
     */
-    class API_OVTOOLS SizeConverter
+    class SizeConverter
     {
     public:
         enum class ESizeUnit

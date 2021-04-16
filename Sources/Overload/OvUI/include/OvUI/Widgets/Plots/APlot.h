@@ -19,7 +19,7 @@ namespace OvUI::Widgets::Plots
 	/**
 	* Base class for any plot widget
 	*/
-	class API_OVUI APlot : public DataWidget<std::vector<float>>
+	class APlot : public DataWidget<std::vector<float>>
 	{
 	public:
 		/**

@@ -15,7 +15,7 @@ namespace OvCore::ResourceManagement
 	/**
 	* ResourceManager of textures
 	*/
-	class API_OVCORE TextureManager : public AResourceManager<OvRendering::Resources::Texture>
+	class TextureManager : public AResourceManager<OvRendering::Resources::Texture>
 	{
 	public:
 		/**

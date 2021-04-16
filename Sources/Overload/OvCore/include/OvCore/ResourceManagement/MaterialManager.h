@@ -14,7 +14,7 @@ namespace OvCore::ResourceManagement
 	/**
 	* ResourceManager of materials
 	*/
-	class API_OVCORE MaterialManager : public AResourceManager<OvCore::Resources::Material>
+	class MaterialManager : public AResourceManager<OvCore::Resources::Material>
 	{
 	public:
 		/**

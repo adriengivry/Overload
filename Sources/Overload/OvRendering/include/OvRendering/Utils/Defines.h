@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "OvRendering/API/Export.h"
+
 
 #define FORCE_DEDICATED_GPU \
 extern "C"\

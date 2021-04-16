@@ -11,7 +11,7 @@
 
 #include "OvRendering/Settings/ETextureFilteringMode.h"
 
-#include "OvRendering/API/Export.h"
+
 
 namespace OvRendering::Resources
 {
@@ -20,7 +20,7 @@ namespace OvRendering::Resources
 	/**
 	* OpenGL texture wrapper
 	*/
-	class API_OVRENDERING Texture
+	class Texture
 	{
 		friend class Loaders::TextureLoader;
 

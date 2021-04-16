@@ -18,7 +18,7 @@ namespace OvUI::Widgets::Buttons
 	/**
 	* Simple button widget
 	*/
-	class API_OVUI Button : public AButton
+	class Button : public AButton
 	{
 	public:
 		/**

@@ -10,14 +10,14 @@
 #include <OvMaths/FMatrix4.h>
 #include <OvMaths/FTransform.h>
 
-#include "OvRendering/API/Export.h"
+
 
 namespace OvRendering::Entities
 {
 	/**
 	* Data structure that can represent any type of light
 	*/
-	struct API_OVRENDERING Light
+	struct Light
 	{
 		/**
 		* Light types

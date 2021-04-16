@@ -13,7 +13,7 @@ namespace OvUI::Widgets::Visual
 	/**
 	* Simple widget that display a separator
 	*/
-	class API_OVUI Separator : public AWidget
+	class Separator : public AWidget
 	{
 	protected:
 		void _Draw_Impl() override;

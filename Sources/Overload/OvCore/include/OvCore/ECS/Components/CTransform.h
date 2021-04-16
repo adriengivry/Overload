@@ -21,7 +21,7 @@ namespace OvCore::ECS::Components
 	/**
 	* Represents the 3D transformations applied to an actor
 	*/
-	class API_OVCORE CTransform : public AComponent
+	class CTransform : public AComponent
 	{
 	public:
 		/**

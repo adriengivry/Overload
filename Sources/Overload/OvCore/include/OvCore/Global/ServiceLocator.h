@@ -9,7 +9,7 @@
 #include <any>
 #include <unordered_map>
 
-#include "OvCore/API/Export.h"
+
 
 #define OVSERVICE(Type) OvCore::Global::ServiceLocator::Get<Type>()
 
@@ -18,7 +18,7 @@ namespace OvCore::Global
 	/**
 	* Provide a way to access to core services
 	*/
-	class API_OVCORE ServiceLocator
+	class ServiceLocator
 	{
 	public:
 		/**

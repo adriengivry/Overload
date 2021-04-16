@@ -15,7 +15,7 @@ namespace OvUI::Widgets::InputFields
 	/**
 	* Input widget of type string
 	*/
-	class API_OVUI InputText : public DataWidget<std::string>
+	class InputText : public DataWidget<std::string>
 	{
 	public:
 		/**

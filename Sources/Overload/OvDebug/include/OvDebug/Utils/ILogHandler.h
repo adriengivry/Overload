@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "OvDebug/API/Export.h"
 
 namespace OvDebug
 {
@@ -48,7 +47,7 @@ namespace OvDebug
 	/*
 	* Treat the log in a certain way (Defined by children)
 	*/
-	class API_OVDEBUG ILogHandler
+	class ILogHandler
 	{
 		friend class Logger;
 

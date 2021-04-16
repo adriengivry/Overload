@@ -14,7 +14,7 @@ namespace OvUI::Widgets::Texts
 	/**
 	* Simple widget to display text on a panel
 	*/
-	class API_OVUI Text : public DataWidget<std::string>
+	class Text : public DataWidget<std::string>
 	{
 	public:
 		/**

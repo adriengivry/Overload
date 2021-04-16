@@ -18,7 +18,7 @@ namespace OvRendering::Buffers
 	/**
 	* Wraps OpenGL SSBO
 	*/
-	class API_OVRENDERING ShaderStorageBuffer
+	class ShaderStorageBuffer
 	{
 	public:
 		/**

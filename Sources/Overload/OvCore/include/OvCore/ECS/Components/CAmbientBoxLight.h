@@ -15,7 +15,7 @@ namespace OvCore::ECS::Components
 	/**
 	* Represents an ambient light with a box shape
 	*/
-	class API_OVCORE CAmbientBoxLight : public CLight
+	class CAmbientBoxLight : public CLight
 	{
 	public:
 		/**

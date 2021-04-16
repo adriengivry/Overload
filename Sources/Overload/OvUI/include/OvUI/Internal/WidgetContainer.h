@@ -16,7 +16,7 @@ namespace OvUI::Internal
 	/**
 	* The base class for any widget container
 	*/
-	class API_OVUI WidgetContainer
+	class WidgetContainer
 	{
 	public:
 		/**

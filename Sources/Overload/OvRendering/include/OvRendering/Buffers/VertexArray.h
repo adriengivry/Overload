@@ -28,7 +28,7 @@ namespace OvRendering::Buffers
 	/**
 	* Wraps OpenGL VAO
 	*/
-	class API_OVRENDERING VertexArray
+	class VertexArray
 	{
 	public:
 		/**

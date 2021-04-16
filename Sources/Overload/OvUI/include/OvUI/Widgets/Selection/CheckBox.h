@@ -15,7 +15,7 @@ namespace OvUI::Widgets::Selection
 	/**
 	* Checkbox widget that can be checked or not
 	*/
-	class API_OVUI CheckBox : public DataWidget<bool>
+	class CheckBox : public DataWidget<bool>
 	{
 	public:
 		/** 

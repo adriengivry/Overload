@@ -19,7 +19,7 @@ namespace OvRendering::Buffers
 	/**
 	* Wraps OpenGL UBO
 	*/
-	class API_OVRENDERING UniformBuffer
+	class UniformBuffer
 	{
 	public:
 		/**

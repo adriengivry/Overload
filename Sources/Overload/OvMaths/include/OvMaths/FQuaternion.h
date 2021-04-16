@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "OvMaths/API/export.h"
 #include "OvMaths/FVector3.h"
 #include "OvMaths/FMatrix3.h"
 #include "OvMaths/FMatrix4.h"
@@ -19,7 +18,7 @@ namespace OvMaths
 	/**
 	* Mathematic representation of a Quaternion with float precision
 	*/
-	struct API_OVMATHS FQuaternion
+	struct FQuaternion
 	{
 	public:
 		float x;

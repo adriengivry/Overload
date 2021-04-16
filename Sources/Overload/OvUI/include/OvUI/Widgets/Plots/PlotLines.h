@@ -13,7 +13,7 @@ namespace OvUI::Widgets::Plots
 	/**
 	* Plot displayed as lines
 	*/
-	class API_OVUI PlotLines : public APlot
+	class PlotLines : public APlot
 	{
 	public:
 		/**

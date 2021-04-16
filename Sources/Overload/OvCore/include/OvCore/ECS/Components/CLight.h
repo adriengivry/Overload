@@ -17,7 +17,7 @@ namespace OvCore::ECS::Components
 	/**
 	* Base class for any light
 	*/
-	class API_OVCORE CLight : public AComponent
+	class CLight : public AComponent
 	{
 	public:
 		/**

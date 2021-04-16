@@ -16,7 +16,7 @@ namespace OvDebug
 	/*
 	* Treat the log in a file
 	*/
-	class API_OVDEBUG FileHandler : public ILogHandler
+	class FileHandler : public ILogHandler
 	{
 	public:
 

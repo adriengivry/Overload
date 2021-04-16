@@ -14,7 +14,7 @@ namespace OvUI::Widgets::Texts
 	/**
 	* Widget to display text on a panel that can be colored
 	*/
-	class API_OVUI TextColored : public Text
+	class TextColored : public Text
 	{
 	public:
 		/**

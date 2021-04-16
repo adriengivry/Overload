@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "OvMaths/API/Export.h"
 #include "OvMaths/Internal/TransformNotifier.h"
 #include "OvMaths/FQuaternion.h"
 #include "OvMaths/FMatrix4.h"
@@ -17,7 +16,7 @@ namespace OvMaths
 	/**
 	* Mathematic representation of a 3D transformation with float precision
 	*/
-	class API_OVMATHS FTransform
+	class FTransform
 	{
 	public:
 		/**

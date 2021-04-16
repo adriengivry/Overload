@@ -8,14 +8,13 @@
 
 #include <string>
 
-#include "OvTools/API/Export.h"
 
 namespace OvTools::Utils
 {
 	/**
 	* Provide some tools to get information about a given path
 	*/
-	class API_OVTOOLS PathParser
+	class PathParser
 	{
 	public:
 		enum class EFileType

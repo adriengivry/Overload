@@ -15,7 +15,7 @@ namespace OvAudio::Resources::Loaders
 	/**
 	* Handle the Mesh creation and destruction
 	*/
-	class API_OVAUDIO SoundLoader
+	class SoundLoader
 	{
 	public:
 		/**

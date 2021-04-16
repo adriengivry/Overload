@@ -18,7 +18,7 @@ namespace OvUI::Widgets::Buttons
 	/**
 	* Button widget of a single color (Color palette element)
 	*/
-	class API_OVUI ButtonColored : public AButton
+	class ButtonColored : public AButton
 	{
 	public:
 		/**

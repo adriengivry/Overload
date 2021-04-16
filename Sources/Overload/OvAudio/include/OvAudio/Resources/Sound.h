@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "OvAudio/API/Export.h"
+
 
 namespace OvAudio::Resources
 {
@@ -17,7 +17,7 @@ namespace OvAudio::Resources
 	/**
 	* Playable sound
 	*/
-	class API_OVAUDIO Sound
+	class Sound
 	{
 		friend class Loaders::SoundLoader;
 

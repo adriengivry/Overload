@@ -13,7 +13,7 @@ namespace OvUI::Widgets::InputFields
 	/**
 	* Input widget of type int
 	*/
-	class API_OVUI InputInt : public InputSingleScalar<int>
+	class InputInt : public InputSingleScalar<int>
 	{
 	public:
 		/**

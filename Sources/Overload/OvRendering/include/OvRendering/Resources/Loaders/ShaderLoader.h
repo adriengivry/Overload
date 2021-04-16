@@ -13,7 +13,7 @@ namespace OvRendering::Resources::Loaders
 	/**
 	* Handle the Shader creation and destruction
 	*/
-	class API_OVRENDERING ShaderLoader
+	class ShaderLoader
 	{
 	public:
 		/**

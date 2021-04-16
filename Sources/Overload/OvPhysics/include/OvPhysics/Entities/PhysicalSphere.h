@@ -13,7 +13,7 @@ namespace OvPhysics::Entities
 	/**
 	* PhysicalObject with a sphere shape
 	*/
-	class API_OVPHYSICS PhysicalSphere : public PhysicalObject
+	class PhysicalSphere : public PhysicalObject
 	{
 	public:
 		/**

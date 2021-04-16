@@ -14,7 +14,7 @@ namespace OvUI::Widgets::Selection
 	* Handle the link of radio buttons. Necessary to enable the correct behaviour
 	* of radio buttons
 	*/
-	class API_OVUI RadioButtonLinker : public DataWidget<int>
+	class RadioButtonLinker : public DataWidget<int>
 	{
 	public:
 		/**

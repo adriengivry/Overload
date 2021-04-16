@@ -19,7 +19,7 @@
 #include <OvUI/Widgets/Visual/Image.h>
 #include <OvUI/Types/Color.h>
 
-#include "OvCore/API/Export.h"
+
 
 namespace OvCore::Resources
 {
@@ -43,7 +43,7 @@ namespace OvCore::Helpers
 	/**
 	* Provide some helpers to draw UI elements
 	*/
-	class API_OVCORE GUIDrawer
+	class GUIDrawer
 	{
 	public:
 		static const OvUI::Types::Color TitleColor;
