@@ -13,8 +13,6 @@
 #include "OvEditor/Core/ProjectHub.h"
 #include "OvEditor/Core/Application.h"
 
-#include <OvWindowing/Dialogs/MessageBox.h>
-
 #undef APIENTRY
 #include "Windows.h"
 
