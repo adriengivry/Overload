@@ -32,6 +32,7 @@ void UpdateWorkingDirectory(const std::string& p_executablePath)
 }
 
 int main(int argc, char** argv);
+static void TryRun(const std::string& projectPath, const std::string& projectName);
 
 #ifndef _DEBUG
 INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
@@ -74,10 +75,30 @@ int main(int argc, char** argv)
 	}
 
 	if (ready)
-	{
-		OvEditor::Core::Application app(projectPath, projectName);
-		app.Run();
-	}
+		TryRun(projectPath, projectName);
 
 	return EXIT_SUCCESS;
+}
+
+static void TryRun(const std::string& projectPath, const std::string& projectName)
+{
+	auto errorEvent =
+		[](OvWindowing::Context::EDeviceError, std::string errMsg)
+		{
+			errMsg = "Overload requires OpenGL 4.3 or newer.\r\n" + errMsg;
+			MessageBox(0, errMsg.c_str(), "Overload", MB_OK | MB_ICONSTOP);
+		};
+
+	std::unique_ptr<OvEditor::Core::Application> app;
+
+	try
+	{
+		auto listenerId = OvWindowing::Context::Device::ErrorEvent += errorEvent;
+		app = std::make_unique<OvEditor::Core::Application>(projectPath, projectName);
+		OvWindowing::Context::Device::ErrorEvent -= listenerId;
+	}
+	catch (...) {}
+
+	if (app)
+		app->Run();
 }
