@@ -34,7 +34,7 @@ void UpdateWorkingDirectory(const std::string& p_executablePath)
 }
 
 int main(int argc, char** argv);
-void TryRun(std::string projectPath, std::string projectName);
+static void TryRun(const std::string& projectPath, const std::string& projectName);
 
 #ifndef _DEBUG
 INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 	return EXIT_SUCCESS;
 }
 
-void TryRun(std::string projectPath, std::string projectName)
+static void TryRun(const std::string& projectPath, const std::string& projectName)
 {
 	auto errorEvent =
 		[](OvWindowing::Context::EDeviceError, std::string errMsg)
