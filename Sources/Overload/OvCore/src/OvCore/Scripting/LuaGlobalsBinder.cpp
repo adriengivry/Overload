@@ -195,7 +195,7 @@ void OvCore::Scripting::LuaGlobalsBinder::BindGlobals(sol::state & p_luaState)
 	p_luaState.create_named_table("Physics");
 
 	p_luaState["Debug"]["Log"] = [](const std::string& p_message) { OVLOG(p_message); };
-	p_luaState["Debug"]["LogIngo"] = [](const std::string& p_message) { OVLOG_INFO(p_message); };
+	p_luaState["Debug"]["LogInfo"] = [](const std::string& p_message) { OVLOG_INFO(p_message); };
 	p_luaState["Debug"]["LogWarning"] = [](const std::string& p_message) { OVLOG_WARNING(p_message); };
 	p_luaState["Debug"]["LogError"] = [](const std::string& p_message) { OVLOG_ERROR(p_message); };
 
