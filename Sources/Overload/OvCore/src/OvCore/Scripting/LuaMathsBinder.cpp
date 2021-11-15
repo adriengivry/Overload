@@ -218,6 +218,8 @@ void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
 		"RotateOnAxisZ", &FMatrix4::RotateOnAxisZ,
 		"RotationYXZ", &FMatrix4::RotationYXZ,
 		"RotateYXZ", &FMatrix4::RotateYXZ,
+		"Rotation", &FMatrix4::Rotation,
+		"Rotate", &FMatrix4::Rotate,
 		"Scaling", &FMatrix4::Scaling,
 		"Scale", &FMatrix4::Scale,
 		"GetRow", &FMatrix4::GetRow,
