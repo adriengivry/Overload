@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <chrono>
 #include <mutex>
+#include <thread>
 
 
 #include "OvAnalytics/Profiling/ProfilerReport.h"
@@ -73,7 +74,7 @@ namespace OvAnalytics::Profiling
 
 	private:
 		/* Time relatives */
-		std::chrono::steady_clock::time_point m_lastTime;
+		std::chrono::system_clock::time_point m_lastTime;
 
 		/* Profiler settings */
 		static bool __ENABLED;

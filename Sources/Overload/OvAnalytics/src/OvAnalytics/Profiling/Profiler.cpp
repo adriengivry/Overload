@@ -74,8 +74,19 @@ void OvAnalytics::Profiling::Profiler::Save(OvAnalytics::Profiling::ProfilerSpy&
 	__SAVE_MUTEX.lock();
 
 	/* Check if this thread is already registered */
-	if (std::find(__WORKING_THREADS.begin(), __WORKING_THREADS.end(), std::this_thread::get_id()) == __WORKING_THREADS.end())
-		__WORKING_THREADS.push_back(std::this_thread::get_id());
+	{
+		bool found = false;
+		auto my_id = std::this_thread::get_id();
+		for (const auto id : __WORKING_THREADS) {
+			if (id == my_id) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			__WORKING_THREADS.push_back(std::this_thread::get_id());
+		}
+	}
 
 	if (__ELPASED_HISTORY.find(p_spy.name) != __ELPASED_HISTORY.end())
 	{

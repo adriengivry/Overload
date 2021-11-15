@@ -5,6 +5,7 @@
 */
 
 #pragma once
+#include <memory>
 
 #include <irrklang/ik_ISoundEngine.h>
 #include <irrklang/ik_ISoundStopEventReceiver.h>
