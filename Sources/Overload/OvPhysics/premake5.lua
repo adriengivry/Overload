@@ -3,7 +3,7 @@ project "OvPhysics"
 	language "C++"
 	cppdialect "C++17"
 	files { "**.h", "**.inl", "**.cpp" }
-	includedirs { "include", dependdir .. "bullet3/include", "%{wks.location}/OvDebug/include", "%{wks.location}/OvMaths/include", "%{wks.location}/OvTools/include" }
+	includedirs { "include", dependdir .. "bullet3/include", "bullet3/include/bullet", "%{wks.location}/OvDebug/include", "%{wks.location}/OvMaths/include", "%{wks.location}/OvTools/include" }
 	targetdir (outputdir .. "%{cfg.buildcfg}/%{prj.name}")
 	objdir (objoutdir .. "%{cfg.buildcfg}/%{prj.name}")
 	characterset ("MBCS")

@@ -6,7 +6,7 @@
 
 #include "OvWindowing/Dialogs/SaveFileDialog.h"
 
-#include <Windows.h>
+#include <windows.h>
 
 OvWindowing::Dialogs::SaveFileDialog::SaveFileDialog(const std::string & p_dialogTitle) : FileDialog(GetSaveFileNameA, p_dialogTitle)
 {

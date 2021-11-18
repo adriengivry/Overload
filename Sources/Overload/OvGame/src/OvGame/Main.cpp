@@ -14,7 +14,7 @@ FORCE_DEDICATED_GPU
 int main()
 #else
 #undef APIENTRY
-#include "Windows.h"
+#include "windows.h"
 INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
 #endif
 {

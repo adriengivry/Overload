@@ -7,7 +7,7 @@
 #include "OvTools/Utils/PathParser.h"
 #include "OvTools/Utils/SystemCalls.h"
 
-#include <Windows.h>
+#include <windows.h>
 
 void OvTools::Utils::SystemCalls::ShowInExplorer(const std::string & p_path)
 {

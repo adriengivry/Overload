@@ -6,7 +6,7 @@
 
 #include "OvWindowing/Dialogs/OpenFileDialog.h"
 
-#include <Windows.h>
+#include <windows.h>
 
 OvWindowing::Dialogs::OpenFileDialog::OpenFileDialog(const std::string & p_dialogTitle) : FileDialog(GetOpenFileNameA, p_dialogTitle)
 {

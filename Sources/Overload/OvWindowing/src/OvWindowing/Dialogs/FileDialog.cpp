@@ -6,7 +6,7 @@
 
 #include <filesystem>
 
-#include <Windows.h>
+#include <windows.h>
 
 #include "OvWindowing/Dialogs/FileDialog.h"
 

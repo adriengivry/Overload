@@ -4,7 +4,7 @@
 * @licence: MIT
 */
 
-#include <Windows.h>
+#include <windows.h>
 
 #include "OvAnalytics/Hardware/HardwareInfo.h"
 

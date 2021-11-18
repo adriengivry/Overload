@@ -11,8 +11,6 @@ project "OvCore"
 	objdir (objoutdir .. "%{cfg.buildcfg}/%{prj.name}")
 	characterset ("MBCS")
 	
-	buildoptions { "/bigobj" }
-
 	filter { "configurations:Debug" }
 		defines { "DEBUG" }
 		symbols "On"

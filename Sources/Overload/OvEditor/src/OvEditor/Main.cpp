@@ -14,7 +14,7 @@
 #include "OvEditor/Core/Application.h"
 
 #undef APIENTRY
-#include "Windows.h"
+#include "windows.h"
 
 FORCE_DEDICATED_GPU
 
