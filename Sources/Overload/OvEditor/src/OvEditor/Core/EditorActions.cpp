@@ -263,7 +263,7 @@ void OvEditor::Core::EditorActions::BuildAtLocation(const std::string & p_config
 
 						if (!err)
 						{
-							OVLOG_INFO("Game executable renamed to " + executableName + ".exe");
+							OVLOG_INFO("Game executable renamed to " + executableName);
 
 							if (p_autoRun)
 							{
