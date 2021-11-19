@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <OvDebug/Utils/Logger.h>
+#include <OvDebug/Logger.h>
 
 #include <OvUI/Panels/PanelWindow.h>
 #include <OvUI/Widgets/Layout/Group.h>

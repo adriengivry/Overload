@@ -6,7 +6,7 @@
 
 #include <GL/glew.h>
 
-#include <OvDebug/Utils/Logger.h>
+#include <OvDebug/Logger.h>
 
 #include "OvRendering/Context/Driver.h"
 

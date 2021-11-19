@@ -4,7 +4,7 @@
 * @licence: MIT
 */
 
-#include <OvDebug/Utils/Logger.h>
+#include <OvDebug/Logger.h>
 
 #include "OvCore/Scripting/LuaBinder.h"
 #include "OvCore/Scripting/ScriptInterpreter.h"

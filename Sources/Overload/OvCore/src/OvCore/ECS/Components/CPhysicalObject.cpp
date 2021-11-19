@@ -7,7 +7,7 @@
 #include <OvUI/Widgets/Drags/DragFloat.h>
 #include <OvUI/Widgets/Selection/ComboBox.h>
 
-#include <OvDebug/Utils/Logger.h>
+#include <OvDebug/Logger.h>
 
 #include <OvPhysics/Entities/PhysicalObject.h>
 

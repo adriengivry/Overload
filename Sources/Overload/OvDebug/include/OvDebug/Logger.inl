@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "OvDebug/Utils/Logger.h"
+#include "OvDebug/Logger.h"
 
 namespace OvDebug
 {
