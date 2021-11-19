@@ -8,7 +8,7 @@
 
 #include "OvGame/Debug/GameProfiler.h"
 
-#include <OvDebug/Utils/Logger.h>
+#include <OvDebug/Logger.h>
 #include <OvUI/Widgets/Visual/Separator.h>
 #include <OvAnalytics/Profiling/ProfilerSpy.h>
 

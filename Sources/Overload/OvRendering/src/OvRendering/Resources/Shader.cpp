@@ -6,7 +6,7 @@
 
 #include <GL/glew.h>
 
-#include <OvDebug/Utils/Logger.h>
+#include <OvDebug/Logger.h>
 
 #include "OvRendering/Resources/Texture.h"
 #include "OvRendering/Resources/Shader.h"

@@ -13,7 +13,7 @@
 #include <OvUI/Plugins/DDSource.h>
 #include <OvUI/Plugins/DDTarget.h>
 
-#include <OvDebug/Utils/Logger.h>
+#include <OvDebug/Logger.h>
 
 #include <OvCore/Global/ServiceLocator.h>
 

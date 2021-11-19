@@ -8,7 +8,7 @@
 #include <iostream>
 #include <fstream>
 
-#include <OvDebug/Utils/Logger.h>
+#include <OvDebug/Logger.h>
 
 #include <OvCore/ECS/Components/CPhysicalBox.h>
 #include <OvCore/ECS/Components/CPhysicalSphere.h>

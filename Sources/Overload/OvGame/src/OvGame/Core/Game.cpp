@@ -6,7 +6,7 @@
 
 #include "OvGame/Core/Game.h"
 
-#include <OvDebug/Utils/Logger.h>
+#include <OvDebug/Logger.h>
 #include <OvUI/Widgets/Texts/Text.h>
 
 #include <OvAnalytics/Profiling/ProfilerSpy.h>

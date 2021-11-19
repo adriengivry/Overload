@@ -5,7 +5,7 @@
 */
 
 #include <OvUI/Widgets/Texts/TextColored.h>
-#include <OvDebug/Utils/Logger.h>
+#include <OvDebug/Logger.h>
 
 #include "OvCore/ECS/Actor.h"
 #include "OvCore/ECS/Components/Behaviour.h"

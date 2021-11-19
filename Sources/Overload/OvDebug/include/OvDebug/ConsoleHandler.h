@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "OvDebug/Utils/ILogHandler.h"
+#include "OvDebug/ILogHandler.h"
 
 namespace OvDebug
 {

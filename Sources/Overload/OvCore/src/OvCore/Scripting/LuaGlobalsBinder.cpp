@@ -6,7 +6,7 @@
 
 #include "OvCore/Scripting/LuaGlobalsBinder.h"
 
-#include <OvDebug/Utils/Logger.h>
+#include <OvDebug/Logger.h>
 #include <OvTools/Utils/Random.h>
 
 #include "OvCore/ECS/Actor.h"

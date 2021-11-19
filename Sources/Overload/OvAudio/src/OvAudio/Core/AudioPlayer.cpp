@@ -4,7 +4,7 @@
 * @licence: MIT
 */
 
-#include <OvDebug/Utils/Logger.h>
+#include <OvDebug/Logger.h>
 
 #include "OvAudio/Core/AudioPlayer.h"
 

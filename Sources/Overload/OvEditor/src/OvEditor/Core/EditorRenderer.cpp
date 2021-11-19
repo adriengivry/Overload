@@ -15,7 +15,7 @@
 
 #include <OvAnalytics/Profiling/ProfilerSpy.h>
 
-#include <OvDebug/Utils/Assertion.h>
+#include <OvDebug/Assertion.h>
 
 #include "OvEditor/Core/EditorRenderer.h"
 #include "OvEditor/Core/EditorResources.h"

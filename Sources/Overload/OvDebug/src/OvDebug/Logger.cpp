@@ -4,7 +4,7 @@
 * @licence: MIT
 */
 
-#include "OvDebug/Utils/Logger.h"
+#include "OvDebug/Logger.h"
 #include "OvTools/Time/Date.h"
 
 OvTools::Eventing::Event<const OvDebug::LogData&> OvDebug::Logger::LogEvent;

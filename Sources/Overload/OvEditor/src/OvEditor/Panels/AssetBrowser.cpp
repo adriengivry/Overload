@@ -28,7 +28,7 @@
 #include <OvCore/ResourceManagement/TextureManager.h>
 #include <OvCore/ResourceManagement/ShaderManager.h>
 
-#include <OvDebug/Utils/Logger.h>
+#include <OvDebug/Logger.h>
 
 #include "OvEditor/Panels/AssetBrowser.h"
 #include "OvEditor/Panels/AssetView.h"
