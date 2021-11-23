@@ -207,6 +207,14 @@ void OvEditor::Core::EditorActions::BuildAtLocation(const std::string & p_config
 		
 					std::filesystem::copy(m_context.projectAssetsPath, buildPath + "Data\\User\\Assets\\", std::filesystem::copy_options::recursive, err);
 
+					if (!std::filesystem::exists(buildPath + "Data\\User\\Assets\\" + (m_context.projectSettings.Get<std::string>("start_scene"))))
+					{
+						OVLOG_ERROR("Failed to find Start Scene at expected path. Verify your Project Setings.");
+						OvWindowing::Dialogs::MessageBox message("Build Failure", "An error occured during the building of your game.\nCheck the console for more information", OvWindowing::Dialogs::MessageBox::EMessageType::ERROR, OvWindowing::Dialogs::MessageBox::EButtonLayout::OK, true);
+						std::filesystem::remove_all(buildPath);
+						return;						
+					}
+
 					if (!err)
 					{
 						OVLOG_INFO("Data\\User\\Assets\\ directory copied");
@@ -263,7 +271,7 @@ void OvEditor::Core::EditorActions::BuildAtLocation(const std::string & p_config
 
 						if (!err)
 						{
-							OVLOG_INFO("Game executable renamed to " + executableName + ".exe");
+							OVLOG_INFO("Game executable renamed to " + executableName);
 
 							if (p_autoRun)
 							{
@@ -292,7 +300,8 @@ void OvEditor::Core::EditorActions::BuildAtLocation(const std::string & p_config
 				}
 				else
 				{
-					OVLOG_ERROR("Builder folder for \"" + p_configuration + "\" not found. (Missing \"" + builderFolder + "\")");
+					const std::string buildConfiguration = p_configuration == "Development" ? "Debug" : "Release";
+					OVLOG_ERROR("Builder folder for \"" + p_configuration + "\" not found. Verify you have compiled Engine source code in '" + buildConfiguration + "' configuration.");
 					failed = true;
 				}
 			}
