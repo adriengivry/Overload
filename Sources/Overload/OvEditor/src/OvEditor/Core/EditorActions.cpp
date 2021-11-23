@@ -300,7 +300,8 @@ void OvEditor::Core::EditorActions::BuildAtLocation(const std::string & p_config
 				}
 				else
 				{
-					OVLOG_ERROR("Builder folder for \"" + p_configuration + "\" not found. Verify you have compiled Engine source code in 'Release' configuration.");
+					const std::string buildConfiguration = p_configuration == "Development" ? "Debug" : "Release";
+					OVLOG_ERROR("Builder folder for \"" + p_configuration + "\" not found. Verify you have compiled Engine source code in '" + buildConfiguration + "' configuration.");
 					failed = true;
 				}
 			}
