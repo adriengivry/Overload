@@ -50,6 +50,21 @@ void OvCore::ECS::Components::CTransform::SetLocalScale(OvMaths::FVector3 p_newS
 	m_transform.SetLocalScale(p_newScale);
 }
 
+void OvCore::ECS::Components::CTransform::SetWorldPosition(OvMaths::FVector3 p_newPosition)
+{
+	m_transform.SetWorldPosition(p_newPosition);
+}
+
+void OvCore::ECS::Components::CTransform::SetWorldRotation(OvMaths::FQuaternion p_newRotation)
+{
+	m_transform.SetWorldRotation(p_newRotation);
+}
+
+void OvCore::ECS::Components::CTransform::SetWorldScale(OvMaths::FVector3 p_newScale)
+{
+	m_transform.SetWorldScale(p_newScale);
+}
+
 void OvCore::ECS::Components::CTransform::TranslateLocal(const OvMaths::FVector3 & p_translation)
 {
 	m_transform.TranslateLocal(p_translation);

@@ -99,6 +99,21 @@ void OvMaths::FTransform::SetLocalScale(FVector3 p_newScale)
 	GenerateMatrices(m_localPosition, m_localRotation, p_newScale);
 }
 
+void OvMaths::FTransform::SetWorldPosition(FVector3 p_newPosition)
+{
+	GenerateMatrices(p_newPosition, m_worldRotation, m_worldScale);
+}
+
+void OvMaths::FTransform::SetWorldRotation(FQuaternion p_newRotation)
+{
+	GenerateMatrices(m_worldPosition, p_newRotation, m_worldScale);
+}
+
+void OvMaths::FTransform::SetWorldScale(FVector3 p_newScale)
+{
+	GenerateMatrices(m_worldPosition, m_worldRotation, p_newScale);
+}
+
 void OvMaths::FTransform::TranslateLocal(const FVector3& p_translation)
 {
 	SetLocalPosition(m_localPosition + p_translation);
@@ -109,7 +124,7 @@ void OvMaths::FTransform::RotateLocal(const FQuaternion& p_rotation)
 	SetLocalRotation(m_localRotation * p_rotation);
 }
 
-void OvMaths::FTransform::ScaleLocal(const FVector3 & p_scale)
+void OvMaths::FTransform::ScaleLocal(const FVector3& p_scale)
 {
 	SetLocalScale(FVector3
 	(

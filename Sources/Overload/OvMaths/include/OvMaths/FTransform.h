@@ -88,6 +88,24 @@ namespace OvMaths
 		void SetLocalScale(FVector3 p_newScale);
 
 		/**
+		* Set the position of the transform in world space
+		* @param p_newPosition
+		*/
+		void SetWorldPosition(FVector3 p_newPosition);
+
+		/**
+		* Set the rotation of the transform in world space
+		* @param p_newRotation
+		*/
+		void SetWorldRotation(FQuaternion p_newRotation);
+
+		/**
+		* Set the scale of the transform in world space
+		* @param p_newScale
+		*/
+		void SetWorldScale(FVector3 p_newScale);
+
+		/**
 		* Translate in the local space
 		* @param p_translation
 		*/
