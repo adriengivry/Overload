@@ -72,6 +72,25 @@ namespace OvCore::ECS::Components
 		*/
 		void SetLocalScale(struct OvMaths::FVector3 p_newScale);
 
+
+		/**
+		* Set the position of the transform in world space
+		* @param p_newPosition
+		*/
+		void SetWorldPosition(struct OvMaths::FVector3 p_newPosition);
+
+		/**
+		* Set the rotation of the transform in world space
+		* @param p_newRotation
+		*/
+		void SetWorldRotation(OvMaths::FQuaternion p_newRotation);
+
+		/**
+		* Set the scale of the transform in world space
+		* @param p_newScale
+		*/
+		void SetWorldScale(struct OvMaths::FVector3 p_newScale);
+
 		/**
 		* Translate in the local space
 		* @param p_translation
