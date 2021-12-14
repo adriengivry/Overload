@@ -158,14 +158,14 @@ void OvCore::ECS::Components::CPhysicalObject::OnSerialize(tinyxml2::XMLDocument
 
 void OvCore::ECS::Components::CPhysicalObject::OnDeserialize(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node)
 {
-	SetTrigger(Helpers::Serializer::DeserializeBoolean(p_doc, p_node, "is_trigger"));
-	SetKinematic(Helpers::Serializer::DeserializeBoolean(p_doc, p_node, "is_kinematic"));
-	SetBounciness(Helpers::Serializer::DeserializeFloat(p_doc, p_node, "bounciness"));
-	SetMass(Helpers::Serializer::DeserializeFloat(p_doc, p_node, "mass"));
-	SetFriction(Helpers::Serializer::DeserializeFloat(p_doc, p_node, "friction"));
-	SetLinearFactor(Helpers::Serializer::DeserializeVec3(p_doc, p_node, "linear_factor"));
-	SetAngularFactor(Helpers::Serializer::DeserializeVec3(p_doc, p_node, "angular_factor"));
-	SetCollisionDetectionMode(static_cast<OvPhysics::Entities::PhysicalObject::ECollisionDetectionMode>(Helpers::Serializer::DeserializeInt(p_doc, p_node, "collision_mode")));
+	SetTrigger(Helpers::Serializer::DeserializeBoolean(p_doc, p_node, "is_trigger", IsTrigger()));
+	SetKinematic(Helpers::Serializer::DeserializeBoolean(p_doc, p_node, "is_kinematic", IsKinematic()));
+	SetBounciness(Helpers::Serializer::DeserializeFloat(p_doc, p_node, "bounciness", GetBounciness()));
+	SetMass(Helpers::Serializer::DeserializeFloat(p_doc, p_node, "mass", GetMass()));
+	SetFriction(Helpers::Serializer::DeserializeFloat(p_doc, p_node, "friction", GetFriction()));
+	SetLinearFactor(Helpers::Serializer::DeserializeVec3(p_doc, p_node, "linear_factor", GetLinearFactor()));
+	SetAngularFactor(Helpers::Serializer::DeserializeVec3(p_doc, p_node, "angular_factor", GetAngularFactor()));
+	SetCollisionDetectionMode(static_cast<OvPhysics::Entities::PhysicalObject::ECollisionDetectionMode>(Helpers::Serializer::DeserializeInt(p_doc, p_node, "collision_mode", static_cast<int>(GetCollisionDetectionMode()))));
 }
 
 void OvCore::ECS::Components::CPhysicalObject::OnInspector(OvUI::Internal::WidgetContainer & p_root)

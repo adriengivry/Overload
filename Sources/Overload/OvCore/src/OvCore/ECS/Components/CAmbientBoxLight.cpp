@@ -56,7 +56,7 @@ void OvCore::ECS::Components::CAmbientBoxLight::OnDeserialize(tinyxml2::XMLDocum
 
 	CLight::OnDeserialize(p_doc, p_node);
 
-	OvMaths::FVector3 size = Serializer::DeserializeVec3(p_doc, p_node, "size");
+	OvMaths::FVector3 size = Serializer::DeserializeVec3(p_doc, p_node, "size", GetSize());
 	m_data.constant = size.x;
 	m_data.linear = size.y;
 	m_data.quadratic = size.z;

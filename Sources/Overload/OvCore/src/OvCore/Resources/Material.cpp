@@ -302,27 +302,27 @@ void OvCore::Resources::Material::OnDeserialize(tinyxml2::XMLDocument & p_doc, t
 						switch (uniformInfo->type)
 						{
 						case OvRendering::Resources::UniformType::UNIFORM_BOOL:
-							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeBoolean(p_doc, uniform, "value");
+							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeBoolean(p_doc, uniform, "value", false);
 							break;
 
 						case OvRendering::Resources::UniformType::UNIFORM_INT:
-							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeInt(p_doc, uniform, "value");
+							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeInt(p_doc, uniform, "value", 0);
 							break;
 
 						case OvRendering::Resources::UniformType::UNIFORM_FLOAT:
-							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeFloat(p_doc, uniform, "value");
+							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeFloat(p_doc, uniform, "value", 0.0f);
 							break;
 
 						case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC2:
-							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeVec2(p_doc, uniform, "value");
+							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeVec2(p_doc, uniform, "value", (0.0f,0.0f));
 							break;
 
 						case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC3:
-							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeVec3(p_doc, uniform, "value");
+							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeVec3(p_doc, uniform, "value", (0.0f, 0.0f, 0.0f));
 							break;
 
 						case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC4:
-							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeVec4(p_doc, uniform, "value");
+							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeVec4(p_doc, uniform, "value", (0.0f, 0.0f, 0.0f, 0.0f));
 							break;
 
 						case OvRendering::Resources::UniformType::UNIFORM_SAMPLER_2D:
