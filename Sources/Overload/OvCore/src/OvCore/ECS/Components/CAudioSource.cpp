@@ -152,12 +152,12 @@ void OvCore::ECS::Components::CAudioSource::OnDeserialize(tinyxml2::XMLDocument&
 	using namespace OvCore::Helpers;
 
 	Serializer::DeserializeBoolean(p_doc, p_node, "autoplay", m_autoPlay);
-	SetSpatial(Serializer::DeserializeBoolean(p_doc, p_node, "spatial", m_audioSource.IsSpatial()));
-	SetVolume(Serializer::DeserializeFloat(p_doc, p_node, "volume", m_audioSource.GetVolume()));
-	SetPan(Serializer::DeserializeFloat(p_doc, p_node, "pan", m_audioSource.GetPan()));
-	SetLooped(Serializer::DeserializeBoolean(p_doc, p_node, "looped", m_audioSource.IsLooped()));
-	SetPitch(Serializer::DeserializeFloat(p_doc, p_node, "pitch", m_audioSource.GetPitch()));
-	SetAttenuationThreshold(Serializer::DeserializeFloat(p_doc, p_node, "attenuation_threshold", m_audioSource.GetAttenuationThreshold()));
+	SetSpatial(Serializer::DeserializeBoolean(p_doc, p_node, "spatial"));
+	SetVolume(Serializer::DeserializeFloat(p_doc, p_node, "volume"));
+	SetPan(Serializer::DeserializeFloat(p_doc, p_node, "pan"));
+	SetLooped(Serializer::DeserializeBoolean(p_doc, p_node, "looped"));
+	SetPitch(Serializer::DeserializeFloat(p_doc, p_node, "pitch"));
+	SetAttenuationThreshold(Serializer::DeserializeFloat(p_doc, p_node, "attenuation_threshold"));
 	Serializer::DeserializeSound(p_doc, p_node, "audio_clip", m_sound);
 }
 

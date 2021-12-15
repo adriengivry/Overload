@@ -121,20 +121,20 @@ void OvCore::ECS::Components::CCamera::OnSerialize(tinyxml2::XMLDocument & p_doc
 
 void OvCore::ECS::Components::CCamera::OnDeserialize(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node)
 {
-	m_camera.SetFov(OvCore::Helpers::Serializer::DeserializeFloat(p_doc, p_node, "fov", m_camera.GetFov()));
-	m_camera.SetSize(OvCore::Helpers::Serializer::DeserializeFloat(p_doc, p_node, "size", m_camera.GetSize()));
-	m_camera.SetNear(OvCore::Helpers::Serializer::DeserializeFloat(p_doc, p_node, "near", m_camera.GetNear()));
-	m_camera.SetFar(OvCore::Helpers::Serializer::DeserializeFloat(p_doc, p_node, "far", m_camera.GetFar()));
-	m_camera.SetClearColor(OvCore::Helpers::Serializer::DeserializeVec3(p_doc, p_node, "clear_color", m_camera.GetClearColor()));
-	m_camera.SetFrustumGeometryCulling(OvCore::Helpers::Serializer::DeserializeBoolean(p_doc, p_node, "frustum_geometry_culling", m_camera.HasFrustumGeometryCulling()));
-	m_camera.SetFrustumLightCulling(OvCore::Helpers::Serializer::DeserializeBoolean(p_doc, p_node, "frustum_light_culling", m_camera.HasFrustumLightCulling()));
+	m_camera.SetFov(OvCore::Helpers::Serializer::DeserializeFloat(p_doc, p_node, "fov"));
+	m_camera.SetSize(OvCore::Helpers::Serializer::DeserializeFloat(p_doc, p_node, "size"));
+	m_camera.SetNear(OvCore::Helpers::Serializer::DeserializeFloat(p_doc, p_node, "near"));
+	m_camera.SetFar(OvCore::Helpers::Serializer::DeserializeFloat(p_doc, p_node, "far"));
+	m_camera.SetClearColor(OvCore::Helpers::Serializer::DeserializeVec3(p_doc, p_node, "clear_color"));
+	m_camera.SetFrustumGeometryCulling(OvCore::Helpers::Serializer::DeserializeBoolean(p_doc, p_node, "frustum_geometry_culling"));
+	m_camera.SetFrustumLightCulling(OvCore::Helpers::Serializer::DeserializeBoolean(p_doc, p_node, "frustum_light_culling"));
 
     // We have to make sure the "projection_mode" exists in the serialized component, otherwise we do not want to modify the default setting (Perspective).
     // This is a bad practice to have each components calling setters in `OnDeserialize` even if no XML node hasn't been found for a given property.
     // We should rework this system later. As it is out of the scope of the orthographic projection scope, this will be left as is for now.
     if (p_node->FirstChildElement("projection_mode"))
     {
-        m_camera.SetProjectionMode(static_cast<OvRendering::Settings::EProjectionMode>(OvCore::Helpers::Serializer::DeserializeInt(p_doc, p_node, "projection_mode", static_cast<int>(m_camera.GetProjectionMode()))));
+        m_camera.SetProjectionMode(static_cast<OvRendering::Settings::EProjectionMode>(OvCore::Helpers::Serializer::DeserializeInt(p_doc, p_node, "projection_mode")));
     }
 }
 
