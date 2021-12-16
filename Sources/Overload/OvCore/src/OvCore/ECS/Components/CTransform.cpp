@@ -166,9 +166,9 @@ void OvCore::ECS::Components::CTransform::OnDeserialize(tinyxml2::XMLDocument & 
 {
 	m_transform.GenerateMatrices
 	(
-		OvCore::Helpers::Serializer::DeserializeVec3(p_doc, p_node, "position", m_transform.GetLocalPosition()),
-		OvCore::Helpers::Serializer::DeserializeQuat(p_doc, p_node, "rotation", m_transform.GetLocalRotation()),
-		OvCore::Helpers::Serializer::DeserializeVec3(p_doc, p_node, "scale", m_transform.GetLocalScale())
+		OvCore::Helpers::Serializer::DeserializeVec3(p_doc, p_node, "position"),
+		OvCore::Helpers::Serializer::DeserializeQuat(p_doc, p_node, "rotation"),
+		OvCore::Helpers::Serializer::DeserializeVec3(p_doc, p_node, "scale")
 	);
 }
 

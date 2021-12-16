@@ -49,7 +49,7 @@ void OvCore::ECS::Components::CPhysicalSphere::OnDeserialize(tinyxml2::XMLDocume
 {
 	CPhysicalObject::OnDeserialize(p_doc, p_node);
 
-	SetRadius(Helpers::Serializer::DeserializeFloat(p_doc, p_node, "radius", GetRadius()));
+	SetRadius(Helpers::Serializer::DeserializeFloat(p_doc, p_node, "radius"));
 }
 
 void OvCore::ECS::Components::CPhysicalSphere::OnInspector(OvUI::Internal::WidgetContainer & p_root)

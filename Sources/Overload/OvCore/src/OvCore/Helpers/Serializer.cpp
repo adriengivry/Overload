@@ -174,6 +174,12 @@ void OvCore::Helpers::Serializer::SerializeShader(tinyxml2::XMLDocument & p_doc,
 	SerializeString(p_doc, p_node, p_name.c_str(), p_value ? p_value->path : "?");
 }
 
+void OvCore::Helpers::Serializer::DeserializeBoolean(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, bool & p_out)
+{
+	if (auto element = p_node->FirstChildElement(p_name.c_str()); element)
+		element->QueryBoolText(&p_out);
+}
+
 void OvCore::Helpers::Serializer::SerializeMaterial(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvCore::Resources::Material * p_value)
 {
 	SerializeString(p_doc, p_node, p_name.c_str(), p_value ? p_value->path : "?");
@@ -184,280 +190,129 @@ void OvCore::Helpers::Serializer::SerializeSound(tinyxml2::XMLDocument& p_doc, t
 	SerializeString(p_doc, p_node, p_name.c_str(), p_value ? p_value->path : "?");
 }
 
-void OvCore::Helpers::Serializer::DeserializeBoolean(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, bool & p_out, bool p_default)
-{
-	if (auto element = p_node->FirstChildElement(p_name.c_str()); element)
-	{
-		tinyxml2::XMLError errorTest = element->QueryBoolText(&p_out);
-		if (errorTest != tinyxml2::XML_SUCCESS)
-		{
-			p_out = p_default;
-		}
-	}
-}
-
-void OvCore::Helpers::Serializer::DeserializeString(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, std::string & p_out, std::string p_default)
+void OvCore::Helpers::Serializer::DeserializeString(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, std::string & p_out)
 {
 	if (auto element = p_node->FirstChildElement(p_name.c_str()); element)
 	{
 		const char* result = element->GetText();
-		if (result == nullptr)
-		{
-			p_out = p_default;
-		}
-		else p_out = result ? result : "";
+		p_out = result ? result : "";
 	}
 }
 
-void OvCore::Helpers::Serializer::DeserializeFloat(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, float & p_out, float p_default)
+void OvCore::Helpers::Serializer::DeserializeFloat(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, float & p_out)
 {
 	if (auto element = p_node->FirstChildElement(p_name.c_str()); element)
-	{
-		tinyxml2::XMLError errorTest = element->QueryFloatText(&p_out);
-		if (errorTest != tinyxml2::XML_SUCCESS)
-		{
-			p_out = p_default;
-		}
-	}
+		element->QueryFloatText(&p_out);
 }
 
-void OvCore::Helpers::Serializer::DeserializeDouble(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, double & p_out, double p_default)
+void OvCore::Helpers::Serializer::DeserializeDouble(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, double & p_out)
 {
 	if (auto element = p_node->FirstChildElement(p_name.c_str()); element)
-	{
-		tinyxml2::XMLError errorTest = element->QueryDoubleText(&p_out);
-		if (errorTest != tinyxml2::XML_SUCCESS)
-		{
-			p_out = p_default;
-		}
-	}
+		element->QueryDoubleText(&p_out);
 }
 
-void OvCore::Helpers::Serializer::DeserializeInt(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, int & p_out, int p_default)
+void OvCore::Helpers::Serializer::DeserializeInt(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, int & p_out)
 {
 	if (auto element = p_node->FirstChildElement(p_name.c_str()); element)
-	{
-		tinyxml2::XMLError errorTest = element->QueryIntText(&p_out);
-		if (errorTest != tinyxml2::XML_SUCCESS)
-		{
-			p_out = p_default;
-		}
-	}
+		element->QueryIntText(&p_out);
 }
 
-void OvCore::Helpers::Serializer::DeserializeUint(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, unsigned & p_out, unsigned p_default)
+void OvCore::Helpers::Serializer::DeserializeUint(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, unsigned & p_out)
 {
 	if (auto element = p_node->FirstChildElement(p_name.c_str()); element)
-	{
-		tinyxml2::XMLError errorTest = element->QueryUnsignedText(&p_out);
-		if (errorTest != tinyxml2::XML_SUCCESS)
-		{
-			p_out = p_default;
-		}
-	}
+		element->QueryUnsignedText(&p_out);
 }
 
-void OvCore::Helpers::Serializer::DeserializeInt64(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, int64_t & p_out, int64_t p_default)
+void OvCore::Helpers::Serializer::DeserializeInt64(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, int64_t & p_out)
 {
 	if (auto element = p_node->FirstChildElement(p_name.c_str()); element)
-	{
-		tinyxml2::XMLError errorTest = element->QueryInt64Text(&p_out);
-		if (errorTest != tinyxml2::XML_SUCCESS)
-		{
-			p_out = p_default;
-		}
-	}
+		element->QueryInt64Text(&p_out);
 }
 
-void OvCore::Helpers::Serializer::DeserializeVec2(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvMaths::FVector2 & p_out, OvMaths::FVector2 p_default)
+void OvCore::Helpers::Serializer::DeserializeVec2(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvMaths::FVector2 & p_out)
 {
 	if (auto node = p_node->FirstChildElement(p_name.c_str()); node)
 	{
-		tinyxml2::XMLError errorTest;
-
 		if (auto element = node->FirstChildElement("x"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.x);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.x = p_default.x;
-			}
-		}
+			element->QueryFloatText(&p_out.x);
+
 		if (auto element = node->FirstChildElement("y"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.y);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.y = p_default.y;
-			}
-		}
+			element->QueryFloatText(&p_out.y);
 	}
 }
 
-void OvCore::Helpers::Serializer::DeserializeVec3(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvMaths::FVector3 & p_out, OvMaths::FVector3 p_default)
+void OvCore::Helpers::Serializer::DeserializeVec3(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvMaths::FVector3 & p_out)
 {
 	if (auto node = p_node->FirstChildElement(p_name.c_str()); node)
 	{
-		tinyxml2::XMLError errorTest;
-
 		if (auto element = node->FirstChildElement("x"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.x);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.x = p_default.x;
-			}
-		}
+			element->QueryFloatText(&p_out.x);
+
 		if (auto element = node->FirstChildElement("y"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.y);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.y = p_default.y;
-			}
-		}
+			element->QueryFloatText(&p_out.y);
 
 		if (auto element = node->FirstChildElement("z"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.z);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.z = p_default.z;
-			}
-		}
+			element->QueryFloatText(&p_out.z);
 	}
 }
 
-void OvCore::Helpers::Serializer::DeserializeVec4(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvMaths::FVector4 & p_out, OvMaths::FVector4 p_default)
+void OvCore::Helpers::Serializer::DeserializeVec4(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvMaths::FVector4 & p_out)
 {
 	if (auto node = p_node->FirstChildElement(p_name.c_str()); node)
 	{
-		tinyxml2::XMLError errorTest;
-
 		if (auto element = node->FirstChildElement("x"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.x);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.x = p_default.x;
-			}
-		}
+			element->QueryFloatText(&p_out.x);
+
 		if (auto element = node->FirstChildElement("y"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.y);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.y = p_default.y;
-			}
-		}
+			element->QueryFloatText(&p_out.y);
 
 		if (auto element = node->FirstChildElement("z"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.z);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.z = p_default.z;
-			}
-		}
+			element->QueryFloatText(&p_out.z);
 
 		if (auto element = node->FirstChildElement("w"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.w);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.w = p_default.w;
-			}
-		}
+			element->QueryFloatText(&p_out.w);
 	}
 }
 
-void OvCore::Helpers::Serializer::DeserializeQuat(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvMaths::FQuaternion & p_out, OvMaths::FQuaternion p_default)
+void OvCore::Helpers::Serializer::DeserializeQuat(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvMaths::FQuaternion & p_out)
 {
 	if (auto node = p_node->FirstChildElement(p_name.c_str()); node)
 	{
-		tinyxml2::XMLError errorTest;
-
 		if (auto element = node->FirstChildElement("x"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.x);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				 p_out.x = p_default.x;
-			}
-		}
+			element->QueryFloatText(&p_out.x);
+
 		if (auto element = node->FirstChildElement("y"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.y);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.y = p_default.y;
-			}
-		}
+			element->QueryFloatText(&p_out.y);
 
 		if (auto element = node->FirstChildElement("z"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.z);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.z = p_default.z;
-			}
-		}
+			element->QueryFloatText(&p_out.z);
 
 		if (auto element = node->FirstChildElement("w"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.w);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.w = p_default.w;
-			}
-		}
+			element->QueryFloatText(&p_out.w);
 	}
 }
 
-void OvCore::Helpers::Serializer::DeserializeColor(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvUI::Types::Color & p_out, OvUI::Types::Color p_default)
-{	
-	tinyxml2::XMLError errorTest;
-
+void OvCore::Helpers::Serializer::DeserializeColor(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvUI::Types::Color & p_out)
+{
 	if (auto node = p_node->FirstChildElement(p_name.c_str()); node)
 	{
 		if (auto element = node->FirstChildElement("r"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.r);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.r = p_default.r;
-			}
-		}
+			element->QueryFloatText(&p_out.r);
+
 		if (auto element = node->FirstChildElement("g"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.g);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.g = p_default.g;
-			}
-		}
+			element->QueryFloatText(&p_out.g);
+
 		if (auto element = node->FirstChildElement("b"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.b);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.b = p_default.b;
-			}
-		}
+			element->QueryFloatText(&p_out.b);
+
 		if (auto element = node->FirstChildElement("q"); element)
-		{
-			errorTest = element->QueryFloatText(&p_out.a);
-			if (errorTest != tinyxml2::XML_SUCCESS)
-			{
-				p_out.a = p_default.a;
-			}
-		}
+			element->QueryFloatText(&p_out.a);
 	}
 }
 
 void OvCore::Helpers::Serializer::DeserializeModel(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvRendering::Resources::Model *& p_out)
 {
-	if (std::string path = DeserializeString(p_doc, p_node, p_name.c_str(), ""); path != "?" && path != "")
+	if (std::string path = DeserializeString(p_doc, p_node, p_name.c_str()); path != "?" && path != "")
 		p_out = OvCore::Global::ServiceLocator::Get<OvCore::ResourceManagement::ModelManager>().GetResource(path);
 	else
 		p_out = nullptr;
@@ -465,7 +320,7 @@ void OvCore::Helpers::Serializer::DeserializeModel(tinyxml2::XMLDocument & p_doc
 
 void OvCore::Helpers::Serializer::DeserializeTexture(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvRendering::Resources::Texture *& p_out)
 {
-	if (std::string path = DeserializeString(p_doc, p_node, p_name.c_str(), ""); path != "?" && path != "")
+	if (std::string path = DeserializeString(p_doc, p_node, p_name.c_str()); path != "?" && path != "")
 		p_out = OvCore::Global::ServiceLocator::Get<OvCore::ResourceManagement::TextureManager>().GetResource(path);
 	else
 		p_out = nullptr;
@@ -473,7 +328,7 @@ void OvCore::Helpers::Serializer::DeserializeTexture(tinyxml2::XMLDocument & p_d
 
 void OvCore::Helpers::Serializer::DeserializeShader(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvRendering::Resources::Shader *& p_out)
 {
-	if (std::string path = DeserializeString(p_doc, p_node, p_name.c_str(), ""); path != "?" && path != "")
+	if (std::string path = DeserializeString(p_doc, p_node, p_name.c_str()); path != "?" && path != "")
 		p_out = OvCore::Global::ServiceLocator::Get<OvCore::ResourceManagement::ShaderManager>().GetResource(path);
 	else
 		p_out = nullptr;
@@ -481,7 +336,7 @@ void OvCore::Helpers::Serializer::DeserializeShader(tinyxml2::XMLDocument & p_do
 
 void OvCore::Helpers::Serializer::DeserializeMaterial(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvCore::Resources::Material *& p_out)
 {
-	if (std::string path = DeserializeString(p_doc, p_node, p_name.c_str(), ""); path != "?" && path != "")
+	if (std::string path = DeserializeString(p_doc, p_node, p_name.c_str()); path != "?" && path != "")
 		p_out = OvCore::Global::ServiceLocator::Get<OvCore::ResourceManagement::MaterialManager>().GetResource(path);
 	else
 		p_out = nullptr;
@@ -489,93 +344,93 @@ void OvCore::Helpers::Serializer::DeserializeMaterial(tinyxml2::XMLDocument & p_
 
 void OvCore::Helpers::Serializer::DeserializeSound(tinyxml2::XMLDocument& p_doc, tinyxml2::XMLNode* p_node, const std::string& p_name, OvAudio::Resources::Sound*& p_out)
 {
-	if (std::string path = DeserializeString(p_doc, p_node, p_name.c_str(), ""); path != "?" && path != "")
+	if (std::string path = DeserializeString(p_doc, p_node, p_name.c_str()); path != "?" && path != "")
 		p_out = OvCore::Global::ServiceLocator::Get<OvCore::ResourceManagement::SoundManager>().GetResource(path);
 	else
 		p_out = nullptr;
 }
 
-bool OvCore::Helpers::Serializer::DeserializeBoolean(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, bool p_default)
+bool OvCore::Helpers::Serializer::DeserializeBoolean(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name)
 {
 	bool result;
-	DeserializeBoolean(p_doc, p_node, p_name, result, p_default);
+	DeserializeBoolean(p_doc, p_node, p_name, result);
 	return result;
 }
 
-std::string OvCore::Helpers::Serializer::DeserializeString(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, std::string p_default)
+std::string OvCore::Helpers::Serializer::DeserializeString(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name)
 {
 	std::string result;
-	DeserializeString(p_doc, p_node, p_name, result, p_default);
+	DeserializeString(p_doc, p_node, p_name, result);
 	return result;
 }
 
-float OvCore::Helpers::Serializer::DeserializeFloat(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, float p_default)
+float OvCore::Helpers::Serializer::DeserializeFloat(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name)
 {
 	float result;
-	DeserializeFloat(p_doc, p_node, p_name, result, p_default);
+	DeserializeFloat(p_doc, p_node, p_name, result);
 	return result;
 }
 
-double OvCore::Helpers::Serializer::DeserializeDouble(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, double p_default)
+double OvCore::Helpers::Serializer::DeserializeDouble(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name)
 {
 	double result;
-	DeserializeDouble(p_doc, p_node, p_name, result, p_default);
+	DeserializeDouble(p_doc, p_node, p_name, result);
 	return result;
 }
 
-int OvCore::Helpers::Serializer::DeserializeInt(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, int p_default)
+int OvCore::Helpers::Serializer::DeserializeInt(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name)
 {
 	int result;
-	DeserializeInt(p_doc, p_node, p_name, result, p_default);
+	DeserializeInt(p_doc, p_node, p_name, result);
 	return result;
 }
 
-unsigned OvCore::Helpers::Serializer::DeserializeUint(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, unsigned p_default)
+unsigned OvCore::Helpers::Serializer::DeserializeUint(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name)
 {
 	unsigned result;
-	DeserializeUint(p_doc, p_node, p_name, result, p_default);
+	DeserializeUint(p_doc, p_node, p_name, result);
 	return result;
 }
 
-int64_t OvCore::Helpers::Serializer::DeserializeInt64(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, int64_t p_default)
+int64_t OvCore::Helpers::Serializer::DeserializeInt64(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name)
 {
 	int64_t result;
-	DeserializeInt64(p_doc, p_node, p_name, result, p_default);
+	DeserializeInt64(p_doc, p_node, p_name, result);
 	return result;
 }
 
-OvMaths::FVector2 OvCore::Helpers::Serializer::DeserializeVec2(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvMaths::FVector2 p_default)
+OvMaths::FVector2 OvCore::Helpers::Serializer::DeserializeVec2(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name)
 {
 	OvMaths::FVector2 result;
-	DeserializeVec2(p_doc, p_node, p_name, result, p_default);
+	DeserializeVec2(p_doc, p_node, p_name, result);
 	return result;
 }
 
-OvMaths::FVector3 OvCore::Helpers::Serializer::DeserializeVec3(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvMaths::FVector3 p_default)
+OvMaths::FVector3 OvCore::Helpers::Serializer::DeserializeVec3(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name)
 {
 	OvMaths::FVector3 result;
-	DeserializeVec3(p_doc, p_node, p_name, result, p_default);
+	DeserializeVec3(p_doc, p_node, p_name, result);
 	return result;
 }
 
-OvMaths::FVector4 OvCore::Helpers::Serializer::DeserializeVec4(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvMaths::FVector4 p_default)
+OvMaths::FVector4 OvCore::Helpers::Serializer::DeserializeVec4(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name)
 {
 	OvMaths::FVector4 result;
-	DeserializeVec4(p_doc, p_node, p_name, result, p_default);
+	DeserializeVec4(p_doc, p_node, p_name, result);
 	return result;
 }
 
-OvMaths::FQuaternion OvCore::Helpers::Serializer::DeserializeQuat(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvMaths::FQuaternion p_default)
+OvMaths::FQuaternion OvCore::Helpers::Serializer::DeserializeQuat(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name)
 {
 	OvMaths::FQuaternion result;
-	DeserializeQuat(p_doc, p_node, p_name, result, p_default);
+	DeserializeQuat(p_doc, p_node, p_name, result);
 	return result;
 }
 
-OvUI::Types::Color OvCore::Helpers::Serializer::DeserializeColor(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvUI::Types::Color p_default)
+OvUI::Types::Color OvCore::Helpers::Serializer::DeserializeColor(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name)
 {
 	OvUI::Types::Color result;
-	DeserializeColor(p_doc, p_node, p_name, result, p_default);
+	DeserializeColor(p_doc, p_node, p_name, result);
 	return result;
 }
 
