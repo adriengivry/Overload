@@ -7,13 +7,14 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "OvRendering/Context/Driver.h"
 
 namespace OvRendering::Buffers
 {
 	/**
-	* Wraps OpenGL EBO
+	* IndexBuffer abstraction layer
 	*/
 	class IndexBuffer
 	{
@@ -23,35 +24,31 @@ namespace OvRendering::Buffers
 		* @param p_data
 		* @parma p_elements
 		*/
-		IndexBuffer(unsigned int* p_data, size_t p_elements);
+		static std::unique_ptr<IndexBuffer> Create(unsigned int* p_data, size_t p_elements);
 
 		/**
 		* Create the EBO using a vector
 		* @param p_data
 		*/
-		IndexBuffer(std::vector<uint32_t>& p_data);
-
-		/**
-		* Destructor
-		*/
-		~IndexBuffer();
+		inline static std::unique_ptr<IndexBuffer> Create(std::vector<uint32_t>& p_data)
+		{
+			return Create(p_data.data(), p_data.size());
+		}
 
 		/**
 		* Bind the buffer
 		*/
-		void Bind();
+		virtual void Bind() = 0;
 
 		/**
 		* Unbind the buffer
 		*/
-		void Unbind();
+		virtual void Unbind() = 0;
 
 		/**
 		* Returns the ID of the OpenGL EBO
 		*/
-		uint32_t GetID();
+		virtual uint32_t GetID() = 0;
 
-	private:
-		uint32_t m_bufferID;
 	};
 }

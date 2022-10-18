@@ -8,6 +8,8 @@
 
 #include "OvRendering/Core/Renderer.h"
 
+static OvRendering::Settings::ERederingApi s_activeApi = OvRendering::Settings::ERederingApi::OpenGL; // hardcoded for, as we support opengl only for now
+
 OvRendering::Core::Renderer::Renderer(Context::Driver& p_driver) : m_driver(p_driver), m_state(0)
 {
 }
@@ -323,3 +325,12 @@ const OvRendering::Core::Renderer::FrameInfo& OvRendering::Core::Renderer::GetFr
 {
 	return m_frameInfo;
 }
+
+OvRendering::Settings::ERederingApi OvRendering::Core::Renderer::GetActiveRenderingApi() 
+{
+	return s_activeApi;
+}
+
+
+
+

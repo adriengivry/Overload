@@ -21,6 +21,7 @@
 #include "OvRendering/Settings/ECullingOptions.h"
 #include "OvRendering/Settings/EPixelDataFormat.h"
 #include "OvRendering/Settings/EPixelDataType.h"
+#include "OvRendering/Settings/EActiveRenderingApi.h"
 
 namespace OvRendering::Core
 {
@@ -310,6 +311,11 @@ namespace OvRendering::Core
 		* Returns the FrameInfo structure
 		*/
 		const FrameInfo& GetFrameInfo() const;
+
+		/**
+		* Returns picked rendering api
+		*/
+		static Settings::ERederingApi GetActiveRenderingApi();
 
 	private:
 		Context::Driver&	m_driver;
