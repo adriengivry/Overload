@@ -15,6 +15,24 @@ local function add_inc(...)
     end
 end
 
+
+local run_env_path = {
+    "assimp",
+    "glew",
+    "glfw",
+    "irrklang",
+    "lua"
+}
+
+local function envs()
+    local mt = {}
+    for _,s in ipairs(run_env_path) do
+        local ss =  path.join(os.projectdir(),"Dependencies",s,"bin")
+        table.insert(mt,ss)
+    end
+    return  path.joinenv(mt)
+end
+
 target("OvGame")
     set_languages("c++17")
     set_kind("binary")
@@ -23,3 +41,5 @@ target("OvGame")
     add_deps("OvCore")
 
     add_includedirs(path.join(proj_dir,"include"),{public=true})
+    add_runenvs("PATH", envs())
+    -- set_runargs("arg1","arg2")

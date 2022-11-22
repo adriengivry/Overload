@@ -7,3 +7,5 @@ imgui.ini
 *.aps
 *.vcxproj*
 *.sln
+vsxmake*
+.xmake
