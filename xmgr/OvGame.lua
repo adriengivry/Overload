@@ -25,7 +25,7 @@ local run_env_path = {
 }
 
 local function envs()
-    local mt = {}
+    local mt = {os.getenv("PATH")}
     for _,s in ipairs(run_env_path) do
         local ss =  path.join(os.projectdir(),"Dependencies",s,"bin")
         table.insert(mt,ss)
@@ -41,5 +41,5 @@ target("OvGame")
     add_deps("OvCore")
 
     add_includedirs(path.join(proj_dir,"include"),{public=true})
-    add_runenvs("PATH", envs())
+    set_runenv("PATH", envs())
     -- set_runargs("arg1","arg2")
