@@ -1,0 +1,19 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(Windows) 启动",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/windows/x64/debug/OvEditor.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/windows/x64/debug/",
+            "environment": [{"name": "PATH","value": "${workspaceFolder}/Dependencies/lua/bin;${workspaceFolder}/Dependencies/irrklang/bin;${workspaceFolder}/Dependencies/glfw/bin;${workspaceFolder}/Dependencies/glew/bin;${workspaceFolder}/Dependencies/assimp/bin;${PATH}"}],
+            "console": "externalTerminal"
+        }
+    ]
+}
