@@ -159,8 +159,8 @@ If you want to help us, visit our [CONTRIBUTING.md](https://github.com/adriengiv
 ![Build System](https://user-images.githubusercontent.com/33324216/94352926-5db1c780-0039-11eb-88ef-7ca14a8bc821.PNG)
 ![Project Hub](https://user-images.githubusercontent.com/33324216/94352807-9781ce80-0037-11eb-911b-7e3d0d00ce41.png)
 
-build for xmake 
-xmake 
-xmake run editor
-xmake run game
-set environment see the xmgr/OvTask.lua
+# build for xmake 
+- xmake 
+- xmake run editor
+- xmake run game
+- set environment see the xmgr/OvTask.lua
