@@ -39,6 +39,11 @@ target("OvEditor")
     add_src("**.cpp")
     add_inc("**.h","**.inl")
     add_deps("OvCore")
+    if is_mode("debug") then
+        add_defines("_WINDOWS")
+        -- add_ldflags("/SUBSYSTEM:CONSOLE",{force = true,public=true})
+        add_ldflags("/SUBSYSTEM:WINDOWS",{force = true,public=true})
+    end 
     add_includedirs(path.join(proj_dir,"include"),{public=true})
     set_runenv("PATH", envs())
     -- set_runargs("arg1","arg2")

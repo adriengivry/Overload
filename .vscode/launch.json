@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "preLaunchTask": "OvEditorTask",
             "name": "(Windows) 启动",
             "type": "cppvsdbg",
             "request": "launch",

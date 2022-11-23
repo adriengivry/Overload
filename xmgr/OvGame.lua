@@ -39,7 +39,7 @@ target("OvGame")
     add_src("**.cpp")
     add_inc("**.h","**.inl")
     add_deps("OvCore")
-
+    set_enabled(false)
     add_includedirs(path.join(proj_dir,"include"),{public=true})
     set_runenv("PATH", envs())
     -- set_runargs("arg1","arg2")
