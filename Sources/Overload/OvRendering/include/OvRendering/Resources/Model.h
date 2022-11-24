@@ -6,7 +6,9 @@
 
 #pragma once
 
+#include <vector>
 #include <unordered_map>
+#include <string>
 
 #include "OvRendering/Resources/Mesh.h"
 
