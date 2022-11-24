@@ -7,6 +7,7 @@
 #pragma once
 
 #include <any>
+#include <memory>
 
 #include <bullet/btBulletCollisionCommon.h>
 #include <bullet/btBulletDynamicsCommon.h>

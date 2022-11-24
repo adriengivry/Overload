@@ -6,13 +6,14 @@
 
 #pragma once
 
+#include <memory>
+
 #include <irrklang/ik_ISoundEngine.h>
 #include <irrklang/ik_ISoundStopEventReceiver.h>
 
 #include <OvTools/Eventing/Event.h>
 #include <OvMaths/FVector3.h>
 #include <OvMaths/FTransform.h>
-
 
 #include "OvAudio/Tracking/SoundTracker.h"
 #include "OvAudio/Resources/Sound.h"
