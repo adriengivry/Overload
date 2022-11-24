@@ -17,19 +17,20 @@ project "OvEditor"
 	debugdir "%{wks.location}/../../Build/%{cfg.buildcfg}"
 
 	postbuildcommands {
-		"for /f %%i in ('dir /B /S %{wks.location}..\\..\\Dependencies\\*.dll') do xcopy /Q /Y %%i %{wks.location}..\\..\\Bin\\%{cfg.buildcfg}\\%{prj.name}",
+		"for /f \"delims=|\" %%i in ('dir /B /S \"%{wks.location}..\\..\\Dependencies\\*.dll\"') do xcopy /Q /Y \"%%i\" \"%{wks.location}..\\..\\Bin\\%{cfg.buildcfg}\\%{prj.name}\"",
 
-		"xcopy %{wks.location}\\..\\..\\Resources\\Engine\\* %{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\Data\\Engine /y /i /r /e /q",
-		"xcopy %{wks.location}\\..\\..\\Resources\\Editor\\* %{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\Data\\Editor /y /i /r /e /q",
-		"xcopy %{prj.location}\\Layout.ini %{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\Config\\ /y /i",
+		"xcopy \"%{wks.location}\\..\\..\\Resources\\Engine\\*\" \"%{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\Data\\Engine\" /y /i /r /e /q",
+		"xcopy \"%{wks.location}\\..\\..\\Resources\\Editor\\*\" \"%{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\Data\\Editor\" /y /i /r /e /q",
+		"xcopy \"%{prj.location}\\Layout.ini\" \"%{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\Config\\\" /y /i",
 
-		"xcopy /Y /I /Q /D %{wks.location}\\..\\..\\Bin\\Debug\\%{prj.name}\\*.exe %{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\",
-		"xcopy /Y /I /Q /D %{wks.location}\\..\\..\\Bin\\Debug\\%{prj.name}\\*.dll %{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\",
-		"xcopy /Y /I /Q /D %{wks.location}\\..\\..\\Bin\\Release\\%{prj.name}\\*.exe %{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\",
-		"xcopy /Y /I /Q /D %{wks.location}\\..\\..\\Bin\\Release\\%{prj.name}\\*.dll %{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\",
+		"xcopy /Y /I /Q /D \"%{wks.location}\\..\\..\\Bin\\Debug\\%{prj.name}\\*.exe\" \"%{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\\"",
+		"xcopy /Y /I /Q /D \"%{wks.location}\\..\\..\\Bin\\Debug\\%{prj.name}\\*.dll\" \"%{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\\"",
+		"xcopy /Y /I /Q /D \"%{wks.location}\\..\\..\\Bin\\Release\\%{prj.name}\\*.exe\" \"%{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\\"",
+		"xcopy /Y /I /Q /D \"%{wks.location}\\..\\..\\Bin\\Release\\%{prj.name}\\*.dll\" \"%{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\\"",
 
-		"xcopy %{wks.location}..\\..\\Bin\\Debug\\OvGame %{wks.location}..\\..\\Build\\%{cfg.buildcfg}\\Builder\\Development /y /i /c",
-		"xcopy %{wks.location}..\\..\\Bin\\Release\\OvGame %{wks.location}..\\..\\Build\\%{cfg.buildcfg}\\Builder\\Shipping /y /i /c",
+		"xcopy \"%{wks.location}..\\..\\Bin\\Debug\\OvGame\\*.exe\" \"%{wks.location}..\\..\\Build\\%{cfg.buildcfg}\\Builder\\Development\" /y /i /c",
+		"xcopy \"%{wks.location}..\\..\\Bin\\Release\\OvGame\\*.exe\" \"%{wks.location}..\\..\\Build\\%{cfg.buildcfg}\\Builder\\Shipping\" /y /i /c",
+
 		"EXIT /B 0"
 	}
 
