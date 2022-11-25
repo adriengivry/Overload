@@ -102,7 +102,7 @@ Again, a non-exhaustive list of Overload in-coming features:
 
 # 4. Details
 ## 4.1. Software
-- Visual Studio 2019
+- Visual Studio 2022 (previous versions should also be supported)
 
 ## 4.2. Dependencies
 - OpenGL with GLEW (Graphics API)
@@ -119,10 +119,11 @@ Overload requires:
 - RAM: 100MB
 - OS: Windows 7
 - GPU: Graphics card supporting OpenGL 4.3
+- CPU: x64
 
 ## 4.4. Compiling sources
-We made this project using Visual Studio 2019. If you want to compile Overload, you should consider using this IDE.<br>
-Overload only targets Windows x64.
+Overload is using Premake5 to generate project files. To generate these project files, execute `GenerateProjects.bat` located at the root of the repository. By default, `GenerateProjects.bat` will generate project files for Visual Studio 2022. If you want to use another version of Visual Studio (vs2019, vs2017...) or another IDE (c.f. https://github.com/premake/premake-core/), you can execute `GenerateProjects.bat` from the command line with an argument. (ex: `.\GeneratedProjects.bat vs2019`)<br><br>
+*Overload only targets Windows x64.*
 
 ## 4.5. Licence
 Overload is licenced under an MIT licence.
