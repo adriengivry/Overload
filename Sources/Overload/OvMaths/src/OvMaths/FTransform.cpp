@@ -114,7 +114,7 @@ void OvMaths::FTransform::SetLocalRotation(FQuaternion p_newRotation)
 
 void OvMaths::FTransform::SetLocalScale(FVector3 p_newScale)
 {
-	GenerateMatricesWorld(m_localPosition, m_localRotation, p_newScale);
+	GenerateMatricesLocal(m_localPosition, m_localRotation, p_newScale);
 }
 
 void OvMaths::FTransform::SetWorldPosition(FVector3 p_newPosition)
