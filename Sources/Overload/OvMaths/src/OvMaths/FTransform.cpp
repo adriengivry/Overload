@@ -96,7 +96,7 @@ void OvMaths::FTransform::UpdateWorldMatrix()
 
 void OvMaths::FTransform::UpdateLocalMatrix()
 {
-	m_localMatrix = HasParent() ? m_worldMatrix * FMatrix4::Inverse(m_parent->m_worldMatrix) : m_worldMatrix;
+	m_localMatrix = HasParent() ? FMatrix4::Inverse(m_parent->m_worldMatrix) * m_worldMatrix : m_worldMatrix;
 	PreDecomposeLocalMatrix();
 
 	Notifier.NotifyChildren(Internal::TransformNotifier::ENotification::TRANSFORM_CHANGED);
