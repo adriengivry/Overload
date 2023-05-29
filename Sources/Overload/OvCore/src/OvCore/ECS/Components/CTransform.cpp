@@ -12,7 +12,7 @@
 OvCore::ECS::Components::CTransform::CTransform(ECS::Actor& p_owner, OvMaths::FVector3 p_localPosition, OvMaths::FQuaternion p_localRotation, OvMaths::FVector3 p_localScale) :
 AComponent(p_owner)
 {
-	m_transform.GenerateMatrices(p_localPosition, p_localRotation, p_localScale);
+	m_transform.GenerateMatricesLocal(p_localPosition, p_localRotation, p_localScale);
 }
 
 std::string OvCore::ECS::Components::CTransform::GetName()
@@ -164,7 +164,7 @@ void OvCore::ECS::Components::CTransform::OnSerialize(tinyxml2::XMLDocument& p_d
 
 void OvCore::ECS::Components::CTransform::OnDeserialize(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node)
 {
-	m_transform.GenerateMatrices
+	m_transform.GenerateMatricesLocal
 	(
 		OvCore::Helpers::Serializer::DeserializeVec3(p_doc, p_node, "position"),
 		OvCore::Helpers::Serializer::DeserializeQuat(p_doc, p_node, "rotation"),

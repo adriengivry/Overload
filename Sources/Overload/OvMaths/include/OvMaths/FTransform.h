@@ -57,17 +57,30 @@ namespace OvMaths
 		bool HasParent() const;
 
 		/**
-		* Initialize transform with raw data
+		* Initialize transform with raw data from world info
 		* @param p_position
 		* @param p_rotation
 		* @param p_scale
 		*/
-		void GenerateMatrices(FVector3 p_position, FQuaternion p_rotation, FVector3 p_scale);
+		void GenerateMatricesWorld(FVector3 p_position, FQuaternion p_rotation, FVector3 p_scale);
+
+		/**
+		* Initialize transform with raw data from local info
+		* @param p_position
+		* @param p_rotation
+		* @param p_scale
+		*/
+		void GenerateMatricesLocal(FVector3 p_position, FQuaternion p_rotation, FVector3 p_scale);
 
 		/**
 		* Re-update world matrix to use parent transformations
 		*/
 		void UpdateWorldMatrix();
+
+		/**
+		* Re-update local matrix to use parent transformations
+		*/
+		void UpdateLocalMatrix();
 
 		/**
 		* Set the position of the transform in the local space
