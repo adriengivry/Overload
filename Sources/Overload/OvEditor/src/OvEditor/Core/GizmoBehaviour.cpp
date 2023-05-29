@@ -111,7 +111,7 @@ OvMaths::FVector2 OvEditor::Core::GizmoBehaviour::GetScreenDirection(const OvMat
 void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
 {
 	auto unitsPerPixel = 0.001f * m_distanceToActor;
-	auto originPosition = m_originalTransform.GetLocalPosition();
+	auto originPosition = m_originalTransform.GetWorldPosition();
 
 	auto screenDirection = GetScreenDirection(p_viewMatrix, p_projectionMatrix, p_viewSize);
 
@@ -123,7 +123,7 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 		translationCoefficient = SnapValue(translationCoefficient, OvEditor::Settings::EditorSettings::TranslationSnapUnit);
 	}
 
-	m_target->transform.SetLocalPosition(originPosition + GetRealDirection() * translationCoefficient);
+	m_target->transform.SetWorldPosition(originPosition + GetRealDirection() * translationCoefficient);
 }
 
 void OvEditor::Core::GizmoBehaviour::ApplyRotation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
@@ -143,13 +143,13 @@ void OvEditor::Core::GizmoBehaviour::ApplyRotation(const OvMaths::FMatrix4& p_vi
 	}
 
 	auto rotationToApply = OvMaths::FQuaternion(OvMaths::FVector3(GetFakeDirection() * rotationCoefficient));
-	m_target->transform.SetLocalRotation(originRotation * rotationToApply);
+	m_target->transform.SetWorldRotation(originRotation * rotationToApply);
 }
 
 void OvEditor::Core::GizmoBehaviour::ApplyScale(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
 {
 	auto unitsPerPixel = 0.01f;
-	auto originScale = m_originalTransform.GetLocalScale();
+	auto originScale = m_originalTransform.GetWorldScale();
 
 	auto screenDirection = GetScreenDirection(p_viewMatrix, p_projectionMatrix, p_viewSize);
 
@@ -168,7 +168,7 @@ void OvEditor::Core::GizmoBehaviour::ApplyScale(const OvMaths::FMatrix4& p_viewM
 	newScale.y = std::max(newScale.y, 0.0001f);
 	newScale.z = std::max(newScale.z, 0.0001f);
 
-	m_target->transform.SetLocalScale(newScale);
+	m_target->transform.SetWorldScale(newScale);
 }
 
 void OvEditor::Core::GizmoBehaviour::ApplyOperation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize)
