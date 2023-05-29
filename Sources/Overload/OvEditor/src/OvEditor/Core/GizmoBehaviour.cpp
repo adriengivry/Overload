@@ -123,13 +123,13 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 		translationCoefficient = SnapValue(translationCoefficient, OvEditor::Settings::EditorSettings::TranslationSnapUnit);
 	}
 
-	m_target->transform.SetWorldPosition(originPosition + GetRealDirection() * translationCoefficient);
+	m_target->transform.SetWorldPosition(originPosition + GetRealDirection(true) * translationCoefficient);
 }
 
 void OvEditor::Core::GizmoBehaviour::ApplyRotation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
 {
 	auto unitsPerPixel = 0.2f;
-	auto originRotation = m_originalTransform.GetLocalRotation();
+	auto originRotation = m_originalTransform.GetWorldRotation();
 
 	auto screenDirection = GetScreenDirection(p_viewMatrix, p_projectionMatrix, p_viewSize);
 	screenDirection = OvMaths::FVector2(-screenDirection.y, screenDirection.x);
