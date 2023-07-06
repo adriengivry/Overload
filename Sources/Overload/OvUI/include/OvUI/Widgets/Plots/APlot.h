@@ -30,7 +30,6 @@ namespace OvUI::Widgets::Plots
 		* @param p_size
 		* @param p_overlay
 		* @param p_label
-		* @param p_forceHover
 		*/
 		APlot
 		(
@@ -39,8 +38,7 @@ namespace OvUI::Widgets::Plots
 			float p_maxScale = std::numeric_limits<float>::max(),
 			const OvMaths::FVector2& p_size = { 0.0f, 0.0f },
 			const std::string& p_overlay = "",
-			const std::string& p_label = "",
-			int p_forceHover = -1
+			const std::string& p_label = ""
 		);
 
 	protected:
@@ -53,6 +51,5 @@ namespace OvUI::Widgets::Plots
 		OvMaths::FVector2 size;
 		std::string overlay;
 		std::string label;
-		int forceHover;
 	};
 }

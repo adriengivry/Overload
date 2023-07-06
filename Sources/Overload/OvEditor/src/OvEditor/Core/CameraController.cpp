@@ -111,7 +111,7 @@ void OvEditor::Core::CameraController::HandleInputs(float p_deltaTime)
 		{
 			if (EDITOR_EXEC(IsAnyActorSelected()))
 			{
-				auto targetPos = EDITOR_EXEC(GetSelectedActor()).transform.GetWorldPosition();
+				const auto& targetPos = EDITOR_EXEC(GetSelectedActor()).transform.GetWorldPosition();
 
 				float dist = GetActorFocusDist(EDITOR_EXEC(GetSelectedActor()));
 
@@ -120,7 +120,7 @@ void OvEditor::Core::CameraController::HandleInputs(float p_deltaTime)
 					MoveToTarget(EDITOR_EXEC(GetSelectedActor()));
 				}
 
-				auto focusObjectFromAngle = [this, &targetPos, &dist]( const OvMaths::FVector3& offset)
+				auto focusObjectFromAngle = [this, &targetPos, &dist](const OvMaths::FVector3& offset)
 				{
 					auto camPos = targetPos + offset * dist;
 					auto direction = OvMaths::FVector3::Normalize(targetPos - camPos);

@@ -6,4 +6,5 @@ Build/
 imgui.ini
 *.aps
 *.vcxproj*
+*.vcproj*
 *.sln

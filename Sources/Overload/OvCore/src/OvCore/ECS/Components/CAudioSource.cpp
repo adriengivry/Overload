@@ -201,7 +201,7 @@ void OvCore::ECS::Components::CAudioSource::OnInspector(OvUI::Internal::WidgetCo
 
 			if (abs(graphX - distanceToListener) <= 0.25f)
 			{
-				graph.forceHover = static_cast<int>(graphX * 4.0f);
+				//graph.forceHover = static_cast<int>(graphX * 4.0f);
 				graph.overlay = std::to_string(static_cast<int>(graphY * 100.0f)) + "%";
 			}
 
