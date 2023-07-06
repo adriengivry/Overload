@@ -10,6 +10,7 @@
 #include <GL/glew.h>
 
 #include <OvDebug/Logger.h>
+#include <OvTools/Utils/PathParser.h>
 
 #include "OvRendering/Resources/Loaders/ShaderLoader.h"
 
@@ -82,9 +83,36 @@ bool OvRendering::Resources::Loaders::ShaderLoader::Destroy(Shader*& p_shader)
 	return false;
 }
 
+const std::string INCLUDE_PREFIX = "#include ";
+
+void ReadFileAndHandleIncludes(std::stringstream& output, std::string p_filepath)
+{
+    std::ifstream stream(p_filepath);
+
+    std::string line;
+
+    while (std::getline(stream, line))
+    {
+        size_t lineSize = line.size();
+        size_t includePrefixSize = INCLUDE_PREFIX.size();
+
+        if (lineSize > includePrefixSize && line.find(INCLUDE_PREFIX) != std::string::npos)
+        {
+            std::string toIncludeFilePath = line.substr(includePrefixSize + 1, lineSize - includePrefixSize - 2);
+            std::string fullPath = OvTools::Utils::PathParser::GetContainingFolder(p_filepath) + toIncludeFilePath;
+            ReadFileAndHandleIncludes(output, fullPath);
+        }
+        else
+        {
+            output << line << std::endl;
+        }
+    }
+}
+
 std::pair<std::string, std::string> OvRendering::Resources::Loaders::ShaderLoader::ParseShader(const std::string& p_filePath)
 {
-	std::ifstream stream(p_filePath);
+    std::stringstream source;
+    ReadFileAndHandleIncludes(source, p_filePath);
 
 	enum class ShaderType { NONE = -1, VERTEX = 0, FRAGMENT = 1 };
 
@@ -94,7 +122,7 @@ std::pair<std::string, std::string> OvRendering::Resources::Loaders::ShaderLoade
 
 	ShaderType type = ShaderType::NONE;
 
-	while (std::getline(stream, line))
+	while (std::getline(source, line))
 	{
 		if (line.find("#shader") != std::string::npos)
 		{
