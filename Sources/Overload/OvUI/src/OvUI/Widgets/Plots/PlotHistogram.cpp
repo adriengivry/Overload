@@ -5,7 +5,6 @@
 */
 
 #include "OvUI/Widgets/Plots/PlotHistogram.h"
-#include "OvUI/Internal/Converter.h"
 
 OvUI::Widgets::Plots::PlotHistogram::PlotHistogram
 (
@@ -21,5 +20,5 @@ OvUI::Widgets::Plots::PlotHistogram::PlotHistogram
 
 void OvUI::Widgets::Plots::PlotHistogram::_Draw_Impl()
 {
-	ImGui::PlotHistogram((label + m_widgetID).c_str(), data.data(), static_cast<int>(data.size()), 0, overlay.c_str(), minScale, maxScale, Internal::Converter::ToImVec2(size), sizeof(float));
+	ImGui::PlotHistogram((label + m_widgetID).c_str(), data.data(), static_cast<int>(data.size()), 0, overlay.c_str(), minScale, maxScale, size, sizeof(float));
 }

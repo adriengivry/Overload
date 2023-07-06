@@ -6,11 +6,12 @@
 
 #pragma once
 
+#include <OvMaths/FVector4.h>
 
 namespace OvUI::Types
 {
 	/**
-	* Data structur that contains color information in a 0.f to 1.f float format
+	* @brief Data structure that contains color information in a 0.f to 1.f float format
 	*/
 	struct Color
 	{
@@ -32,15 +33,48 @@ namespace OvUI::Types
 		static const Color Magenta;
 
 		/**
-		* Compares two colors, returns true if they are identical
-		* @param p_other
+		* @brief Returns a representation of the color as a OvMaths::FVector4 having (r,g,b,a) order
+		* @returns OvMaths::FVector4 representing the color
 		*/
-		bool operator==(const Color& p_other);
+		OvMaths::FVector4 ToVector4();
 
 		/**
-		* Compares two colors, returns true if they are different
+		* @brief Compares two colors, returns true if they are identical
 		* @param p_other
+		* @returns true if equal, false otherwise
 		*/
-		bool operator!=(const Color& p_other);
+		bool operator==(const Color& p_other) const;
+
+		/**
+		* @brief Compares a color with a OvMaths::FVector4 representing a color, returns true if they are identical
+		* @param p_other
+		* @returns true if equal, false otherwise
+		*/
+		bool operator==(const OvMaths::FVector4& p_other) const;
+
+		/**
+		* @brief Compares two colors, returns true if they are different
+		* @param p_other
+		* @returns true if not equal, false otherwise
+		*/
+		bool operator!=(const Color& p_other) const;
+
+		/**
+		* @brief Set a color from a OvMaths::FVector4 representing a color.
+		* @param p_other
+		* @returns The new color represented by p_other, the same color otherwise.
+		*/
+		Color& operator=(const OvMaths::FVector4& p_other)
+		{
+			if (*this == p_other)
+				return *this;
+
+			r = p_other.x;
+			g = p_other.y;
+			b = p_other.z;
+			a = p_other.w;
+
+			return *this;
+		}
 	};
 }

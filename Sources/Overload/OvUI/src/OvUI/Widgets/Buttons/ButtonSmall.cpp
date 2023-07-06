@@ -4,8 +4,6 @@
 * @licence: MIT
 */
 
-#include "OvUI/Internal/Converter.h"
-
 #include "OvUI/Widgets/Buttons/ButtonSmall.h"
 
 OvUI::Widgets::Buttons::ButtonSmall::ButtonSmall(const std::string& p_label) :
@@ -13,10 +11,10 @@ OvUI::Widgets::Buttons::ButtonSmall::ButtonSmall(const std::string& p_label) :
 {
 	auto& style = ImGui::GetStyle();
 
-	idleBackgroundColor = Internal::Converter::ToColor(style.Colors[ImGuiCol_Button]);
-	hoveredBackgroundColor = Internal::Converter::ToColor(style.Colors[ImGuiCol_ButtonHovered]);
-	clickedBackgroundColor = Internal::Converter::ToColor(style.Colors[ImGuiCol_ButtonActive]);
-	textColor = Internal::Converter::ToColor(style.Colors[ImGuiCol_Text]);
+	idleBackgroundColor		= style.Colors[ImGuiCol_Button];
+	hoveredBackgroundColor	= style.Colors[ImGuiCol_ButtonHovered];
+	clickedBackgroundColor	= style.Colors[ImGuiCol_ButtonActive];
+	textColor				= style.Colors[ImGuiCol_Text];
 }
 
 void OvUI::Widgets::Buttons::ButtonSmall::_Draw_Impl()
@@ -28,10 +26,10 @@ void OvUI::Widgets::Buttons::ButtonSmall::_Draw_Impl()
 	auto defaultClickedColor	= style.Colors[ImGuiCol_ButtonActive];
 	auto defaultTextColor		= style.Colors[ImGuiCol_Text];
 
-	style.Colors[ImGuiCol_Button]			= OvUI::Internal::Converter::ToImVec4(idleBackgroundColor);
-	style.Colors[ImGuiCol_ButtonHovered]	= OvUI::Internal::Converter::ToImVec4(hoveredBackgroundColor);
-	style.Colors[ImGuiCol_ButtonActive]		= OvUI::Internal::Converter::ToImVec4(clickedBackgroundColor);
-	style.Colors[ImGuiCol_Text]				= OvUI::Internal::Converter::ToImVec4(textColor);
+	style.Colors[ImGuiCol_Button]			= idleBackgroundColor.ToVector4();
+	style.Colors[ImGuiCol_ButtonHovered]	= hoveredBackgroundColor.ToVector4();
+	style.Colors[ImGuiCol_ButtonActive]		= clickedBackgroundColor.ToVector4();
+	style.Colors[ImGuiCol_Text]				= textColor.ToVector4();
 
 	if (ImGui::SmallButton((label + m_widgetID).c_str()))
 		ClickedEvent.Invoke();

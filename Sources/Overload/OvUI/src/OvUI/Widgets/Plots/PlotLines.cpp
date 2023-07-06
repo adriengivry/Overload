@@ -5,7 +5,6 @@
 */
 
 #include "OvUI/Widgets/Plots/PlotLines.h"
-#include "OvUI/Internal/Converter.h"
 
 OvUI::Widgets::Plots::PlotLines::PlotLines
 (
@@ -21,5 +20,5 @@ OvUI::Widgets::Plots::PlotLines::PlotLines
 
 void OvUI::Widgets::Plots::PlotLines::_Draw_Impl()
 {
-	ImGui::PlotLines((label + m_widgetID).c_str(), data.data(), static_cast<int>(data.size()), 0, overlay.c_str(), minScale, maxScale, Internal::Converter::ToImVec2(size), sizeof(float));
+	ImGui::PlotLines((label + m_widgetID).c_str(), data.data(), static_cast<int>(data.size()), 0, overlay.c_str(), minScale, maxScale, size, sizeof(float));
 }

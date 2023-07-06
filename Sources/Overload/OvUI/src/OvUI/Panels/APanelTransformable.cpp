@@ -5,7 +5,6 @@
 */
 
 #include "OvUI/Panels/APanelTransformable.h"
-#include "OvUI/Internal/Converter.h"
 
 OvUI::Panels::APanelTransformable::APanelTransformable
 (
@@ -67,14 +66,14 @@ void OvUI::Panels::APanelTransformable::UpdatePosition()
 	if (m_defaultPosition.x != -1.f && m_defaultPosition.y != 1.f)
 	{
 		OvMaths::FVector2 offsettedDefaultPos = m_defaultPosition + CalculatePositionAlignmentOffset(true);
-		ImGui::SetWindowPos(Internal::Converter::ToImVec2(offsettedDefaultPos), m_ignoreConfigFile ? ImGuiCond_Once : ImGuiCond_FirstUseEver);
+		ImGui::SetWindowPos(offsettedDefaultPos, m_ignoreConfigFile ? ImGuiCond_Once : ImGuiCond_FirstUseEver);
 	}
 
 	if (m_positionChanged || m_alignmentChanged)
 	{
 		OvMaths::FVector2 offset = CalculatePositionAlignmentOffset(false);
 		OvMaths::FVector2 offsettedPos(m_position.x + offset.x, m_position.y + offset.y);
-		ImGui::SetWindowPos(Internal::Converter::ToImVec2(offsettedPos), ImGuiCond_Always);
+		ImGui::SetWindowPos(offsettedPos, ImGuiCond_Always);
 		m_positionChanged = false;
 		m_alignmentChanged = false;
 	}
@@ -88,19 +87,19 @@ void OvUI::Panels::APanelTransformable::UpdateSize()
 	*/
 	if (m_sizeChanged)
 	{
-		ImGui::SetWindowSize(Internal::Converter::ToImVec2(m_size), ImGuiCond_Always);
+		ImGui::SetWindowSize(m_size, ImGuiCond_Always);
 		m_sizeChanged = false;
 	}
 }
 
 void OvUI::Panels::APanelTransformable::CopyImGuiPosition()
 {
-	m_position = Internal::Converter::ToFVector2(ImGui::GetWindowPos());
+	m_position = ImGui::GetWindowPos();
 }
 
 void OvUI::Panels::APanelTransformable::CopyImGuiSize()
 {
-	m_size = Internal::Converter::ToFVector2(ImGui::GetWindowSize());
+	m_size = ImGui::GetWindowSize();
 }
 
 void OvUI::Panels::APanelTransformable::Update()

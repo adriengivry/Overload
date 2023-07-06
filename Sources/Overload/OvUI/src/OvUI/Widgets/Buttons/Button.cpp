@@ -5,18 +5,16 @@
 */
 
 #include "OvUI/Widgets/Buttons/Button.h"
-#include "OvUI/Internal/Converter.h"
-#include "OvUI/ImGui/imgui_internal.h"
 
 OvUI::Widgets::Buttons::Button::Button(const std::string& p_label, const OvMaths::FVector2& p_size, bool p_disabled) :
 	label(p_label), size(p_size), disabled(p_disabled)
 {
 	auto& style = ImGui::GetStyle();
 
-	idleBackgroundColor		= Internal::Converter::ToColor(style.Colors[ImGuiCol_Button]);
-	hoveredBackgroundColor	= Internal::Converter::ToColor(style.Colors[ImGuiCol_ButtonHovered]);
-	clickedBackgroundColor	= Internal::Converter::ToColor(style.Colors[ImGuiCol_ButtonActive]);
-	textColor				= Internal::Converter::ToColor(style.Colors[ImGuiCol_Text]);
+	idleBackgroundColor		= style.Colors[ImGuiCol_Button];
+	hoveredBackgroundColor	= style.Colors[ImGuiCol_ButtonHovered];
+	clickedBackgroundColor	= style.Colors[ImGuiCol_ButtonActive];
+	textColor				= style.Colors[ImGuiCol_Text];
 }
 
 void OvUI::Widgets::Buttons::Button::_Draw_Impl()
@@ -28,15 +26,15 @@ void OvUI::Widgets::Buttons::Button::_Draw_Impl()
 	auto defaultClickedColor	= style.Colors[ImGuiCol_ButtonActive];
 	auto defaultTextColor		= style.Colors[ImGuiCol_Text];
 
-	style.Colors[ImGuiCol_Button]			= OvUI::Internal::Converter::ToImVec4(idleBackgroundColor);
-	style.Colors[ImGuiCol_ButtonHovered]	= OvUI::Internal::Converter::ToImVec4(hoveredBackgroundColor);
-	style.Colors[ImGuiCol_ButtonActive]		= OvUI::Internal::Converter::ToImVec4(clickedBackgroundColor);
-	style.Colors[ImGuiCol_Text]				= OvUI::Internal::Converter::ToImVec4(textColor);
+	style.Colors[ImGuiCol_Button]			= idleBackgroundColor.ToVector4();
+	style.Colors[ImGuiCol_ButtonHovered]	= hoveredBackgroundColor.ToVector4();
+	style.Colors[ImGuiCol_ButtonActive]		= clickedBackgroundColor.ToVector4();
+	style.Colors[ImGuiCol_Text]				= textColor.ToVector4();
 
 	if (disabled)
 		ImGui::BeginDisabled();
 
-	if (ImGui::ButtonEx((label + m_widgetID).c_str(), Internal::Converter::ToImVec2(size)))
+	if (ImGui::Button((label + m_widgetID).c_str(), size))
 		ClickedEvent.Invoke();
 
 	if (disabled)

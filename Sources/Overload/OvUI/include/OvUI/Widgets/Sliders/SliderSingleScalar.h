@@ -11,7 +11,6 @@
 
 #include "OvUI/Widgets/DataWidget.h"
 #include "OvUI/Widgets/Sliders/ESliderOrientation.h"
-#include "OvUI/Internal/Converter.h"
 
 namespace OvUI::Widgets::Sliders
 {
@@ -64,7 +63,7 @@ namespace OvUI::Widgets::Sliders
 				valueChanged = ImGui::SliderScalar((label + this->m_widgetID).c_str(), m_dataType, &value, &min, &max, format.c_str());
 				break;
 			case ESliderOrientation::VERTICAL:
-				valueChanged = ImGui::VSliderScalar((label + this->m_widgetID).c_str(), Internal::Converter::ToImVec2(verticalModeSize), m_dataType, &value, &min, &max, format.c_str());
+				valueChanged = ImGui::VSliderScalar((label + this->m_widgetID).c_str(), verticalModeSize, m_dataType, &value, &min, &max, format.c_str());
 				break;
 			}
 

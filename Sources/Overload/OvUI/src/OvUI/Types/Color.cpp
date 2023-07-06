@@ -20,12 +20,22 @@ OvUI::Types::Color::Color(float p_r, float p_g, float p_b, float p_a) : r(p_r), 
 {
 }
 
-bool OvUI::Types::Color::operator==(const Color & p_other)
+OvMaths::FVector4 OvUI::Types::Color::ToVector4()
+{
+	return OvMaths::FVector4(r, g, b, a);
+}
+
+bool OvUI::Types::Color::operator==(const Color & p_other) const
 {
 	return this->r == p_other.r && this->g == p_other.g && this->b == p_other.b && this->a == p_other.a;
 }
 
-bool OvUI::Types::Color::operator!=(const Color & p_other)
+bool OvUI::Types::Color::operator==(const OvMaths::FVector4& p_other) const
+{
+	return this->r == p_other.x && this->g == p_other.y && this->b == p_other.z && this->a == p_other.w;
+}
+
+bool OvUI::Types::Color::operator!=(const Color & p_other) const
 {
 	return !operator==(p_other);
 }
