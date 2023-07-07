@@ -123,8 +123,8 @@ namespace OvUI::Panels
 
 	private:
 		bool m_opened;
-		bool m_hovered;
-		bool m_focused;
+		bool m_hovered = false;
+		bool m_focused = false;
         bool m_mustScrollToBottom = false;
         bool m_mustScrollToTop = false;
         bool m_scrolledToBottom = false;
