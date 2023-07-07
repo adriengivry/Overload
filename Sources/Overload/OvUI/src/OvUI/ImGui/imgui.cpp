@@ -1295,6 +1295,7 @@ ImGuiIO::ImGuiIO()
     MouseDragThreshold = 6.0f;
     KeyRepeatDelay = 0.275f;
     KeyRepeatRate = 0.050f;
+    DisableMouseUpdate = false;
 
     // Platform Functions
     // Note: Initialize() will setup default clipboard/ime handlers.
