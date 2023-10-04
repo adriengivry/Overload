@@ -282,6 +282,9 @@ void OvEditor::Panels::Hierarchy::AddActorByInstance(OvCore::ECS::Actor & p_acto
 	textSelectable.AddPlugin<OvUI::Plugins::DDSource<std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*>>>("Actor", "Attach to...", std::make_pair(&p_actor, &textSelectable));
 	textSelectable.AddPlugin<OvUI::Plugins::DDTarget<std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*>>>("Actor").DataReceivedEvent += [&p_actor, &textSelectable](std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*> p_element)
 	{
+		if (p_element.second == textSelectable.GetParent())
+			return;
+
 		if (p_element.second->HasParent())
 			p_element.second->GetParent()->UnconsiderWidget(*p_element.second);
 
