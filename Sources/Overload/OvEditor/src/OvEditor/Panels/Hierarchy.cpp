@@ -285,11 +285,6 @@ void OvEditor::Panels::Hierarchy::AddActorByInstance(OvCore::ECS::Actor & p_acto
 		if (p_element.second == textSelectable.GetParent())
 			return;
 
-		if (p_element.second->HasParent())
-			p_element.second->GetParent()->UnconsiderWidget(*p_element.second);
-
-		textSelectable.ConsiderWidget(*p_element.second);
-
 		p_element.first->SetParent(p_actor);
 	};
 	auto& dispatcher = textSelectable.AddPlugin<OvUI::Plugins::DataDispatcher<std::string>>();
