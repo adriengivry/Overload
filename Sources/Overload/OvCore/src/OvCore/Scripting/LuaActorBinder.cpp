@@ -43,6 +43,7 @@ void OvCore::Scripting::LuaActorBinder::BindActor(sol::state & p_luaState)
 		"IsSelfActive", &Actor::IsSelfActive, // TODO: Add to doc
 		"IsActive", &Actor::IsActive,
 		"SetActive", &Actor::SetActive,
+		"IsDescendantOf", &Actor::IsDescendantOf,
 
 
 		/* Components Getters */
