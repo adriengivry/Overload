@@ -148,6 +148,22 @@ void OvCore::ECS::Actor::DetachFromParent()
 	transform.RemoveParent();
 }
 
+bool OvCore::ECS::Actor::IsDescendantOf(const Actor* p_actor) const
+{
+	const Actor* currentParentActor = m_parent;
+
+	while (currentParentActor != nullptr)
+	{
+		if (currentParentActor == p_actor)
+		{
+			return true;
+		}
+		currentParentActor = currentParentActor->GetParent();
+	}
+
+	return false;
+}
+
 bool OvCore::ECS::Actor::HasParent() const
 {
 	return m_parent;

@@ -101,6 +101,12 @@ namespace OvCore::ECS
 		void DetachFromParent();
 
 		/**
+		* Returns true if this actor transform is descendant of the actor
+		* @param p_actor
+		*/
+		bool IsDescendantOf(const Actor* p_actor) const;
+
+		/**
 		* Returns true if the actor has a parent
 		*/
 		bool HasParent() const;
