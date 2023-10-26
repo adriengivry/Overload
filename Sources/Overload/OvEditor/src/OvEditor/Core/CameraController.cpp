@@ -98,7 +98,7 @@ void OvEditor::Core::CameraController::HandleInputs(float p_deltaTime)
 	{
 		UpdateMouseState();
 
-		ImGui::GetIO().DisableMouseUpdate = m_rightMousePressed || m_middleMousePressed;
+		//ImGui::GetIO().DisableMouseUpdate = m_rightMousePressed || m_middleMousePressed;
 
 		if (!ImGui::IsAnyItemActive())
 		{
