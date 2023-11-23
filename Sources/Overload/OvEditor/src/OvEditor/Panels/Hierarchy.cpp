@@ -270,6 +270,14 @@ void OvEditor::Panels::Hierarchy::DeleteActorByInstance(OvCore::ECS::Actor& p_ac
 			result->second->Destroy();
 		}
 
+		if (p_actor.HasParent() && p_actor.GetParent()->GetChildren().size() == 1)
+		{
+			if (auto parentWidget = m_widgetActorLink.find(p_actor.GetParent()); parentWidget != m_widgetActorLink.end())
+			{
+				parentWidget->second->leaf = true;
+			}
+		}
+
 		m_widgetActorLink.erase(result);
 	}
 }
