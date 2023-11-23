@@ -115,8 +115,10 @@ public:
 	{
 		if (!m_protected)
 		{
-			auto& renameMenu = CreateWidget<OvUI::Widgets::Menu::MenuList>("Rename to...");
 			auto& deleteAction = CreateWidget<OvUI::Widgets::Menu::MenuItem>("Delete");
+			deleteAction.ClickedEvent += [this] { DeleteItem(); };
+
+			auto& renameMenu = CreateWidget<OvUI::Widgets::Menu::MenuList>("Rename to...");
 
 			auto& nameEditor = renameMenu.CreateWidget<OvUI::Widgets::InputFields::InputText>("");
 			nameEditor.selectAllOnClick = true;
@@ -129,8 +131,6 @@ public:
 					if (size_t pos = nameEditor.content.rfind('.'); pos != std::string::npos)
 						nameEditor.content = nameEditor.content.substr(0, pos);
 			};
-
-			deleteAction.ClickedEvent += [this] { DeleteItem(); };
 
 			nameEditor.EnterPressedEvent += [this](std::string p_newName)
 			{

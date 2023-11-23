@@ -33,10 +33,10 @@
 
 #include "OvEditor/Utils/ActorCreationMenu.h"
 
-class HierarchyContextualMenu : public OvUI::Plugins::ContextualMenu
+class ActorContextualMenu : public OvUI::Plugins::ContextualMenu
 {
 public:
-    HierarchyContextualMenu(OvCore::ECS::Actor* p_target, OvUI::Widgets::Layout::TreeNode& p_treeNode, bool p_panelMenu = false) :
+    ActorContextualMenu(OvCore::ECS::Actor* p_target, OvUI::Widgets::Layout::TreeNode& p_treeNode, bool p_panelMenu = false) :
         m_target(p_target),
         m_treeNode(p_treeNode)
     {
@@ -64,6 +64,21 @@ public:
             {
                 EDITOR_EXEC(DestroyActor(std::ref(*m_target)));
             };
+
+			auto& renameMenu = CreateWidget<OvUI::Widgets::Menu::MenuList>("Rename to...");
+
+			auto& nameEditor = renameMenu.CreateWidget<OvUI::Widgets::InputFields::InputText>("");
+			nameEditor.selectAllOnClick = true;
+
+			renameMenu.ClickedEvent += [this, &nameEditor]
+			{
+				nameEditor.content = m_target->GetName();
+			};
+
+			nameEditor.EnterPressedEvent += [this](std::string p_newName)
+			{
+				m_target->SetName(p_newName);
+			};
         }
 
 		auto& createActor = CreateWidget<OvUI::Widgets::Menu::MenuList>("Create...");
@@ -176,7 +191,7 @@ OvEditor::Panels::Hierarchy::Hierarchy
 
 		p_element.first->DetachFromParent();
 	};
-    m_sceneRoot->AddPlugin<HierarchyContextualMenu>(nullptr, *m_sceneRoot);
+    m_sceneRoot->AddPlugin<ActorContextualMenu>(nullptr, *m_sceneRoot);
 
 	EDITOR_EVENT(ActorUnselectedEvent) += std::bind(&Hierarchy::UnselectActorsWidgets, this);
 	EDITOR_CONTEXT(sceneManager).SceneUnloadEvent += std::bind(&Hierarchy::Clear, this);
@@ -278,7 +293,7 @@ void OvEditor::Panels::Hierarchy::AddActorByInstance(OvCore::ECS::Actor & p_acto
 {
 	auto& textSelectable = m_sceneRoot->CreateWidget<OvUI::Widgets::Layout::TreeNode>(p_actor.GetName(), true);
 	textSelectable.leaf = true;
-	textSelectable.AddPlugin<HierarchyContextualMenu>(&p_actor, textSelectable);
+	textSelectable.AddPlugin<ActorContextualMenu>(&p_actor, textSelectable);
 	textSelectable.AddPlugin<OvUI::Plugins::DDSource<std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*>>>("Actor", "Attach to...", std::make_pair(&p_actor, &textSelectable));
 	textSelectable.AddPlugin<OvUI::Plugins::DDTarget<std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*>>>("Actor").DataReceivedEvent += [&p_actor, &textSelectable](std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*> p_element)
 	{
