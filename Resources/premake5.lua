@@ -1,3 +1,3 @@
 project "Resources"
-    kind "None"
-    files { "Editor/**", "Engine/**" }
+    kind "SharedItems"
+    files { "Editor/**", "Engine/**", "**.lua" }

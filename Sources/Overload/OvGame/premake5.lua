@@ -16,12 +16,12 @@ project "OvGame"
 	characterset ("MBCS")
 
 	postbuildcommands {
-		"for /f \"delims=|\" %%i in ('dir /B /S \"%{wks.location}..\\..\\Dependencies\\*.dll\"') do xcopy /Q /Y \"%%i\" \"%{wks.location}..\\..\\Bin\\%{cfg.buildcfg}\\%{prj.name}\"",
+		"for /f \"delims=|\" %%i in ('dir /B /S \"%{dependdir}*.dll\"') do xcopy /Q /Y \"%%i\" \"%{builddir}%{cfg.buildcfg}\\%{prj.name}\"",
 		
-		"xcopy /Y /I /Q /D \"%{wks.location}\\..\\..\\Bin\\Debug\\%{prj.name}\\*.exe\" \"%{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\Builder\\Development\"",
-		"xcopy /Y /I /Q /D \"%{wks.location}\\..\\..\\Bin\\Debug\\%{prj.name}\\*.dll\" \"%{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\Builder\\Development\"",
-		"xcopy /Y /I /Q /D \"%{wks.location}\\..\\..\\Bin\\Release\\%{prj.name}\\*.exe\" \"%{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\Builder\\Shipping\"",
-		"xcopy /Y /I /Q /D \"%{wks.location}\\..\\..\\Bin\\Release\\%{prj.name}\\*.dll\" \"%{wks.location}\\..\\..\\Build\\%{cfg.buildcfg}\\Builder\\Shipping\"",
+		"xcopy /Y /I /Q /D \"%{outputdir}Debug\\%{prj.name}\\*.exe\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Development\"",
+		"xcopy /Y /I /Q /D \"%{outputdir}Debug\\%{prj.name}\\*.dll\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Development\"",
+		"xcopy /Y /I /Q /D \"%{outputdir}Release\\%{prj.name}\\*.exe\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Shipping\"",
+		"xcopy /Y /I /Q /D \"%{outputdir}Release\\%{prj.name}\\*.dll\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Shipping\"",
 
 		"EXIT /B 0"
 	}
