@@ -33,6 +33,14 @@ OvEditor::Panels::SceneView::SceneView
 		case OvTools::Utils::PathParser::EFileType::MODEL:	EDITOR_EXEC(CreateActorWithModel(path, true));	break;
 		}
 	};
+
+	OvCore::ECS::Actor::DestroyedEvent += [this](const OvCore::ECS::Actor& actor)
+	{
+		if (m_highlightedActor.has_value() && m_highlightedActor->get().GetID() == actor.GetID())
+		{
+			m_highlightedActor = std::nullopt;
+		}
+	};
 }
 
 void OvEditor::Panels::SceneView::Update(float p_deltaTime)
