@@ -6,8 +6,8 @@ layout (location = 2) in vec3 geo_Normal;
 layout (location = 3) in vec3 geo_Tangent;
 layout (location = 4) in vec3 geo_Bitangent;
 
-#include ":Shaders/Common/Buffers/EngineUBO.glsl"
-#include ":Shaders/Common/IO/VertexOutput.glsl"
+#include ":Shaders/Common/Buffers/EngineUBO.part.glsl"
+#include ":Shaders/Common/IO/VertexOutput.part.glsl"
 
 void main()
 {

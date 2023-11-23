@@ -2,7 +2,7 @@
 
 out vec4 FRAGMENT_COLOR;
 
-#include ":Shaders/Common/IO/FragmentInput.glsl"
+#include ":Shaders/Common/IO/FragmentInput.part.glsl"
 
 uniform vec4        u_Diffuse = vec4(1.0, 1.0, 1.0, 1.0);
 uniform sampler2D   u_DiffuseMap;

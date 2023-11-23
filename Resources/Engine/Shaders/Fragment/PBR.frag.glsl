@@ -1,8 +1,8 @@
 #version 430 core
 
-#include ":Shaders/Common/IO/FragmentInput.glsl"
-#include ":Shaders/Common/Buffers/EngineUBO.glsl"
-#include ":Shaders/Common/Buffers/LightsSSBO.glsl"
+#include ":Shaders/Common/IO/FragmentInput.part.glsl"
+#include ":Shaders/Common/Buffers/EngineUBO.part.glsl"
+#include ":Shaders/Common/Buffers/LightsSSBO.part.glsl"
 
 out vec4 FRAGMENT_COLOR;
 

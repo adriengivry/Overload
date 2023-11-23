@@ -2,15 +2,7 @@
 
 out vec4 FRAGMENT_COLOR;
 
-in VS_OUT
-{
-    vec3        FragPos;
-    vec3        Normal;
-    vec2        TexCoords;
-    mat3        TBN;
-    flat vec3   TangentViewPos;
-    vec3        TangentFragPos;
-} fs_in;
+#include ":Shaders/Common/IO/FragmentInput.part.glsl"
 
 uniform vec4        u_Diffuse = vec4(1.0, 1.0, 1.0, 1.0);
 uniform sampler2D   u_DiffuseMap;

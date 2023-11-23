@@ -1,4 +1,4 @@
 #shader vertex
-#include ":Shaders/Vertex/Basic.glsl"
+#include ":Shaders/Vertex/Basic.vert.glsl"
 #shader fragment
-#include ":Shaders/Fragment/BlinnPhong.glsl"
+#include ":Shaders/Fragment/BlinnPhong.frag.glsl"
