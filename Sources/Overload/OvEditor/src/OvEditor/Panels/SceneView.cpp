@@ -250,6 +250,10 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 			}
 		}
 	}
+	else
+	{
+		m_highlightedActor = std::nullopt;
+	}
 
 	if (m_gizmoOperations.IsPicking())
 	{
