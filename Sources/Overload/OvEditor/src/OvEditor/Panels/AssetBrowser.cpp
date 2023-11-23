@@ -1286,5 +1286,13 @@ void OvEditor::Panels::AssetBrowser::ConsiderItem(OvUI::Widgets::Layout::TreeNod
 			auto& texturePreview = clickableText.AddPlugin<TexturePreview>();
 			texturePreview.SetPath(resourceFormatPath);
 		}
+
+		if (fileType == OvTools::Utils::PathParser::EFileType::SCENE)
+		{
+			clickableText.DoubleClickedEvent += [path]
+			{
+				EDITOR_EXEC(LoadSceneFromDisk(EDITOR_EXEC(GetResourcePath(path))));
+			};
+		}
 	}
 }
