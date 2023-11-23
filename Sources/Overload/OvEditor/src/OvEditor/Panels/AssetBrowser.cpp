@@ -683,7 +683,7 @@ public:
 			if (shaderManager.IsResourceRegistered(resourcePath))
 			{
 				/* Trying to recompile */
-				OvRendering::Resources::Loaders::ShaderLoader::Recompile(*shaderManager[resourcePath], filePath);
+				shaderManager.ReloadResource(shaderManager[resourcePath], filePath);
 			}
 			else
 			{
