@@ -12,6 +12,7 @@
 #include "OvEditor/Panels/AssetBrowser.h"
 #include "OvEditor/Panels/HardwareInfo.h"
 #include "OvEditor/Panels/Profiler.h"
+#include "OvEditor/Panels/FrameInfo.h"
 #include "OvEditor/Panels/Console.h"
 #include "OvEditor/Panels/Inspector.h"
 #include "OvEditor/Panels/Hierarchy.h"
@@ -55,6 +56,7 @@ void OvEditor::Core::Editor::SetupUI()
 	m_panelsManager.CreatePanel<OvEditor::Panels::AssetBrowser>("Asset Browser", true, settings, m_context.engineAssetsPath, m_context.projectAssetsPath, m_context.projectScriptsPath);
 	m_panelsManager.CreatePanel<OvEditor::Panels::HardwareInfo>("Hardware Info", false, settings, 0.2f, 50);
 	m_panelsManager.CreatePanel<OvEditor::Panels::Profiler>("Profiler", true, settings, 0.25f);
+	m_panelsManager.CreatePanel<OvEditor::Panels::FrameInfo>("Frame Info", true, settings);
 	m_panelsManager.CreatePanel<OvEditor::Panels::Console>("Console", true, settings);
 	m_panelsManager.CreatePanel<OvEditor::Panels::Hierarchy>("Hierarchy", true, settings);
 	m_panelsManager.CreatePanel<OvEditor::Panels::Inspector>("Inspector", true, settings);
@@ -77,6 +79,7 @@ void OvEditor::Core::Editor::PreUpdate()
 	m_context.device->PollEvents();
 	m_context.renderer->SetClearColor(0.f, 0.f, 0.f);
 	m_context.renderer->Clear();
+	m_context.renderer->ClearFrameInfo();
 }
 
 void OvEditor::Core::Editor::Update(float p_deltaTime)
@@ -84,8 +87,8 @@ void OvEditor::Core::Editor::Update(float p_deltaTime)
 	HandleGlobalShortcuts();
 	UpdateCurrentEditorMode(p_deltaTime);
 	PrepareRendering(p_deltaTime);
-	UpdateEditorPanels(p_deltaTime);
 	RenderViews(p_deltaTime);
+	UpdateEditorPanels(p_deltaTime);
 	RenderEditorUI(p_deltaTime);
 	m_editorActions.ExecuteDelayedActions();
 }
@@ -163,6 +166,7 @@ void OvEditor::Core::Editor::UpdateEditorPanels(float p_deltaTime)
 {
 	auto& menuBar = m_panelsManager.GetPanelAs<OvEditor::Panels::MenuBar>("Menu Bar");
 	auto& profiler = m_panelsManager.GetPanelAs<OvEditor::Panels::Profiler>("Profiler");
+	auto& frameInfo = m_panelsManager.GetPanelAs<OvEditor::Panels::FrameInfo>("Frame Info");
 	auto& hardwareInfo = m_panelsManager.GetPanelAs<OvEditor::Panels::HardwareInfo>("Hardware Info");
 	auto& sceneView = m_panelsManager.GetPanelAs<OvEditor::Panels::SceneView>("Scene View");
 
@@ -170,6 +174,12 @@ void OvEditor::Core::Editor::UpdateEditorPanels(float p_deltaTime)
 
 	if (m_elapsedFrames == 1) // Let the first frame happen and then make the scene view the first seen view
 		sceneView.Focus();
+
+	if (frameInfo.IsOpened())
+	{
+		PROFILER_SPY("Frame Info Update");
+		frameInfo.Update(p_deltaTime);
+	}
 
 	if (profiler.IsOpened())
 	{
