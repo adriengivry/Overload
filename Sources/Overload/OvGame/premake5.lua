@@ -16,7 +16,7 @@ project "OvGame"
 	characterset ("MBCS")
 
 	postbuildcommands {
-		"for /f \"delims=|\" %%i in ('dir /B /S \"%{dependdir}*.dll\"') do xcopy /Q /Y \"%%i\" \"%{builddir}%{cfg.buildcfg}\\%{prj.name}\"",
+		"for /f \"delims=|\" %%i in ('dir /B /S \"%{dependdir}\\*.dll\"') do xcopy /Q /Y \"%%i\" \"%{builddir}%{cfg.buildcfg}\\%{prj.name}\"",
 		
 		"xcopy /Y /I /Q /D \"%{outputdir}Debug\\%{prj.name}\\*.exe\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Development\"",
 		"xcopy /Y /I /Q /D \"%{outputdir}Debug\\%{prj.name}\\*.dll\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Development\"",

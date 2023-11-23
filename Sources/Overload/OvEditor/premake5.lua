@@ -17,7 +17,7 @@ project "OvEditor"
 	debugdir "%{wks.location}/../../Build/%{cfg.buildcfg}"
 
 	postbuildcommands {
-		"for /f \"delims=|\" %%i in ('dir /B /S \"%{dependdir}*.dll\"') do xcopy /Q /Y \"%%i\" \"%{outputdir}%{cfg.buildcfg}\\%{prj.name}\"",
+		"for /f \"delims=|\" %%i in ('dir /B /S \"%{dependdir}\\*.dll\"') do xcopy /Q /Y \"%%i\" \"%{outputdir}%{cfg.buildcfg}\\%{prj.name}\"",
 
 		"rmdir /s /q \"%{builddir}%{cfg.buildcfg}\\Data\"",
 
