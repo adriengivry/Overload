@@ -26,6 +26,7 @@ OvEditor::Panels::FrameInfo::FrameInfo
 	m_batchCountText    = &CreateWidget<Texts::TextColored>("");
 	m_instanceCountText = &CreateWidget<Texts::TextColored>("");
 	m_polyCountText     = &CreateWidget<Texts::TextColored>("");
+	m_polyCountText->lineBreak = false;
 	m_vertexCountText = &CreateWidget<Texts::TextColored>("");
 }
 
