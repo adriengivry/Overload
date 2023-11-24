@@ -33,8 +33,8 @@ void OvCore::Resources::Loaders::MaterialLoader::Reload(Material& p_material, co
 	if (!doc.Error())
 	{
 		tinyxml2::XMLNode* root = doc.FirstChild();
-
 		p_material.OnDeserialize(doc, root);
+		OVLOG_INFO("[MATERIAL] \"" + p_path + "\" Reloaded");
 	}
 }
 

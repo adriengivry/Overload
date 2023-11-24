@@ -26,5 +26,6 @@ void OvCore::ResourceManagement::MaterialManager::DestroyResource(OvCore::Resour
 
 void OvCore::ResourceManagement::MaterialManager::ReloadResource(OvCore::Resources::Material* p_resource, const std::string& p_path)
 {
-	OvCore::Resources::Loaders::MaterialLoader::Reload(*p_resource, p_path);
+	std::string realPath = GetRealPath(p_path);
+	OvCore::Resources::Loaders::MaterialLoader::Reload(*p_resource, realPath);
 }
