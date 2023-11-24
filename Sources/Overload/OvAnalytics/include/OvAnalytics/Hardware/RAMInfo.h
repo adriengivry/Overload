@@ -6,9 +6,6 @@
 
 #pragma once
 
-#include <Windows.h>
-#include <psapi.h>
-
 namespace OvAnalytics::Hardware
 {
 	/**
@@ -38,6 +35,8 @@ namespace OvAnalytics::Hardware
 		float GetMaxRAM();
 
 	private:
-		MEMORYSTATUSEX m_statex;
+		float m_usedRAM = 0.0f;
+		float m_freeRAM = 0.0f;
+		float m_maxRAM = 0.0f;
 	};
 }

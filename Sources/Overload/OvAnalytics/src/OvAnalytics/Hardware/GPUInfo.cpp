@@ -6,6 +6,8 @@
 
 #include "OvAnalytics/Hardware/GPUInfo.h"
 
+#include <Windows.h>
+
 OvAnalytics::Hardware::GPUInfo::GPUInfo()
 {
 	#if _WIN32 || _WIN64
@@ -32,7 +34,7 @@ OvAnalytics::Hardware::GPUInfo::GPUInfo()
 		m_NvAPI_EnumPhysicalGPUs = (NvAPI_EnumPhysicalGPUs_t)(*m_NvAPI_QueryInterface)(0xE5AC921F);
 		m_NvAPI_GPU_GetUsages = (NvAPI_GPU_GetUsages_t)(*m_NvAPI_QueryInterface)(0x189A1FDF);
 
-		if (m_NvAPI_Initialize && m_NvAPI_EnumPhysicalGPUs && m_NvAPI_EnumPhysicalGPUs && m_NvAPI_GPU_GetUsages)
+		if (m_NvAPI_Initialize && m_NvAPI_EnumPhysicalGPUs && m_NvAPI_GPU_GetUsages)
 		{
 			(*m_NvAPI_Initialize)();
 

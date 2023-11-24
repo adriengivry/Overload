@@ -6,6 +6,13 @@
 
 #include "OvAnalytics/Hardware/CPUInfo.h"
 
+#include <Windows.h>
+
+uint64_t FileTimeToInt64(const FILETIME& ft)
+{
+	return (((unsigned long long)(ft.dwHighDateTime)) << 32) | ((unsigned long long)ft.dwLowDateTime);
+}
+
 float OvAnalytics::Hardware::CPUInfo::CalculateCPULoad()
 {
 	FILETIME idleTime, kernelTime, userTime;
@@ -23,9 +30,4 @@ float OvAnalytics::Hardware::CPUInfo::CalculateCPULoad(uint64_t p_idleTicks, uin
 	m_cpuPreviousIdleTicks = p_idleTicks;
 
 	return ret * 100.0f;
-}
-
-uint64_t OvAnalytics::Hardware::CPUInfo::FileTimeToInt64(const FILETIME& ft)
-{
-	return (((unsigned long long)(ft.dwHighDateTime)) << 32) | ((unsigned long long)ft.dwLowDateTime);
 }
