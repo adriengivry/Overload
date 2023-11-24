@@ -199,6 +199,7 @@ void OvRendering::Core::Renderer::ClearFrameInfo()
 	m_frameInfo.batchCount		= 0;
 	m_frameInfo.instanceCount	= 0;
 	m_frameInfo.polyCount		= 0;
+	m_frameInfo.vertexCount	= 0;
 }
 
 void OvRendering::Core::Renderer::Draw(Resources::IMesh& p_mesh, Settings::EPrimitiveMode p_primitiveMode, uint32_t p_instances)
@@ -207,7 +208,8 @@ void OvRendering::Core::Renderer::Draw(Resources::IMesh& p_mesh, Settings::EPrim
 	{
 		++m_frameInfo.batchCount;
 		m_frameInfo.instanceCount += p_instances;
-		m_frameInfo.polyCount += (p_mesh.GetIndexCount() / 3) * p_instances;
+		m_frameInfo.polyCount     += p_mesh.GetIndexCount() / 3 * p_instances;
+		m_frameInfo.vertexCount   += p_mesh.GetVertexCount() * p_instances;
 
 		p_mesh.Bind();
 		

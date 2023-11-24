@@ -37,5 +37,6 @@ namespace OvEditor::Panels
 		OvUI::Widgets::Texts::TextColored* m_batchCountText;
 		OvUI::Widgets::Texts::TextColored* m_instanceCountText;
 		OvUI::Widgets::Texts::TextColored* m_polyCountText;
+		OvUI::Widgets::Texts::TextColored* m_vertexCountText;
 	};
 }
