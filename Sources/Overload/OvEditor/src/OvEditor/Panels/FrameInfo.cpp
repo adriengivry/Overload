@@ -10,6 +10,7 @@
 #include <OvUI/Widgets/Visual/Separator.h>
 
 #include "OvEditor/Core/EditorActions.h"
+#include "OvTools/Utils/Format.h"
 
 using namespace OvUI::Panels;
 using namespace OvUI::Widgets;
@@ -29,7 +30,7 @@ OvEditor::Panels::FrameInfo::FrameInfo
 
 void OvEditor::Panels::FrameInfo::Update(float p_deltaTime)
 {
-	m_batchCountText->content = "Batches: " + std::to_string(EDITOR_CONTEXT(renderer)->GetFrameInfo().batchCount);
-	m_instanceCountText->content = "Instances: " + std::to_string(EDITOR_CONTEXT(renderer)->GetFrameInfo().instanceCount);
-	m_polyCountText->content = "Polygons: " + std::to_string(EDITOR_CONTEXT(renderer)->GetFrameInfo().polyCount);
+    m_batchCountText->content = "Batches: " + OvTools::Utils::Format::ReadableNumber(EDITOR_CONTEXT(renderer)->GetFrameInfo().batchCount);
+	m_instanceCountText->content = "Instances: " + OvTools::Utils::Format::ReadableNumber(EDITOR_CONTEXT(renderer)->GetFrameInfo().instanceCount);
+    m_polyCountText->content = "Polygons: " + OvTools::Utils::Format::ReadableNumber(EDITOR_CONTEXT(renderer)->GetFrameInfo().polyCount);
 }
