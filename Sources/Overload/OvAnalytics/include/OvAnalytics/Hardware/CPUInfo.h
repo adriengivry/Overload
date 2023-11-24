@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <Windows.h>
 #include <stdint.h>
 
 namespace OvAnalytics::Hardware
@@ -24,7 +23,6 @@ namespace OvAnalytics::Hardware
 
 	private:
 		float CalculateCPULoad(uint64_t idleTicks, uint64_t totalTicks);
-		uint64_t FileTimeToInt64(const FILETIME& ft);
 
 	private:
 		uint64_t m_cpuPreviousTotalTicks = 0;
