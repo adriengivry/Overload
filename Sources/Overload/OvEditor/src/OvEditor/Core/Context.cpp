@@ -42,9 +42,8 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 	deviceSettings.contextMajorVersion = 4;
 	deviceSettings.contextMinorVersion = 3;
 	windowSettings.title = "Overload Editor";
-	windowSettings.width = 1280;
-	windowSettings.height = 720;
-	windowSettings.maximized = true;
+	windowSettings.width = 1600;
+	windowSettings.height = 900;
 
 	/* Window creation */
 	device = std::make_unique<OvWindowing::Context::Device>(deviceSettings);
@@ -53,6 +52,11 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 	window->SetIconFromMemory(reinterpret_cast<uint8_t*>(iconRaw.data()), 16, 16);
 	inputManager = std::make_unique<OvWindowing::Inputs::InputManager>(*window);
 	window->MakeCurrentContext();
+
+	/* Center Window */
+	auto [monWidth, monHeight] = device->GetMonitorSize();
+	auto [winWidth, winHeight] = window->GetSize();
+	window->SetPosition(monWidth / 2 - winWidth / 2, monHeight / 2 - winHeight / 2);
 
 	device->SetVsync(true);
 
