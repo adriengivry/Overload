@@ -51,22 +51,22 @@ namespace OvRendering::Buffers
 		* @param p_offset
 		*/
 		template <class T>
-		void BindAttribute(uint32_t p_attribute, VertexBuffer<T>& p_vertexBuffer, EType p_type, uint64_t p_count, uint64_t p_stride, intptr_t p_offset);
+		void BindAttribute(uint32_t p_attribute, VertexBuffer<T>& p_vertexBuffer, EType p_type, uint64_t p_count, uint64_t p_stride, intptr_t p_offset) const;
 
 		/**
 		* Bind the buffer
 		*/
-		void Bind();
+		void Bind() const;
 
 		/**
 		* Unbind the buffer
 		*/
-		void Unbind();
+		void Unbind() const;
 
 		/**
 		* Return the VAO OpenGL ID
 		*/
-		GLint GetID();
+		GLint GetID() const;
 
 	private:
 		GLuint m_bufferID;

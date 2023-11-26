@@ -11,8 +11,8 @@
 #include <OvMaths/FMatrix4.h>
 #include <OvMaths/FTransform.h>
 
-
 #include "OvRendering/Geometry/BoundingSphere.h"
+#include "OvRendering/Resources/Model.h"
 
 namespace OvRendering::Data
 {
@@ -60,6 +60,29 @@ namespace OvRendering::Data
 		* @param p_transform
 		*/
 		bool BoundingSphereInFrustum(const OvRendering::Geometry::BoundingSphere& p_boundingSphere, const OvMaths::FTransform& p_transform) const;
+
+		/**
+		* Returns true if the 
+		* @param p_mesh
+		* @param p_transform
+		*/
+		bool IsMeshInFrustum(const OvRendering::Resources::Mesh& p_mesh, const OvMaths::FTransform& p_transform) const;
+
+		/**
+		* Returns the list of meshes from a model that should be rendered
+		* @param p_model
+		* @param p_modelBoundingSphere
+		* @param p_modelTransform
+		* @param p_frustum
+		* @param p_cullingOptions
+		*/
+		std::vector<std::reference_wrapper<OvRendering::Resources::Mesh>> GetMeshesInFrustum
+		(
+			const OvRendering::Resources::Model& p_model,
+			const OvRendering::Geometry::BoundingSphere& p_modelBoundingSphere,
+			const OvMaths::FTransform& p_modelTransform,
+			OvRendering::Settings::ECullingOptions p_cullingOptions
+		) const;
 
 		/**
 		* Returns the near plane

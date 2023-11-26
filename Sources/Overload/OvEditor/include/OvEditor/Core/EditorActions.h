@@ -18,8 +18,8 @@
 #define EDITOR_BIND(method, ...)			std::bind(&OvEditor::Core::EditorActions::method, &OvCore::Global::ServiceLocator::Get<OvEditor::Core::EditorActions>(), ##__VA_ARGS__)
 #define EDITOR_EVENT(target)				OvCore::Global::ServiceLocator::Get<OvEditor::Core::EditorActions>().target
 #define EDITOR_CONTEXT(instance)			OvCore::Global::ServiceLocator::Get<OvEditor::Core::EditorActions>().GetContext().instance
-#define EDITOR_RENDERER()					OvCore::Global::ServiceLocator::Get<OvEditor::Core::EditorActions>().GetRenderer()
 #define EDITOR_PANEL(type, id)				OvCore::Global::ServiceLocator::Get<OvEditor::Core::EditorActions>().GetPanelsManager().GetPanelAs<type>(id)
+#define EDITOR_RENDERER()					OvCore::Global::ServiceLocator::Get<OvEditor::Core::EditorActions>().GetRenderer()
 
 namespace OvEditor::Core
 {

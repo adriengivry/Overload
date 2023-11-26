@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <OvRendering/Core/ShapeRenderer.h>
+#include <OvCore/ECS/SceneRenderer.h>
+
 #include "OvEditor/Panels/AViewControllable.h"
 #include "OvEditor/Core/GizmoBehaviour.h"
 
@@ -39,9 +42,9 @@ namespace OvEditor::Panels
 
 		/**
 		* Render the actual scene
-		* @param p_defaultRenderState
+		* @param p_defaultStateMask
 		*/
-		void RenderScene(uint8_t p_defaultRenderState);
+		void RenderScene(OvRendering::Data::StateMask p_defaultStateMask);
 
 		/**
 		* Render the scene for actor picking (Using unlit colors)
@@ -58,6 +61,9 @@ namespace OvEditor::Panels
 		OvRendering::Buffers::Framebuffer m_actorPickingFramebuffer;
 		OvEditor::Core::GizmoBehaviour m_gizmoOperations;
 		OvEditor::Core::EGizmoOperation m_currentOperation = OvEditor::Core::EGizmoOperation::TRANSLATE;
+
+		OvRendering::Core::ShapeRenderer m_shapeRenderer;
+		OvCore::ECS::SceneRenderer m_sceneRenderer;
 
 		std::optional<std::reference_wrapper<OvCore::ECS::Actor>> m_highlightedActor;
 		std::optional<OvEditor::Core::GizmoBehaviour::EDirection> m_highlightedGizmoDirection;

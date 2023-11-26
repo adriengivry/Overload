@@ -8,7 +8,6 @@
 
 #ifdef _DEBUG
 
-#include <OvRendering/Core/Renderer.h>
 #include <OvWindowing/Window.h>
 
 #include <OvAnalytics/Profiling/Profiler.h>

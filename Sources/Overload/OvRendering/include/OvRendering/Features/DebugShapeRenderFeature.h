@@ -6,27 +6,26 @@
 
 #pragma once
 
-#include "OvRendering/Core/Renderer.h"
-#include "OvRendering/Resources/Mesh.h"
+#include "OvRendering/Features/ARenderFeature.h"
 
-namespace OvRendering::Core
+namespace OvRendering::Features
 {
 	/**
 	* The ShapeDrawer handles the drawing of basic shapes
 	*/
-	class ShapeDrawer
+	class DebugShapeRenderFeature : ARenderFeature
 	{
 	public:
 		/**
-		* Creates the ShapeDrawer instance. It needs a renderer
+		* Constructor
 		* @param p_renderer
 		*/
-		ShapeDrawer(OvRendering::Core::Renderer& p_renderer);
+		DebugShapeRenderFeature(Core::CompositeRenderer& p_renderer);
 
 		/**
 		* Destructor
 		*/
-		~ShapeDrawer();
+		virtual ~DebugShapeRenderFeature();
 
 		/**
 		* Defines the view projection to use when drawing
@@ -59,6 +58,5 @@ namespace OvRendering::Core
 		OvRendering::Resources::Shader* m_lineShader = nullptr;
 		OvRendering::Resources::Shader* m_gridShader = nullptr;
 		OvRendering::Resources::Mesh* m_lineMesh = nullptr;
-		OvRendering::Core::Renderer& m_renderer;
 	};
 }

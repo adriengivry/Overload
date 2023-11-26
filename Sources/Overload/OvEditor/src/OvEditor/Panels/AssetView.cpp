@@ -50,29 +50,33 @@ void OvEditor::Panels::AssetView::_Render_Impl()
 {
 	PrepareCamera();
 
-	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
+	auto& driver = *EDITOR_CONTEXT(driver).get();
 
 	m_fbo.Bind();
 
-	baseRenderer.SetStencilMask(0xFF);
-	baseRenderer.Clear(m_camera);
-	baseRenderer.SetStencilMask(0x00);
+	driver.SetStencilMask(0xFF);
+	
+	OvMaths::FVector3 clearColor = m_camera.GetClearColor();
+	driver.SetClearColor(clearColor.x, clearColor.y, clearColor.z);
+	driver.Clear(true, true, false);
 
-	uint8_t glState = baseRenderer.FetchGLState();
-	baseRenderer.ApplyStateMask(glState);
+	driver.SetStencilMask(0x00);
 
-	m_editorRenderer.RenderGrid(m_cameraPosition, m_gridColor);
+	driver.UpdateStateMask();
+	OvRendering::Data::StateMask stateMask = driver.GetStateMask();
+
+	EDITOR_RENDERER().RenderGrid(m_cameraPosition, m_gridColor);
 
 	if (auto pval = std::get_if<OvRendering::Resources::Model*>(&m_resource); pval && *pval)
-		m_editorRenderer.RenderModelAsset(**pval);
+		EDITOR_RENDERER().RenderModelAsset(**pval);
 	
 	if (auto pval = std::get_if<OvRendering::Resources::Texture*>(&m_resource); pval && *pval)
-		m_editorRenderer.RenderTextureAsset(**pval);
+		EDITOR_RENDERER().RenderTextureAsset(**pval);
 	
 	if (auto pval = std::get_if<OvCore::Resources::Material*>(&m_resource); pval && *pval)
-		m_editorRenderer.RenderMaterialAsset(**pval);
+		EDITOR_RENDERER().RenderMaterialAsset(**pval);
 
-	baseRenderer.ApplyStateMask(glState);
+	driver.ApplyStateMask(stateMask);
 
 	m_fbo.Unbind();
 }

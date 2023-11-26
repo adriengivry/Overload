@@ -53,9 +53,7 @@ OvGame::Core::Context::Context() :
 
 	/* Graphics context creation */
 	driver = std::make_unique<OvRendering::Context::Driver>(OvRendering::Settings::DriverSettings{ false });
-	renderer = std::make_unique<OvCore::ECS::Renderer>(*driver);
-
-	renderer->SetCapability(OvRendering::Settings::ERenderingCapability::MULTISAMPLE, projectSettings.Get<bool>("multisampling"));
+	driver->SetCapability(OvRendering::Settings::ERenderingCapability::MULTISAMPLE, projectSettings.Get<bool>("multisampling"));
 
 	uiManager = std::make_unique<OvUI::Core::UIManager>(window->GetGlfwWindow(), OvUI::Styling::EStyle::ALTERNATIVE_DARK);
 	uiManager->LoadFont("Ruda_Big", engineAssetsPath + "Fonts\\Ruda-Bold.ttf", 16);
@@ -87,22 +85,6 @@ OvGame::Core::Context::Context() :
 
 	/* Scripting */
 	scriptInterpreter = std::make_unique<OvCore::Scripting::ScriptInterpreter>(projectScriptsPath);
-
-	engineUBO = std::make_unique<OvRendering::Buffers::UniformBuffer>
-	(
-		/* UBO Data Layout */
-		sizeof(OvMaths::FMatrix4) +
-		sizeof(OvMaths::FMatrix4) +
-		sizeof(OvMaths::FMatrix4) +
-		sizeof(OvMaths::FVector3) +
-		sizeof(float) +
-		sizeof(OvMaths::FMatrix4),
-		0, 0,
-		OvRendering::Buffers::EAccessSpecifier::STREAM_DRAW
-	);
-
-	lightSSBO = std::make_unique<OvRendering::Buffers::ShaderStorageBuffer>(OvRendering::Buffers::EAccessSpecifier::STREAM_DRAW);
-	lightSSBO->Bind(0);
 }
 
 OvGame::Core::Context::~Context()

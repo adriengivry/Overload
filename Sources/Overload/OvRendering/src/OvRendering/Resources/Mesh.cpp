@@ -17,22 +17,22 @@ OvRendering::Resources::Mesh::Mesh(const std::vector<Geometry::Vertex>& p_vertic
 	ComputeBoundingSphere(p_vertices);
 }
 
-void OvRendering::Resources::Mesh::Bind()
+void OvRendering::Resources::Mesh::Bind() const
 {
 	m_vertexArray.Bind();
 }
 
-void OvRendering::Resources::Mesh::Unbind()
+void OvRendering::Resources::Mesh::Unbind() const
 {
 	m_vertexArray.Unbind();
 }
 
-uint32_t OvRendering::Resources::Mesh::GetVertexCount()
+uint32_t OvRendering::Resources::Mesh::GetVertexCount() const
 {
 	return m_vertexCount;
 }
 
-uint32_t OvRendering::Resources::Mesh::GetIndexCount()
+uint32_t OvRendering::Resources::Mesh::GetIndexCount() const
 {
 	return m_indicesCount;
 }

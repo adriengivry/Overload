@@ -25,13 +25,13 @@ OvEditor::Panels::HardwareInfo::HardwareInfo
 	m_maxElements(p_maxElements),
 	m_hardwareInfo(new OvAnalytics::Hardware::HardwareInfo(m_logFrequency))
 {
-	auto& renderer = *EDITOR_CONTEXT(renderer).get();
+	auto& driver = *EDITOR_CONTEXT(driver).get();
 
 	// Display some static information about the graphics driver
-	CreateWidget<OvUI::Widgets::Texts::Text>("Vendor: " + renderer.GetString(GL_VENDOR));
-	CreateWidget<OvUI::Widgets::Texts::Text>("Hardware: " + renderer.GetString(GL_RENDERER));
-	CreateWidget<OvUI::Widgets::Texts::Text>("OpenGL Version: " + renderer.GetString(GL_VERSION));
-	CreateWidget<OvUI::Widgets::Texts::Text>("GLSL Version: " + renderer.GetString(GL_SHADING_LANGUAGE_VERSION));
+	CreateWidget<OvUI::Widgets::Texts::Text>("Vendor: " + driver.GetString(GL_VENDOR));
+	CreateWidget<OvUI::Widgets::Texts::Text>("Hardware: " + driver.GetString(GL_RENDERER));
+	CreateWidget<OvUI::Widgets::Texts::Text>("OpenGL Version: " + driver.GetString(GL_VERSION));
+	CreateWidget<OvUI::Widgets::Texts::Text>("GLSL Version: " + driver.GetString(GL_SHADING_LANGUAGE_VERSION));
 
 	m_cpuUsage = &CreateWidget<Plots::PlotLines>();
 	m_gpuUsage = &CreateWidget<Plots::PlotLines>();

@@ -10,7 +10,6 @@
 
 #include <OvRendering/Buffers/UniformBuffer.h>
 #include <OvRendering/Buffers/ShaderStorageBuffer.h>
-#include <OvRendering/Core/ShapeDrawer.h>
 
 #include <OvPhysics/Core/PhysicsEngine.h>
 
@@ -20,7 +19,6 @@
 #include <OvWindowing/Inputs/InputManager.h>
 #include <OvWindowing/Window.h>
 
-#include <OvCore/ECS/Renderer.h>
 #include <OvCore/ResourceManagement/ModelManager.h>
 #include <OvCore/ResourceManagement/TextureManager.h>
 #include <OvCore/ResourceManagement/ShaderManager.h>
@@ -80,31 +78,25 @@ namespace OvEditor::Core
 		const std::string projectScriptsPath;
 		const std::string editorAssetsPath;
 
-		std::unique_ptr<OvWindowing::Context::Device>			device;
-		std::unique_ptr<OvWindowing::Window>					window;
-		std::unique_ptr<OvWindowing::Inputs::InputManager>		inputManager;
-		std::unique_ptr<OvRendering::Context::Driver>			driver;
-		std::unique_ptr<OvCore::ECS::Renderer>					renderer;
-		std::unique_ptr<OvRendering::Core::ShapeDrawer>			shapeDrawer;
-		std::unique_ptr<OvUI::Core::UIManager>					uiManager;
-		std::unique_ptr<OvPhysics::Core::PhysicsEngine>			physicsEngine;
-		std::unique_ptr<OvAudio::Core::AudioEngine>				audioEngine;
-		std::unique_ptr<OvAudio::Core::AudioPlayer>				audioPlayer;
-		std::unique_ptr<OvEditor::Core::EditorResources>		editorResources;
+		std::unique_ptr<OvWindowing::Context::Device> device;
+		std::unique_ptr<OvWindowing::Window> window;
+		std::unique_ptr<OvWindowing::Inputs::InputManager> inputManager;
+		std::unique_ptr<OvRendering::Context::Driver> driver;
+		std::unique_ptr<OvUI::Core::UIManager> uiManager;
+		std::unique_ptr<OvPhysics::Core::PhysicsEngine> physicsEngine;
+		std::unique_ptr<OvAudio::Core::AudioEngine> audioEngine;
+		std::unique_ptr<OvAudio::Core::AudioPlayer> audioPlayer;
+		std::unique_ptr<OvEditor::Core::EditorResources> editorResources;
 
-		std::unique_ptr<OvCore::Scripting::ScriptInterpreter>	scriptInterpreter;
-		std::unique_ptr<OvRendering::Buffers::UniformBuffer>	engineUBO;
+		std::unique_ptr<OvCore::Scripting::ScriptInterpreter> scriptInterpreter;
 
-		std::unique_ptr<OvRendering::Buffers::ShaderStorageBuffer>	lightSSBO;
-		std::unique_ptr<OvRendering::Buffers::ShaderStorageBuffer>	simulatedLightSSBO;
-		
 		OvCore::SceneSystem::SceneManager sceneManager;
 
-		OvCore::ResourceManagement::ModelManager	modelManager;
-		OvCore::ResourceManagement::TextureManager	textureManager;
-		OvCore::ResourceManagement::ShaderManager	shaderManager;
-		OvCore::ResourceManagement::MaterialManager	materialManager;
-		OvCore::ResourceManagement::SoundManager	soundManager;
+		OvCore::ResourceManagement::ModelManager modelManager;
+		OvCore::ResourceManagement::TextureManager textureManager;
+		OvCore::ResourceManagement::ShaderManager shaderManager;
+		OvCore::ResourceManagement::MaterialManager materialManager;
+		OvCore::ResourceManagement::SoundManager soundManager;
 
 		OvWindowing::Settings::WindowSettings windowSettings;
 

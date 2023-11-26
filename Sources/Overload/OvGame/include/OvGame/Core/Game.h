@@ -8,10 +8,9 @@
 
 #include <OvUI/Modules/Canvas.h>
 #include <OvCore/ECS/Components/CCamera.h>
+#include <OvCore/ECS/SceneRenderer.h>
 
 #include "OvGame/Core/Context.h"
-#include "OvGame/Core/GameRenderer.h"
-
 #include "OvGame/Utils/FPSCounter.h"
 
 #ifdef _DEBUG
@@ -56,12 +55,10 @@ namespace OvGame::Core
 		void PostUpdate();
 
 	private:
-		float m_elapsed = 0.0f;
-
 		OvGame::Core::Context& m_context;
 		OvUI::Modules::Canvas m_canvas;
 
-		OvGame::Core::GameRenderer m_gameRenderer;
+		OvCore::ECS::SceneRenderer m_sceneRenderer;
 
 		/* Debug elements */
 		OvGame::Utils::FPSCounter	m_fpsCounter;

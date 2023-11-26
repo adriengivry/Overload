@@ -53,6 +53,7 @@ namespace OvEditor::Panels
 
 	private:
 		OvCore::SceneSystem::SceneManager& m_sceneManager;
+		OvCore::ECS::SceneRenderer m_sceneRenderer;
 		bool m_hasCamera = false;
 	};
 }

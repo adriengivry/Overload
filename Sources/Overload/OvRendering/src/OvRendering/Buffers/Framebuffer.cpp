@@ -37,12 +37,12 @@ OvRendering::Buffers::Framebuffer::~Framebuffer()
 	glDeleteRenderbuffers(1, &m_depthStencilBuffer);
 }
 
-void OvRendering::Buffers::Framebuffer::Bind()
+void OvRendering::Buffers::Framebuffer::Bind() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_bufferID);
 }
 
-void OvRendering::Buffers::Framebuffer::Unbind()
+void OvRendering::Buffers::Framebuffer::Unbind() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -66,17 +66,17 @@ void OvRendering::Buffers::Framebuffer::Resize(uint16_t p_width, uint16_t p_heig
 	Unbind();
 }
 
-uint32_t OvRendering::Buffers::Framebuffer::GetID()
+uint32_t OvRendering::Buffers::Framebuffer::GetID() const
 {
 	return m_bufferID;
 }
 
-uint32_t OvRendering::Buffers::Framebuffer::GetTextureID()
+uint32_t OvRendering::Buffers::Framebuffer::GetTextureID() const
 {
 	return m_renderTexture;
 }
 
-uint32_t OvRendering::Buffers::Framebuffer::GetRenderBufferID()
+uint32_t OvRendering::Buffers::Framebuffer::GetRenderBufferID() const
 {
 	return m_depthStencilBuffer;
 }

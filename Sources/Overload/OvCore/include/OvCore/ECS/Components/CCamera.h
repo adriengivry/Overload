@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "OvRendering/LowRenderer/Camera.h"
+#include "OvRendering/Entities/Camera.h"
 #include "AComponent.h"
 
 namespace OvCore::ECS { class Actor; }
@@ -126,7 +126,7 @@ namespace OvCore::ECS::Components
 		/**
 		* Returns the OvRendering camera instance attached to this component
 		*/
-		OvRendering::LowRenderer::Camera& GetCamera();
+		OvRendering::Entities::Camera& GetCamera();
 
 		/**
 		* Serialize the component
@@ -149,6 +149,6 @@ namespace OvCore::ECS::Components
 		virtual void OnInspector(OvUI::Internal::WidgetContainer& p_root) override;
 
 	private:
-		OvRendering::LowRenderer::Camera m_camera;
+		OvRendering::Entities::Camera m_camera;
 	};
 }

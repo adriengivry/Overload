@@ -19,7 +19,7 @@
 OvEditor::Core::CameraController::CameraController
 (
 	OvEditor::Panels::AView& p_view,
-	OvRendering::LowRenderer::Camera& p_camera,
+	OvRendering::Entities::Camera& p_camera,
 	OvMaths::FVector3& p_position,
 	OvMaths::FQuaternion& p_rotation,
 	bool p_enableFocusInputs

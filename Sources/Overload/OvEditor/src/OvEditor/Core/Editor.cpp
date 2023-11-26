@@ -77,9 +77,8 @@ void OvEditor::Core::Editor::PreUpdate()
 	PROFILER_SPY("Editor Pre-Update");
 
 	m_context.device->PollEvents();
-	m_context.renderer->SetClearColor(0.f, 0.f, 0.f);
-	m_context.renderer->Clear();
-	m_context.renderer->ClearFrameInfo();
+	m_context.driver->SetClearColor(0.f, 0.f, 0.f);
+	m_context.driver->Clear();
 }
 
 void OvEditor::Core::Editor::Update(float p_deltaTime)
@@ -178,7 +177,7 @@ void OvEditor::Core::Editor::UpdateEditorPanels(float p_deltaTime)
 	if (frameInfo.IsOpened())
 	{
 		PROFILER_SPY("Frame Info Update");
-		frameInfo.Update(p_deltaTime);
+		frameInfo.Update({}); // TODO: Fix FrameInfo (Get it from SceneView or GameView end frame I guess)
 	}
 
 	if (profiler.IsOpened())
@@ -192,12 +191,6 @@ void OvEditor::Core::Editor::UpdateEditorPanels(float p_deltaTime)
 		PROFILER_SPY("Hardware Info Update");
 		hardwareInfo.Update(p_deltaTime);
 	}
-}
-
-void OvEditor::Core::Editor::PrepareRendering(float p_deltaTime)
-{
-	PROFILER_SPY("Engine UBO Update");
-	m_context.engineUBO->SetSubData(m_context.device->GetElapsedTime(), 3 * sizeof(OvMaths::FMatrix4) + sizeof(OvMaths::FVector3));
 }
 
 void OvEditor::Core::Editor::RenderViews(float p_deltaTime)
@@ -218,9 +211,7 @@ void OvEditor::Core::Editor::RenderViews(float p_deltaTime)
 	{
 		PROFILER_SPY("Asset View Rendering");
 
-		m_context.simulatedLightSSBO->Bind(0);
 		assetView.Render();
-		m_context.simulatedLightSSBO->Unbind();
 	}
 
 	m_context.lightSSBO->Bind(0);
@@ -228,14 +219,12 @@ void OvEditor::Core::Editor::RenderViews(float p_deltaTime)
 	if (gameView.IsOpened())
 	{
 		PROFILER_SPY("Game View Rendering");
-
 		gameView.Render();
 	}
 
 	if (sceneView.IsOpened())
 	{
 		PROFILER_SPY("Scene View Rendering");
-
 		sceneView.Render();
 	}
 

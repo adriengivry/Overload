@@ -10,7 +10,7 @@
 
 #include <OvWindowing/Inputs/InputManager.h>
 #include <OvWindowing/Window.h>
-#include <OvRendering/LowRenderer/Camera.h>
+#include <OvRendering/Entities/Camera.h>
 
 #include "OvEditor/Panels/Hierarchy.h"
 #include "OvEditor/Panels/AView.h"
@@ -34,7 +34,7 @@ namespace OvEditor::Core
 		CameraController
 		(
 			OvEditor::Panels::AView& p_view,
-			OvRendering::LowRenderer::Camera& p_camera,
+			OvRendering::Entities::Camera& p_camera,
 			OvMaths::FVector3& p_position,
 			OvMaths::FQuaternion& p_rotation,
 			bool p_enableFocusInputs = false
@@ -103,7 +103,7 @@ namespace OvEditor::Core
 		OvWindowing::Inputs::InputManager& m_inputManager;
 		OvWindowing::Window& m_window;
 		OvEditor::Panels::AView& m_view;
-		OvRendering::LowRenderer::Camera& m_camera;
+		OvRendering::Entities::Camera& m_camera;
 		OvMaths::FVector3& m_cameraPosition;
 		OvMaths::FQuaternion& m_cameraRotation;
 

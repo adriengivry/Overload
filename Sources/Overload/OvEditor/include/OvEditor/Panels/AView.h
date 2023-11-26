@@ -11,7 +11,7 @@
 #include <OvUI/Widgets/Visual/Image.h>
 #include <OvRendering/Buffers/UniformBuffer.h>
 #include <OvRendering/Buffers/Framebuffer.h>
-#include <OvRendering/LowRenderer/Camera.h>
+#include <OvRendering/Entities/Camera.h>
 
 namespace OvEditor::Core { class EditorRenderer; }
 
@@ -82,7 +82,7 @@ namespace OvEditor::Panels
 		/**
 		* Returns the camera used by this view
 		*/
-		OvRendering::LowRenderer::Camera& GetCamera();
+		OvRendering::Entities::Camera& GetCamera();
 
 		/**
 		* Returns the size of the panel ignoring its titlebar height
@@ -112,8 +112,7 @@ namespace OvEditor::Panels
 		void PrepareCamera();
 
 	protected:
-		OvEditor::Core::EditorRenderer& m_editorRenderer;
-		OvRendering::LowRenderer::Camera m_camera;
+		OvRendering::Entities::Camera m_camera;
 		OvMaths::FVector3 m_cameraPosition;
 		OvMaths::FQuaternion m_cameraRotation;
 		OvUI::Widgets::Visual::Image* m_image;

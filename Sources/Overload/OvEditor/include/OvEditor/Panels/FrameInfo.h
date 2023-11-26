@@ -9,6 +9,8 @@
 #include <OvUI/Panels/PanelWindow.h>
 #include <OvUI/Widgets/Texts/TextColored.h>
 
+#include <OvRendering/Data/FrameInfo.h>
+
 namespace OvEditor::Panels
 {
 	class FrameInfo : public OvUI::Panels::PanelWindow
@@ -29,9 +31,9 @@ namespace OvEditor::Panels
 
 		/**
 		* Update frame info information
-		* @param p_deltaTime
+		* @param p_frameInfo
 		*/
-		void Update(float p_deltaTime);
+		void Update(const OvRendering::Data::FrameInfo& p_frameInfo);
 
 	private:
 		OvUI::Widgets::Texts::TextColored* m_batchCountText;

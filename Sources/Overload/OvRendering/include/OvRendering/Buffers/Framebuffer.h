@@ -33,12 +33,12 @@ namespace OvRendering::Buffers
 		/**
 		* Bind the framebuffer
 		*/
-		void Bind();
+		void Bind() const;
 
 		/**
 		* Unbind the framebuffer
 		*/
-		void Unbind();
+		void Unbind() const;
 
 		/**
 		* Defines a new size for the framebuffer
@@ -50,17 +50,17 @@ namespace OvRendering::Buffers
 		/**
 		* Returns the ID of the OpenGL framebuffer
 		*/
-		uint32_t GetID();
+		uint32_t GetID() const;
 
 		/**
 		* Returns the ID of the OpenGL render texture
 		*/
-		uint32_t GetTextureID();
+		uint32_t GetTextureID() const;
 
 		/**
 		* Returns the ID of the OpenGL render buffer
 		*/
-		uint32_t GetRenderBufferID();
+		uint32_t GetRenderBufferID() const;
 
 	private:
 		uint32_t m_bufferID = 0;

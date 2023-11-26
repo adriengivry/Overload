@@ -16,7 +16,14 @@ OvEditor::Panels::GameView::GameView
 	const std::string & p_title,
 	bool p_opened,
 	const OvUI::Settings::PanelWindowSettings & p_windowSettings
-) : AView(p_title, p_opened, p_windowSettings), m_sceneManager(EDITOR_CONTEXT(sceneManager))
+) :
+	AView(p_title, p_opened, p_windowSettings),
+	m_sceneManager(EDITOR_CONTEXT(sceneManager)),
+	m_sceneRenderer(*
+		EDITOR_CONTEXT(driver),
+		*EDITOR_CONTEXT(engineUBO),
+		*EDITOR_CONTEXT(lightSSBO)
+	)
 {
 }
 
@@ -28,7 +35,8 @@ void OvEditor::Panels::GameView::Update(float p_deltaTime)
 
 	if (currentScene)
 	{
-		auto cameraComponent = EDITOR_CONTEXT(renderer)->FindMainCamera(*currentScene);
+		auto cameraComponent = m_sceneRenderer.FindMainCamera(*currentScene);
+
 		if (cameraComponent)
 		{
 			m_camera = cameraComponent->GetCamera();
@@ -47,33 +55,19 @@ void OvEditor::Panels::GameView::Update(float p_deltaTime)
 
 void OvEditor::Panels::GameView::_Render_Impl()
 {
-	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
-	auto& currentScene = *m_sceneManager.GetCurrentScene();
-
-	m_fbo.Bind();
-
-	baseRenderer.Clear(m_camera);
-
-	uint8_t glState = baseRenderer.FetchGLState();
-	baseRenderer.ApplyStateMask(glState);
-
-	if (m_hasCamera)
+	if (auto currentScene = m_sceneManager.GetCurrentScene())
 	{
-		if (m_camera.HasFrustumLightCulling())
-		{
-			m_editorRenderer.UpdateLightsInFrustum(currentScene, m_camera.GetFrustum());
-		}
-		else
-		{
-			m_editorRenderer.UpdateLights(currentScene);
-		}
+		m_fbo.Bind();
 
-		m_editorRenderer.RenderScene(m_cameraPosition, m_camera);
+		m_sceneRenderer.RenderScene(
+			*currentScene,
+			static_cast<uint16_t>(m_size.x),
+			static_cast<uint16_t>(m_size.y),
+			nullptr // TODO: Evaluate if we want to use a default material here
+		); 
+
+		m_fbo.Unbind();
 	}
-
-	baseRenderer.ApplyStateMask(glState);
-
-	m_fbo.Unbind();
 }
 
 bool OvEditor::Panels::GameView::HasCamera() const

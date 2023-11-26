@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <OvRendering/Core/Renderer.h>
 #include <OvWindowing/Context/Device.h>
 #include <OvWindowing/Window.h>
 #include <OvRendering/Context/Driver.h>
@@ -46,7 +45,6 @@ namespace OvEditor::Core
 		std::unique_ptr<OvWindowing::Context::Device>		m_device;
 		std::unique_ptr<OvWindowing::Window>				m_window;
 		std::unique_ptr<OvRendering::Context::Driver>		m_driver;
-		std::unique_ptr<OvRendering::Core::Renderer>		m_renderer;
 		std::unique_ptr<OvUI::Core::UIManager>				m_uiManager;
 
 		OvUI::Modules::Canvas m_canvas;

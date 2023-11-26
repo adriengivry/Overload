@@ -8,9 +8,9 @@
 
 #include <OvDebug/Logger.h>
 
-#include "OvCore/Resources/Material.h"
+#include "OvRendering/Data/Material.h"
 
-namespace OvCore::Resources
+namespace OvRendering::Data
 {
 	template<typename T>
 	inline void Material::Set(const std::string p_key, const T& p_value)
@@ -18,7 +18,9 @@ namespace OvCore::Resources
 		if (HasShader())
 		{
 			if (m_uniformsData.find(p_key) != m_uniformsData.end())
+			{
 				m_uniformsData[p_key] = std::any(p_value);
+			}
 		}
 		else
 		{
@@ -27,11 +29,11 @@ namespace OvCore::Resources
 	}
 
 	template<typename T>
-	inline const T& Material::Get(const std::string p_key)
+	inline const T& Material::Get(const std::string p_key) const
 	{
-		if (m_uniformsData.find(p_key) != m_uniformsData.end())
-			return T();
-		else
-			return std::any_cast<T>(m_uniformsData.at(p_key));
+		return
+			m_uniformsData.find(p_key) == m_uniformsData.end() ?
+			std::any_cast<T>(m_uniformsData.at(p_key)) :
+			T();
 	}
 }

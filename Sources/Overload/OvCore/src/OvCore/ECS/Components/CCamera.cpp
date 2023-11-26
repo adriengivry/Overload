@@ -102,7 +102,7 @@ OvRendering::Settings::EProjectionMode OvCore::ECS::Components::CCamera::GetProj
     return m_camera.GetProjectionMode();
 }
 
-OvRendering::LowRenderer::Camera & OvCore::ECS::Components::CCamera::GetCamera()
+OvRendering::Entities::Camera & OvCore::ECS::Components::CCamera::GetCamera()
 {
 	return m_camera;
 }

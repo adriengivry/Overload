@@ -62,9 +62,7 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 
 	/* Graphics context creation */
 	driver = std::make_unique<OvRendering::Context::Driver>(OvRendering::Settings::DriverSettings{ true });
-	renderer = std::make_unique<OvCore::ECS::Renderer>(*driver);
-	renderer->SetCapability(OvRendering::Settings::ERenderingCapability::MULTISAMPLE, true);
-	shapeDrawer = std::make_unique<OvRendering::Core::ShapeDrawer>(*renderer);
+	driver->SetCapability(OvRendering::Settings::ERenderingCapability::MULTISAMPLE, true);
 
 	std::filesystem::create_directories(std::string(getenv("APPDATA")) + "\\OverloadTech\\OvEditor\\");
 
@@ -106,41 +104,6 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 
 	/* Scripting */
 	scriptInterpreter = std::make_unique<OvCore::Scripting::ScriptInterpreter>(projectScriptsPath);
-
-	engineUBO = std::make_unique<OvRendering::Buffers::UniformBuffer>
-	(
-		/* UBO Data Layout */
-		sizeof(OvMaths::FMatrix4) +
-		sizeof(OvMaths::FMatrix4) +
-		sizeof(OvMaths::FMatrix4) +
-		sizeof(OvMaths::FVector3) +
-		sizeof(float) +
-		sizeof(OvMaths::FMatrix4),
-		0, 0,
-		OvRendering::Buffers::EAccessSpecifier::STREAM_DRAW
-	);
-
-	lightSSBO			= std::make_unique<OvRendering::Buffers::ShaderStorageBuffer>(OvRendering::Buffers::EAccessSpecifier::STREAM_DRAW);
-	simulatedLightSSBO	= std::make_unique<OvRendering::Buffers::ShaderStorageBuffer>(OvRendering::Buffers::EAccessSpecifier::STREAM_DRAW); // Used in Asset View
-
-	std::vector<OvMaths::FMatrix4> simulatedLights;
-
-	OvMaths::FTransform simulatedLightTransform;
-	simulatedLightTransform.SetLocalRotation(OvMaths::FQuaternion({ 45.f, 180.f, 10.f }));
-
-	OvRendering::Entities::Light simulatedDirectionalLight(simulatedLightTransform, OvRendering::Entities::Light::Type::DIRECTIONAL);
-	simulatedDirectionalLight.color = { 1.f, 1.f, 1.f };
-	simulatedDirectionalLight.intensity = 1.f;
-
-	OvRendering::Entities::Light simulatedAmbientLight(simulatedLightTransform, OvRendering::Entities::Light::Type::AMBIENT_SPHERE);
-	simulatedAmbientLight.color = { 0.07f, 0.07f, 0.07f };
-	simulatedAmbientLight.intensity = 1.f;
-	simulatedAmbientLight.constant = 1000.0f;
-
-	simulatedLights.push_back(simulatedDirectionalLight.GenerateMatrix());
-	simulatedLights.push_back(simulatedAmbientLight.GenerateMatrix());
-
-	simulatedLightSSBO->SendBlocks<OvMaths::FMatrix4>(simulatedLights.data(), simulatedLights.size() * sizeof(OvMaths::FMatrix4));
 
 	ApplyProjectSettings();
 }

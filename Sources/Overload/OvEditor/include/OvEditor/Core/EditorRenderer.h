@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <OvRendering/LowRenderer/Camera.h>
+#include <OvRendering/Entities/Camera.h>
 
 #include <OvCore/ECS/Actor.h>
 #include <OvCore/SceneSystem/SceneManager.h>
@@ -14,6 +14,7 @@
 #include <OvCore/Resources/Material.h>
 #include <OvCore/ECS/Components/CAmbientBoxLight.h>
 #include <OvCore/ECS/Components/CAmbientSphereLight.h>
+#include <OvCore/ECS/SceneRenderer.h>
 
 #include "OvEditor/Core/Context.h"
 
@@ -25,7 +26,7 @@ namespace OvEditor::Core
 	/**
 	* Handle the rendering of the editor
 	*/
-	class EditorRenderer
+	class EditorRenderer : public OvCore::ECS::SceneRenderer
 	{
 	public:
 		/**
@@ -34,6 +35,15 @@ namespace OvEditor::Core
 		*/
 		EditorRenderer(Context& p_context);
 
+		/**
+		* Render the scene
+		* @param p_cameraPosition
+		* @param p_camera
+		* @param p_customFrustum
+		*/
+		void RenderScene(const OvMaths::FVector3& p_cameraPosition, const OvRendering::Entities::Camera& p_camera, const OvRendering::Data::Frustum* p_customFrustum = nullptr);
+
+	protected:
 		/**
 		* Initialize custom materials
 		*/
@@ -53,21 +63,9 @@ namespace OvEditor::Core
 		OvMaths::FMatrix4 CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor);
 
 		/**
-		* Render the scene
-		* @param p_cameraPosition
-		* @param p_camera
-		*/
-		void RenderScene(const OvMaths::FVector3& p_cameraPosition, const OvRendering::LowRenderer::Camera& p_camera, const OvRendering::Data::Frustum* p_customFrustum = nullptr);
-
-		/**
 		* Render the scene for actor picking (Unlit version of the scene with colors indicating actor IDs)
 		*/
 		void RenderSceneForActorPicking();
-
-		/**
-		* Render the User Interface
-		*/
-		void RenderUI();
 
 		/**
 		* Render every scene cameras
@@ -110,19 +108,49 @@ namespace OvEditor::Core
 		*/
 		void RenderActorOutlinePass(OvCore::ECS::Actor& p_actor, bool p_toStencil, bool p_isSelected = false);
 
-        /**
-        * Render the camera perspective frustum
-        * @param p_size
-        * @param p_camera
-        */
-        void RenderCameraPerspectiveFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera);
+		/**
+		* Draw frustum lines
+		* @param pos
+		* @param p_forward
+		* @param p_near
+		* @param p_far
+		* @param p_a
+		* @parma p_b
+		* @param p_c
+		* @param p_d
+		* @param p_e
+		* @param p_f
+		* @param p_g
+		* @param p_h
+		*/
+		void DrawFrustumLines(
+			const OvMaths::FVector3& pos,
+			const OvMaths::FVector3& forward,
+			float near,
+			const float far,
+			const OvMaths::FVector3& a,
+			const OvMaths::FVector3& b,
+			const OvMaths::FVector3& c,
+			const OvMaths::FVector3& d,
+			const OvMaths::FVector3& e,
+			const OvMaths::FVector3& f,
+			const OvMaths::FVector3& g,
+			const OvMaths::FVector3& h
+		);
 
-        /**
-        * Render the camera orthographic frustum
-        * @param p_size
-        * @param p_camera
-        */
-        void RenderCameraOrthographicFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera);
+		/**
+		* Render the camera perspective frustum
+		* @param p_size
+		* @param p_camera
+		*/
+		void RenderCameraPerspectiveFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera);
+
+		/**
+		* Render the camera orthographic frustum
+		* @param p_size
+		* @param p_camera
+		*/
+		void RenderCameraOrthographicFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera);
 
 		/**
 		* Render the camera frustum
@@ -174,21 +202,10 @@ namespace OvEditor::Core
 		*/
 		void RenderGrid(const OvMaths::FVector3& p_viewPos, const OvMaths::FVector3& p_color);
 
-		/**
-		* Update the light SSBO with the current scene
-		* @param p_scene
-		*/
-		void UpdateLights(OvCore::SceneSystem::Scene& p_scene);
-
-		/**
-		* Update the light SSBO with the current scene (Lights outside of the given frustum are culled)
-		* @param p_scene
-		*/
-		void UpdateLightsInFrustum(OvCore::SceneSystem::Scene& p_scene, const OvRendering::Data::Frustum& p_frustum);
-
 	private:
 		Context& m_context;
 
+		OvRendering::Features::DebugShapeRenderFeature& m_debugShapeRenderFeature;
 		OvCore::Resources::Material m_gridMaterial;
 		OvCore::Resources::Material m_stencilFillMaterial;
 		OvCore::Resources::Material m_textureMaterial;

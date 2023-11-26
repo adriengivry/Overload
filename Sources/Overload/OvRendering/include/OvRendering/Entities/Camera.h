@@ -10,13 +10,10 @@
 #include <OvMaths/FMatrix4.h>
 #include <OvMaths/FQuaternion.h>
 
-#include <OvTools/Utils/ReferenceOrValue.h>
-
-
 #include "OvRendering/Data/Frustum.h"
 #include "OvRendering/Settings/EProjectionMode.h"
 
-namespace OvRendering::LowRenderer
+namespace OvRendering::Entities
 {
 	/**
 	* Represents a camera. Wraps projection and view calculation based on applied rotation and the given positions

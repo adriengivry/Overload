@@ -8,8 +8,7 @@
 
 #include "OvGame/Debug/FrameInfo.h"
 
-OvGame::Debug::FrameInfo::FrameInfo(OvRendering::Core::Renderer& p_renderer, OvWindowing::Window& p_window) :
-	m_renderer(p_renderer),
+OvGame::Debug::FrameInfo::FrameInfo(OvWindowing::Window& p_window) :
 	m_window(p_window)
 {
 	m_defaultHorizontalAlignment = OvUI::Settings::EHorizontalAlignment::LEFT;
@@ -22,13 +21,11 @@ OvGame::Debug::FrameInfo::FrameInfo(OvRendering::Core::Renderer& p_renderer, OvW
 	m_frameInfo[2] = &CreateWidget<OvUI::Widgets::Texts::TextColored>("", OvUI::Types::Color::Yellow);
 }
 
-void OvGame::Debug::FrameInfo::Update(float p_deltaTime)
+void OvGame::Debug::FrameInfo::Update(const OvRendering::Data::FrameInfo& p_frameInfo)
 {
-	auto& frameInfo = m_renderer.GetFrameInfo();
-
-	m_frameInfo[0]->content = "Triangles: " + std::to_string(frameInfo.polyCount);
-	m_frameInfo[1]->content = "Batches: " + std::to_string(frameInfo.batchCount);
-	m_frameInfo[2]->content = "Instances: " + std::to_string(frameInfo.instanceCount);
+	m_frameInfo[0]->content = "Triangles: " + std::to_string(p_frameInfo.polyCount);
+	m_frameInfo[1]->content = "Batches: " + std::to_string(p_frameInfo.batchCount);
+	m_frameInfo[2]->content = "Instances: " + std::to_string(p_frameInfo.instanceCount);
 
 	SetPosition({ 10.0f , static_cast<float>(m_window.GetSize().second) - 10.f });
 	SetAlignment(OvUI::Settings::EHorizontalAlignment::LEFT, OvUI::Settings::EVerticalAlignment::BOTTOM);

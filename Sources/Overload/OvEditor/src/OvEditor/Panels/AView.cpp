@@ -14,7 +14,7 @@ OvEditor::Panels::AView::AView
 	const std::string& p_title,
 	bool p_opened,
 	const OvUI::Settings::PanelWindowSettings& p_windowSettings
-) : PanelWindow(p_title, p_opened, p_windowSettings), m_editorRenderer(EDITOR_RENDERER())
+) : PanelWindow(p_title, p_opened, p_windowSettings)
 {
 	m_cameraPosition = { -10.0f, 3.0f, 10.0f };
 	m_cameraRotation = OvMaths::FQuaternion({0.0f, 135.0f, 0.0f});
@@ -48,9 +48,10 @@ void OvEditor::Panels::AView::Render()
 
 	auto [winWidth, winHeight] = GetSafeSize();
 
-	EDITOR_CONTEXT(shapeDrawer)->SetViewProjection(m_camera.GetProjectionMatrix() * m_camera.GetViewMatrix());
+	// TODO: Put that in Asset and Scene view only
+	// EDITOR_CONTEXT(shapeDrawer)->SetViewProjection(m_camera.GetProjectionMatrix() * m_camera.GetViewMatrix());
 
-	EDITOR_CONTEXT(renderer)->SetViewPort(0, 0, winWidth, winHeight);
+	EDITOR_CONTEXT(driver)->SetViewPort(0, 0, winWidth, winHeight);
 
 	_Render_Impl();
 }
@@ -75,7 +76,7 @@ const OvMaths::FQuaternion& OvEditor::Panels::AView::GetCameraRotation() const
 	return m_cameraRotation;
 }
 
-OvRendering::LowRenderer::Camera & OvEditor::Panels::AView::GetCamera()
+OvRendering::Entities::Camera & OvEditor::Panels::AView::GetCamera()
 {
 	return m_camera;
 }

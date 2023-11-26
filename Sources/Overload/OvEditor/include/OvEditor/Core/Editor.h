@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <OvRendering/LowRenderer/Camera.h>
+#include <OvRendering/Entities/Camera.h>
 
 #include "OvEditor/Core/EditorRenderer.h"
 #include "OvEditor/Core/EditorActions.h"
@@ -82,13 +82,6 @@ namespace OvEditor::Core
 		* @param p_deltaTime
 		*/
 		void UpdateEditorPanels(float p_deltaTime);
-
-		/**
-		* Prepare the rendering of the views by parsing lights and sending them to the GPU
-		* and filling Engine UBO with elapsed time
-		* @param p_deltaTime
-		*/
-		void PrepareRendering(float p_deltaTime);
 
 		/**
 		* Render every views (Scene View, Game View, Asset View)
