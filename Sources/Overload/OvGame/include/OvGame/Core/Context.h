@@ -17,7 +17,6 @@
 
 #include <OvUI/Core/UIManager.h>
 
-#include <OvCore/ECS/SceneRenderer.h>
 #include <OvCore/ResourceManagement/ModelManager.h>
 #include <OvCore/ResourceManagement/TextureManager.h>
 #include <OvCore/ResourceManagement/ShaderManager.h>

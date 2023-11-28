@@ -7,6 +7,7 @@
 #pragma once
 
 #include <OvRendering/Entities/Camera.h>
+#include <OvRendering/Features/DebugShapeRenderFeature.h>
 
 #include <OvCore/ECS/Actor.h>
 #include <OvCore/SceneSystem/SceneManager.h>
@@ -14,36 +15,27 @@
 #include <OvCore/Resources/Material.h>
 #include <OvCore/ECS/Components/CAmbientBoxLight.h>
 #include <OvCore/ECS/Components/CAmbientSphereLight.h>
-#include <OvCore/ECS/SceneRenderer.h>
+#include <OvCore/Rendering/SceneRenderer.h>
 
 #include "OvEditor/Core/Context.h"
 
 namespace OvEditor::Core { enum class EGizmoOperation; }
 namespace OvEditor::Panels { class AView; }
 
-namespace OvEditor::Core
+namespace OvEditor::Rendering
 {
 	/**
 	* Handle the rendering of the editor
 	*/
-	class EditorRenderer : public OvCore::ECS::SceneRenderer
+	class EditorViewRenderFeature : public OvRendering::Features::DebugShapeRenderFeature
 	{
 	public:
 		/**
-		* Create the EditorRenderer
-		* @param p_context
+		* Constructor
+		* @param p_renderer
 		*/
-		EditorRenderer(Context& p_context);
+		EditorViewRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer);
 
-		/**
-		* Render the scene
-		* @param p_cameraPosition
-		* @param p_camera
-		* @param p_customFrustum
-		*/
-		void RenderScene(const OvMaths::FVector3& p_cameraPosition, const OvRendering::Entities::Camera& p_camera, const OvRendering::Data::Frustum* p_customFrustum = nullptr);
-
-	protected:
 		/**
 		* Initialize custom materials
 		*/
@@ -64,18 +56,21 @@ namespace OvEditor::Core
 
 		/**
 		* Render the scene for actor picking (Unlit version of the scene with colors indicating actor IDs)
+		* @param p_scene
 		*/
-		void RenderSceneForActorPicking();
+		void RenderSceneForActorPicking(OvCore::SceneSystem::Scene& p_scene);
 
 		/**
 		* Render every scene cameras
+		* @param p_scene
 		*/
-		void RenderCameras();
+		void RenderCameras(OvCore::SceneSystem::Scene& p_scene);
 
 		/**
 		* Render every scene lights as billboards
+		* @param p_scene
 		*/
-		void RenderLights();
+		void RenderLights(OvCore::SceneSystem::Scene& p_scene);
 
 		/**
 		* Render a gizmo at position
@@ -203,9 +198,6 @@ namespace OvEditor::Core
 		void RenderGrid(const OvMaths::FVector3& p_viewPos, const OvMaths::FVector3& p_color);
 
 	private:
-		Context& m_context;
-
-		OvRendering::Features::DebugShapeRenderFeature& m_debugShapeRenderFeature;
 		OvCore::Resources::Material m_gridMaterial;
 		OvCore::Resources::Material m_stencilFillMaterial;
 		OvCore::Resources::Material m_textureMaterial;

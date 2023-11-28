@@ -41,7 +41,7 @@ namespace OvRendering::Core
 	{
 		static_assert(std::is_base_of<Features::ARenderFeature, T>::value, "T should derive from ARenderFeature");
 		auto it = m_renderFeatures.find(typeid(T));
-		OVASSERT(it == m_renderFeatures.end(), "Couldn't find a render feature matching given type T.");
+		OVASSERT(it != m_renderFeatures.end(), "Couldn't find a render feature matching given type T.");
 		return *dynamic_cast<T*>(it->second.get());
 	}
 

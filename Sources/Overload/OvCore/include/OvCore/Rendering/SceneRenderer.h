@@ -20,7 +20,7 @@
 #include "OvCore/ECS/Components/CCamera.h"
 #include "OvCore/SceneSystem/Scene.h"
 
-namespace OvCore::ECS
+namespace OvCore::Rendering
 {
 	/**
 	* Extension of the ImmediateRenderer adding support for the scene system
@@ -48,30 +48,13 @@ namespace OvCore::ECS
 		* @param p_scene
 		* @param p_viewportWidth
 		* @param p_viewportHeight
-		* @param p_defaultMaterial
+		* @param p_materialOverride
 		*/
 		void RenderScene(
 			OvCore::SceneSystem::Scene& p_scene,
 			uint16_t p_viewportWidth,
 			uint16_t p_viewportHeight,
-			OvCore::Resources::Material* p_defaultMaterial = nullptr
-		);
-
-	protected:
-		/**
-		* Draw the given scene using the given default material (optional) if no material found on an actor
-		* @param p_scene
-		* @param p_cameraPosition
-		* @param p_camera
-		* @param p_customFrustum
-		* @param p_defaultMaterial
-		*/
-		void RenderScene(
-			OvCore::SceneSystem::Scene& p_scene,
-			const OvMaths::FVector3& p_cameraPosition,
-			const OvRendering::Entities::Camera& p_camera,
-			const OvRendering::Data::Frustum* p_customFrustum = nullptr,
-			OvCore::Resources::Material* p_defaultMaterial = nullptr
+			std::optional<std::reference_wrapper<OvCore::Resources::Material>> p_materialOverride = std::nullopt
 		);
 
 		/**
@@ -93,29 +76,17 @@ namespace OvCore::ECS
 		void UpdateLightsInFrustum(OvCore::SceneSystem::Scene& p_scene, const OvRendering::Data::Frustum& p_frustum);
 
 		/**
-		* Returns opaque and transparents drawables from the scene with frustum culling
-		* @param p_scene
-		* @param p_cameraPosition
-		* @param p_frustum
-		* @param p_defaultMaterial
-		*/
-		std::pair<OpaqueDrawables, TransparentDrawables> FindAndSortFrustumCulledDrawables(
-			const OvCore::SceneSystem::Scene& p_scene,
-			const OvMaths::FVector3& p_cameraPosition,
-			const OvRendering::Data::Frustum& p_frustum,
-			OvCore::Resources::Material* p_defaultMaterial
-		);
-
-		/**
 		* Returns opaque and transparents drawables from the scene
 		* @param p_scene
 		* @param p_cameraPosition
-		* @param p_defaultMaterial
+		* @param p_frustum
+		* @param p_materialOverride
 		*/
 		std::pair<OpaqueDrawables, TransparentDrawables> FindAndSortDrawables(
 			const OvCore::SceneSystem::Scene& p_scene,
 			const OvMaths::FVector3& p_cameraPosition,
-			OvCore::Resources::Material* p_defaultMaterial
+			std::optional<OvRendering::Data::Frustum> p_frustum = std::nullopt,
+			std::optional<std::reference_wrapper<OvCore::Resources::Material>> p_materialOverride = std::nullopt
 		);
 
 		/**
@@ -123,13 +94,28 @@ namespace OvCore::ECS
 		* @param p_model
 		* @param p_material
 		* @param p_modelMatrix
-		* @param p_defaultMaterial (Used if the given material has no shader attached)
+		* @param p_materialOverride (Used if the given material has no shader attached)
 		*/
 		void DrawModelWithSingleMaterial(
 			OvRendering::Resources::Model& p_model,
 			OvCore::Resources::Material& p_material,
 			OvMaths::FMatrix4 const* p_modelMatrix,
-			OvCore::Resources::Material* p_defaultMaterial = nullptr
+			std::optional<std::reference_wrapper<OvCore::Resources::Material>> p_materialOverride = std::nullopt
+		);
+
+	private:
+		/**
+		* Draw the given scene using the given default material (optional) if no material found on an actor
+		* @param p_scene
+		* @param p_camera
+		* @param p_frustumOverride
+		* @param p_materialOverride
+		*/
+		void RenderScene(
+			OvCore::SceneSystem::Scene& p_scene,
+			const OvRendering::Entities::Camera& p_camera,
+			std::optional<OvRendering::Data::Frustum> p_frustumOverride = std::nullopt,
+			std::optional<std::reference_wrapper<OvCore::Resources::Material>> p_materialOverride = std::nullopt
 		);
 	};
 }

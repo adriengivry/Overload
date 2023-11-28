@@ -32,8 +32,7 @@ namespace OvEditor::Panels
 		* @param p_opened
 		* @param p_windowSettings
 		*/
-		AssetProperties
-		(
+		AssetProperties(
 			const std::string& p_title,
 			bool p_opened,
 			const OvUI::Settings::PanelWindowSettings& p_windowSettings

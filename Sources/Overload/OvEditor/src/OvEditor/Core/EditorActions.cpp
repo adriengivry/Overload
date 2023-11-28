@@ -33,9 +33,8 @@
 #include "OvEditor/Panels/ProjectSettings.h"
 #include "OvEditor/Panels/MaterialEditor.h"
 
-OvEditor::Core::EditorActions::EditorActions(Context& p_context, EditorRenderer& p_editorRenderer, PanelsManager& p_panelsManager) :
+OvEditor::Core::EditorActions::EditorActions(Context& p_context, PanelsManager& p_panelsManager) :
 	m_context(p_context), 
-	m_renderer(p_editorRenderer),
 	m_panelsManager(p_panelsManager)
 {
 	OvCore::Global::ServiceLocator::Provide<OvEditor::Core::EditorActions>(*this);
@@ -346,11 +345,6 @@ OvEditor::Core::Context& OvEditor::Core::EditorActions::GetContext()
 	return m_context;
 }
 
-OvEditor::Core::EditorRenderer & OvEditor::Core::EditorActions::GetRenderer()
-{
-	return m_renderer;
-}
-
 OvEditor::Core::PanelsManager& OvEditor::Core::EditorActions::GetPanelsManager()
 {
 	return m_panelsManager;
@@ -489,7 +483,7 @@ void OvEditor::Core::EditorActions::NextFrame()
 OvMaths::FVector3 OvEditor::Core::EditorActions::CalculateActorSpawnPoint(float p_distanceToCamera)
 {
 	auto& sceneView = m_panelsManager.GetPanelAs<OvEditor::Panels::SceneView>("Scene View");
-	return sceneView.GetCameraPosition() + sceneView.GetCameraRotation() * OvMaths::FVector3::Forward * p_distanceToCamera;
+	return sceneView.GetCamera().GetPosition() + sceneView.GetCamera().GetRotation() * OvMaths::FVector3::Forward * p_distanceToCamera;
 }
 
 OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreateEmptyActor(bool p_focusOnCreation, OvCore::ECS::Actor* p_parent, const std::string& p_name)

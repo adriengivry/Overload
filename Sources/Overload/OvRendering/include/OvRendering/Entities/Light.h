@@ -10,8 +10,6 @@
 #include <OvMaths/FMatrix4.h>
 #include <OvMaths/FTransform.h>
 
-
-
 namespace OvRendering::Entities
 {
 	/**

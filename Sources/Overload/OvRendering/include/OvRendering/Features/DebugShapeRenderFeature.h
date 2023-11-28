@@ -13,7 +13,7 @@ namespace OvRendering::Features
 	/**
 	* The ShapeDrawer handles the drawing of basic shapes
 	*/
-	class DebugShapeRenderFeature : ARenderFeature
+	class DebugShapeRenderFeature : public ARenderFeature
 	{
 	public:
 		/**

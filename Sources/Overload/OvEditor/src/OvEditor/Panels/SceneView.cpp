@@ -6,7 +6,9 @@
 
 #include <OvUI/Plugins/DDTarget.h>
 
-#include "OvEditor/Core/EditorRenderer.h"
+#include <OvCore/Rendering/SceneRenderer.h>
+
+#include "OvEditor/Rendering/EditorViewRenderFeature.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Panels/SceneView.h"
 #include "OvEditor/Panels/GameView.h"
@@ -18,10 +20,11 @@ OvEditor::Panels::SceneView::SceneView
 	bool p_opened,
 	const OvUI::Settings::PanelWindowSettings& p_windowSettings
 ) : AViewControllable(p_title, p_opened, p_windowSettings, true),
-	m_sceneManager(EDITOR_CONTEXT(sceneManager)),
-	m_shapeRenderer(*EDITOR_CONTEXT(driver)),
-	m_sceneRenderer(*EDITOR_CONTEXT(driver), *EDITOR_CONTEXT(engineUBO), *EDITOR_CONTEXT(lightSSBO))
+	m_sceneManager(EDITOR_CONTEXT(sceneManager))
 {
+	m_renderer = std::make_unique<OvCore::Rendering::SceneRenderer>(*EDITOR_CONTEXT(driver));
+	GetRendererAs<OvRendering::Core::CompositeRenderer>().AddFeature<Rendering::EditorViewRenderFeature>();
+
 	m_camera.SetClearColor({ 0.098f, 0.098f, 0.098f });
 	m_camera.SetFar(5000.0f);
 
@@ -72,8 +75,6 @@ void OvEditor::Panels::SceneView::Update(float p_deltaTime)
 
 void OvEditor::Panels::SceneView::_Render_Impl()
 {
-	PrepareCamera();
-
 	OvRendering::Context::Driver& driver = *EDITOR_CONTEXT(driver).get();
 
 	driver.UpdateStateMask();
@@ -89,8 +90,11 @@ void OvEditor::Panels::SceneView::RenderScene(OvRendering::Data::StateMask p_def
 	auto& driver = *EDITOR_CONTEXT(driver).get();
 	auto& currentScene = *m_sceneManager.GetCurrentScene();
 	auto& gameView = EDITOR_PANEL(OvEditor::Panels::GameView, "Game View");
+	auto& renderer = GetRendererAs<OvCore::Rendering::SceneRenderer>();
+	auto& editorViewRenderFeature = renderer.GetFeature<OvEditor::Rendering::EditorViewRenderFeature>();
 
 	// If the game is playing, and ShowLightFrustumCullingInSceneView is true, apply the game view frustum culling to the scene view (For debugging purposes)
+	/* TODO: Reenable
 	if (auto gameViewFrustum = gameView.GetActiveFrustum(); gameViewFrustum.has_value() && gameView.GetCamera().HasFrustumLightCulling() && Settings::EditorSettings::ShowLightFrustumCullingInSceneView)
 	{
 		m_sceneRenderer.UpdateLightsInFrustum(currentScene, gameViewFrustum.value());
@@ -99,8 +103,7 @@ void OvEditor::Panels::SceneView::RenderScene(OvRendering::Data::StateMask p_def
 	{
 		EDITOR_RENDERER().UpdateLights(currentScene);
 	}
-
-	m_fbo.Bind();
+	*/
 
 	driver.SetStencilMask(0xFF);
 	OvMaths::FVector3 clearColor = m_camera.GetClearColor();
@@ -108,32 +111,34 @@ void OvEditor::Panels::SceneView::RenderScene(OvRendering::Data::StateMask p_def
 	driver.Clear(true, true, false);
 	driver.SetStencilMask(0x00);
 
-	EDITOR_RENDERER().RenderGrid(m_cameraPosition, m_gridColor);
-	EDITOR_RENDERER().RenderCameras();
+	editorViewRenderFeature.RenderGrid(m_camera.GetPosition(), m_gridColor);
+	editorViewRenderFeature.RenderCameras(currentScene);
 
 	// If the game is playing, and ShowGeometryFrustumCullingInSceneView is true, apply the game view frustum culling to the scene view (For debugging purposes)
 	if (auto gameViewFrustum = gameView.GetActiveFrustum(); gameViewFrustum.has_value() && gameView.GetCamera().HasFrustumGeometryCulling() && Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView)
 	{
 		m_camera.SetFrustumGeometryCulling(gameView.HasCamera() ? gameView.GetCamera().HasFrustumGeometryCulling() : false);
-		EDITOR_RENDERER().RenderScene(m_cameraPosition, m_camera, &gameViewFrustum.value());
+		// renderer.RenderScene(currentScene, m_camera, gameViewFrustum);
 		m_camera.SetFrustumGeometryCulling(false);
 	}
 	else
 	{
-		EDITOR_RENDERER().RenderScene(m_cameraPosition, m_camera);
+		// renderer.RenderScene(currentScene, m_camera);
 	}
 
-	EDITOR_RENDERER().RenderLights();
+	editorViewRenderFeature.RenderLights(currentScene);
 
+	// TODO: Reenable
+	/*
 	if (EDITOR_EXEC(IsAnyActorSelected()))
 	{
 		auto& selectedActor = EDITOR_EXEC(GetSelectedActor());
 
 		if (selectedActor.IsActive())
 		{
-			EDITOR_RENDERER().RenderActorOutlinePass(selectedActor, true, true);
+			editorViewRenderFeature.RenderActorOutlinePass(selectedActor, true, true);
 			driver.ApplyStateMask(p_defaultStateMask);
-			EDITOR_RENDERER().RenderActorOutlinePass(selectedActor, false, true);
+			editorViewRenderFeature.RenderActorOutlinePass(selectedActor, false, true);
 		}
 
 		driver.ApplyStateMask(p_defaultStateMask);
@@ -146,39 +151,43 @@ void OvEditor::Panels::SceneView::RenderScene(OvRendering::Data::StateMask p_def
 			highlightedAxis = static_cast<int>(m_highlightedGizmoDirection.value());
 		}
 
-		EDITOR_RENDERER().RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation, false, highlightedAxis);
+		editorViewRenderFeature.RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation, false, highlightedAxis);
 	}
 
 	if (m_highlightedActor.has_value())
 	{
-		EDITOR_RENDERER().RenderActorOutlinePass(m_highlightedActor.value().get(), true, false);
+		editorViewRenderFeature.RenderActorOutlinePass(m_highlightedActor.value().get(), true, false);
 		driver.ApplyStateMask(p_defaultStateMask);
-		EDITOR_RENDERER().RenderActorOutlinePass(m_highlightedActor.value().get(), false, false);
+		editorViewRenderFeature.RenderActorOutlinePass(m_highlightedActor.value().get(), false, false);
 	}
-
-	m_fbo.Unbind();
+	*/
 }
 
 void OvEditor::Panels::SceneView::RenderSceneForActorPicking()
 {
-	auto& driver = *EDITOR_CONTEXT(driver).get();
+	auto& driver = m_renderer->GetDriver();
+	auto& renderer = GetRendererAs<OvCore::Rendering::SceneRenderer>();
+	auto& editorViewRenderFeature = renderer.GetFeature<OvEditor::Rendering::EditorViewRenderFeature>();
 
-	auto [winWidth, winHeight] = GetSafeSize();
-
-	m_actorPickingFramebuffer.Resize(winWidth, winHeight);
-	m_actorPickingFramebuffer.Bind();
-	driver.SetClearColor(1.0f, 1.0f, 1.0f);
-	driver.Clear();
-	EDITOR_RENDERER().RenderSceneForActorPicking();
-
-	if (EDITOR_EXEC(IsAnyActorSelected()))
+	if (auto scene = m_sceneManager.GetCurrentScene(); scene)
 	{
-		auto& selectedActor = EDITOR_EXEC(GetSelectedActor());
-		driver.Clear(false, true, false);
-		EDITOR_RENDERER().RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation, true);
-	}
+		auto [winWidth, winHeight] = GetSafeSize();
 
-	m_actorPickingFramebuffer.Unbind();
+		m_actorPickingFramebuffer.Resize(winWidth, winHeight);
+		m_actorPickingFramebuffer.Bind();
+		driver.SetClearColor(1.0f, 1.0f, 1.0f);
+		driver.Clear();
+		editorViewRenderFeature.RenderSceneForActorPicking(*scene);
+
+		if (EDITOR_EXEC(IsAnyActorSelected()))
+		{
+			auto& selectedActor = EDITOR_EXEC(GetSelectedActor());
+			driver.Clear(false, true, false);
+			editorViewRenderFeature.RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation, true);
+		}
+
+		m_actorPickingFramebuffer.Unbind();
+	}
 }
 
 bool IsResizing()
@@ -245,7 +254,7 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 			/* Gizmo picking */
 			if (direction.has_value())
 			{
-				m_gizmoOperations.StartPicking(EDITOR_EXEC(GetSelectedActor()), m_cameraPosition, m_currentOperation, direction.value());
+				m_gizmoOperations.StartPicking(EDITOR_EXEC(GetSelectedActor()), m_camera.GetPosition(), m_currentOperation, direction.value());
 			}
 			/* Actor picking */
 			else

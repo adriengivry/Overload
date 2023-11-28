@@ -12,8 +12,7 @@
 #include <OvRendering/Buffers/UniformBuffer.h>
 #include <OvRendering/Buffers/Framebuffer.h>
 #include <OvRendering/Entities/Camera.h>
-
-namespace OvEditor::Core { class EditorRenderer; }
+#include <OvRendering/Core/IRenderer.h>
 
 namespace OvEditor::Panels
 {
@@ -29,8 +28,7 @@ namespace OvEditor::Panels
 		* @param p_opened
 		* @param p_windowSettings
 		*/
-		AView
-		(
+		AView(
 			const std::string& p_title,
 			bool p_opened,
 			const OvUI::Settings::PanelWindowSettings& p_windowSettings
@@ -58,28 +56,6 @@ namespace OvEditor::Panels
 		void Render();
 
 		/**
-		* Defines the camera position
-		* @param p_position
-		*/
-		void SetCameraPosition(const OvMaths::FVector3& p_position);
-
-		/**
-		* Defines the camera rotation
-		* @param p_rotation
-		*/
-		void SetCameraRotation(const OvMaths::FQuaternion& p_rotation);
-
-		/**
-		* Returns the camera position
-		*/
-		const OvMaths::FVector3& GetCameraPosition() const;
-
-		/**
-		* Returns the camera rotation
-		*/
-		const OvMaths::FQuaternion& GetCameraRotation() const;
-
-		/**
 		* Returns the camera used by this view
 		*/
 		OvRendering::Entities::Camera& GetCamera();
@@ -103,22 +79,28 @@ namespace OvEditor::Panels
 		/**
 		* Fill the UBO using the view settings
 		*/
-		void FillEngineUBO();
+		// void FillEngineUBO();
 
 	protected:
 		/**
 		* Update camera matrices
 		*/
-		void PrepareCamera();
+		// void PrepareCamera();
+
+		template<class T>
+		T& GetRendererAs()
+		{
+			OVASSERT(m_renderer != nullptr, "Cannot retrieve the renderer! Make sure to create one first.");
+			return *static_cast<T*>(m_renderer.get());
+		}
 
 	protected:
 		OvRendering::Entities::Camera m_camera;
-		OvMaths::FVector3 m_cameraPosition;
-		OvMaths::FQuaternion m_cameraRotation;
 		OvUI::Widgets::Visual::Image* m_image;
 
         OvMaths::FVector3 m_gridColor = OvMaths::FVector3 { 0.176f, 0.176f, 0.176f };
 
 		OvRendering::Buffers::Framebuffer m_fbo;
+		std::unique_ptr<OvRendering::Core::IRenderer> m_renderer;
 	};
 }

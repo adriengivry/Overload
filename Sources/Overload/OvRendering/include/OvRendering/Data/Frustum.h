@@ -76,8 +76,7 @@ namespace OvRendering::Data
 		* @param p_frustum
 		* @param p_cullingOptions
 		*/
-		std::vector<std::reference_wrapper<OvRendering::Resources::Mesh>> GetMeshesInFrustum
-		(
+		std::vector<OvRendering::Resources::Mesh*> GetMeshesInFrustum(
 			const OvRendering::Resources::Model& p_model,
 			const OvRendering::Geometry::BoundingSphere& p_modelBoundingSphere,
 			const OvMaths::FTransform& p_modelTransform,

@@ -14,6 +14,7 @@
 #include <OvCore/ECS/Components/CDirectionalLight.h>
 #include <OvCore/ECS/Components/CSpotLight.h>
 #include <OvCore/ECS/Components/CAmbientSphereLight.h>
+#include <OvCore/ECS/Components/CAmbientBoxLight.h>
 #include <OvCore/ECS/Components/CAudioSource.h>
 #include <OvCore/ECS/Components/CAudioListener.h>
 #include <OvCore/ECS/Components/CCamera.h>

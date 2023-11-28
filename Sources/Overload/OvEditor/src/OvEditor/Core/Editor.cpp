@@ -31,9 +31,8 @@ using namespace OvRendering::Resources::Parsers;
 
 OvEditor::Core::Editor::Editor(Context& p_context) : 
 	m_context(p_context),
-	m_editorRenderer(p_context),
 	m_panelsManager(m_canvas),
-	m_editorActions(m_context, m_editorRenderer, m_panelsManager)
+	m_editorActions(m_context, m_panelsManager)
 {
 	SetupUI();
 
@@ -85,7 +84,6 @@ void OvEditor::Core::Editor::Update(float p_deltaTime)
 {
 	HandleGlobalShortcuts();
 	UpdateCurrentEditorMode(p_deltaTime);
-	PrepareRendering(p_deltaTime);
 	RenderViews(p_deltaTime);
 	UpdateEditorPanels(p_deltaTime);
 	RenderEditorUI(p_deltaTime);
@@ -210,11 +208,8 @@ void OvEditor::Core::Editor::RenderViews(float p_deltaTime)
 	if (assetView.IsOpened())
 	{
 		PROFILER_SPY("Asset View Rendering");
-
 		assetView.Render();
 	}
-
-	m_context.lightSSBO->Bind(0);
 
 	if (gameView.IsOpened())
 	{
@@ -227,15 +222,13 @@ void OvEditor::Core::Editor::RenderViews(float p_deltaTime)
 		PROFILER_SPY("Scene View Rendering");
 		sceneView.Render();
 	}
-
-	m_context.lightSSBO->Unbind();
 }
 
 void OvEditor::Core::Editor::RenderEditorUI(float p_deltaTime)
 {
 	PROFILER_SPY("Editor UI Rendering");
 
-	m_editorActions.GetRenderer().RenderUI();
+	EDITOR_CONTEXT(uiManager)->Render();
 }
 
 void OvEditor::Core::Editor::PostUpdate()

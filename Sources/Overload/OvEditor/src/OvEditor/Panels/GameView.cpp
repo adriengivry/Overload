@@ -5,8 +5,8 @@
 */
 
 #include <OvCore/ECS/Components/CCamera.h>
+#include <OvCore/Rendering/SceneRenderer.h>
 
-#include "OvEditor/Core/EditorRenderer.h"
 #include "OvEditor/Panels/GameView.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Settings/EditorSettings.h"
@@ -18,19 +18,16 @@ OvEditor::Panels::GameView::GameView
 	const OvUI::Settings::PanelWindowSettings & p_windowSettings
 ) :
 	AView(p_title, p_opened, p_windowSettings),
-	m_sceneManager(EDITOR_CONTEXT(sceneManager)),
-	m_sceneRenderer(*
-		EDITOR_CONTEXT(driver),
-		*EDITOR_CONTEXT(engineUBO),
-		*EDITOR_CONTEXT(lightSSBO)
-	)
+	m_sceneManager(EDITOR_CONTEXT(sceneManager))
 {
+	m_renderer = std::make_unique<OvCore::Rendering::SceneRenderer>(*EDITOR_CONTEXT(driver));
 }
 
 void OvEditor::Panels::GameView::Update(float p_deltaTime)
 {
 	AView::Update(p_deltaTime);
 
+	/*
 	auto currentScene = EDITOR_CONTEXT(sceneManager).GetCurrentScene();
 
 	if (currentScene)
@@ -51,22 +48,19 @@ void OvEditor::Panels::GameView::Update(float p_deltaTime)
 			m_hasCamera = false;
 		}
 	}
+	*/
 }
 
 void OvEditor::Panels::GameView::_Render_Impl()
 {
-	if (auto currentScene = m_sceneManager.GetCurrentScene())
+	if (auto currentScene = m_sceneManager.GetCurrentScene(); currentScene && m_size.x > 0 && m_size.y > 0)
 	{
-		m_fbo.Bind();
-
-		m_sceneRenderer.RenderScene(
+		GetRendererAs<OvCore::Rendering::SceneRenderer>().RenderScene(
 			*currentScene,
 			static_cast<uint16_t>(m_size.x),
 			static_cast<uint16_t>(m_size.y),
-			nullptr // TODO: Evaluate if we want to use a default material here
-		); 
-
-		m_fbo.Unbind();
+			std::nullopt // TODO: Evaluate if we want to use a default material here
+		);
 	}
 }
 

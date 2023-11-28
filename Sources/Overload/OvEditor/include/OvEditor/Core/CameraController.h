@@ -27,16 +27,11 @@ namespace OvEditor::Core
 		* Constructor
 		* @param p_view
 		* @param p_camera
-		* @param p_position
-		* @param p_rotation
 		* @param p_enableFocusInputs
 		*/
-		CameraController
-		(
+		CameraController(
 			OvEditor::Panels::AView& p_view,
 			OvRendering::Entities::Camera& p_camera,
-			OvMaths::FVector3& p_position,
-			OvMaths::FQuaternion& p_rotation,
 			bool p_enableFocusInputs = false
 		);
 
@@ -104,8 +99,6 @@ namespace OvEditor::Core
 		OvWindowing::Window& m_window;
 		OvEditor::Panels::AView& m_view;
 		OvRendering::Entities::Camera& m_camera;
-		OvMaths::FVector3& m_cameraPosition;
-		OvMaths::FQuaternion& m_cameraRotation;
 
 		std::queue<std::tuple<OvMaths::FVector3, OvMaths::FQuaternion>> m_cameraDestinations;
 

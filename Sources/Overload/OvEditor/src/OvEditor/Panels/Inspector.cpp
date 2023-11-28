@@ -37,6 +37,7 @@
 #include <OvCore/ECS/Components/CMaterialRenderer.h>
 #include <OvCore/ECS/Components/CAudioSource.h>
 #include <OvCore/ECS/Components/CAudioListener.h>
+#include "OvCore/ECS/Components/CAmbientSphereLight.h"
 
 #include <OvWindowing/Dialogs/MessageBox.h>
 

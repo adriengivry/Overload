@@ -16,8 +16,8 @@ OvEditor::Panels::AView::AView
 	const OvUI::Settings::PanelWindowSettings& p_windowSettings
 ) : PanelWindow(p_title, p_opened, p_windowSettings)
 {
-	m_cameraPosition = { -10.0f, 3.0f, 10.0f };
-	m_cameraRotation = OvMaths::FQuaternion({0.0f, 135.0f, 0.0f});
+	m_camera.GetTransform().SetWorldPosition({-10.0f, 3.0f, 10.0f});
+	m_camera.GetTransform().SetWorldScale({ 0.0f, 135.0f, 0.0f });
 
 	m_image = &CreateWidget<OvUI::Widgets::Visual::Image>(m_fbo.GetTextureID(), OvMaths::FVector2{ 0.f, 0.f });
 
@@ -44,36 +44,21 @@ void OvEditor::Panels::AView::_Draw_Impl()
 
 void OvEditor::Panels::AView::Render()
 {
-	FillEngineUBO();
-
 	auto [winWidth, winHeight] = GetSafeSize();
 
 	// TODO: Put that in Asset and Scene view only
 	// EDITOR_CONTEXT(shapeDrawer)->SetViewProjection(m_camera.GetProjectionMatrix() * m_camera.GetViewMatrix());
 
+	// TODO: The driver shouldn't be used at all here, the win size should be provided to the RenderOutputDesc
 	EDITOR_CONTEXT(driver)->SetViewPort(0, 0, winWidth, winHeight);
 
+	OvRendering::Data::RenderOutputDesc outputDesc{
+		m_fbo
+	};
+
+	m_renderer->BeginFrame(outputDesc);
 	_Render_Impl();
-}
-
-void OvEditor::Panels::AView::SetCameraPosition(const OvMaths::FVector3 & p_position)
-{
-	m_cameraPosition = p_position;
-}
-
-void OvEditor::Panels::AView::SetCameraRotation(const OvMaths::FQuaternion& p_rotation)
-{
-	m_cameraRotation = p_rotation;
-}
-
-const OvMaths::FVector3 & OvEditor::Panels::AView::GetCameraPosition() const
-{
-	return m_cameraPosition;
-}
-
-const OvMaths::FQuaternion& OvEditor::Panels::AView::GetCameraRotation() const
-{
-	return m_cameraRotation;
+	m_renderer->EndFrame();
 }
 
 OvRendering::Entities::Camera & OvEditor::Panels::AView::GetCamera()
@@ -97,6 +82,7 @@ void OvEditor::Panels::AView::SetGridColor(const OvMaths::FVector3& p_color)
 	m_gridColor = p_color;
 }
 
+/*
 void OvEditor::Panels::AView::FillEngineUBO()
 {
 	auto& engineUBO = *EDITOR_CONTEXT(engineUBO);
@@ -114,3 +100,4 @@ void OvEditor::Panels::AView::PrepareCamera()
 	auto [winWidth, winHeight] = GetSafeSize();
 	m_camera.CacheMatrices(winWidth, winHeight, m_cameraPosition, m_cameraRotation);
 }
+*/

@@ -9,7 +9,8 @@
 #include "OvRendering/Entities/Camera.h"
 #include "OvMaths/FMatrix4.h"
 
-OvRendering::Entities::Camera::Camera() :
+OvRendering::Entities::Camera::Camera(OvMaths::FTransform* p_transform) :
+	Entity(p_transform),
     m_projectionMode(Settings::EProjectionMode::PERSPECTIVE),
 	m_fov(45.0f),
     m_size(5.0f),
@@ -17,14 +18,15 @@ OvRendering::Entities::Camera::Camera() :
 	m_far(100.f),
 	m_clearColor(0.f, 0.f, 0.f),
 	m_frustumGeometryCulling(false),
-	m_frustumLightCulling(false)
+	m_frustumLightCulling(false),
+	m_frustum{}
 {
 }
 
-void OvRendering::Entities::Camera::CacheMatrices(uint16_t p_windowWidth, uint16_t p_windowHeight, const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation)
+void OvRendering::Entities::Camera::CacheMatrices(uint16_t p_windowWidth, uint16_t p_windowHeight)
 {
 	CacheProjectionMatrix(p_windowWidth, p_windowHeight);
-	CacheViewMatrix(p_position, p_rotation);
+	CacheViewMatrix();
 	CacheFrustum(m_viewMatrix, m_projectionMatrix);
 }
 
@@ -33,14 +35,24 @@ void OvRendering::Entities::Camera::CacheProjectionMatrix(uint16_t p_windowWidth
 	m_projectionMatrix = CalculateProjectionMatrix(p_windowWidth, p_windowHeight);
 }
 
-void OvRendering::Entities::Camera::CacheViewMatrix(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation)
+void OvRendering::Entities::Camera::CacheViewMatrix()
 {
-	m_viewMatrix = CalculateViewMatrix(p_position, p_rotation);
+	m_viewMatrix = CalculateViewMatrix();
 }
 
 void OvRendering::Entities::Camera::CacheFrustum(const OvMaths::FMatrix4& p_view, const OvMaths::FMatrix4& p_projection)
 {
 	m_frustum.CalculateFrustum(p_projection * p_view);
+}
+
+const OvMaths::FVector3& OvRendering::Entities::Camera::GetPosition() const
+{
+	return GetTransform().GetWorldPosition();
+}
+
+const OvMaths::FQuaternion& OvRendering::Entities::Camera::GetRotation() const
+{
+	return GetTransform().GetWorldRotation();
 }
 
 float OvRendering::Entities::Camera::GetFov() const
@@ -96,6 +108,16 @@ bool OvRendering::Entities::Camera::HasFrustumLightCulling() const
 OvRendering::Settings::EProjectionMode OvRendering::Entities::Camera::GetProjectionMode() const
 {
     return m_projectionMode;
+}
+
+void OvRendering::Entities::Camera::SetPosition(const OvMaths::FVector3& p_position)
+{
+	GetTransform().SetWorldPosition(p_position);
+}
+
+void OvRendering::Entities::Camera::SetRotation(const OvMaths::FQuaternion& p_rotation)
+{
+	GetTransform().SetWorldRotation(p_rotation);
 }
 
 void OvRendering::Entities::Camera::SetFov(float p_value)
@@ -158,15 +180,16 @@ OvMaths::FMatrix4 OvRendering::Entities::Camera::CalculateProjectionMatrix(uint1
     }
 }
 
-OvMaths::FMatrix4 OvRendering::Entities::Camera::CalculateViewMatrix(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation) const
+OvMaths::FMatrix4 OvRendering::Entities::Camera::CalculateViewMatrix() const
 {
-	const auto& up = p_rotation * OvMaths::FVector3::Up;
-	const auto& forward = p_rotation * OvMaths::FVector3::Forward;
+	const OvMaths::FVector3& position = GetTransform().GetWorldPosition();
+	const OvMaths::FQuaternion& rotation = GetTransform().GetWorldRotation();
+	const OvMaths::FVector3& up = GetTransform().GetWorldUp();
+	const OvMaths::FVector3& forward = GetTransform().GetWorldForward();
 
-	return OvMaths::FMatrix4::CreateView
-	(
-		p_position.x, p_position.y, p_position.z,												// Position
-		p_position.x + forward.x, p_position.y + forward.y, p_position.z + forward.z,			// LookAt (Position + Forward)
-		up.x, up.y, up.z																		// Up Vector
+	return OvMaths::FMatrix4::CreateView(
+		position.x, position.y, position.z,
+		position.x + forward.x, position.y + forward.y, position.z + forward.z,
+		up.x, up.y, up.z
 	);
 }

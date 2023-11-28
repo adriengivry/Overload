@@ -6,9 +6,6 @@
 
 #pragma once
 
-#include <OvRendering/Core/ShapeRenderer.h>
-#include <OvCore/ECS/SceneRenderer.h>
-
 #include "OvEditor/Panels/AViewControllable.h"
 #include "OvEditor/Core/GizmoBehaviour.h"
 
@@ -23,8 +20,7 @@ namespace OvEditor::Panels
 		* @param p_opened
 		* @param p_windowSettings
 		*/
-		SceneView
-		(
+		SceneView(
 			const std::string& p_title,
 			bool p_opened,
 			const OvUI::Settings::PanelWindowSettings& p_windowSettings
@@ -61,9 +57,6 @@ namespace OvEditor::Panels
 		OvRendering::Buffers::Framebuffer m_actorPickingFramebuffer;
 		OvEditor::Core::GizmoBehaviour m_gizmoOperations;
 		OvEditor::Core::EGizmoOperation m_currentOperation = OvEditor::Core::EGizmoOperation::TRANSLATE;
-
-		OvRendering::Core::ShapeRenderer m_shapeRenderer;
-		OvCore::ECS::SceneRenderer m_sceneRenderer;
 
 		std::optional<std::reference_wrapper<OvCore::ECS::Actor>> m_highlightedActor;
 		std::optional<OvEditor::Core::GizmoBehaviour::EDirection> m_highlightedGizmoDirection;

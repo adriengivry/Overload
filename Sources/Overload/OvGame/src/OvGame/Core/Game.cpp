@@ -54,8 +54,6 @@ void OvGame::Core::Game::PreUpdate()
 
 void OvGame::Core::Game::Update(float p_deltaTime)
 {
-	m_sceneRenderer.BeginFrame(std::nullopt);
-
 	if (auto currentScene = m_context.sceneManager.GetCurrentScene())
 	{
 		{
@@ -90,16 +88,16 @@ void OvGame::Core::Game::Update(float p_deltaTime)
 
 			auto [windowWidth, windowHeight] = m_context.window->GetSize();
 
+			m_sceneRenderer.BeginFrame(std::nullopt);
 			m_sceneRenderer.RenderScene(
 				*currentScene,
 				windowWidth,
 				windowHeight,
-				nullptr // TODO: Evaluate if we want to use a default material here instead of nullptr
+				std::nullopt // TODO: Evaluate if we want to use a default material here instead of nullptr
 			);
+			m_sceneRenderer.EndFrame();
 		}
 	}
-
-	m_sceneRenderer.EndFrame();
 
 	m_context.sceneManager.Update();
 

@@ -10,8 +10,6 @@
 
 #include "OvEditor/Panels/AView.h"
 
-namespace OvEditor::Core { class EditorRenderer; }
-
 namespace OvEditor::Panels
 {
 	class GameView : public OvEditor::Panels::AView
@@ -23,8 +21,7 @@ namespace OvEditor::Panels
 		* @param p_opened
 		* @param p_windowSettings
 		*/
-		GameView
-		(
+		GameView(
 			const std::string& p_title,
 			bool p_opened,
 			const OvUI::Settings::PanelWindowSettings& p_windowSettings
@@ -53,7 +50,6 @@ namespace OvEditor::Panels
 
 	private:
 		OvCore::SceneSystem::SceneManager& m_sceneManager;
-		OvCore::ECS::SceneRenderer m_sceneRenderer;
 		bool m_hasCamera = false;
 	};
 }

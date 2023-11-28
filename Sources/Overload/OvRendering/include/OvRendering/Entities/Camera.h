@@ -12,28 +12,28 @@
 
 #include "OvRendering/Data/Frustum.h"
 #include "OvRendering/Settings/EProjectionMode.h"
+#include "OvRendering/Entities/Entity.h"
 
 namespace OvRendering::Entities
 {
 	/**
 	* Represents a camera. Wraps projection and view calculation based on applied rotation and the given positions
 	*/
-	class Camera
+	class Camera : public OvRendering::Entities::Entity
 	{
 	public:
 		/**
 		* Constructor
+		* @param p_transform
 		*/
-		Camera();
+		Camera(OvMaths::FTransform* p_transform = nullptr);
 
 		/**
 		* Cache the projection, view and frustum matrices
 		* @param p_windowWidth
 		* @param p_windowHeight
-		* @param p_position
-		* @param p_rotation
 		*/
-		void CacheMatrices(uint16_t p_windowWidth, uint16_t p_windowHeight, const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation);
+		void CacheMatrices(uint16_t p_windowWidth, uint16_t p_windowHeight);
 
 		/**
 		* Calculate and cache the result projection matrix
@@ -44,10 +44,8 @@ namespace OvRendering::Entities
 
 		/**
 		* Calculate and cache the result view matrix
-		* @param p_position
-		* @param p_rotation
 		*/
-		void CacheViewMatrix(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation);
+		void CacheViewMatrix();
 
 		/**
 		* Calculate and cache the result frustum.
@@ -58,14 +56,24 @@ namespace OvRendering::Entities
 		void CacheFrustum(const OvMaths::FMatrix4& p_view, const OvMaths::FMatrix4& p_projection);
 
 		/**
+		* Returns the camera position
+		*/
+		const OvMaths::FVector3& GetPosition() const;
+
+		/**
+		* Returns the camera rotation
+		*/
+		const OvMaths::FQuaternion& GetRotation() const;
+
+		/**
 		* Returns the fov of the camera
 		*/
 		float GetFov() const;
 
-        /**
-        * Returns the size of the camera
-        */
-        float GetSize() const;
+		/**
+		* Returns the size of the camera
+		*/
+		float GetSize() const;
 
 		/**
 		* Returns the near of the camera
@@ -107,10 +115,22 @@ namespace OvRendering::Entities
 		*/
 		bool HasFrustumLightCulling() const;
 
-        /**
-        * Returns the current projection mode
-        */
-        OvRendering::Settings::EProjectionMode GetProjectionMode() const;
+		/**
+		* Returns the current projection mode
+		*/
+		OvRendering::Settings::EProjectionMode GetProjectionMode() const;
+
+		/**
+		* Set the camera position
+		* @param p_position
+		*/
+		void SetPosition(const OvMaths::FVector3& p_position);
+
+		/**
+		* Set the camera rotation
+		* @param p_rotation
+		*/
+		void SetRotation(const OvMaths::FQuaternion& p_rotation);
 
 		/**
 		* Sets the fov of the camera to the given value
@@ -118,11 +138,11 @@ namespace OvRendering::Entities
 		*/
 		void SetFov(float p_value);
 
-        /**
-        * Sets the size of the camera to the given value
-        * @param p_value
-        */
-        void SetSize(float p_value);
+		/**
+		* Sets the size of the camera to the given value
+		* @param p_value
+		*/
+		void SetSize(float p_value);
 
 		/**
 		* Sets the near of the camera to the given value
@@ -154,24 +174,24 @@ namespace OvRendering::Entities
 		*/
 		void SetFrustumLightCulling(bool p_enable);
 
-        /**
-        * Defines the projection mode the camera should adopt
-        * @param p_projectionMode
-        */
-        void SetProjectionMode(OvRendering::Settings::EProjectionMode p_projectionMode);
+		/**
+		* Defines the projection mode the camera should adopt
+		* @param p_projectionMode
+		*/
+		void SetProjectionMode(OvRendering::Settings::EProjectionMode p_projectionMode);
 
 	private:
 		OvMaths::FMatrix4 CalculateProjectionMatrix(uint16_t p_windowWidth, uint16_t p_windowHeight) const;
-		OvMaths::FMatrix4 CalculateViewMatrix(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation) const;
+		OvMaths::FMatrix4 CalculateViewMatrix() const;
 
 	private:
 		OvRendering::Data::Frustum m_frustum;
 		OvMaths::FMatrix4 m_viewMatrix;
 		OvMaths::FMatrix4 m_projectionMatrix;
-        OvRendering::Settings::EProjectionMode m_projectionMode;
+		OvRendering::Settings::EProjectionMode m_projectionMode;
 
 		float m_fov;
-        float m_size;
+		float m_size;
 		float m_near;
 		float m_far;
 
