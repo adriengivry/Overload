@@ -38,8 +38,9 @@ namespace OvRendering::Buffers
 
 		/**
 		* Bind the UBO
+		* @param p_bindingPoint
 		*/
-		void Bind();
+		void Bind(uint32_t p_bindingPoint);
 
 		/**
 		* Unbind the UBO
@@ -92,6 +93,7 @@ namespace OvRendering::Buffers
 
 	private:
 		uint32_t m_bufferID;
+		uint32_t m_bindingPoint = 0;
 	};
 }
 

@@ -50,7 +50,6 @@ namespace OvRendering::Buffers
 
 	private:
 		uint32_t m_bufferID;
-		uint32_t m_bindingPoint = 0;
 	};
 }
 

@@ -53,7 +53,8 @@ void OvCore::Rendering::EngineBufferRenderFeature::OnBeforeDraw(const OvRenderin
 		sizeof(OvMaths::FVector3) +
 		sizeof(float)
 	);
-	m_engineBuffer->Bind();
+
+	m_engineBuffer->Bind(0);
 }
 
 void OvCore::Rendering::EngineBufferRenderFeature::OnBeginFrame(std::optional<OvRendering::Data::RenderOutputDesc>& p_outputDesc)

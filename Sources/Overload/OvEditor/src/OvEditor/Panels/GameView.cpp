@@ -21,6 +21,8 @@ OvEditor::Panels::GameView::GameView
 	m_sceneManager(EDITOR_CONTEXT(sceneManager))
 {
 	m_renderer = std::make_unique<OvCore::Rendering::SceneRenderer>(*EDITOR_CONTEXT(driver));
+
+	OvRendering::Buffers::UniformBuffer test(1024, 1);
 }
 
 void OvEditor::Panels::GameView::Update(float p_deltaTime)

@@ -46,8 +46,7 @@ OvEditor::Panels::AssetView::AssetView
 	m_renderer = std::make_unique<OvRendering::Core::CompositeRenderer>(*EDITOR_CONTEXT(driver));
 	auto& renderer = GetRendererAs<OvRendering::Core::CompositeRenderer>();
 	auto& lightingFeature = renderer.AddFeature<OvRendering::Features::LightingRenderFeature>();
-	// TODO: Reenable, for something reason having multiple UBOs break the game view right now
-	// renderer.AddFeature<OvCore::Rendering::EngineBufferRenderFeature>();
+	renderer.AddFeature<OvCore::Rendering::EngineBufferRenderFeature>();
 	renderer.AddFeature<OvEditor::Rendering::EditorViewRenderFeature>();
 
 	OvMaths::FTransform simulatedLightTransform;

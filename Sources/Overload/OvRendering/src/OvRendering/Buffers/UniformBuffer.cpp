@@ -9,13 +9,17 @@
 #include "OvRendering/Buffers/UniformBuffer.h"
 #include "OvRendering/Resources/Shader.h"
 
-OvRendering::Buffers::UniformBuffer::UniformBuffer(size_t p_size, uint32_t p_bindingPoint, uint32_t p_offset, EAccessSpecifier p_accessSpecifier)
+OvRendering::Buffers::UniformBuffer::UniformBuffer(
+	size_t p_size,
+	uint32_t p_bindingPoint,
+	uint32_t p_offset,
+	EAccessSpecifier p_accessSpecifier
+) : m_bindingPoint(p_bindingPoint)
 {
 	glGenBuffers(1, &m_bufferID);
 	glBindBuffer(GL_UNIFORM_BUFFER, m_bufferID);
-	glBufferData(GL_UNIFORM_BUFFER, p_size, NULL, static_cast<GLint>(p_accessSpecifier));
+	glBufferData(GL_UNIFORM_BUFFER, p_size, nullptr, static_cast<GLint>(p_accessSpecifier));
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	glBindBufferRange(GL_UNIFORM_BUFFER, p_bindingPoint, m_bufferID, p_offset, p_size);
 }
 
 OvRendering::Buffers::UniformBuffer::~UniformBuffer()
@@ -23,9 +27,9 @@ OvRendering::Buffers::UniformBuffer::~UniformBuffer()
 	glDeleteBuffers(1, &m_bufferID);
 }
 
-void OvRendering::Buffers::UniformBuffer::Bind()
+void OvRendering::Buffers::UniformBuffer::Bind(uint32_t p_bindingPoint)
 {
-	glBindBuffer(GL_UNIFORM_BUFFER, m_bufferID);
+	glBindBufferBase(GL_UNIFORM_BUFFER, p_bindingPoint, m_bufferID);
 }
 
 void OvRendering::Buffers::UniformBuffer::Unbind()
