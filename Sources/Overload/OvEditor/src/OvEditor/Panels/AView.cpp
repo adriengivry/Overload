@@ -16,54 +16,54 @@ OvEditor::Panels::AView::AView
 	const OvUI::Settings::PanelWindowSettings& p_windowSettings
 ) : PanelWindow(p_title, p_opened, p_windowSettings)
 {
-	m_camera.GetTransform().SetWorldPosition({-10.0f, 3.0f, 10.0f});
-	m_camera.GetTransform().SetWorldScale({ 0.0f, 135.0f, 0.0f });
-
 	m_image = &CreateWidget<OvUI::Widgets::Visual::Image>(m_fbo.GetTextureID(), OvMaths::FVector2{ 0.f, 0.f });
 
-    scrollable = false;
+	scrollable = false;
 }
 
 void OvEditor::Panels::AView::Update(float p_deltaTime)
 {
 	auto[winWidth, winHeight] = GetSafeSize();
-
 	m_image->size = OvMaths::FVector2(static_cast<float>(winWidth), static_cast<float>(winHeight));
-
 	m_fbo.Resize(winWidth, winHeight);
 }
 
 void OvEditor::Panels::AView::_Draw_Impl()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-
 	OvUI::Panels::PanelWindow::_Draw_Impl();
-
 	ImGui::PopStyleVar();
+}
+
+void OvEditor::Panels::AView::InitFrame()
+{
+	// Nothing to prepare in this base view.
+	// Views should probably override this method
+	// and add appropriate descriptors for their
+	// respective renderers.
 }
 
 void OvEditor::Panels::AView::Render()
 {
+	InitFrame();
+
 	auto [winWidth, winHeight] = GetSafeSize();
+	auto camera = GetCamera();
 
-	// TODO: Put that in Asset and Scene view only
-	// EDITOR_CONTEXT(shapeDrawer)->SetViewProjection(m_camera.GetProjectionMatrix() * m_camera.GetViewMatrix());
+	OvRendering::Data::FrameDescriptor frameDescriptor;
+	frameDescriptor.clearColor = camera ? camera->GetClearColor() : OvMaths::FVector3::Zero;
+	frameDescriptor.renderWidth = winWidth;
+	frameDescriptor.renderHeight = winHeight;
+	frameDescriptor.outputBuffer = &m_fbo;
 
-	// TODO: The driver shouldn't be used at all here, the win size should be provided to the RenderOutputDesc
-	EDITOR_CONTEXT(driver)->SetViewPort(0, 0, winWidth, winHeight);
-
-	OvRendering::Data::RenderOutputDesc outputDesc{
-		m_fbo
-	};
-
-	m_renderer->BeginFrame(outputDesc);
-	_Render_Impl();
+	m_renderer->BeginFrame(frameDescriptor);
+	DrawFrame();
 	m_renderer->EndFrame();
 }
 
-OvRendering::Entities::Camera & OvEditor::Panels::AView::GetCamera()
+void OvEditor::Panels::AView::DrawFrame()
 {
-	return m_camera;
+	m_renderer->Draw();
 }
 
 std::pair<uint16_t, uint16_t> OvEditor::Panels::AView::GetSafeSize() const

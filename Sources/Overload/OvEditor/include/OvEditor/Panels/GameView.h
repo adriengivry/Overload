@@ -28,28 +28,21 @@ namespace OvEditor::Panels
 		);
 
 		/**
-		* Update the view
-		* @param p_deltaTime
+		* Prepare the renderer for rendering
 		*/
-		virtual void Update(float p_deltaTime) override;
+		virtual void InitFrame() override;
 
 		/**
-		* Custom implementation of the render method
+		* Returns the main camera used by the attached scene
 		*/
-		virtual void _Render_Impl() override;
-
-		/**
-		* Returns true if the game view has a camera
-		*/
-		bool HasCamera() const;
+		virtual OvRendering::Entities::Camera* GetCamera();
 
 		/**
 		* Returns the game view camera frustum or nothing if the game isn't playing
 		*/
-		std::optional<OvRendering::Data::Frustum> GetActiveFrustum() const;
+		std::optional<OvRendering::Data::Frustum> GetActiveFrustum();
 
 	private:
 		OvCore::SceneSystem::SceneManager& m_sceneManager;
-		bool m_hasCamera = false;
 	};
 }

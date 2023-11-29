@@ -13,41 +13,39 @@ OvRendering::Core::CompositeRenderer::CompositeRenderer(Context::Driver& p_drive
 {
 }
 
-void OvRendering::Core::CompositeRenderer::BeginFrame(std::optional<Data::RenderOutputDesc> p_outputDesc)
+void OvRendering::Core::CompositeRenderer::BeginFrame(const Data::FrameDescriptor& p_frameDescriptor)
 {
-	ABaseRenderer::BeginFrame(p_outputDesc);
+	ABaseRenderer::BeginFrame(p_frameDescriptor);
 
-	for (const auto& [_, feature] : m_renderFeatures)
+	for (const auto& [_, feature] : m_features)
 	{
-		OVASSERT(feature->Validate(), "Critical Error: Couldn't validate render feature.");
-	}
-
-	for (const auto& [_, feature] : m_renderFeatures)
-	{
-		feature->OnBeginFrame(p_outputDesc);
+		feature->OnBeginFrame(p_frameDescriptor);
 	}
 }
 
 void OvRendering::Core::CompositeRenderer::EndFrame()
 {
-	for (const auto& [_, feature] : m_renderFeatures)
+	for (const auto& [_, feature] : m_features)
 	{
 		feature->OnEndFrame();
 	}
+
+	// Consume descriptors
+	m_descriptors.clear();
 
 	return ABaseRenderer::EndFrame();
 }
 
 void OvRendering::Core::CompositeRenderer::DrawEntity(const Entities::Drawable& p_drawable)
 {
-	for (const auto& [_, feature] : m_renderFeatures)
+	for (const auto& [_, feature] : m_features)
 	{
 		feature->OnBeforeDraw(p_drawable);
 	}
 
 	ABaseRenderer::DrawEntity(p_drawable);
 
-	for (const auto& [_, feature] : m_renderFeatures)
+	for (const auto& [_, feature] : m_features)
 	{
 		feature->OnAfterDraw(p_drawable);
 	}

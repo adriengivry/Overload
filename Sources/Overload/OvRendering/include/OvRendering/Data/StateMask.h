@@ -15,6 +15,8 @@ namespace OvRendering::Data
 	*/
     struct StateMask
     {
+        // TODO: Add more common driver settings to the state mask (rasterization mode, line width...)
+        // Also maybe move ApplyStateMask method to here, taking a driver as a parameter
         union
         {
             struct

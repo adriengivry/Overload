@@ -14,68 +14,15 @@
 #include "OvCore/ECS/Components/CModelRenderer.h"
 #include "OvCore/ECS/Components/CMaterialRenderer.h"
 
-#include <chrono>
+using OpaqueDrawables = std::multimap<float, OvRendering::Entities::Drawable, std::less<float>>;
+using TransparentDrawables = std::multimap<float, OvRendering::Entities::Drawable, std::greater<float>>;
+using AllDrawables = std::pair<OpaqueDrawables, TransparentDrawables>;
 
 OvCore::Rendering::SceneRenderer::SceneRenderer(OvRendering::Context::Driver& p_driver)
 	: OvRendering::Core::CompositeRenderer(p_driver)
 {
 	AddFeature<EngineBufferRenderFeature>();
 	AddFeature<OvRendering::Features::LightingRenderFeature>();
-}
-
-OvCore::ECS::Components::CCamera* OvCore::Rendering::SceneRenderer::FindMainCamera(const OvCore::SceneSystem::Scene& p_scene)
-{
-	for (OvCore::ECS::Components::CCamera* camera : p_scene.GetFastAccessComponents().cameras)
-	{
-		if (camera->owner.IsActive())
-		{
-			return camera;
-		}
-	}
-
-	return nullptr;
-}
-
-void OvCore::Rendering::SceneRenderer::RenderScene(
-	OvCore::SceneSystem::Scene& p_scene,
-	uint16_t p_viewportWidth,
-	uint16_t p_viewportHeight,
-	std::optional<std::reference_wrapper<OvCore::Resources::Material>> p_materialOverride
-)
-{
-	if (OvCore::ECS::Components::CCamera* mainCameraComponent = FindMainCamera(p_scene))
-	{
-		if (mainCameraComponent->HasFrustumLightCulling())
-		{
-			UpdateLightsInFrustum(p_scene, mainCameraComponent->GetCamera().GetFrustum());
-		}
-		else
-		{
-			UpdateLights(p_scene);
-		}
-
-		auto& camera = mainCameraComponent->GetCamera();
-
-		GetFeature<EngineBufferRenderFeature>().UploadViewData(
-			camera,
-			p_viewportWidth,
-			p_viewportHeight
-		);
-
-		OvMaths::FVector3 clearColor = camera.GetClearColor();
-		m_driver.SetClearColor(clearColor.x, clearColor.y, clearColor.z);
-		m_driver.Clear(true, true, false);
-
-		m_driver.UpdateStateMask();
-		OvRendering::Data::StateMask state = m_driver.GetStateMask();
-		RenderScene(p_scene, camera, std::nullopt, p_materialOverride);
-		m_driver.ApplyStateMask(state);
-	}
-	else
-	{
-		m_driver.SetClearColor(0.0f, 0.0f, 0.0f);
-		m_driver.Clear(true, true, false);
-	}
 }
 
 OvRendering::Features::LightingRenderFeature::LightSet FindActiveLights(const OvCore::SceneSystem::Scene& p_scene)
@@ -95,52 +42,27 @@ OvRendering::Features::LightingRenderFeature::LightSet FindActiveLights(const Ov
 	return lights;
 }
 
-void OvCore::Rendering::SceneRenderer::UpdateLights(OvCore::SceneSystem::Scene& p_scene)
+void OvCore::Rendering::SceneRenderer::BeginFrame(const OvRendering::Data::FrameDescriptor& p_frameDescriptor)
 {
-	PROFILER_SPY("Light SSBO Update");
-	auto activeLights = FindActiveLights(p_scene);
-	GetFeature<OvRendering::Features::LightingRenderFeature>().UploadLightingData(activeLights, std::nullopt);
+	OVASSERT(HasDescriptor<SceneDescriptor>(), "Cannot find SceneDescriptor attached to this renderer");
+
+	auto& sceneDescriptor = GetDescriptor<SceneDescriptor>();
+
+	sceneDescriptor.camera.CacheMatrices(p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
+
+	AddDescriptor<OvCore::Rendering::EngineBufferRenderFeature::EngineBufferDescriptor>({
+		sceneDescriptor.camera
+	});
+
+	AddDescriptor<OvRendering::Features::LightingRenderFeature::LightingDescriptor>({
+		FindActiveLights(sceneDescriptor.scene),
+		sceneDescriptor.camera.HasFrustumLightCulling() ? std::optional(sceneDescriptor.camera.GetFrustum()) : std::nullopt
+	});
+
+	OvRendering::Core::CompositeRenderer::BeginFrame(p_frameDescriptor);
 }
 
-void OvCore::Rendering::SceneRenderer::UpdateLightsInFrustum(OvCore::SceneSystem::Scene& p_scene, const OvRendering::Data::Frustum& p_frustum)
-{
-	PROFILER_SPY("Light SSBO Update (Frustum culled)");
-	auto activeLights = FindActiveLights(p_scene);
-	GetFeature<OvRendering::Features::LightingRenderFeature>().UploadLightingData(activeLights, p_frustum);
-}
-
-void OvCore::Rendering::SceneRenderer::RenderScene(
-	OvCore::SceneSystem::Scene& p_scene,
-	const OvRendering::Entities::Camera& p_camera,
-	std::optional<OvRendering::Data::Frustum> p_frustumOverride,
-	std::optional<std::reference_wrapper<OvCore::Resources::Material>> p_materialOverride
-)
-{
-	OpaqueDrawables	opaqueMeshes;
-	TransparentDrawables transparentMeshes;
-
-	if (p_camera.HasFrustumGeometryCulling())
-	{
-		const auto& frustum = p_frustumOverride ? p_frustumOverride.value() : p_camera.GetFrustum();
-		std::tie(opaqueMeshes, transparentMeshes) = FindAndSortDrawables(p_scene, p_camera.GetPosition(), frustum, p_materialOverride);
-	}
-	else
-	{
-		std::tie(opaqueMeshes, transparentMeshes) = FindAndSortDrawables(p_scene, p_camera.GetPosition(), std::nullopt, p_materialOverride);
-	}
-
-	for (const auto& [distance, drawable] : opaqueMeshes)
-	{
-		DrawEntity(drawable);
-	}
-
-	for (const auto& [distance, drawable] : transparentMeshes)
-	{
-		DrawEntity(drawable);
-	}
-}
-
-std::pair<OvCore::Rendering::SceneRenderer::OpaqueDrawables, OvCore::Rendering::SceneRenderer::TransparentDrawables> OvCore::Rendering::SceneRenderer::FindAndSortDrawables(
+AllDrawables FindAndSortDrawables(
 	const OvCore::SceneSystem::Scene& p_scene,
 	const OvMaths::FVector3& p_cameraPosition,
 	std::optional<OvRendering::Data::Frustum> p_frustum,
@@ -235,36 +157,36 @@ std::pair<OvCore::Rendering::SceneRenderer::OpaqueDrawables, OvCore::Rendering::
 	return { opaqueDrawables, transparentDrawables };
 }
 
-void OvCore::Rendering::SceneRenderer::DrawModelWithSingleMaterial(
-	OvRendering::Resources::Model& p_model,
-	OvCore::Resources::Material& p_material,
-	OvMaths::FMatrix4 const* p_modelMatrix,
-	std::optional<std::reference_wrapper<OvCore::Resources::Material>> p_materialOverride
-)
+void OvCore::Rendering::SceneRenderer::Draw()
 {
-	std::optional<std::reference_wrapper<OvCore::Resources::Material>> targetMaterial =
-		p_material.GetShader() ?
-		std::ref(p_material) :
-		p_materialOverride;
-	
-	if (p_materialOverride)
+	auto& sceneDescriptor = GetDescriptor<SceneDescriptor>();
+	auto& scene = sceneDescriptor.scene;
+	auto& camera = sceneDescriptor.camera;
+	auto& frustumOverride = sceneDescriptor.frustumOverride;
+	auto& materialOverride = sceneDescriptor.materialOverride;
+
+	OpaqueDrawables	opaqueMeshes;
+	TransparentDrawables transparentMeshes;
+
+	if (camera.HasFrustumGeometryCulling())
 	{
-		OvCore::Resources::Material& material = targetMaterial.value().get();
-
-		OvRendering::Data::StateMask stateMask = material.GenerateStateMask();
-		OvMaths::FMatrix4 userMatrix = OvMaths::FMatrix4::Identity;
-
-		for (auto mesh : p_model.GetMeshes())
-		{
-			OvRendering::Entities::Drawable element{
-				*p_modelMatrix,
-				*mesh,
-				material,
-				stateMask,
-				userMatrix
-			};
-
-			DrawEntity(element);
-		}
+		const auto& frustum = frustumOverride ? frustumOverride.value() : camera.GetFrustum();
+		std::tie(opaqueMeshes, transparentMeshes) = FindAndSortDrawables(scene, camera.GetPosition(), frustum, materialOverride);
 	}
+	else
+	{
+		// TODO: Consider auto[x, y] instead of std::tie (not sure if it's exactly equivalent)
+		std::tie(opaqueMeshes, transparentMeshes) = FindAndSortDrawables(scene, camera.GetPosition(), std::nullopt, materialOverride);
+	}
+
+	for (const auto& [distance, drawable] : opaqueMeshes)
+	{
+		DrawEntity(drawable);
+	}
+
+	for (const auto& [distance, drawable] : transparentMeshes)
+	{
+		DrawEntity(drawable);
+	}
+
 }

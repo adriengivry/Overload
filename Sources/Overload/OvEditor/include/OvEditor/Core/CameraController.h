@@ -85,9 +85,22 @@ namespace OvEditor::Core
 		*/
 		bool IsRightMousePressed() const;
 
+		/**
+		* Lock the target actor to the given actor.
+		* @note Usefull to force orbital camera or camera focus to target a specific actor
+		* @param p_actor
+		*/
+		void LockTargetActor(OvCore::ECS::Actor& p_actor);
+
+		/**
+		* Removes any locked actor
+		*/
+		void UnlockTargetActor();
+
 	private:
+		std::optional<std::reference_wrapper<OvCore::ECS::Actor>> GetTargetActor() const;
 		void HandleCameraPanning(const OvMaths::FVector2& p_mouseOffset, bool p_firstMouse);
-		void HandleCameraOrbit(const OvMaths::FVector2& p_mouseOffset, bool p_firstMouse);
+		void HandleCameraOrbit(OvCore::ECS::Actor& p_target, const OvMaths::FVector2& p_mouseOffset, bool p_firstMouse);
 		void HandleCameraFPSMouse(const OvMaths::FVector2& p_mouseOffset, bool p_firstMouse);
 
 		void HandleCameraZoom();
@@ -123,5 +136,7 @@ namespace OvEditor::Core
 		float m_cameraMoveSpeed = 15.0f;
 		float m_focusDistance = 15.0f;
 		float m_focusLerpCoefficient = 8.0f;
+
+		std::optional<std::reference_wrapper<OvCore::ECS::Actor>> m_lockedActor = std::nullopt;
 	};
 }

@@ -27,14 +27,14 @@ namespace OvEditor::Rendering
 	/**
 	* Handle the rendering of the editor
 	*/
-	class EditorViewRenderFeature : public OvRendering::Features::DebugShapeRenderFeature
+	class DebugSceneRenderer : public OvCore::Rendering::SceneRenderer
 	{
 	public:
 		/**
-		* Constructor
-		* @param p_renderer
+		* Constructor of the Renderer
+		* @param p_driver
 		*/
-		EditorViewRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer);
+		DebugSceneRenderer(OvRendering::Context::Driver& p_driver);
 
 		/**
 		* Initialize custom materials
@@ -47,6 +47,7 @@ namespace OvEditor::Rendering
 		* @param p_material
 		*/
 		void PreparePickingMaterial(OvCore::ECS::Actor& p_actor, OvCore::Resources::Material& p_material);
+		// TODO: Consider moving everything actor picking related to its own render feature
 
 		/**
 		* Calculate the model matrix for a camera attached to the given actor
@@ -178,26 +179,13 @@ namespace OvEditor::Rendering
 		void RenderBoundingSpheres(OvCore::ECS::Components::CModelRenderer& p_modelRenderer);
 
 		/**
-		* Render model
-		*/
-		void RenderModelAsset(OvRendering::Resources::Model& p_model);
-
-		/**
-		* Render texture
-		*/
-		void RenderTextureAsset(OvRendering::Resources::Texture& p_texture);
-
-		/**
-		* Render material
-		*/
-		void RenderMaterialAsset(OvCore::Resources::Material& p_material);
-
-		/**
 		* Render the grid
 		*/
 		void RenderGrid(const OvMaths::FVector3& p_viewPos, const OvMaths::FVector3& p_color);
 
 	private:
+		OvRendering::Features::DebugShapeRenderFeature& m_debugShapeFeature;
+
 		OvCore::Resources::Material m_gridMaterial;
 		OvCore::Resources::Material m_stencilFillMaterial;
 		OvCore::Resources::Material m_textureMaterial;

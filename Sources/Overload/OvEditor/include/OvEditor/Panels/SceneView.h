@@ -27,25 +27,25 @@ namespace OvEditor::Panels
 		);
 
 		/**
+		* Prepare the renderer for rendering
+		*/
+		virtual void InitFrame() override;
+
+		/**
 		* Update the scene view
 		*/
 		virtual void Update(float p_deltaTime) override;
 
 		/**
-		* Custom implementation of the render method
-		*/
-		virtual void _Render_Impl() override;
-
-		/**
 		* Render the actual scene
 		* @param p_defaultStateMask
 		*/
-		void RenderScene(OvRendering::Data::StateMask p_defaultStateMask);
+		// void RenderScene(OvRendering::Data::StateMask p_defaultStateMask);
 
 		/**
 		* Render the scene for actor picking (Using unlit colors)
 		*/
-		void RenderSceneForActorPicking();
+		// void RenderSceneForActorPicking();
 
 		/**
 		* Render the scene for actor picking and handle the logic behind it

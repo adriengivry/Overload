@@ -25,53 +25,39 @@ OvEditor::Panels::GameView::GameView
 	OvRendering::Buffers::UniformBuffer test(1024, 1);
 }
 
-void OvEditor::Panels::GameView::Update(float p_deltaTime)
+void OvEditor::Panels::GameView::InitFrame()
 {
-	AView::Update(p_deltaTime);
-
-	/*
-	auto currentScene = EDITOR_CONTEXT(sceneManager).GetCurrentScene();
-
-	if (currentScene)
+	if (auto currentScene = m_sceneManager.GetCurrentScene())
 	{
-		auto cameraComponent = m_sceneRenderer.FindMainCamera(*currentScene);
-
-		if (cameraComponent)
+		if (auto camera = GetCamera())
 		{
-			m_camera = cameraComponent->GetCamera();
-			m_cameraPosition = cameraComponent->owner.transform.GetWorldPosition();
-			m_cameraRotation = cameraComponent->owner.transform.GetWorldRotation();
-			m_hasCamera = true;
-			PrepareCamera();
-		}
-		else
-		{
-			m_camera.SetClearColor({ 0.f, 0.f, 0.f });
-			m_hasCamera = false;
+			m_renderer->AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>({
+				*currentScene,
+				*camera
+			});
 		}
 	}
-	*/
 }
 
-void OvEditor::Panels::GameView::_Render_Impl()
+OvRendering::Entities::Camera* OvEditor::Panels::GameView::GetCamera()
 {
-	if (auto currentScene = m_sceneManager.GetCurrentScene(); currentScene && m_size.x > 0 && m_size.y > 0)
+	if (auto scene = m_sceneManager.GetCurrentScene())
 	{
-		GetRendererAs<OvCore::Rendering::SceneRenderer>().RenderScene(
-			*currentScene,
-			static_cast<uint16_t>(m_size.x),
-			static_cast<uint16_t>(m_size.y),
-			std::nullopt // TODO: Evaluate if we want to use a default material here
-		);
+		if (auto camera = scene->FindMainCamera())
+		{
+			return &camera->GetCamera();
+		}
 	}
+
+	return nullptr;
 }
 
-bool OvEditor::Panels::GameView::HasCamera() const
+std::optional<OvRendering::Data::Frustum> OvEditor::Panels::GameView::GetActiveFrustum()
 {
-	return m_hasCamera;
-}
+	if (auto camera = GetCamera())
+	{
+		return camera->GetFrustum();
+	}
 
-std::optional<OvRendering::Data::Frustum> OvEditor::Panels::GameView::GetActiveFrustum() const
-{
-	return m_hasCamera ? m_camera.GetFrustum() : std::optional<OvRendering::Data::Frustum>{};
+	return std::nullopt;
 }

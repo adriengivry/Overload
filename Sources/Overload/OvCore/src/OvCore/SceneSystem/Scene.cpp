@@ -180,6 +180,19 @@ std::vector<std::reference_wrapper<OvCore::ECS::Actor>> OvCore::SceneSystem::Sce
 	return actors;
 }
 
+OvCore::ECS::Components::CCamera* OvCore::SceneSystem::Scene::FindMainCamera()
+{
+	for (OvCore::ECS::Components::CCamera* camera : m_fastAccessComponents.cameras)
+	{
+		if (camera->owner.IsActive())
+		{
+			return camera;
+		}
+	}
+
+	return nullptr;
+}
+
 void OvCore::SceneSystem::Scene::OnComponentAdded(ECS::Components::AComponent& p_compononent)
 {
 	if (auto result = dynamic_cast<ECS::Components::CModelRenderer*>(&p_compononent))

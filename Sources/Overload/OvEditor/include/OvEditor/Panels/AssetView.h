@@ -9,6 +9,8 @@
 #include <variant>
 
 #include <OvCore/Resources/Material.h>
+#include <OvCore/ECS/Components/CMaterialRenderer.h>
+#include <OvCore/ECS/Components/CModelRenderer.h>
 
 #include "OvEditor/Panels/AViewControllable.h"
 
@@ -35,9 +37,9 @@ namespace OvEditor::Panels
 		);
 
 		/**
-		* Custom implementation of the render method
+		* Prepare the renderer for rendering
 		*/
-		virtual void _Render_Impl() override;
+		virtual void InitFrame() override;
 
 		/**
 		* Defines the resource to preview
@@ -46,11 +48,41 @@ namespace OvEditor::Panels
 		void SetResource(ViewableResource p_resource);
 
 		/**
+		* Clear any currently viewed resource
+		*/
+		void ClearResource();
+
+		/**
+		* Set the currently viewed resource to the given texture
+		* @param p_texture
+		*/
+		void SetTexture(OvRendering::Resources::Texture& p_texture);
+
+		/**
+		* Set the currently viewed resource to the given model
+		* @param p_model
+		*/
+		void SetModel(OvRendering::Resources::Model& p_model);
+
+		/**
+		* Set the currently viewed resource to the given material
+		* @param p_material
+		*/
+		void SetMaterial(OvCore::Resources::Material& p_material);
+
+		/**
 		* Return the currently previewed resource
 		*/
-		ViewableResource GetResource() const;
+		ViewableResource GetResource() const; // TODO: Consider removing this getter (and storing the m_resource at all)
 
 	private:
+		OvCore::Resources::Material m_defaultMaterial;
+		OvCore::Resources::Material m_textureMaterial;
+
+		OvCore::ECS::Actor* m_assetActor;
+		OvCore::ECS::Components::CModelRenderer* m_modelRenderer;
+		OvCore::ECS::Components::CMaterialRenderer* m_materialRenderer;
 		ViewableResource m_resource;
+		OvCore::SceneSystem::Scene m_scene;
 	};
 }

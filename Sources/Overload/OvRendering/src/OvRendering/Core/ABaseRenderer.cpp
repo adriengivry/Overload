@@ -23,18 +23,30 @@ OvRendering::Core::ABaseRenderer::~ABaseRenderer()
 	OvRendering::Resources::Loaders::TextureLoader::Destroy(m_emptyTexture);
 }
 
-void OvRendering::Core::ABaseRenderer::BeginFrame(std::optional<Data::RenderOutputDesc> p_outputDesc)
+void OvRendering::Core::ABaseRenderer::BeginFrame(const Data::FrameDescriptor& p_frameDescriptor)
 {
-	OVASSERT(!s_isDrawing, "Critical Error: Cannot call BeginFrame() when previous frame hasn't finished.");
+	OVASSERT(!s_isDrawing, "Cannot call BeginFrame() when previous frame hasn't finished.");
 
-	if (p_outputDesc)
+	m_frameDescriptor = p_frameDescriptor;
+
+	m_driver.UpdateStateMask();
+	m_previousStateMask = m_driver.GetStateMask();
+
+	if (p_frameDescriptor.outputBuffer)
 	{
-		m_target = std::make_optional(std::ref(p_outputDesc.value().framebuffer));
+		p_frameDescriptor.outputBuffer->Bind();
 	}
 
-	if (m_target)
+	m_driver.SetViewPort(0, 0, p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
+
+	if (p_frameDescriptor.clearColorBuffer || p_frameDescriptor.clearDepthBuffer || p_frameDescriptor.clearStencilBuffer)
 	{
-		m_target->get().Bind();
+		Clear(
+			p_frameDescriptor.clearColor,
+			p_frameDescriptor.clearColorBuffer,
+			p_frameDescriptor.clearDepthBuffer,
+			p_frameDescriptor.clearStencilBuffer
+		);
 	}
 
 	m_isDrawing = true;
@@ -43,11 +55,13 @@ void OvRendering::Core::ABaseRenderer::BeginFrame(std::optional<Data::RenderOutp
 
 void OvRendering::Core::ABaseRenderer::EndFrame()
 {
-	OVASSERT(s_isDrawing, "Critical Error: Cannot call EndFrame() before calling BeginFrame()");
+	OVASSERT(s_isDrawing, "Cannot call EndFrame() before calling BeginFrame()");
 
-	if (m_target)
+	m_driver.ApplyStateMask(m_previousStateMask);
+
+	if (m_frameDescriptor.value().outputBuffer)
 	{
-		m_target->get().Unbind();
+		m_frameDescriptor.value().outputBuffer->Unbind();
 	}
 
 	m_isDrawing = false;
@@ -57,6 +71,18 @@ void OvRendering::Core::ABaseRenderer::EndFrame()
 OvRendering::Context::Driver& OvRendering::Core::ABaseRenderer::GetDriver() const
 {
 	return m_driver;
+}
+
+void OvRendering::Core::ABaseRenderer::Clear(const OvMaths::FVector3& p_color, bool p_colorBuffer, bool p_depthBuffer, bool p_stencilBuffer)
+{
+	m_driver.SetClearColor(p_color.x, p_color.y, p_color.z);
+	m_driver.Clear(p_colorBuffer, p_depthBuffer, p_stencilBuffer);
+}
+
+const OvRendering::Data::FrameDescriptor& OvRendering::Core::ABaseRenderer::GetFrameDescriptor() const
+{
+	OVASSERT(m_frameDescriptor.has_value(), "Cannot call GetFrameDescriptor() outside of a frame");
+	return m_frameDescriptor.value();
 }
 
 void OvRendering::Core::ABaseRenderer::DrawEntity(const Entities::Drawable& p_drawable)
@@ -100,5 +126,38 @@ void OvRendering::Core::ABaseRenderer::DrawMesh(const Resources::IMesh& p_mesh, 
 		}
 
 		p_mesh.Unbind();
+	}
+}
+
+void OvRendering::Core::ABaseRenderer::DrawModelWithSingleMaterial(
+	OvRendering::Resources::Model& p_model,
+	OvRendering::Data::Material& p_material,
+	const OvMaths::FMatrix4& p_modelMatrix,
+	std::optional<std::reference_wrapper<OvRendering::Data::Material>> p_fallbackMaterial
+)
+{
+	std::optional<std::reference_wrapper<Data::Material>> targetMaterial =
+		p_material.GetShader() ?
+		std::ref(p_material) :
+		p_fallbackMaterial;
+
+	if (targetMaterial)
+	{
+		Data::Material& material = targetMaterial.value().get();
+		Data::StateMask stateMask = material.GenerateStateMask();
+		OvMaths::FMatrix4 userMatrix = OvMaths::FMatrix4::Identity;
+
+		for (auto mesh : p_model.GetMeshes())
+		{
+			OvRendering::Entities::Drawable element{
+				p_modelMatrix,
+				*mesh,
+				material,
+				stateMask,
+				userMatrix
+			};
+
+			DrawEntity(element);
+		}
 	}
 }

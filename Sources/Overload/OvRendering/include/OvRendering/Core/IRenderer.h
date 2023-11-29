@@ -8,7 +8,7 @@
 
 #include <optional>
 
-#include "OvRendering/Data/RenderOutputDesc.h"
+#include "OvRendering/Data/FrameDescriptor.h"
 #include "OvRendering/Context/Driver.h"
 
 namespace OvRendering::Data
@@ -21,7 +21,7 @@ namespace OvRendering::Core
 	class IRenderer
 	{
 	public:
-		virtual void BeginFrame(std::optional<Data::RenderOutputDesc> p_outputDesc) = 0;
+		virtual void BeginFrame(const Data::FrameDescriptor& p_frameDescriptor) = 0;
 		virtual void EndFrame() = 0;
 		virtual Context::Driver& GetDriver() const = 0;
 	};

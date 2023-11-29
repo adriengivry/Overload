@@ -19,7 +19,7 @@
 
 #include <OvDebug/Assertion.h>
 
-#include "OvEditor/Rendering/EditorViewRenderFeature.h"
+#include "OvEditor/Rendering/DebugSceneRenderer.h"
 #include "OvEditor/Core/EditorResources.h"
 #include "OvEditor/Panels/AView.h"
 #include "OvEditor/Panels/GameView.h"
@@ -37,18 +37,20 @@ const OvMaths::FVector3 LIGHT_VOLUME_COLOR		= { 1.0f, 1.0f, 0.0f };
 const OvMaths::FVector3 COLLIDER_COLOR			= { 0.0f, 1.0f, 0.0f };
 const OvMaths::FVector3 FRUSTUM_COLOR			= { 1.0f, 1.0f, 1.0f };
 
-OvEditor::Rendering::EditorViewRenderFeature::EditorViewRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer) :
-	OvRendering::Features::DebugShapeRenderFeature(p_renderer)
+OvEditor::Rendering::DebugSceneRenderer::DebugSceneRenderer(OvRendering::Context::Driver& p_driver) :
+	OvCore::Rendering::SceneRenderer(p_driver),
+	m_debugShapeFeature(AddFeature<OvRendering::Features::DebugShapeRenderFeature>())
 {
 	// TODO: Do not use the driver directly heres
 	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::STENCIL_TEST, true);
 	m_driver.SetStencilOperations(OvRendering::Settings::EOperation::KEEP, OvRendering::Settings::EOperation::KEEP, OvRendering::Settings::EOperation::REPLACE);
 	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::ALWAYS, 1, 0xFF);
 
+
 	InitMaterials();
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::InitMaterials()
+void OvEditor::Rendering::DebugSceneRenderer::InitMaterials()
 {
 	/* Default Material */
 	m_defaultMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Standard.glsl"]);
@@ -123,7 +125,7 @@ void OvEditor::Rendering::EditorViewRenderFeature::InitMaterials()
 	m_actorPickingMaterial.SetBackfaceCulling(false);
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::PreparePickingMaterial(OvCore::ECS::Actor& p_actor, OvCore::Resources::Material& p_material)
+void OvEditor::Rendering::DebugSceneRenderer::PreparePickingMaterial(OvCore::ECS::Actor& p_actor, OvCore::Resources::Material& p_material)
 {
 	uint32_t actorID = static_cast<uint32_t>(p_actor.GetID());
 
@@ -133,7 +135,7 @@ void OvEditor::Rendering::EditorViewRenderFeature::PreparePickingMaterial(OvCore
 	p_material.Set("u_Diffuse", color);
 }
 
-OvMaths::FMatrix4 OvEditor::Rendering::EditorViewRenderFeature::CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor)
+OvMaths::FMatrix4 OvEditor::Rendering::DebugSceneRenderer::CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor)
 {
 	auto translation = FMatrix4::Translation(p_actor.transform.GetWorldPosition());
 	auto rotation = FQuaternion::ToMatrix4(p_actor.transform.GetWorldRotation());
@@ -141,7 +143,7 @@ OvMaths::FMatrix4 OvEditor::Rendering::EditorViewRenderFeature::CalculateCameraM
 	return translation * rotation;
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderSceneForActorPicking(OvCore::SceneSystem::Scene& p_scene)
+void OvEditor::Rendering::DebugSceneRenderer::RenderSceneForActorPicking(OvCore::SceneSystem::Scene& p_scene)
 {
 	/* Render models */
 	for (auto modelRenderer : p_scene.GetFastAccessComponents().modelRenderers)
@@ -178,7 +180,7 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderSceneForActorPicking(Ov
 							m_actorPickingMaterial.SetDepthTest(material->HasDepthTest());
 							m_actorPickingMaterial.SetDepthWriting(material->HasDepthWriting());
 
-							m_renderer.DrawEntity(OvRendering::Entities::Drawable{
+							DrawEntity(OvRendering::Entities::Drawable{
 								modelMatrix,
 								*mesh,
 								m_actorPickingMaterial,
@@ -203,7 +205,7 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderSceneForActorPicking(Ov
 			auto& model = *EDITOR_CONTEXT(editorResources)->GetModel("Camera");
 			auto modelMatrix = CalculateCameraModelMatrix(actor);
 
-			static_cast<OvCore::Rendering::SceneRenderer&>(m_renderer).DrawModelWithSingleMaterial(model, m_actorPickingMaterial, &modelMatrix);
+			DrawModelWithSingleMaterial(model, m_actorPickingMaterial, modelMatrix);
 		}
 	}
 
@@ -225,13 +227,13 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderSceneForActorPicking(Ov
 				PreparePickingMaterial(actor, m_lightMaterial);
 				auto& model = *EDITOR_CONTEXT(editorResources)->GetModel("Vertical_Plane");
 				auto modelMatrix = FMatrix4::Translation(actor.transform.GetWorldPosition());
-				static_cast<OvCore::Rendering::SceneRenderer&>(m_renderer).DrawModelWithSingleMaterial(model, m_lightMaterial, &modelMatrix);
+				DrawModelWithSingleMaterial(model, m_lightMaterial, modelMatrix);
 			}
 		}
 	}
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderCameras(OvCore::SceneSystem::Scene& p_scene)
+void OvEditor::Rendering::DebugSceneRenderer::RenderCameras(OvCore::SceneSystem::Scene& p_scene)
 {
 	using namespace OvMaths;
 
@@ -244,12 +246,12 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderCameras(OvCore::SceneSy
 			auto& model = *EDITOR_CONTEXT(editorResources)->GetModel("Camera");
 			auto modelMatrix = CalculateCameraModelMatrix(actor);
 			
-			static_cast<OvCore::Rendering::SceneRenderer&>(m_renderer).DrawModelWithSingleMaterial(model, m_cameraMaterial, &modelMatrix);
+			DrawModelWithSingleMaterial(model, m_cameraMaterial, modelMatrix);
 		}
 	}
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderLights(OvCore::SceneSystem::Scene& p_scene)
+void OvEditor::Rendering::DebugSceneRenderer::RenderLights(OvCore::SceneSystem::Scene& p_scene)
 {
 	using namespace OvMaths;
 
@@ -279,12 +281,12 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderLights(OvCore::SceneSys
 			const auto& lightColor = light->GetColor();
 			m_lightMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", texture);
 			m_lightMaterial.Set<OvMaths::FVector4>("u_Diffuse", OvMaths::FVector4(lightColor.x, lightColor.y, lightColor.z, 0.75f));
-			static_cast<OvCore::Rendering::SceneRenderer&>(m_renderer).DrawModelWithSingleMaterial(model, m_lightMaterial, &modelMatrix);
+			DrawModelWithSingleMaterial(model, m_lightMaterial, modelMatrix);
 		}
 	}
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderGizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, OvEditor::Core::EGizmoOperation p_operation, bool p_pickable, int p_highlightedAxis)
+void OvEditor::Rendering::DebugSceneRenderer::RenderGizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, OvEditor::Core::EGizmoOperation p_operation, bool p_pickable, int p_highlightedAxis)
 {
 	using namespace OvMaths;
 
@@ -296,10 +298,10 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderGizmo(const OvMaths::FV
 	{
 		FMatrix4 sphereModel = model * OvMaths::FMatrix4::Scaling({ 0.1f, 0.1f, 0.1f });
 
-		static_cast<OvCore::Rendering::SceneRenderer&>(m_renderer).DrawModelWithSingleMaterial(
+		DrawModelWithSingleMaterial(
 			*EDITOR_CONTEXT(editorResources)->GetModel("Sphere"),
 			m_gizmoBallMaterial,
-			&sphereModel
+			sphereModel
 		);
 
 		m_gizmoArrowMaterial.Set("u_HighlightedAxis", p_highlightedAxis);
@@ -324,29 +326,29 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderGizmo(const OvMaths::FV
 
 	if (arrowModel)
 	{
-		static_cast<OvCore::Rendering::SceneRenderer&>(m_renderer).DrawModelWithSingleMaterial(*arrowModel, p_pickable ? m_gizmoPickingMaterial : m_gizmoArrowMaterial, &model);
+		DrawModelWithSingleMaterial(*arrowModel, p_pickable ? m_gizmoPickingMaterial : m_gizmoArrowMaterial, model);
 	}
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderModelToStencil(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model)
+void OvEditor::Rendering::DebugSceneRenderer::RenderModelToStencil(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model)
 {
 	m_driver.SetStencilMask(0xFF);
-	static_cast<OvCore::Rendering::SceneRenderer&>(m_renderer).DrawModelWithSingleMaterial(p_model, m_stencilFillMaterial, &p_worldMatrix);
+	DrawModelWithSingleMaterial(p_model, m_stencilFillMaterial, p_worldMatrix);
 	m_driver.SetStencilMask(0x00);
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderModelOutline(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model, float p_width)
+void OvEditor::Rendering::DebugSceneRenderer::RenderModelOutline(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model, float p_width)
 {
 	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::NOTEQUAL, 1, 0xFF);
 	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::LINE);
 	m_driver.SetRasterizationLinesWidth(p_width);
-	static_cast<OvCore::Rendering::SceneRenderer&>(m_renderer).DrawModelWithSingleMaterial(p_model, m_outlineMaterial, &p_worldMatrix);
+	DrawModelWithSingleMaterial(p_model, m_outlineMaterial, p_worldMatrix);
 	m_driver.SetRasterizationLinesWidth(1.f);
 	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::FILL);
 	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::ALWAYS, 1, 0xFF);
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderActorOutlinePass(OvCore::ECS::Actor& p_actor, bool p_toStencil, bool p_isSelected)
+void OvEditor::Rendering::DebugSceneRenderer::RenderActorOutlinePass(OvCore::ECS::Actor& p_actor, bool p_toStencil, bool p_isSelected)
 {
 	float outlineWidth = p_isSelected ? 5.0f : 2.5f;
 
@@ -419,7 +421,7 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderActorOutlinePass(OvCore
 	}
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::DrawFrustumLines(
+void OvEditor::Rendering::DebugSceneRenderer::DrawFrustumLines(
 	const OvMaths::FVector3& pos,
 	const OvMaths::FVector3& forward,
 	float near,
@@ -440,7 +442,7 @@ void OvEditor::Rendering::EditorViewRenderFeature::DrawFrustumLines(
 		auto offset = pos + forward * planeDistance;
 		auto start = offset + p_start;
 		auto end = offset + p_end;
-		DrawLine(start, end, FRUSTUM_COLOR);
+		m_debugShapeFeature.DrawLine(start, end, FRUSTUM_COLOR);
 	};
 
 	// Draw near plane
@@ -462,7 +464,7 @@ void OvEditor::Rendering::EditorViewRenderFeature::DrawFrustumLines(
 	draw(d + forward * near, h + forward * far, 0);
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderCameraPerspectiveFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera)
+void OvEditor::Rendering::DebugSceneRenderer::RenderCameraPerspectiveFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera)
 {
 	const auto& owner = p_camera.owner;
 	auto& camera = p_camera.GetCamera();
@@ -498,7 +500,7 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderCameraPerspectiveFrustu
 	DrawFrustumLines(cameraPos, cameraForward, near, far, a, b, c, d, e, f, g, h);
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderCameraOrthographicFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera)
+void OvEditor::Rendering::DebugSceneRenderer::RenderCameraOrthographicFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera)
 {
 	auto& owner = p_camera.owner;
 	auto& camera = p_camera.GetCamera();
@@ -525,7 +527,7 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderCameraOrthographicFrust
 	DrawFrustumLines(cameraPos, cameraForward, near, far, a, b, c, d, a, b, c, d);
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderCameraFrustum(OvCore::ECS::Components::CCamera& p_camera)
+void OvEditor::Rendering::DebugSceneRenderer::RenderCameraFrustum(OvCore::ECS::Components::CCamera& p_camera)
 {
 	auto& gameView = EDITOR_PANEL(Panels::GameView, "Game View");
 	auto gameViewSize = gameView.GetSafeSize();
@@ -547,7 +549,7 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderCameraFrustum(OvCore::E
 	}
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderActorCollider(OvCore::ECS::Actor & p_actor)
+void OvEditor::Rendering::DebugSceneRenderer::RenderActorCollider(OvCore::ECS::Actor & p_actor)
 {
 	using namespace OvCore::ECS::Components;
 	using namespace OvPhysics::Entities;
@@ -565,18 +567,18 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderActorCollider(OvCore::E
 		OvMaths::FVector3 halfSize = { colliderSize.x * actorScale.x, colliderSize.y * actorScale.y, colliderSize.z * actorScale.z };
 		OvMaths::FVector3 size = halfSize * 2.f;
 		
-		DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, -halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ -halfSize.x, -halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ -halfSize.x, +halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, -halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ -halfSize.x, +halfSize.y, -halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, -halfSize.y, +halfSize.z }, center	+ rotation * OvMaths::FVector3{ -halfSize.x, +halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * OvMaths::FVector3{ +halfSize.x, -halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, -halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * OvMaths::FVector3{ +halfSize.x, halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, +halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * OvMaths::FVector3{ +halfSize.x, -halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, +halfSize.y, -halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * OvMaths::FVector3{ +halfSize.x, -halfSize.y, +halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, +halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, -halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, -halfSize.y, -halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, +halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, +halfSize.y, -halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, -halfSize.y, +halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, -halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, +halfSize.y, +halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, +halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, -halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ -halfSize.x, -halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ -halfSize.x, +halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, -halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ -halfSize.x, +halfSize.y, -halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, -halfSize.y, +halfSize.z }, center	+ rotation * OvMaths::FVector3{ -halfSize.x, +halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * OvMaths::FVector3{ +halfSize.x, -halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, -halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * OvMaths::FVector3{ +halfSize.x, halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, +halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * OvMaths::FVector3{ +halfSize.x, -halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, +halfSize.y, -halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * OvMaths::FVector3{ +halfSize.x, -halfSize.y, +halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, +halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, -halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, -halfSize.y, -halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, +halfSize.y, -halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, +halfSize.y, -halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, -halfSize.y, +halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, -halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * OvMaths::FVector3{ -halfSize.x, +halfSize.y, +halfSize.z }, center	+ rotation * OvMaths::FVector3{ +halfSize.x, +halfSize.y, +halfSize.z }, OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
 	}
 
 	/* Draw the sphere collider if any */
@@ -589,9 +591,9 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderActorCollider(OvCore::E
 
 		for (float i = 0; i <= 360.0f; i += 10.0f)
 		{
-			DrawLine(center + rotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } * radius), center + rotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-			DrawLine(center + rotation * (OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } * radius), center + rotation * (OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-			DrawLine(center + rotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } * radius), center + rotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+			m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } * radius), center + rotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+			m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } * radius), center + rotation * (OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+			m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } * radius), center + rotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
 		}
 	}
 
@@ -609,32 +611,32 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderActorCollider(OvCore::E
 		OvMaths::FVector3 hVec = { 0.0f, halfHeight, 0.0f };
 		for (float i = 0; i < 360.0f; i += 10.0f)
 		{
-			DrawLine(center + rotation * (hVec + OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *radius), center + rotation * (hVec + OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-			DrawLine(center + rotation * (-hVec + OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *radius), center + rotation * (-hVec + OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+			m_debugShapeFeature.DrawLine(center + rotation * (hVec + OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *radius), center + rotation * (hVec + OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+			m_debugShapeFeature.DrawLine(center + rotation * (-hVec + OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *radius), center + rotation * (-hVec + OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
 
 			if (i < 180.f)
 			{
-				DrawLine(center + rotation * (hVec + OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } * radius), center + rotation * (hVec + OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-				DrawLine(center + rotation * (hVec + OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } * radius), center + rotation * (hVec + OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+				m_debugShapeFeature.DrawLine(center + rotation * (hVec + OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } * radius), center + rotation * (hVec + OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+				m_debugShapeFeature.DrawLine(center + rotation * (hVec + OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } * radius), center + rotation * (hVec + OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
 			}
 			else
 			{
-				DrawLine(center + rotation * (-hVec + OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } * radius), center + rotation * (-hVec + OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-				DrawLine(center + rotation * (-hVec + OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } * radius), center + rotation * (-hVec + OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+				m_debugShapeFeature.DrawLine(center + rotation * (-hVec + OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } * radius), center + rotation * (-hVec + OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+				m_debugShapeFeature.DrawLine(center + rotation * (-hVec + OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } * radius), center + rotation * (-hVec + OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } * radius), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
 			}
 		}
 
-		DrawLine(center + rotation * (OvMaths::FVector3{ -radius, -halfHeight, 0.f }),	center + rotation * (OvMaths::FVector3{ -radius, +halfHeight, 0.f }), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * (OvMaths::FVector3{ radius, -halfHeight, 0.f }),	center + rotation * (OvMaths::FVector3{ radius, +halfHeight, 0.f }), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * (OvMaths::FVector3{ 0.f, -halfHeight, -radius }),	center + rotation * (OvMaths::FVector3{ 0.f, +halfHeight, -radius }), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
-		DrawLine(center + rotation * (OvMaths::FVector3{ 0.f, -halfHeight, radius }),	center + rotation * (OvMaths::FVector3{ 0.f, +halfHeight, radius }), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ -radius, -halfHeight, 0.f }),	center + rotation * (OvMaths::FVector3{ -radius, +halfHeight, 0.f }), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ radius, -halfHeight, 0.f }),	center + rotation * (OvMaths::FVector3{ radius, +halfHeight, 0.f }), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ 0.f, -halfHeight, -radius }),	center + rotation * (OvMaths::FVector3{ 0.f, +halfHeight, -radius }), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ 0.f, -halfHeight, radius }),	center + rotation * (OvMaths::FVector3{ 0.f, +halfHeight, radius }), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
 	}
 
 	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, depthTestBackup);
 	m_driver.SetRasterizationLinesWidth(1.0f);
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderLightBounds(OvCore::ECS::Components::CLight& p_light)
+void OvEditor::Rendering::DebugSceneRenderer::RenderLightBounds(OvCore::ECS::Components::CLight& p_light)
 {
 	bool depthTestBackup = m_driver.GetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST);
 	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, false);
@@ -649,16 +651,16 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderLightBounds(OvCore::ECS
 	{
 		for (float i = 0; i <= 360.0f; i += 10.0f)
 		{
-			DrawLine(center + rotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } *radius), center + rotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } *radius), DEBUG_BOUNDS_COLOR, 1.f);
-			DrawLine(center + rotation * (OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } *radius), center + rotation * (OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } *radius), DEBUG_BOUNDS_COLOR, 1.f);
-			DrawLine(center + rotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *radius), center + rotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *radius), DEBUG_BOUNDS_COLOR, 1.f);
+			m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } *radius), center + rotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } *radius), DEBUG_BOUNDS_COLOR, 1.f);
+			m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } *radius), center + rotation * (OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } *radius), DEBUG_BOUNDS_COLOR, 1.f);
+			m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *radius), center + rotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *radius), DEBUG_BOUNDS_COLOR, 1.f);
 		}
 	}
 
 	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, depthTestBackup);
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderAmbientBoxVolume(OvCore::ECS::Components::CAmbientBoxLight & p_ambientBoxLight)
+void OvEditor::Rendering::DebugSceneRenderer::RenderAmbientBoxVolume(OvCore::ECS::Components::CAmbientBoxLight & p_ambientBoxLight)
 {
 	bool depthTestBackup = m_driver.GetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST);
 	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, false);
@@ -674,23 +676,23 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderAmbientBoxVolume(OvCore
 	OvMaths::FVector3 actorScale = p_ambientBoxLight.owner.transform.GetWorldScale();
 	OvMaths::FVector3 halfSize = size / 2.f;
 
-	DrawLine(center + OvMaths::FVector3{ -halfSize.x, -halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ -halfSize.x, -halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
-	DrawLine(center + OvMaths::FVector3{ -halfSize.x, halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ -halfSize.x, +halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
-	DrawLine(center + OvMaths::FVector3{ -halfSize.x, -halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ -halfSize.x, +halfSize.y, -halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
-	DrawLine(center + OvMaths::FVector3{ -halfSize.x, -halfSize.y, +halfSize.z }, center + OvMaths::FVector3{ -halfSize.x, +halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
-	DrawLine(center + OvMaths::FVector3{ +halfSize.x, -halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, -halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
-	DrawLine(center + OvMaths::FVector3{ +halfSize.x, halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, +halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
-	DrawLine(center + OvMaths::FVector3{ +halfSize.x, -halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, +halfSize.y, -halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
-	DrawLine(center + OvMaths::FVector3{ +halfSize.x, -halfSize.y, +halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, +halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
-	DrawLine(center + OvMaths::FVector3{ -halfSize.x, -halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, -halfSize.y, -halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
-	DrawLine(center + OvMaths::FVector3{ -halfSize.x, +halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, +halfSize.y, -halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
-	DrawLine(center + OvMaths::FVector3{ -halfSize.x, -halfSize.y, +halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, -halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
-	DrawLine(center + OvMaths::FVector3{ -halfSize.x, +halfSize.y, +halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, +halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
+	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ -halfSize.x, -halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ -halfSize.x, -halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
+	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ -halfSize.x, halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ -halfSize.x, +halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
+	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ -halfSize.x, -halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ -halfSize.x, +halfSize.y, -halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
+	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ -halfSize.x, -halfSize.y, +halfSize.z }, center + OvMaths::FVector3{ -halfSize.x, +halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
+	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ +halfSize.x, -halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, -halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
+	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ +halfSize.x, halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, +halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
+	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ +halfSize.x, -halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, +halfSize.y, -halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
+	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ +halfSize.x, -halfSize.y, +halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, +halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
+	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ -halfSize.x, -halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, -halfSize.y, -halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
+	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ -halfSize.x, +halfSize.y, -halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, +halfSize.y, -halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
+	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ -halfSize.x, -halfSize.y, +halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, -halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
+	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ -halfSize.x, +halfSize.y, +halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, +halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
 
 	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, depthTestBackup);
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderAmbientSphereVolume(OvCore::ECS::Components::CAmbientSphereLight & p_ambientSphereLight)
+void OvEditor::Rendering::DebugSceneRenderer::RenderAmbientSphereVolume(OvCore::ECS::Components::CAmbientSphereLight & p_ambientSphereLight)
 {
 	bool depthTestBackup = m_driver.GetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST);
 	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, false);
@@ -703,15 +705,15 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderAmbientSphereVolume(OvC
 
 	for (float i = 0; i <= 360.0f; i += 10.0f)
 	{
-		DrawLine(center + rotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } *radius), center + rotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } *radius), LIGHT_VOLUME_COLOR, 1.f);
-		DrawLine(center + rotation * (OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } *radius), center + rotation * (OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } *radius), LIGHT_VOLUME_COLOR, 1.f);
-		DrawLine(center + rotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *radius), center + rotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *radius), LIGHT_VOLUME_COLOR, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } *radius), center + rotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } *radius), LIGHT_VOLUME_COLOR, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } *radius), center + rotation * (OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } *radius), LIGHT_VOLUME_COLOR, 1.f);
+		m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *radius), center + rotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *radius), LIGHT_VOLUME_COLOR, 1.f);
 	}
 
 	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, depthTestBackup);
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderBoundingSpheres(OvCore::ECS::Components::CModelRenderer& p_modelRenderer)
+void OvEditor::Rendering::DebugSceneRenderer::RenderBoundingSpheres(OvCore::ECS::Components::CModelRenderer& p_modelRenderer)
 {
 	using namespace OvCore::ECS::Components;
 	using namespace OvPhysics::Entities;
@@ -741,9 +743,9 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderBoundingSpheres(OvCore:
 
 		for (float i = 0; i <= 360.0f; i += 10.0f)
 		{
-			DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } *scaledRadius), DEBUG_BOUNDS_COLOR, 1.f);
-			DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } *scaledRadius), DEBUG_BOUNDS_COLOR, 1.f);
-			DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *scaledRadius), DEBUG_BOUNDS_COLOR, 1.f);
+			m_debugShapeFeature.DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } *scaledRadius), DEBUG_BOUNDS_COLOR, 1.f);
+			m_debugShapeFeature.DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } *scaledRadius), DEBUG_BOUNDS_COLOR, 1.f);
+			m_debugShapeFeature.DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *scaledRadius), DEBUG_BOUNDS_COLOR, 1.f);
 		}
 
 		if (p_modelRenderer.GetFrustumBehaviour() == OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::CULL_MESHES)
@@ -762,9 +764,9 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderBoundingSpheres(OvCore:
 
 					for (float i = 0; i <= 360.0f; i += 10.0f)
 					{
-						DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } *scaledRadius), DEBUG_BOUNDS_COLOR, 1.f);
-						DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } *scaledRadius), DEBUG_BOUNDS_COLOR, 1.f);
-						DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *scaledRadius), DEBUG_BOUNDS_COLOR, 1.f);
+						m_debugShapeFeature.DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), sin(i * (3.14f / 180.0f)), 0.f } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), sin((i + 10.0f) * (3.14f / 180.0f)), 0.f } *scaledRadius), DEBUG_BOUNDS_COLOR, 1.f);
+						m_debugShapeFeature.DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ 0.f, sin(i * (3.14f / 180.0f)), cos(i * (3.14f / 180.0f)) } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ 0.f, sin((i + 10.0f) * (3.14f / 180.0f)), cos((i + 10.0f) * (3.14f / 180.0f)) } *scaledRadius), DEBUG_BOUNDS_COLOR, 1.f);
+						m_debugShapeFeature.DrawLine(boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *scaledRadius), boundingSphereCenter + actorRotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *scaledRadius), DEBUG_BOUNDS_COLOR, 1.f);
 					}
 				}
 			}
@@ -775,35 +777,15 @@ void OvEditor::Rendering::EditorViewRenderFeature::RenderBoundingSpheres(OvCore:
 	m_driver.SetRasterizationLinesWidth(1.0f);
 }
 
-void OvEditor::Rendering::EditorViewRenderFeature::RenderModelAsset(OvRendering::Resources::Model& p_model)
-{
-	FMatrix4 model = OvMaths::FMatrix4::Scaling({ 3.f, 3.f, 3.f });
-	static_cast<OvCore::Rendering::SceneRenderer&>(m_renderer).DrawModelWithSingleMaterial(p_model, m_defaultMaterial, &model);
-}
-
-void OvEditor::Rendering::EditorViewRenderFeature::RenderTextureAsset(OvRendering::Resources::Texture & p_texture)
-{
-	FMatrix4 model = FMatrix4::RotateOnAxisX(FMatrix4::Scaling({ 5.f, 5.f, 5.f }), 90.f * 0.0174f);
-
-	m_textureMaterial.Set<Texture*>("u_DiffuseMap", &p_texture);
-	static_cast<OvCore::Rendering::SceneRenderer&>(m_renderer).DrawModelWithSingleMaterial(*EDITOR_CONTEXT(editorResources)->GetModel("Plane"), m_textureMaterial, &model);
-}
-
-void OvEditor::Rendering::EditorViewRenderFeature::RenderMaterialAsset(OvCore::Resources::Material & p_material)
-{
-	FMatrix4 model = OvMaths::FMatrix4::Scaling({ 3.f, 3.f, 3.f });
-	static_cast<OvCore::Rendering::SceneRenderer&>(m_renderer).DrawModelWithSingleMaterial(*EDITOR_CONTEXT(editorResources)->GetModel("Sphere"), p_material, &model, std::ref(m_emptyMaterial));
-}
-
-void OvEditor::Rendering::EditorViewRenderFeature::RenderGrid(const OvMaths::FVector3& p_viewPos, const OvMaths::FVector3& p_color)
+void OvEditor::Rendering::DebugSceneRenderer::RenderGrid(const OvMaths::FVector3& p_viewPos, const OvMaths::FVector3& p_color)
 {
 	constexpr float gridSize = 5000.0f;
 
 	FMatrix4 model = FMatrix4::Translation({ p_viewPos.x, 0.0f, p_viewPos.z }) * FMatrix4::Scaling({ gridSize * 2.0f, 1.f, gridSize * 2.0f });
 	m_gridMaterial.Set("u_Color", p_color);
-	static_cast<OvCore::Rendering::SceneRenderer&>(m_renderer).DrawModelWithSingleMaterial(*EDITOR_CONTEXT(editorResources)->GetModel("Plane"), m_gridMaterial, &model);
+	DrawModelWithSingleMaterial(*EDITOR_CONTEXT(editorResources)->GetModel("Plane"), m_gridMaterial, model);
 
-	DrawLine(OvMaths::FVector3(-gridSize + p_viewPos.x, 0.0f, 0.0f), OvMaths::FVector3(gridSize + p_viewPos.x, 0.0f, 0.0f), OvMaths::FVector3(1.0f, 0.0f, 0.0f), 1.0f);
-	DrawLine(OvMaths::FVector3(0.0f, -gridSize + p_viewPos.y, 0.0f), OvMaths::FVector3(0.0f, gridSize + p_viewPos.y, 0.0f), OvMaths::FVector3(0.0f, 1.0f, 0.0f), 1.0f);
-	DrawLine(OvMaths::FVector3(0.0f, 0.0f, -gridSize + p_viewPos.z), OvMaths::FVector3(0.0f, 0.0f, gridSize + p_viewPos.z), OvMaths::FVector3(0.0f, 0.0f, 1.0f), 1.0f);
+	m_debugShapeFeature.DrawLine(OvMaths::FVector3(-gridSize + p_viewPos.x, 0.0f, 0.0f), OvMaths::FVector3(gridSize + p_viewPos.x, 0.0f, 0.0f), OvMaths::FVector3(1.0f, 0.0f, 0.0f), 1.0f);
+	m_debugShapeFeature.DrawLine(OvMaths::FVector3(0.0f, -gridSize + p_viewPos.y, 0.0f), OvMaths::FVector3(0.0f, gridSize + p_viewPos.y, 0.0f), OvMaths::FVector3(0.0f, 1.0f, 0.0f), 1.0f);
+	m_debugShapeFeature.DrawLine(OvMaths::FVector3(0.0f, 0.0f, -gridSize + p_viewPos.z), OvMaths::FVector3(0.0f, 0.0f, gridSize + p_viewPos.z), OvMaths::FVector3(0.0f, 0.0f, 1.0f), 1.0f);
 }

@@ -8,7 +8,7 @@
 
 #include <optional>
 
-#include "OvRendering/Data/RenderOutputDesc.h"
+#include "OvRendering/Data/FrameDescriptor.h"
 #include "OvRendering/Entities/Drawable.h"
 
 namespace OvRendering::Core
@@ -24,9 +24,15 @@ namespace OvRendering::Features
 		virtual ~ARenderFeature() = default; // TODO: Maybe make protected
 
 		/**
-		* Returns true if the render feature requirements and dependencies are met.
+		* Invoked when the BeginFrame is called on the associated base renderer
+		* @param p_frameDescriptor
 		*/
-		virtual bool Validate() const;
+		virtual void OnBeginFrame(const Data::FrameDescriptor& p_frameDescriptor);
+
+		/**
+		* Invoked when the EndFrame is called on the associated base renderer
+		*/
+		virtual void OnEndFrame();
 
 		/**
 		* Invoked before drawing a drawable entity
@@ -39,17 +45,6 @@ namespace OvRendering::Features
 		* @param p_drawable
 		*/
 		virtual void OnAfterDraw(const Entities::Drawable& p_drawable);
-
-		/**
-		* Invoked when the BeginFrame is called on the associated base renderer
-		* @param p_outputDesc
-		*/
-		virtual void OnBeginFrame(std::optional<Data::RenderOutputDesc>& p_outputDesc);
-
-		/**
-		* Invoked when the EndFrame is called on the associated base renderer
-		*/
-		virtual void OnEndFrame();
 
 	protected:
 		ARenderFeature(Core::CompositeRenderer& p_renderer);

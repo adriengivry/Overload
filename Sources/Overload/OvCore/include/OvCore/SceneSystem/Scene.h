@@ -125,6 +125,11 @@ namespace OvCore::SceneSystem
 		std::vector<std::reference_wrapper<ECS::Actor>> FindActorsByTag(const std::string& p_tag);
 
 		/**
+		* Parse the scene to find the main camera
+		*/
+		OvCore::ECS::Components::CCamera* FindMainCamera();
+
+		/**
 		* Callback method called everytime a component is added on an actor of the scene
 		* @param p_component
 		*/

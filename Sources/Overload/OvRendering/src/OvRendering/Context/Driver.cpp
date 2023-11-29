@@ -291,6 +291,7 @@ void OvRendering::Context::Driver::DrawArraysInstanced(Settings::EPrimitiveMode 
 	glDrawArraysInstanced(static_cast<GLenum>(p_primitiveMode), 0, p_vertexCount, p_instances);
 }
 
+// TODO: Rename to something that is more explicit
 void OvRendering::Context::Driver::UpdateStateMask()
 {
 	using namespace OvRendering::Settings;

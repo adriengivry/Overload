@@ -52,6 +52,38 @@ void OvGame::Core::Game::PreUpdate()
 	m_context.device->PollEvents();
 }
 
+void RenderCurrentScene(
+	OvCore::Rendering::SceneRenderer& p_renderer,
+	const OvGame::Core::Context& p_context
+)
+{
+#ifdef _DEBUG
+	PROFILER_SPY("Render Current Scene");
+#endif
+
+	if (auto currentScene = p_context.sceneManager.GetCurrentScene())
+	{
+		if (auto camera = currentScene->FindMainCamera())
+		{
+			auto [windowWidth, windowHeight] = p_context.window->GetSize();
+
+			p_renderer.AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>({
+				*currentScene,
+				camera->GetCamera()
+			});
+
+			OvRendering::Data::FrameDescriptor frameDescriptor;
+			frameDescriptor.clearColor = camera->GetClearColor();
+			frameDescriptor.renderWidth = windowWidth;
+			frameDescriptor.renderHeight = windowHeight;
+
+			p_renderer.BeginFrame(frameDescriptor);
+			p_renderer.Draw();
+			p_renderer.EndFrame();
+		}
+	}
+}
+
 void OvGame::Core::Game::Update(float p_deltaTime)
 {
 	if (auto currentScene = m_context.sceneManager.GetCurrentScene())
@@ -80,23 +112,7 @@ void OvGame::Core::Game::Update(float p_deltaTime)
 			m_context.audioEngine->Update();
 		}
 
-		if (auto currentScene = m_context.sceneManager.GetCurrentScene())
-		{
-			#ifdef _DEBUG
-			PROFILER_SPY("Render Scene");
-			#endif
-
-			auto [windowWidth, windowHeight] = m_context.window->GetSize();
-
-			m_sceneRenderer.BeginFrame(std::nullopt);
-			m_sceneRenderer.RenderScene(
-				*currentScene,
-				windowWidth,
-				windowHeight,
-				std::nullopt // TODO: Evaluate if we want to use a default material here instead of nullptr
-			);
-			m_sceneRenderer.EndFrame();
-		}
+		RenderCurrentScene(m_sceneRenderer, m_context);
 	}
 
 	m_context.sceneManager.Update();

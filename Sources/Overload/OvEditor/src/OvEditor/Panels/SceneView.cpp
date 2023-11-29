@@ -8,7 +8,6 @@
 
 #include <OvCore/Rendering/SceneRenderer.h>
 
-#include "OvEditor/Rendering/EditorViewRenderFeature.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Panels/SceneView.h"
 #include "OvEditor/Panels/GameView.h"
@@ -23,7 +22,7 @@ OvEditor::Panels::SceneView::SceneView
 	m_sceneManager(EDITOR_CONTEXT(sceneManager))
 {
 	m_renderer = std::make_unique<OvCore::Rendering::SceneRenderer>(*EDITOR_CONTEXT(driver));
-	GetRendererAs<OvRendering::Core::CompositeRenderer>().AddFeature<Rendering::EditorViewRenderFeature>();
+	// m_renderer->AddFeature<Rendering::EditorViewRenderFeature>();
 
 	m_camera.SetClearColor({ 0.098f, 0.098f, 0.098f });
 	m_camera.SetFar(5000.0f);
@@ -46,6 +45,17 @@ OvEditor::Panels::SceneView::SceneView
 			m_highlightedActor = std::nullopt;
 		}
 	};
+}
+
+void OvEditor::Panels::SceneView::InitFrame()
+{
+	if (auto currentScene = m_sceneManager.GetCurrentScene())
+	{
+		m_renderer->AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>({
+			*currentScene,
+			*GetCamera()
+		});
+	}
 }
 
 void OvEditor::Panels::SceneView::Update(float p_deltaTime)
@@ -73,6 +83,7 @@ void OvEditor::Panels::SceneView::Update(float p_deltaTime)
 	}
 }
 
+/*
 void OvEditor::Panels::SceneView::_Render_Impl()
 {
 	OvRendering::Context::Driver& driver = *EDITOR_CONTEXT(driver).get();
@@ -94,7 +105,7 @@ void OvEditor::Panels::SceneView::RenderScene(OvRendering::Data::StateMask p_def
 	auto& editorViewRenderFeature = renderer.GetFeature<OvEditor::Rendering::EditorViewRenderFeature>();
 
 	// If the game is playing, and ShowLightFrustumCullingInSceneView is true, apply the game view frustum culling to the scene view (For debugging purposes)
-	/* TODO: Reenable
+	// TODO: Reenable
 	if (auto gameViewFrustum = gameView.GetActiveFrustum(); gameViewFrustum.has_value() && gameView.GetCamera().HasFrustumLightCulling() && Settings::EditorSettings::ShowLightFrustumCullingInSceneView)
 	{
 		m_sceneRenderer.UpdateLightsInFrustum(currentScene, gameViewFrustum.value());
@@ -103,7 +114,11 @@ void OvEditor::Panels::SceneView::RenderScene(OvRendering::Data::StateMask p_def
 	{
 		EDITOR_RENDERER().UpdateLights(currentScene);
 	}
-	*/
+
+	const auto viewportWidth = static_cast<uint16_t>(m_size.x);
+	const auto viewportHeight = static_cast<uint16_t>(m_size.y);
+
+	renderer.PrepareScene(currentScene, viewportWidth, viewportHeight);
 
 	driver.SetStencilMask(0xFF);
 	OvMaths::FVector3 clearColor = m_camera.GetClearColor();
@@ -129,7 +144,6 @@ void OvEditor::Panels::SceneView::RenderScene(OvRendering::Data::StateMask p_def
 	editorViewRenderFeature.RenderLights(currentScene);
 
 	// TODO: Reenable
-	/*
 	if (EDITOR_EXEC(IsAnyActorSelected()))
 	{
 		auto& selectedActor = EDITOR_EXEC(GetSelectedActor());
@@ -160,7 +174,6 @@ void OvEditor::Panels::SceneView::RenderScene(OvRendering::Data::StateMask p_def
 		driver.ApplyStateMask(p_defaultStateMask);
 		editorViewRenderFeature.RenderActorOutlinePass(m_highlightedActor.value().get(), false, false);
 	}
-	*/
 }
 
 void OvEditor::Panels::SceneView::RenderSceneForActorPicking()
@@ -189,6 +202,7 @@ void OvEditor::Panels::SceneView::RenderSceneForActorPicking()
 		m_actorPickingFramebuffer.Unbind();
 	}
 }
+*/
 
 bool IsResizing()
 {
@@ -215,7 +229,7 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 
 	if (IsHovered() && !IsResizing())
 	{
-		RenderSceneForActorPicking();
+		// RenderSceneForActorPicking();
 
 		// Look actor under mouse
 		auto [mouseX, mouseY] = inputManager.GetMousePosition();

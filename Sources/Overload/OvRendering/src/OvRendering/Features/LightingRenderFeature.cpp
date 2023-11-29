@@ -26,23 +26,24 @@ bool IsLightInFrustum(const OvRendering::Entities::Light& p_light, const OvRende
 		p_frustum.SphereInFrustum(position.x, position.y, position.z, p_light.GetEffectRange());
 }
 
-void OvRendering::Features::LightingRenderFeature::UploadLightingData(const LightSet & p_lights, std::optional<OvRendering::Data::Frustum> p_frustum)
+void OvRendering::Features::LightingRenderFeature::OnBeginFrame(const Data::FrameDescriptor& p_frameDescriptor)
 {
+	OVASSERT(m_renderer.HasDescriptor<LightingDescriptor>(), "Cannot find LightingDescriptor attached to this renderer");
+
+	auto& lightDescriptor = m_renderer.GetDescriptor<LightingDescriptor>();
+
 	std::vector<OvMaths::FMatrix4> lightMatrices;
 
-	for (auto light : p_lights)
+	for (auto light : lightDescriptor.lights)
 	{
-		if (!p_frustum.has_value() || IsLightInFrustum(light.get(), p_frustum.value()))
+		if (!lightDescriptor.frustum.has_value() || IsLightInFrustum(light.get(), lightDescriptor.frustum.value()))
 		{
 			lightMatrices.push_back(light.get().GenerateMatrix());
 		}
 	}
 
 	m_lightBuffer->SendBlocks<OvMaths::FMatrix4>(lightMatrices.data(), lightMatrices.size() * sizeof(OvMaths::FMatrix4));
-}
 
-void OvRendering::Features::LightingRenderFeature::OnBeginFrame(std::optional<Data::RenderOutputDesc>& p_outputDesc)
-{
 	m_lightBuffer->Bind(m_bufferBindingPoint);
 }
 

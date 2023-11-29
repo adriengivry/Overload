@@ -12,7 +12,7 @@
 #include <OvRendering/Buffers/UniformBuffer.h>
 #include <OvRendering/Buffers/Framebuffer.h>
 #include <OvRendering/Entities/Camera.h>
-#include <OvRendering/Core/IRenderer.h>
+#include <OvRendering/Core/CompositeRenderer.h>
 
 namespace OvEditor::Panels
 {
@@ -46,9 +46,10 @@ namespace OvEditor::Panels
 		void _Draw_Impl() override;
 
 		/**
-		* Custom implementation of the render method to define in dervied classes
+		* Prepare the renderer for rendering
+		* @note Views should probably override this method and add appropriate descriptors for their respective renderers.
 		*/
-		virtual void _Render_Impl() = 0;
+		virtual void InitFrame();
 
 		/**
 		* Render the view
@@ -56,9 +57,15 @@ namespace OvEditor::Panels
 		void Render();
 
 		/**
+		* Draw the frame (m_renderer->Draw() if not overriden)
+		* @note You don't need to begin/end frame inside of this method, as this is called after begin, and after end
+		*/
+		virtual void DrawFrame();
+
+		/**
 		* Returns the camera used by this view
 		*/
-		OvRendering::Entities::Camera& GetCamera();
+		virtual OvRendering::Entities::Camera* GetCamera() = 0;
 
 		/**
 		* Returns the size of the panel ignoring its titlebar height
@@ -76,31 +83,12 @@ namespace OvEditor::Panels
 		*/
 		void SetGridColor(const OvMaths::FVector3& p_color);
 
-		/**
-		* Fill the UBO using the view settings
-		*/
-		// void FillEngineUBO();
-
 	protected:
-		/**
-		* Update camera matrices
-		*/
-		// void PrepareCamera();
-
-		template<class T>
-		T& GetRendererAs()
-		{
-			OVASSERT(m_renderer != nullptr, "Cannot retrieve the renderer! Make sure to create one first.");
-			return *static_cast<T*>(m_renderer.get());
-		}
-
-	protected:
-		OvRendering::Entities::Camera m_camera;
 		OvUI::Widgets::Visual::Image* m_image;
 
         OvMaths::FVector3 m_gridColor = OvMaths::FVector3 { 0.176f, 0.176f, 0.176f };
 
 		OvRendering::Buffers::Framebuffer m_fbo;
-		std::unique_ptr<OvRendering::Core::IRenderer> m_renderer;
+		std::unique_ptr<OvRendering::Core::CompositeRenderer> m_renderer;
 	};
 }

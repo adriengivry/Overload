@@ -35,11 +35,22 @@ namespace OvEditor::Panels
 		virtual void Update(float p_deltaTime) override;
 
 		/**
+		* Reset the camera transform to its initial value
+		*/
+		virtual void ResetCameraTransform();
+
+		/**
 		* Returns the camera controller of the controllable view
 		*/
 		OvEditor::Core::CameraController& GetCameraController();
 
+		/**
+		* Returns the camera used by the camera controller
+		*/
+		virtual OvRendering::Entities::Camera* GetCamera();
+
 	protected:
+		OvRendering::Entities::Camera m_camera;
 		OvEditor::Core::CameraController m_cameraController;
 	};
 }

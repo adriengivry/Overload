@@ -12,6 +12,8 @@
 
 namespace OvRendering::Features
 {
+	//TODO: Rename into something like FrameStats or FrameAnalysis
+	// If so, also rename the FrameInfo struct (The FrameInfo struct should be moved to inside of this class I guess)
 	class FrameInfoRenderFeature : public OvRendering::Features::ARenderFeature
 	{
 	public:
@@ -23,9 +25,9 @@ namespace OvRendering::Features
 
 		/**
 		* Invoked when a frame begins. Take care of initializing the frame info data
-		* @param p_outputDesc
+		* @param p_frameDescriptor
 		*/
-		virtual void OnBeginFrame(std::optional<Data::RenderOutputDesc>& p_outputDesc) override;
+		virtual void OnBeginFrame(const Data::FrameDescriptor& p_frameDescriptor) override;
 
 		/**
 		* Invoked when a frame ends. Validate the frame info data

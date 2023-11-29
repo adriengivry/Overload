@@ -21,6 +21,12 @@ namespace OvRendering::Features
 		// TODO: Consider not using references here, but copying the light instead (should be fairly cheap and doesn't require to keep an instance outside of the scope)
 		using LightSet = std::vector<std::reference_wrapper<const OvRendering::Entities::Light>>;
 
+		struct LightingDescriptor
+		{
+			LightSet lights;
+			std::optional<OvRendering::Data::Frustum> frustum;
+		};
+
 		/**
 		* Constructor
 		* @param p_renderer
@@ -29,18 +35,10 @@ namespace OvRendering::Features
 		LightingRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer, uint32_t p_bufferBindingPoint = 0);
 
 		/**
-		* Fill up the light buffer with light matrices generated from the given light set, and filtered
-		* using the given optional frustum instance
-		* @param p_lights
-		* @param p_frustum
-		*/
-		void UploadLightingData(const LightSet& p_lights, std::optional<OvRendering::Data::Frustum> p_frustum);
-
-		/**
 		* Invoked when the frame begins, bind the light buffer
-		* @param p_outputDesc
+		* @param p_frameDescriptor
 		*/
-		virtual void OnBeginFrame(std::optional<Data::RenderOutputDesc>& p_outputDesc) override;
+		virtual void OnBeginFrame(const Data::FrameDescriptor& p_frameDescriptor) override;
 
 		/**
 		* Invoked when the frame ends, unbind the light buffer

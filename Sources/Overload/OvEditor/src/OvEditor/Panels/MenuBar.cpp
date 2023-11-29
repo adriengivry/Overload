@@ -126,11 +126,11 @@ void OvEditor::Panels::MenuBar::CreateSettingsMenu()
 	auto& sceneViewBackgroundPicker = sceneViewBackground.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color{ 0.098f, 0.098f, 0.098f });
 	sceneViewBackgroundPicker.ColorChangedEvent += [this](const auto & color)
 	{
-		EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetClearColor({ color.r, color.g, color.b });
+		EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera()->SetClearColor({ color.r, color.g, color.b });
 	};
 	sceneViewBackground.CreateWidget<MenuItem>("Reset").ClickedEvent += [this, &sceneViewBackgroundPicker]
 	{
-		EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetClearColor({ 0.098f, 0.098f, 0.098f });
+		EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera()->SetClearColor({ 0.098f, 0.098f, 0.098f });
 		sceneViewBackgroundPicker.color = { 0.098f, 0.098f, 0.098f };
 	};
 
@@ -150,11 +150,11 @@ void OvEditor::Panels::MenuBar::CreateSettingsMenu()
 	auto& assetViewBackgroundPicker = assetViewBackground.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color{ 0.098f, 0.098f, 0.098f });
 	assetViewBackgroundPicker.ColorChangedEvent += [this](const auto & color)
 	{
-		EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetClearColor({ color.r, color.g, color.b });
+		EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera()->SetClearColor({ color.r, color.g, color.b });
 	};
 	assetViewBackground.CreateWidget<MenuItem>("Reset").ClickedEvent += [this, &assetViewBackgroundPicker]
 	{
-		EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetClearColor({ 0.098f, 0.098f, 0.098f });
+		EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera()->SetClearColor({ 0.098f, 0.098f, 0.098f });
 		assetViewBackgroundPicker.color = { 0.098f, 0.098f, 0.098f };
 	};
 

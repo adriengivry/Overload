@@ -78,7 +78,7 @@ namespace OvCore::SceneSystem
 		/*
 		* Return current loaded scene
 		*/
-		Scene* GetCurrentScene();
+		Scene* GetCurrentScene() const;
 
 		/**
 		* Return the current scene source path

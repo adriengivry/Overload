@@ -51,7 +51,7 @@ namespace OvRendering::Entities
 		float				quadratic	= 1.0f;
 		float				cutoff		= 12.f;
 		float				outerCutoff = 15.f;
-		float				type		= 0.0f;
+		float				type		= 0.0f; //TODO: Consider moving that to use Light::Type (and cast to float when generating matrix)
 
 	protected:
 		OvMaths::FTransform& m_transform;

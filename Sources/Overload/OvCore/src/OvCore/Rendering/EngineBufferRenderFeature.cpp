@@ -4,6 +4,8 @@
 * @licence: MIT
 */
 
+#include <OvRendering/Core/CompositeRenderer.h>
+
 #include "OvCore/Rendering/EngineBufferRenderFeature.h"
 
 OvCore::Rendering::EngineBufferRenderFeature::EngineBufferRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer)
@@ -24,19 +26,26 @@ OvCore::Rendering::EngineBufferRenderFeature::EngineBufferRenderFeature(OvRender
 	m_startTime = std::chrono::high_resolution_clock::now();
 }
 
-void OvCore::Rendering::EngineBufferRenderFeature::UploadViewData(
-	OvRendering::Entities::Camera& p_camera,
-	uint16_t p_windowWidth,
-	uint16_t p_windowHeight
-)
+void OvCore::Rendering::EngineBufferRenderFeature::OnBeginFrame(const OvRendering::Data::FrameDescriptor& p_frameDescriptor)
 {
-	p_camera.CacheMatrices(p_windowWidth, p_windowHeight);
+	OVASSERT(m_renderer.HasDescriptor<EngineBufferDescriptor>(), "Cannot find EngineBufferDescriptor attached to this renderer");
 
-	// We skip the model matrix (Which is a special case, modified every draw calls)
+	auto& descriptor = m_renderer.GetDescriptor<EngineBufferDescriptor>();
+
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	auto elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTime - m_startTime);
+
 	size_t offset = sizeof(OvMaths::FMatrix4);
-	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(p_camera.GetViewMatrix()), std::ref(offset));
-	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(p_camera.GetProjectionMatrix()), std::ref(offset));
-	m_engineBuffer->SetSubData(p_camera.GetPosition(), std::ref(offset));
+	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(descriptor.camera.GetViewMatrix()), std::ref(offset));
+	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(descriptor.camera.GetProjectionMatrix()), std::ref(offset));
+	m_engineBuffer->SetSubData(descriptor.camera.GetPosition(), std::ref(offset));
+	m_engineBuffer->SetSubData(elapsedTime.count(), std::ref(offset));
+	m_engineBuffer->Bind(0);
+}
+
+void OvCore::Rendering::EngineBufferRenderFeature::OnEndFrame()
+{
+	m_engineBuffer->Unbind();
 }
 
 void OvCore::Rendering::EngineBufferRenderFeature::OnBeforeDraw(const OvRendering::Entities::Drawable& p_drawable)
@@ -53,18 +62,4 @@ void OvCore::Rendering::EngineBufferRenderFeature::OnBeforeDraw(const OvRenderin
 		sizeof(OvMaths::FVector3) +
 		sizeof(float)
 	);
-
-	m_engineBuffer->Bind(0);
-}
-
-void OvCore::Rendering::EngineBufferRenderFeature::OnBeginFrame(std::optional<OvRendering::Data::RenderOutputDesc>& p_outputDesc)
-{
-	auto currentTime = std::chrono::high_resolution_clock::now();
-	auto elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTime - m_startTime);
-	m_engineBuffer->SetSubData(elapsedTime.count(), 3 * sizeof(OvMaths::FMatrix4) + sizeof(OvMaths::FVector3));
-}
-
-void OvCore::Rendering::EngineBufferRenderFeature::OnEndFrame()
-{
-	m_engineBuffer->Unbind();
 }

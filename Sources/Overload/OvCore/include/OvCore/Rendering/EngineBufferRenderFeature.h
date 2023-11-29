@@ -21,6 +21,11 @@ namespace OvCore::Rendering
 	class EngineBufferRenderFeature : public OvRendering::Features::ARenderFeature
 	{
 	public:
+		struct EngineBufferDescriptor
+		{
+			OvRendering::Entities::Camera& camera;
+		};
+
 		/**
 		* Constructor
 		* @param p_renderer
@@ -28,33 +33,21 @@ namespace OvCore::Rendering
 		EngineBufferRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer);
 
 		/**
-		* Upload view data to the GPU
-		* @param p_camera
-		* @param p_windowWidth
-		* @param p_windowHeight
+		* Invoked at the beginning of a frame, bind the engine buffer and update elapsed time
+		* @param p_frameDescriptor
 		*/
-		void UploadViewData(
-			OvRendering::Entities::Camera& p_camera,
-			uint16_t p_windowWidth,
-			uint16_t p_windowHeight
-		);
+		virtual void OnBeginFrame(const OvRendering::Data::FrameDescriptor& p_frameDescriptor) override;
+
+		/**
+		* Invoked at the end of a frame, unbind the engine buffer
+		*/
+		virtual void OnEndFrame() override;
 
 		/**
 		* Invoked before drawing, handle uploading entity data to the GPU
 		* @param p_drawable
 		*/
 		virtual void OnBeforeDraw(const OvRendering::Entities::Drawable& p_drawable) override;
-
-		/**
-		* Invoked at the beginning of a frame, bind the engine buffer and update elapsed time
-		* @param p_outputDesc
-		*/
-		virtual void OnBeginFrame(std::optional<OvRendering::Data::RenderOutputDesc>& p_outputDesc) override;
-
-		/**
-		* Invoked at the end of a frame, unbind the engine buffer
-		*/
-		virtual void OnEndFrame() override;
 
 	private:
 		std::chrono::high_resolution_clock::time_point m_startTime;

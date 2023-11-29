@@ -12,12 +12,13 @@ OvRendering::Features::FrameInfoRenderFeature::FrameInfoRenderFeature(OvRenderin
 {
 }
 
-void OvRendering::Features::FrameInfoRenderFeature::OnBeginFrame(std::optional<OvRendering::Data::RenderOutputDesc>& p_outputDesc)
+void OvRendering::Features::FrameInfoRenderFeature::OnBeginFrame(const Data::FrameDescriptor& p_frameDescriptor)
 {
 	m_frameInfo.batchCount = 0;
 	m_frameInfo.instanceCount = 0;
 	m_frameInfo.polyCount = 0;
 	m_frameInfo.vertexCount = 0;
+
 	m_isFrameInfoDataValid = false;
 }
 
