@@ -13,6 +13,19 @@ OvRendering::Features::ARenderFeature::ARenderFeature(Core::CompositeRenderer& p
 {
 }
 
+OvRendering::Settings::ERenderPassMask OvRendering::Features::ARenderFeature::GetRenderPassMask() const
+{
+	return OvRendering::Settings::ERenderPassMask::NONE;
+}
+
+void OvRendering::Features::ARenderFeature::DrawPrePass(OvRendering::Settings::ERenderPass p_renderPass)
+{
+}
+
+void OvRendering::Features::ARenderFeature::DrawPass(OvRendering::Settings::ERenderPass p_renderPass)
+{
+}
+
 void OvRendering::Features::ARenderFeature::OnBeforeDraw(const Entities::Drawable& p_drawable)
 {
 }

@@ -14,10 +14,6 @@
 #include "OvCore/ECS/Components/CModelRenderer.h"
 #include "OvCore/ECS/Components/CMaterialRenderer.h"
 
-using OpaqueDrawables = std::multimap<float, OvRendering::Entities::Drawable, std::less<float>>;
-using TransparentDrawables = std::multimap<float, OvRendering::Entities::Drawable, std::greater<float>>;
-using AllDrawables = std::pair<OpaqueDrawables, TransparentDrawables>;
-
 OvCore::Rendering::SceneRenderer::SceneRenderer(OvRendering::Context::Driver& p_driver)
 	: OvRendering::Core::CompositeRenderer(p_driver)
 {
@@ -59,22 +55,49 @@ void OvCore::Rendering::SceneRenderer::BeginFrame(const OvRendering::Data::Frame
 		sceneDescriptor.camera.HasFrustumLightCulling() ? std::optional(sceneDescriptor.camera.GetFrustum()) : std::nullopt
 	});
 
+	ParseScene();
+
 	OvRendering::Core::CompositeRenderer::BeginFrame(p_frameDescriptor);
 }
 
-AllDrawables FindAndSortDrawables(
-	const OvCore::SceneSystem::Scene& p_scene,
-	const OvMaths::FVector3& p_cameraPosition,
-	std::optional<OvRendering::Data::Frustum> p_frustum,
-	std::optional<std::reference_wrapper<OvCore::Resources::Material>> p_materialOverride
-)
+void OvCore::Rendering::SceneRenderer::DrawPass(OvRendering::Settings::ERenderPass p_pass)
+{
+	if (p_pass == OvRendering::Settings::ERenderPass::OPAQUE)
+	{
+		for (const auto& [distance, drawable] : m_opaqueDrawables)
+		{
+			DrawEntity(drawable);
+		}
+	}
+	else if (p_pass == OvRendering::Settings::ERenderPass::TRANSPARENT)
+	{
+		for (const auto& [distance, drawable] : m_transparentDrawables)
+		{
+			DrawEntity(drawable);
+		}
+	}
+}
+
+void OvCore::Rendering::SceneRenderer::ParseScene()
 {
 	using namespace OvCore::ECS::Components;
 
-	OpaqueDrawables opaqueDrawables;
-	TransparentDrawables transparentDrawables;
+	m_opaqueDrawables.clear();
+	m_transparentDrawables.clear();
 
-	for (CModelRenderer* modelRenderer : p_scene.GetFastAccessComponents().modelRenderers)
+	auto& sceneDescriptor = GetDescriptor<SceneDescriptor>();
+	auto& scene = sceneDescriptor.scene;
+	auto& camera = sceneDescriptor.camera;
+	auto& materialOverride = sceneDescriptor.materialOverride;
+	std::optional<OvRendering::Data::Frustum> frustum = std::nullopt;
+
+	if (camera.HasFrustumGeometryCulling())
+	{
+		auto& frustumOverride = sceneDescriptor.frustumOverride;
+		frustum = frustumOverride ? frustumOverride : camera.GetFrustum();
+	}
+
+	for (CModelRenderer* modelRenderer : scene.GetFastAccessComponents().modelRenderers)
 	{
 		auto& owner = modelRenderer->owner;
 
@@ -86,7 +109,7 @@ AllDrawables FindAndSortDrawables(
 				{
 					auto& transform = owner.transform.GetFTransform();
 
-					OvRendering::Settings::ECullingOptions cullingOptions = OvRendering::Settings::ECullingOptions::NONE;
+					auto cullingOptions = OvRendering::Settings::ECullingOptions::NONE;
 
 					if (modelRenderer->GetFrustumBehaviour() != CModelRenderer::EFrustumBehaviour::DISABLED)
 					{
@@ -102,10 +125,10 @@ AllDrawables FindAndSortDrawables(
 
 					std::vector<OvRendering::Resources::Mesh*> meshes;
 
-					if (p_frustum)
+					if (frustum)
 					{
 						PROFILER_SPY("Frustum Culling");
-						meshes = p_frustum.value().GetMeshesInFrustum(*model, modelBoundingSphere, transform, cullingOptions);
+						meshes = frustum.value().GetMeshesInFrustum(*model, modelBoundingSphere, transform, cullingOptions);
 					}
 					else
 					{
@@ -114,7 +137,7 @@ AllDrawables FindAndSortDrawables(
 
 					if (!meshes.empty())
 					{
-						float distanceToActor = OvMaths::FVector3::Distance(transform.GetWorldPosition(), p_cameraPosition);
+						float distanceToActor = OvMaths::FVector3::Distance(transform.GetWorldPosition(), camera.GetPosition());
 						const OvCore::ECS::Components::CMaterialRenderer::MaterialList& materials = materialRenderer->GetMaterials();
 
 						for (const auto& mesh : meshes)
@@ -125,7 +148,7 @@ AllDrawables FindAndSortDrawables(
 							{
 								material = materials.at(mesh->GetMaterialIndex());
 								if (!material || !material->GetShader())
-									material = p_materialOverride ? &p_materialOverride.value().get() : nullptr;
+									material = materialOverride ? &materialOverride.value().get() : nullptr;
 							}
 
 							if (material)
@@ -140,11 +163,11 @@ AllDrawables FindAndSortDrawables(
 
 								if (material->IsBlendable())
 								{
-									transparentDrawables.emplace(distanceToActor, element);
+									m_transparentDrawables.emplace(distanceToActor, element);
 								}
 								else
 								{
-									opaqueDrawables.emplace(distanceToActor, element);
+									m_opaqueDrawables.emplace(distanceToActor, element);
 								}
 							}
 						}
@@ -153,40 +176,4 @@ AllDrawables FindAndSortDrawables(
 			}
 		}
 	}
-
-	return { opaqueDrawables, transparentDrawables };
-}
-
-void OvCore::Rendering::SceneRenderer::Draw()
-{
-	auto& sceneDescriptor = GetDescriptor<SceneDescriptor>();
-	auto& scene = sceneDescriptor.scene;
-	auto& camera = sceneDescriptor.camera;
-	auto& frustumOverride = sceneDescriptor.frustumOverride;
-	auto& materialOverride = sceneDescriptor.materialOverride;
-
-	OpaqueDrawables	opaqueMeshes;
-	TransparentDrawables transparentMeshes;
-
-	if (camera.HasFrustumGeometryCulling())
-	{
-		const auto& frustum = frustumOverride ? frustumOverride.value() : camera.GetFrustum();
-		std::tie(opaqueMeshes, transparentMeshes) = FindAndSortDrawables(scene, camera.GetPosition(), frustum, materialOverride);
-	}
-	else
-	{
-		// TODO: Consider auto[x, y] instead of std::tie (not sure if it's exactly equivalent)
-		std::tie(opaqueMeshes, transparentMeshes) = FindAndSortDrawables(scene, camera.GetPosition(), std::nullopt, materialOverride);
-	}
-
-	for (const auto& [distance, drawable] : opaqueMeshes)
-	{
-		DrawEntity(drawable);
-	}
-
-	for (const auto& [distance, drawable] : transparentMeshes)
-	{
-		DrawEntity(drawable);
-	}
-
 }

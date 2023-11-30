@@ -20,10 +20,10 @@
 #include <OvDebug/Assertion.h>
 
 #include "OvEditor/Rendering/DebugSceneRenderer.h"
+#include "OvEditor/Rendering/GridRenderFeature.h"
 #include "OvEditor/Core/EditorResources.h"
 #include "OvEditor/Panels/AView.h"
 #include "OvEditor/Panels/GameView.h"
-#include "OvEditor/Core/GizmoBehaviour.h"
 #include "OvEditor/Settings/EditorSettings.h"
 
 #include "OvEditor/Core/EditorActions.h"
@@ -41,30 +41,13 @@ OvEditor::Rendering::DebugSceneRenderer::DebugSceneRenderer(OvRendering::Context
 	OvCore::Rendering::SceneRenderer(p_driver),
 	m_debugShapeFeature(AddFeature<OvRendering::Features::DebugShapeRenderFeature>())
 {
+	AddFeature<OvEditor::Rendering::GridRenderFeature>();
+
 	// TODO: Do not use the driver directly heres
 	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::STENCIL_TEST, true);
 	m_driver.SetStencilOperations(OvRendering::Settings::EOperation::KEEP, OvRendering::Settings::EOperation::KEEP, OvRendering::Settings::EOperation::REPLACE);
 	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::ALWAYS, 1, 0xFF);
 
-
-	InitMaterials();
-}
-
-void OvEditor::Rendering::DebugSceneRenderer::Draw()
-{
-	OVASSERT(HasDescriptor<DebugSceneDescriptor>(), "Missing DebugSceneDescriptor!");
-
-	auto& sceneDescriptor = GetDescriptor<SceneDescriptor>();
-	auto& debugSceneDescriptor = GetDescriptor<DebugSceneDescriptor>();
-
-	RenderGrid(sceneDescriptor.camera.GetPosition(), debugSceneDescriptor.gridColor);
-	OvCore::Rendering::SceneRenderer::Draw();
-	RenderCameras(sceneDescriptor.scene);
-	RenderLights(sceneDescriptor.scene);
-}
-
-void OvEditor::Rendering::DebugSceneRenderer::InitMaterials()
-{
 	/* Default Material */
 	m_defaultMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Standard.glsl"]);
 	m_defaultMaterial.Set("u_Diffuse", FVector4(1.f, 1.f, 1.f, 1.f));
@@ -75,12 +58,6 @@ void OvEditor::Rendering::DebugSceneRenderer::InitMaterials()
 	m_emptyMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
 	m_emptyMaterial.Set("u_Diffuse", FVector4(1.f, 0.f, 1.f, 1.0f));
 	m_emptyMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
-
-	/* Grid Material */
-	m_gridMaterial.SetShader(EDITOR_CONTEXT(editorResources)->GetShader("Grid"));
-	m_gridMaterial.SetBlendable(true);
-	m_gridMaterial.SetBackfaceCulling(false);
-	m_gridMaterial.SetDepthTest(false);
 
 	/* Camera Material */
 	m_cameraMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Lambert.glsl"]);
@@ -101,34 +78,10 @@ void OvEditor::Rendering::DebugSceneRenderer::InitMaterials()
 	m_stencilFillMaterial.SetColorWriting(false);
 	m_stencilFillMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
 
-	/* Texture Material */
-	m_textureMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
-	m_textureMaterial.Set("u_Diffuse", FVector4(1.f, 1.f, 1.f, 1.f));
-	m_textureMaterial.SetBackfaceCulling(false);
-	m_textureMaterial.SetBlendable(true);
-	m_textureMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
-
 	/* Outline Material */
 	m_outlineMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
 	m_outlineMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
 	m_outlineMaterial.SetDepthTest(false);
-
-	/* Gizmo Arrow Material */
-	m_gizmoArrowMaterial.SetShader(EDITOR_CONTEXT(editorResources)->GetShader("Gizmo"));
-	m_gizmoArrowMaterial.SetGPUInstances(3);
-	m_gizmoArrowMaterial.Set("u_IsBall", false);
-	m_gizmoArrowMaterial.Set("u_IsPickable", false);
-
-	/* Gizmo Ball Material */
-	m_gizmoBallMaterial.SetShader(EDITOR_CONTEXT(editorResources)->GetShader("Gizmo"));
-	m_gizmoBallMaterial.Set("u_IsBall", true);
-	m_gizmoBallMaterial.Set("u_IsPickable", false);
-
-	/* Gizmo Pickable Material */
-	m_gizmoPickingMaterial.SetShader(EDITOR_CONTEXT(editorResources)->GetShader("Gizmo"));
-	m_gizmoPickingMaterial.SetGPUInstances(3);
-	m_gizmoPickingMaterial.Set("u_IsBall", false);
-	m_gizmoPickingMaterial.Set("u_IsPickable", true);
 
 	/* Picking Material */
 	m_actorPickingMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
@@ -136,6 +89,19 @@ void OvEditor::Rendering::DebugSceneRenderer::InitMaterials()
 	m_actorPickingMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
 	m_actorPickingMaterial.SetFrontfaceCulling(false);
 	m_actorPickingMaterial.SetBackfaceCulling(false);
+}
+
+void OvEditor::Rendering::DebugSceneRenderer::DrawPass(OvRendering::Settings::ERenderPass p_pass)
+{
+	OvCore::Rendering::SceneRenderer::DrawPass(p_pass);
+
+	if (p_pass == OvRendering::Settings::ERenderPass::POST_TRANSPARENT)
+	{
+		OVASSERT(HasDescriptor<SceneDescriptor>(), "Missing SceneDescriptor!");
+		auto& sceneDescriptor = GetDescriptor<SceneDescriptor>();
+		RenderCameras(sceneDescriptor.scene);
+		RenderLights(sceneDescriptor.scene);
+	}
 }
 
 void OvEditor::Rendering::DebugSceneRenderer::PreparePickingMaterial(OvCore::ECS::Actor& p_actor, OvCore::Resources::Material& p_material)
@@ -148,7 +114,7 @@ void OvEditor::Rendering::DebugSceneRenderer::PreparePickingMaterial(OvCore::ECS
 	p_material.Set("u_Diffuse", color);
 }
 
-OvMaths::FMatrix4 OvEditor::Rendering::DebugSceneRenderer::CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor)
+OvMaths::FMatrix4 CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor)
 {
 	auto translation = FMatrix4::Translation(p_actor.transform.GetWorldPosition());
 	auto rotation = FQuaternion::ToMatrix4(p_actor.transform.GetWorldRotation());
@@ -258,16 +224,29 @@ void OvEditor::Rendering::DebugSceneRenderer::RenderCameras(OvCore::SceneSystem:
 		{
 			auto& model = *EDITOR_CONTEXT(editorResources)->GetModel("Camera");
 			auto modelMatrix = CalculateCameraModelMatrix(actor);
-			
 			DrawModelWithSingleMaterial(model, m_cameraMaterial, modelMatrix);
 		}
 	}
 }
 
+std::optional<std::string> GetLightTypeTextureName(OvRendering::Entities::Light::Type type)
+{
+	using namespace OvRendering::Entities;
+
+	switch (type)
+	{
+	case Light::Type::POINT: return "Bill_Point_Light";
+	case Light::Type::SPOT: return "Bill_Spot_Light";
+	case Light::Type::DIRECTIONAL: return "Bill_Directional_Light";
+	case Light::Type::AMBIENT_BOX: return "Bill_Ambient_Box_Light";
+	case Light::Type::AMBIENT_SPHERE: return "Bill_Ambient_Sphere_Light";
+	}
+
+	return std::nullopt;
+}
+
 void OvEditor::Rendering::DebugSceneRenderer::RenderLights(OvCore::SceneSystem::Scene& p_scene)
 {
-	using namespace OvMaths;
-
 	m_lightMaterial.SetDepthTest(false);
 	m_lightMaterial.Set<float>("u_Scale", Settings::EditorSettings::LightBillboardScale * 0.1f);
 
@@ -278,68 +257,21 @@ void OvEditor::Rendering::DebugSceneRenderer::RenderLights(OvCore::SceneSystem::
 		if (actor.IsActive())
 		{
 			auto& model = *EDITOR_CONTEXT(editorResources)->GetModel("Vertical_Plane");
-			auto modelMatrix = FMatrix4::Translation(actor.transform.GetWorldPosition());
+			auto modelMatrix = OvMaths::FMatrix4::Translation(actor.transform.GetWorldPosition());
 
-			OvRendering::Resources::Texture* texture = nullptr;
+			auto lightType = static_cast<OvRendering::Entities::Light::Type>(static_cast<int>(light->GetData().type));
+			auto lightTypeTextureName = GetLightTypeTextureName(lightType);
 
-			switch (static_cast<OvRendering::Entities::Light::Type>(static_cast<int>(light->GetData().type)))
-			{
-			case OvRendering::Entities::Light::Type::POINT:				texture = EDITOR_CONTEXT(editorResources)->GetTexture("Bill_Point_Light");			break;
-			case OvRendering::Entities::Light::Type::SPOT:				texture = EDITOR_CONTEXT(editorResources)->GetTexture("Bill_Spot_Light");				break;
-			case OvRendering::Entities::Light::Type::DIRECTIONAL:		texture = EDITOR_CONTEXT(editorResources)->GetTexture("Bill_Directional_Light");		break;
-			case OvRendering::Entities::Light::Type::AMBIENT_BOX:		texture = EDITOR_CONTEXT(editorResources)->GetTexture("Bill_Ambient_Box_Light");		break;
-			case OvRendering::Entities::Light::Type::AMBIENT_SPHERE:	texture = EDITOR_CONTEXT(editorResources)->GetTexture("Bill_Ambient_Sphere_Light");	break;
-			}
+			auto lightTexture =
+				lightTypeTextureName ?
+				EDITOR_CONTEXT(editorResources)->GetTexture(lightTypeTextureName.value()) :
+				nullptr;
 
 			const auto& lightColor = light->GetColor();
-			m_lightMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", texture);
+			m_lightMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", lightTexture);
 			m_lightMaterial.Set<OvMaths::FVector4>("u_Diffuse", OvMaths::FVector4(lightColor.x, lightColor.y, lightColor.z, 0.75f));
 			DrawModelWithSingleMaterial(model, m_lightMaterial, modelMatrix);
 		}
-	}
-}
-
-void OvEditor::Rendering::DebugSceneRenderer::RenderGizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, OvEditor::Core::EGizmoOperation p_operation, bool p_pickable, int p_highlightedAxis)
-{
-	using namespace OvMaths;
-
-	FMatrix4 model = FMatrix4::Translation(p_position) * FQuaternion::ToMatrix4(FQuaternion::Normalize(p_rotation));
-
-	OvRendering::Resources::Model* arrowModel = nullptr;
-
-	if (!p_pickable)
-	{
-		FMatrix4 sphereModel = model * OvMaths::FMatrix4::Scaling({ 0.1f, 0.1f, 0.1f });
-
-		DrawModelWithSingleMaterial(
-			*EDITOR_CONTEXT(editorResources)->GetModel("Sphere"),
-			m_gizmoBallMaterial,
-			sphereModel
-		);
-
-		m_gizmoArrowMaterial.Set("u_HighlightedAxis", p_highlightedAxis);
-
-		switch (p_operation)
-		{
-		case OvEditor::Core::EGizmoOperation::TRANSLATE:
-			arrowModel = EDITOR_CONTEXT(editorResources)->GetModel("Arrow_Translate");
-			break;
-		case OvEditor::Core::EGizmoOperation::ROTATE:
-			arrowModel = EDITOR_CONTEXT(editorResources)->GetModel("Arrow_Rotate");
-			break;
-		case OvEditor::Core::EGizmoOperation::SCALE:
-			arrowModel = EDITOR_CONTEXT(editorResources)->GetModel("Arrow_Scale");
-			break;
-		}
-	}
-	else
-	{
-		arrowModel = EDITOR_CONTEXT(editorResources)->GetModel("Arrow_Picking");
-	}
-
-	if (arrowModel)
-	{
-		DrawModelWithSingleMaterial(*arrowModel, p_pickable ? m_gizmoPickingMaterial : m_gizmoArrowMaterial, model);
 	}
 }
 
@@ -486,7 +418,7 @@ void OvEditor::Rendering::DebugSceneRenderer::RenderCameraPerspectiveFrustum(std
 	const auto& cameraRotation = owner.transform.GetWorldRotation();
 	const auto& cameraForward = owner.transform.GetWorldForward();
 
-	camera.CacheMatrices(p_size.first, p_size.second);
+	camera.CacheMatrices(p_size.first, p_size.second); // TODO: We shouldn't cache matrices mid air, we could use another funciton to get the matrices/calculate
 	const auto proj = FMatrix4::Transpose(camera.GetProjectionMatrix());
 	const auto near = camera.GetNear();
 	const auto far = camera.GetFar();
@@ -790,15 +722,3 @@ void OvEditor::Rendering::DebugSceneRenderer::RenderBoundingSpheres(OvCore::ECS:
 	m_driver.SetRasterizationLinesWidth(1.0f);
 }
 
-void OvEditor::Rendering::DebugSceneRenderer::RenderGrid(const OvMaths::FVector3& p_viewPos, const OvMaths::FVector3& p_color)
-{
-	constexpr float gridSize = 5000.0f;
-
-	FMatrix4 model = FMatrix4::Translation({ p_viewPos.x, 0.0f, p_viewPos.z }) * FMatrix4::Scaling({ gridSize * 2.0f, 1.f, gridSize * 2.0f });
-	m_gridMaterial.Set("u_Color", p_color);
-	DrawModelWithSingleMaterial(*EDITOR_CONTEXT(editorResources)->GetModel("Plane"), m_gridMaterial, model);
-
-	m_debugShapeFeature.DrawLine(OvMaths::FVector3(-gridSize + p_viewPos.x, 0.0f, 0.0f), OvMaths::FVector3(gridSize + p_viewPos.x, 0.0f, 0.0f), OvMaths::FVector3(1.0f, 0.0f, 0.0f), 1.0f);
-	m_debugShapeFeature.DrawLine(OvMaths::FVector3(0.0f, -gridSize + p_viewPos.y, 0.0f), OvMaths::FVector3(0.0f, gridSize + p_viewPos.y, 0.0f), OvMaths::FVector3(0.0f, 1.0f, 0.0f), 1.0f);
-	m_debugShapeFeature.DrawLine(OvMaths::FVector3(0.0f, 0.0f, -gridSize + p_viewPos.z), OvMaths::FVector3(0.0f, 0.0f, gridSize + p_viewPos.z), OvMaths::FVector3(0.0f, 0.0f, 1.0f), 1.0f);
-}

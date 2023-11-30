@@ -16,7 +16,7 @@ namespace OvRendering::Entities
 	/**
 	* Represents an entity with a transformation in space
 	*/
-	class Entity
+	class Entity //TODO: Make all the entities (drawable, light...) inherit from it
 	{
 	public:
 		/**

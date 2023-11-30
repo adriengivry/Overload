@@ -25,16 +25,12 @@ namespace OvEditor::Panels { class AView; }
 namespace OvEditor::Rendering
 {
 	/**
-	* Handle the rendering of the editor
+	* Provide a debug layer on top of the default scene renderer to see "invisible" entities such as
+	* lights, cameras, 
 	*/
 	class DebugSceneRenderer : public OvCore::Rendering::SceneRenderer
 	{
 	public:
-		struct DebugSceneDescriptor
-		{
-			OvMaths::FVector3 gridColor;
-		};
-
 		/**
 		* Constructor of the Renderer
 		* @param p_driver
@@ -43,14 +39,11 @@ namespace OvEditor::Rendering
 
 		/**
 		* Add the debug drawing logic on top of SceneRenderer draw method
+		* @param p_pass
 		*/
-		virtual void Draw() override;
+		virtual void DrawPass(OvRendering::Settings::ERenderPass p_pass) override;
 
-		/**
-		* Initialize custom materials
-		*/
-		void InitMaterials();
-
+	protected:
 		/**
 		* Prepare the picking material by send it the color corresponding to the given actor
 		* @param p_actor
@@ -60,38 +53,10 @@ namespace OvEditor::Rendering
 		// TODO: Consider moving everything actor picking related to its own render feature
 
 		/**
-		* Calculate the model matrix for a camera attached to the given actor
-		* @param p_actor
-		*/
-		OvMaths::FMatrix4 CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor);
-
-		/**
 		* Render the scene for actor picking (Unlit version of the scene with colors indicating actor IDs)
 		* @param p_scene
 		*/
 		void RenderSceneForActorPicking(OvCore::SceneSystem::Scene& p_scene);
-
-		/**
-		* Render every scene cameras
-		* @param p_scene
-		*/
-		void RenderCameras(OvCore::SceneSystem::Scene& p_scene);
-
-		/**
-		* Render every scene lights as billboards
-		* @param p_scene
-		*/
-		void RenderLights(OvCore::SceneSystem::Scene& p_scene);
-
-		/**
-		* Render a gizmo at position
-		* @param p_position
-		* @param p_rotation
-		* @param p_operation
-		* @param p_pickable (Determine the shader to use to render the gizmo)
-		* @param p_highlightedAxis (-1 to highlight no axis, 0 for X, 1 for Y, 2 for Z)
-		*/
-		void RenderGizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, OvEditor::Core::EGizmoOperation p_operation, bool p_pickable, int p_highlightedAxis = -1);
 
 		/**
 		* Render a model to the stencil buffer
@@ -144,69 +109,26 @@ namespace OvEditor::Rendering
 			const OvMaths::FVector3& h
 		);
 
-		/**
-		* Render the camera perspective frustum
-		* @param p_size
-		* @param p_camera
-		*/
+		void RenderCameras(OvCore::SceneSystem::Scene& p_scene);
+		void RenderLights(OvCore::SceneSystem::Scene& p_scene);
 		void RenderCameraPerspectiveFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera);
-
-		/**
-		* Render the camera orthographic frustum
-		* @param p_size
-		* @param p_camera
-		*/
 		void RenderCameraOrthographicFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera);
-
-		/**
-		* Render the camera frustum
-		*/
 		void RenderCameraFrustum(OvCore::ECS::Components::CCamera& p_camera);
-
-		/**
-		* Render an actor collider
-		*/
 		void RenderActorCollider(OvCore::ECS::Actor& p_actor);
-
-		/**
-		* Render light bounds
-		*/
 		void RenderLightBounds(OvCore::ECS::Components::CLight& p_light);
-
-		/**
-		* Render ambient box volume
-		*/
 		void RenderAmbientBoxVolume(OvCore::ECS::Components::CAmbientBoxLight& p_ambientBoxLight);
-
-		/**
-		* Render ambient sphere volume
-		*/
 		void RenderAmbientSphereVolume(OvCore::ECS::Components::CAmbientSphereLight& p_ambientSphereLight);
-
-		/**
-		* Render the the bounding spheres of the given model renderer
-		*/
 		void RenderBoundingSpheres(OvCore::ECS::Components::CModelRenderer& p_modelRenderer);
-
-		/**
-		* Render the grid
-		*/
-		void RenderGrid(const OvMaths::FVector3& p_viewPos, const OvMaths::FVector3& p_color);
 
 	private:
 		OvRendering::Features::DebugShapeRenderFeature& m_debugShapeFeature;
 
-		OvCore::Resources::Material m_gridMaterial;
 		OvCore::Resources::Material m_stencilFillMaterial;
-		OvCore::Resources::Material m_textureMaterial;
 		OvCore::Resources::Material m_outlineMaterial;
 		OvCore::Resources::Material m_emptyMaterial;
 		OvCore::Resources::Material m_defaultMaterial;
 		OvCore::Resources::Material m_cameraMaterial;
 		OvCore::Resources::Material m_lightMaterial;
-		OvCore::Resources::Material m_gizmoArrowMaterial;
-		OvCore::Resources::Material m_gizmoBallMaterial;
-		OvCore::Resources::Material m_gizmoPickingMaterial;
 		OvCore::Resources::Material m_actorPickingMaterial;
 	};
 }

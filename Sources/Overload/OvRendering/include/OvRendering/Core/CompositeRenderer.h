@@ -35,9 +35,16 @@ namespace OvRendering::Core
 		virtual void BeginFrame(const Data::FrameDescriptor& p_frameDescriptor);
 
 		/**
-		* Draw the scene using the provided render features and descriptors.
+		* Handle the drawing logic of render pass, invoking DrawPass on the renderer and its
+		* associated render features.
 		*/
-		virtual void Draw() = 0;
+		virtual void Draw() final;
+
+		/**
+		* Draw the given render pass
+		* @param p_pass
+		*/
+		virtual void DrawPass(OvRendering::Settings::ERenderPass p_pass);
 
 		/**
 		* End Frame

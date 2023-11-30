@@ -49,8 +49,19 @@ namespace OvCore::Rendering
 		virtual void BeginFrame(const OvRendering::Data::FrameDescriptor& p_frameDescriptor) override;
 
 		/**
-		* Draw the scene using the provided render features and descriptors.
+		* Draw the given render pass
+		* @param 
 		*/
-		virtual void Draw();
+		virtual void DrawPass(OvRendering::Settings::ERenderPass p_pass);
+
+	private:
+		void ParseScene();
+
+		using OpaqueDrawables = std::multimap<float, OvRendering::Entities::Drawable, std::less<float>>;
+		using TransparentDrawables = std::multimap<float, OvRendering::Entities::Drawable, std::greater<float>>;
+		using AllDrawables = std::pair<OpaqueDrawables, TransparentDrawables>;
+
+		OpaqueDrawables m_opaqueDrawables;
+		TransparentDrawables m_transparentDrawables;
 	};
 }
