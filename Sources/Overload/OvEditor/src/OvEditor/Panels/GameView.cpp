@@ -25,20 +25,6 @@ OvEditor::Panels::GameView::GameView
 	OvRendering::Buffers::UniformBuffer test(1024, 1);
 }
 
-void OvEditor::Panels::GameView::InitFrame()
-{
-	if (auto currentScene = m_sceneManager.GetCurrentScene())
-	{
-		if (auto camera = GetCamera())
-		{
-			m_renderer->AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>({
-				*currentScene,
-				*camera
-			});
-		}
-	}
-}
-
 OvRendering::Entities::Camera* OvEditor::Panels::GameView::GetCamera()
 {
 	if (auto scene = m_sceneManager.GetCurrentScene())
@@ -52,12 +38,8 @@ OvRendering::Entities::Camera* OvEditor::Panels::GameView::GetCamera()
 	return nullptr;
 }
 
-std::optional<OvRendering::Data::Frustum> OvEditor::Panels::GameView::GetActiveFrustum()
+OvCore::SceneSystem::Scene* OvEditor::Panels::GameView::GetScene()
 {
-	if (auto camera = GetCamera())
-	{
-		return camera->GetFrustum();
-	}
-
-	return std::nullopt;
+	return m_sceneManager.GetCurrentScene();
 }
+

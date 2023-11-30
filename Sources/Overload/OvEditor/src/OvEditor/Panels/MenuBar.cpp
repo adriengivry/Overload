@@ -67,6 +67,87 @@ void OvEditor::Panels::MenuBar::HandleShortcuts(float p_deltaTime)
 	}
 }
 
+void OvEditor::Panels::MenuBar::InitializeSettingsMenu()
+{
+	m_settingsMenu->CreateWidget<MenuItem>("Spawn actors at origin", "", true, true).ValueChangedEvent += EDITOR_BIND(SetActorSpawnAtOrigin, std::placeholders::_1);
+	m_settingsMenu->CreateWidget<MenuItem>("Vertical Synchronization", "", true, true).ValueChangedEvent += [this](bool p_value) { EDITOR_CONTEXT(device)->SetVsync(p_value); };
+	auto& cameraSpeedMenu = m_settingsMenu->CreateWidget<MenuList>("Camera Speed");
+	cameraSpeedMenu.CreateWidget<OvUI::Widgets::Sliders::SliderInt>(1, 50, 15, OvUI::Widgets::Sliders::ESliderOrientation::HORIZONTAL, "Scene View").ValueChangedEvent += EDITOR_BIND(SetSceneViewCameraSpeed, std::placeholders::_1);
+	cameraSpeedMenu.CreateWidget<OvUI::Widgets::Sliders::SliderInt>(1, 50, 15, OvUI::Widgets::Sliders::ESliderOrientation::HORIZONTAL, "Asset View").ValueChangedEvent += EDITOR_BIND(SetAssetViewCameraSpeed, std::placeholders::_1);
+	auto& cameraPositionMenu = m_settingsMenu->CreateWidget<MenuList>("Reset Camera");
+	cameraPositionMenu.CreateWidget<MenuItem>("Scene View").ClickedEvent += EDITOR_BIND(ResetSceneViewCameraPosition);
+	cameraPositionMenu.CreateWidget<MenuItem>("Asset View").ClickedEvent += EDITOR_BIND(ResetAssetViewCameraPosition);
+
+	auto& sceneView = EDITOR_PANEL(Panels::SceneView, "Scene View");
+	auto& assetView = EDITOR_PANEL(Panels::AssetView, "Asset View");
+
+	auto& viewColors = m_settingsMenu->CreateWidget<MenuList>("View Colors");
+	auto& sceneViewBackground = viewColors.CreateWidget<MenuList>("Scene View Background");
+	auto& sceneViewBackgroundPicker = sceneViewBackground.CreateWidget<Selection::ColorEdit>(false, sceneView.GetCamera()->GetClearColor());
+	sceneViewBackgroundPicker.ColorChangedEvent += [&](const auto& color)
+	{
+		sceneView.GetCamera()->SetClearColor({ color.r, color.g, color.b });
+	};
+	sceneViewBackground.CreateWidget<MenuItem>("Reset").ClickedEvent += [&]
+	{
+		sceneView.ResetClearColor();
+		sceneViewBackgroundPicker.color = sceneView.GetCamera()->GetClearColor();
+	};
+	auto& sceneViewGrid = viewColors.CreateWidget<MenuList>("Scene View Grid");
+
+	auto& sceneViewGridPicker = sceneViewGrid.CreateWidget<Selection::ColorEdit>(false, sceneView.GetGridColor());
+	sceneViewGridPicker.ColorChangedEvent += [this](const auto& color)
+	{
+		EDITOR_PANEL(Panels::SceneView, "Scene View").SetGridColor({ color.r, color.g, color.b });
+	};
+	sceneViewGrid.CreateWidget<MenuItem>("Reset").ClickedEvent += [&]
+	{
+		sceneView.ResetGridColor();
+		sceneViewGridPicker.color = sceneView.GetGridColor();
+	};
+
+	auto& assetViewBackground = viewColors.CreateWidget<MenuList>("Asset View Background");
+	auto& assetViewBackgroundPicker = assetViewBackground.CreateWidget<Selection::ColorEdit>(false, assetView.GetCamera()->GetClearColor());
+	assetViewBackgroundPicker.ColorChangedEvent += [&](const auto& color)
+	{
+		assetView.GetCamera()->SetClearColor({ color.r, color.g, color.b });
+	};
+	assetViewBackground.CreateWidget<MenuItem>("Reset").ClickedEvent += [&]
+	{
+		assetView.ResetClearColor();
+		assetViewBackgroundPicker.color = assetView.GetCamera()->GetClearColor();
+	};
+
+	auto& assetViewGrid = viewColors.CreateWidget<MenuList>("Asset View Grid");
+	auto& assetViewGridPicker = assetViewGrid.CreateWidget<Selection::ColorEdit>(false, assetView.GetGridColor());
+	assetViewGridPicker.ColorChangedEvent += [&](const auto& color)
+	{
+		assetView.SetGridColor({ color.r, color.g, color.b });
+	};
+	assetViewGrid.CreateWidget<MenuItem>("Reset").ClickedEvent += [&]
+	{
+		assetView.ResetGridColor();
+		assetViewGridPicker.color = assetView.GetGridColor();
+	};
+
+	auto& sceneViewBillboardScaleMenu = m_settingsMenu->CreateWidget<MenuList>("3D Icons Scales");
+	auto& lightBillboardScaleSlider = sceneViewBillboardScaleMenu.CreateWidget<Sliders::SliderInt>(0, 100, static_cast<int>(Settings::EditorSettings::LightBillboardScale * 100.0f), OvUI::Widgets::Sliders::ESliderOrientation::HORIZONTAL, "Lights");
+	lightBillboardScaleSlider.ValueChangedEvent += [this](int p_value) { Settings::EditorSettings::LightBillboardScale = p_value / 100.0f; };
+	lightBillboardScaleSlider.format = "%d %%";
+
+	auto& snappingMenu = m_settingsMenu->CreateWidget<MenuList>("Snapping");
+	snappingMenu.CreateWidget<Drags::DragFloat>(0.001f, 999999.0f, Settings::EditorSettings::TranslationSnapUnit, 0.05f, "Translation Unit").ValueChangedEvent += [this](float p_value) { Settings::EditorSettings::TranslationSnapUnit = p_value; };
+	snappingMenu.CreateWidget<Drags::DragFloat>(0.001f, 999999.0f, Settings::EditorSettings::RotationSnapUnit, 1.0f, "Rotation Unit").ValueChangedEvent += [this](float p_value) { Settings::EditorSettings::RotationSnapUnit = p_value; };
+	snappingMenu.CreateWidget<Drags::DragFloat>(0.001f, 999999.0f, Settings::EditorSettings::ScalingSnapUnit, 0.05f, "Scaling Unit").ValueChangedEvent += [this](float p_value) { Settings::EditorSettings::ScalingSnapUnit = p_value; };
+
+	auto& debuggingMenu = m_settingsMenu->CreateWidget<MenuList>("Debugging");
+	debuggingMenu.CreateWidget<MenuItem>("Show geometry bounds", "", true, Settings::EditorSettings::ShowGeometryBounds).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowGeometryBounds = p_value; };
+	debuggingMenu.CreateWidget<MenuItem>("Show lights bounds", "", true, Settings::EditorSettings::ShowLightBounds).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowLightBounds = p_value; };
+	auto& subMenu = debuggingMenu.CreateWidget<MenuList>("Frustum culling visualizer...");
+	subMenu.CreateWidget<MenuItem>("For geometry", "", true, Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView = p_value; };
+	subMenu.CreateWidget<MenuItem>("For lights", "", true, Settings::EditorSettings::ShowLightFrustumCullingInSceneView).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowLightFrustumCullingInSceneView = p_value; };
+}
+
 void OvEditor::Panels::MenuBar::CreateFileMenu()
 {
 	auto& fileMenu = CreateWidget<MenuList>("File");
@@ -111,81 +192,7 @@ void OvEditor::Panels::MenuBar::CreateResourcesMenu()
 
 void OvEditor::Panels::MenuBar::CreateSettingsMenu()
 {
-	auto& settingsMenu = CreateWidget<MenuList>("Settings");
-	settingsMenu.CreateWidget<MenuItem>("Spawn actors at origin", "", true, true).ValueChangedEvent		+= EDITOR_BIND(SetActorSpawnAtOrigin, std::placeholders::_1);
-	settingsMenu.CreateWidget<MenuItem>("Vertical Synchronization", "", true, true).ValueChangedEvent	+= [this](bool p_value) { EDITOR_CONTEXT(device)->SetVsync(p_value); };
-	auto& cameraSpeedMenu = settingsMenu.CreateWidget<MenuList>("Camera Speed");
-	cameraSpeedMenu.CreateWidget<OvUI::Widgets::Sliders::SliderInt>(1, 50, 15, OvUI::Widgets::Sliders::ESliderOrientation::HORIZONTAL, "Scene View").ValueChangedEvent += EDITOR_BIND(SetSceneViewCameraSpeed, std::placeholders::_1);
-	cameraSpeedMenu.CreateWidget<OvUI::Widgets::Sliders::SliderInt>(1, 50, 15, OvUI::Widgets::Sliders::ESliderOrientation::HORIZONTAL, "Asset View").ValueChangedEvent += EDITOR_BIND(SetAssetViewCameraSpeed, std::placeholders::_1);
-	auto& cameraPositionMenu = settingsMenu.CreateWidget<MenuList>("Reset Camera");
-	cameraPositionMenu.CreateWidget<MenuItem>("Scene View").ClickedEvent += EDITOR_BIND(ResetSceneViewCameraPosition);
-	cameraPositionMenu.CreateWidget<MenuItem>("Asset View").ClickedEvent += EDITOR_BIND(ResetAssetViewCameraPosition);
-
-	auto& viewColors = settingsMenu.CreateWidget<MenuList>("View Colors");
-	auto& sceneViewBackground = viewColors.CreateWidget<MenuList>("Scene View Background");
-	auto& sceneViewBackgroundPicker = sceneViewBackground.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color{ 0.098f, 0.098f, 0.098f });
-	sceneViewBackgroundPicker.ColorChangedEvent += [this](const auto & color)
-	{
-		EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera()->SetClearColor({ color.r, color.g, color.b });
-	};
-	sceneViewBackground.CreateWidget<MenuItem>("Reset").ClickedEvent += [this, &sceneViewBackgroundPicker]
-	{
-		EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera()->SetClearColor({ 0.098f, 0.098f, 0.098f });
-		sceneViewBackgroundPicker.color = { 0.098f, 0.098f, 0.098f };
-	};
-
-	auto& sceneViewGrid = viewColors.CreateWidget<MenuList>("Scene View Grid");
-    auto& sceneViewGridPicker = sceneViewGrid.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color(0.176f, 0.176f, 0.176f));
-	sceneViewGridPicker.ColorChangedEvent += [this](const auto & color)
-	{
-		EDITOR_PANEL(Panels::SceneView, "Scene View").SetGridColor({ color.r, color.g, color.b });
-	};
-	sceneViewGrid.CreateWidget<MenuItem>("Reset").ClickedEvent += [this, &sceneViewGridPicker]
-	{
-		EDITOR_PANEL(Panels::SceneView, "Scene View").SetGridColor(OvMaths::FVector3(0.176f, 0.176f, 0.176f));
-		sceneViewGridPicker.color = OvUI::Types::Color(0.176f, 0.176f, 0.176f);
-	};
-
-	auto& assetViewBackground = viewColors.CreateWidget<MenuList>("Asset View Background");
-	auto& assetViewBackgroundPicker = assetViewBackground.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color{ 0.098f, 0.098f, 0.098f });
-	assetViewBackgroundPicker.ColorChangedEvent += [this](const auto & color)
-	{
-		EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera()->SetClearColor({ color.r, color.g, color.b });
-	};
-	assetViewBackground.CreateWidget<MenuItem>("Reset").ClickedEvent += [this, &assetViewBackgroundPicker]
-	{
-		EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera()->SetClearColor({ 0.098f, 0.098f, 0.098f });
-		assetViewBackgroundPicker.color = { 0.098f, 0.098f, 0.098f };
-	};
-
-	auto& assetViewGrid = viewColors.CreateWidget<MenuList>("Asset View Grid");
-	auto& assetViewGridPicker = assetViewGrid.CreateWidget<Selection::ColorEdit>(false, OvUI::Types::Color(0.176f, 0.176f, 0.176f));
-	assetViewGridPicker.ColorChangedEvent += [this](const auto & color)
-	{
-		EDITOR_PANEL(Panels::AssetView, "Asset View").SetGridColor({ color.r, color.g, color.b });
-	};
-	assetViewGrid.CreateWidget<MenuItem>("Reset").ClickedEvent += [this, &assetViewGridPicker]
-	{
-		EDITOR_PANEL(Panels::AssetView, "Asset View").SetGridColor(OvMaths::FVector3(0.176f, 0.176f, 0.176f));
-		assetViewGridPicker.color = OvUI::Types::Color(0.176f, 0.176f, 0.176f);
-	};
-
-	auto& sceneViewBillboardScaleMenu = settingsMenu.CreateWidget<MenuList>("3D Icons Scales");
-	auto& lightBillboardScaleSlider = sceneViewBillboardScaleMenu.CreateWidget<Sliders::SliderInt>(0, 100, static_cast<int>(Settings::EditorSettings::LightBillboardScale * 100.0f), OvUI::Widgets::Sliders::ESliderOrientation::HORIZONTAL, "Lights");
-	lightBillboardScaleSlider.ValueChangedEvent += [this](int p_value) { Settings::EditorSettings::LightBillboardScale = p_value / 100.0f; };
-	lightBillboardScaleSlider.format = "%d %%";
-
-	auto& snappingMenu = settingsMenu.CreateWidget<MenuList>("Snapping");
-	snappingMenu.CreateWidget<Drags::DragFloat>(0.001f, 999999.0f, Settings::EditorSettings::TranslationSnapUnit, 0.05f, "Translation Unit").ValueChangedEvent += [this](float p_value) { Settings::EditorSettings::TranslationSnapUnit = p_value; };
-	snappingMenu.CreateWidget<Drags::DragFloat>(0.001f, 999999.0f, Settings::EditorSettings::RotationSnapUnit, 1.0f, "Rotation Unit").ValueChangedEvent += [this](float p_value) { Settings::EditorSettings::RotationSnapUnit = p_value; };
-	snappingMenu.CreateWidget<Drags::DragFloat>(0.001f, 999999.0f, Settings::EditorSettings::ScalingSnapUnit, 0.05f, "Scaling Unit").ValueChangedEvent += [this](float p_value) { Settings::EditorSettings::ScalingSnapUnit = p_value; };
-
-	auto& debuggingMenu = settingsMenu.CreateWidget<MenuList>("Debugging");
-	debuggingMenu.CreateWidget<MenuItem>("Show geometry bounds", "", true, Settings::EditorSettings::ShowGeometryBounds).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowGeometryBounds = p_value; };
-	debuggingMenu.CreateWidget<MenuItem>("Show lights bounds", "", true, Settings::EditorSettings::ShowLightBounds).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowLightBounds = p_value; };
-	auto& subMenu = debuggingMenu.CreateWidget<MenuList>("Frustum culling visualizer...");
-	subMenu.CreateWidget<MenuItem>("For geometry", "", true, Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView = p_value; };
-	subMenu.CreateWidget<MenuItem>("For lights", "", true, Settings::EditorSettings::ShowLightFrustumCullingInSceneView).ValueChangedEvent += [this](bool p_value) { Settings::EditorSettings::ShowLightFrustumCullingInSceneView = p_value; };
+	m_settingsMenu = &CreateWidget<MenuList>("Settings");
 }
 
 void OvEditor::Panels::MenuBar::CreateLayoutMenu() 

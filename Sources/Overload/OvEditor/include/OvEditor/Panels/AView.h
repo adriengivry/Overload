@@ -13,6 +13,7 @@
 #include <OvRendering/Buffers/Framebuffer.h>
 #include <OvRendering/Entities/Camera.h>
 #include <OvRendering/Core/CompositeRenderer.h>
+#include <OvCore/Rendering/SceneRenderer.h>
 
 namespace OvEditor::Panels
 {
@@ -68,27 +69,21 @@ namespace OvEditor::Panels
 		virtual OvRendering::Entities::Camera* GetCamera() = 0;
 
 		/**
+		* Returns the scene used by this view
+		*/
+		virtual OvCore::SceneSystem::Scene* GetScene() = 0;
+
+		/**
 		* Returns the size of the panel ignoring its titlebar height
 		*/
 		std::pair<uint16_t, uint16_t> GetSafeSize() const;
 
-		/**
-		* Returns the grid color of the view
-		*/
-		const OvMaths::FVector3& GetGridColor() const;
-
-		/**
-		* Defines the grid color of the view
-		* @param p_color
-		*/
-		void SetGridColor(const OvMaths::FVector3& p_color);
-
 	protected:
 		OvUI::Widgets::Visual::Image* m_image;
 
-        OvMaths::FVector3 m_gridColor = OvMaths::FVector3 { 0.176f, 0.176f, 0.176f };
+		OvMaths::FVector3 m_gridColor = OvMaths::FVector3 { 0.176f, 0.176f, 0.176f };
 
 		OvRendering::Buffers::Framebuffer m_fbo;
-		std::unique_ptr<OvRendering::Core::CompositeRenderer> m_renderer;
+		std::unique_ptr<OvCore::Rendering::SceneRenderer> m_renderer;
 	};
 }

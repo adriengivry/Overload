@@ -28,19 +28,14 @@ namespace OvEditor::Panels
 		);
 
 		/**
-		* Prepare the renderer for rendering
-		*/
-		virtual void InitFrame() override;
-
-		/**
 		* Returns the main camera used by the attached scene
 		*/
 		virtual OvRendering::Entities::Camera* GetCamera();
 
 		/**
-		* Returns the game view camera frustum or nothing if the game isn't playing
+		* Returns the scene used by this view
 		*/
-		std::optional<OvRendering::Data::Frustum> GetActiveFrustum();
+		virtual OvCore::SceneSystem::Scene* GetScene();
 
 	private:
 		OvCore::SceneSystem::SceneManager& m_sceneManager;

@@ -33,6 +33,12 @@ namespace OvEditor::Panels
 		*/
 		void RegisterPanel(const std::string& p_name, OvUI::Panels::PanelWindow& p_panel);
 
+		/**
+		* @note This needs to be called after all other panels have been intialized, as the content of other
+		* panels is required to initialize some settings
+		*/
+		void InitializeSettingsMenu();
+
 	private:
 		void CreateFileMenu();
 		void CreateBuildMenu();
@@ -48,7 +54,7 @@ namespace OvEditor::Panels
 
 	private:
 		PanelMap m_panels;
-
+		OvUI::Widgets::Menu::MenuList* m_settingsMenu = nullptr;
 		OvUI::Widgets::Menu::MenuList* m_windowMenu = nullptr;
 	};
 }

@@ -27,14 +27,14 @@ namespace OvEditor::Panels
 		);
 
 		/**
-		* Prepare the renderer for rendering
-		*/
-		virtual void InitFrame() override;
-
-		/**
 		* Update the scene view
 		*/
 		virtual void Update(float p_deltaTime) override;
+
+		/**
+		* Returns the scene used by this view
+		*/
+		virtual OvCore::SceneSystem::Scene* GetScene();
 
 		/**
 		* Render the actual scene

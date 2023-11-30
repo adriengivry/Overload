@@ -51,21 +51,24 @@ void OvEditor::Core::Editor::SetupUI()
 	settings.collapsable = true;
 	settings.dockable = true;
 
-	m_panelsManager.CreatePanel<OvEditor::Panels::MenuBar>("Menu Bar");
-	m_panelsManager.CreatePanel<OvEditor::Panels::AssetBrowser>("Asset Browser", true, settings, m_context.engineAssetsPath, m_context.projectAssetsPath, m_context.projectScriptsPath);
-	m_panelsManager.CreatePanel<OvEditor::Panels::HardwareInfo>("Hardware Info", false, settings, 0.2f, 50);
-	m_panelsManager.CreatePanel<OvEditor::Panels::Profiler>("Profiler", true, settings, 0.25f);
-	m_panelsManager.CreatePanel<OvEditor::Panels::FrameInfo>("Frame Info", true, settings);
-	m_panelsManager.CreatePanel<OvEditor::Panels::Console>("Console", true, settings);
-	m_panelsManager.CreatePanel<OvEditor::Panels::Hierarchy>("Hierarchy", true, settings);
-	m_panelsManager.CreatePanel<OvEditor::Panels::Inspector>("Inspector", true, settings);
-	m_panelsManager.CreatePanel<OvEditor::Panels::SceneView>("Scene View", true, settings);
-	m_panelsManager.CreatePanel<OvEditor::Panels::GameView>("Game View", true, settings);
-	m_panelsManager.CreatePanel<OvEditor::Panels::AssetView>("Asset View", false, settings);
-	m_panelsManager.CreatePanel<OvEditor::Panels::Toolbar>("Toolbar", true, settings);
-	m_panelsManager.CreatePanel<OvEditor::Panels::MaterialEditor>("Material Editor", false, settings);
-	m_panelsManager.CreatePanel<OvEditor::Panels::ProjectSettings>("Project Settings", false, settings);
-	m_panelsManager.CreatePanel<OvEditor::Panels::AssetProperties>("Asset Properties", false, settings);
+	m_panelsManager.CreatePanel<Panels::MenuBar>("Menu Bar");
+	m_panelsManager.CreatePanel<Panels::AssetBrowser>("Asset Browser", true, settings, m_context.engineAssetsPath, m_context.projectAssetsPath, m_context.projectScriptsPath);
+	m_panelsManager.CreatePanel<Panels::HardwareInfo>("Hardware Info", false, settings, 0.2f, 50);
+	m_panelsManager.CreatePanel<Panels::Profiler>("Profiler", true, settings, 0.25f);
+	m_panelsManager.CreatePanel<Panels::FrameInfo>("Frame Info", true, settings);
+	m_panelsManager.CreatePanel<Panels::Console>("Console", true, settings);
+	m_panelsManager.CreatePanel<Panels::Hierarchy>("Hierarchy", true, settings);
+	m_panelsManager.CreatePanel<Panels::Inspector>("Inspector", true, settings);
+	m_panelsManager.CreatePanel<Panels::SceneView>("Scene View", true, settings);
+	m_panelsManager.CreatePanel<Panels::GameView>("Game View", true, settings);
+	m_panelsManager.CreatePanel<Panels::AssetView>("Asset View", false, settings);
+	m_panelsManager.CreatePanel<Panels::Toolbar>("Toolbar", true, settings);
+	m_panelsManager.CreatePanel<Panels::MaterialEditor>("Material Editor", false, settings);
+	m_panelsManager.CreatePanel<Panels::ProjectSettings>("Project Settings", false, settings);
+	m_panelsManager.CreatePanel<Panels::AssetProperties>("Asset Properties", false, settings);
+
+	// Needs to be called after all panels got created, because some settings in this menu depend on other panels
+	m_panelsManager.GetPanelAs<Panels::MenuBar>("Menu Bar").InitializeSettingsMenu();
 
 	m_canvas.MakeDockspace(true);
 	m_context.uiManager->SetCanvas(m_canvas);

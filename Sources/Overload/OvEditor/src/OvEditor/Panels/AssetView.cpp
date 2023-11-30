@@ -9,7 +9,6 @@
 #include <OvCore/ECS/Components/CDirectionalLight.h>
 #include <OvCore/ECS/Components/CAmbientSphereLight.h>
 #include <OvCore/Rendering/SceneRenderer.h>
-#include <OvRendering/Features/DebugShapeRenderFeature.h>
 
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Panels/AssetView.h"
@@ -21,9 +20,6 @@ OvEditor::Panels::AssetView::AssetView
 	const OvUI::Settings::PanelWindowSettings& p_windowSettings
 ) : AViewControllable(p_title, p_opened, p_windowSettings)
 {
-	m_renderer = std::make_unique<OvCore::Rendering::SceneRenderer>(*EDITOR_CONTEXT(driver));
-
-	m_camera.SetClearColor({ 0.098f, 0.098f, 0.098f });
 	m_camera.SetFar(5000.0f);
 
 	auto& directionalLight = m_scene.CreateActor("Directional Light");
@@ -76,15 +72,9 @@ OvEditor::Panels::AssetView::AssetView
 	};
 }
 
-void OvEditor::Panels::AssetView::InitFrame()
+OvCore::SceneSystem::Scene* OvEditor::Panels::AssetView::GetScene()
 {
-	if (auto camera = GetCamera())
-	{
-		m_renderer->AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>({
-			m_scene,
-			*camera
-		});
-	}
+	return &m_scene;
 }
 
 void OvEditor::Panels::AssetView::SetResource(ViewableResource p_resource)

@@ -30,11 +30,21 @@ namespace OvEditor::Rendering
 	class DebugSceneRenderer : public OvCore::Rendering::SceneRenderer
 	{
 	public:
+		struct DebugSceneDescriptor
+		{
+			OvMaths::FVector3 gridColor;
+		};
+
 		/**
 		* Constructor of the Renderer
 		* @param p_driver
 		*/
 		DebugSceneRenderer(OvRendering::Context::Driver& p_driver);
+
+		/**
+		* Add the debug drawing logic on top of SceneRenderer draw method
+		*/
+		virtual void Draw() override;
 
 		/**
 		* Initialize custom materials

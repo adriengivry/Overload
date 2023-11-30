@@ -35,6 +35,11 @@ namespace OvEditor::Panels
 		virtual void Update(float p_deltaTime) override;
 
 		/**
+		* Prepare the renderer for rendering
+		*/
+		virtual void InitFrame() override;
+
+		/**
 		* Reset the camera transform to its initial value
 		*/
 		virtual void ResetCameraTransform();
@@ -49,7 +54,29 @@ namespace OvEditor::Panels
 		*/
 		virtual OvRendering::Entities::Camera* GetCamera();
 
+		/**
+		* Returns the grid color of the view
+		*/
+		const OvMaths::FVector3& GetGridColor() const;
+
+		/**
+		* Defines the grid color of the view
+		* @param p_color
+		*/
+		void SetGridColor(const OvMaths::FVector3& p_color);
+
+		/**
+		* Reset the grid color to its initial value
+		*/
+		void ResetGridColor();
+
+		/**
+		* Set the camera clear color
+		*/
+		void ResetClearColor();
+
 	protected:
+		OvMaths::FVector3 m_gridColor;
 		OvRendering::Entities::Camera m_camera;
 		OvEditor::Core::CameraController m_cameraController;
 	};

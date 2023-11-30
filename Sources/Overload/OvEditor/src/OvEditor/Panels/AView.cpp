@@ -17,7 +17,6 @@ OvEditor::Panels::AView::AView
 ) : PanelWindow(p_title, p_opened, p_windowSettings)
 {
 	m_image = &CreateWidget<OvUI::Widgets::Visual::Image>(m_fbo.GetTextureID(), OvMaths::FVector2{ 0.f, 0.f });
-
 	scrollable = false;
 }
 
@@ -37,7 +36,6 @@ void OvEditor::Panels::AView::_Draw_Impl()
 
 void OvEditor::Panels::AView::InitFrame()
 {
-	// Nothing to prepare in this base view.
 	// Views should probably override this method
 	// and add appropriate descriptors for their
 	// respective renderers.
@@ -45,20 +43,29 @@ void OvEditor::Panels::AView::InitFrame()
 
 void OvEditor::Panels::AView::Render()
 {
-	InitFrame();
-
 	auto [winWidth, winHeight] = GetSafeSize();
 	auto camera = GetCamera();
+	auto scene = GetScene();
 
-	OvRendering::Data::FrameDescriptor frameDescriptor;
-	frameDescriptor.clearColor = camera ? camera->GetClearColor() : OvMaths::FVector3::Zero;
-	frameDescriptor.renderWidth = winWidth;
-	frameDescriptor.renderHeight = winHeight;
-	frameDescriptor.outputBuffer = &m_fbo;
+	if (winWidth > 0 && winHeight > 0 && camera && scene)
+	{
+		InitFrame();
 
-	m_renderer->BeginFrame(frameDescriptor);
-	DrawFrame();
-	m_renderer->EndFrame();
+		m_renderer->AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>({
+			*scene,
+			*camera
+		});
+
+		OvRendering::Data::FrameDescriptor frameDescriptor;
+		frameDescriptor.clearColor = camera ? camera->GetClearColor() : OvMaths::FVector3::Zero;
+		frameDescriptor.renderWidth = winWidth;
+		frameDescriptor.renderHeight = winHeight;
+		frameDescriptor.outputBuffer = &m_fbo;
+
+		m_renderer->BeginFrame(frameDescriptor);
+		DrawFrame();
+		m_renderer->EndFrame();
+	}
 }
 
 void OvEditor::Panels::AView::DrawFrame()
@@ -70,16 +77,6 @@ std::pair<uint16_t, uint16_t> OvEditor::Panels::AView::GetSafeSize() const
 {
 	auto result = GetSize() - OvMaths::FVector2{ 0.f, 25.f }; // 25 == title bar height
 	return { static_cast<uint16_t>(result.x), static_cast<uint16_t>(result.y) };
-}
-
-const OvMaths::FVector3& OvEditor::Panels::AView::GetGridColor() const
-{
-	return m_gridColor;
-}
-
-void OvEditor::Panels::AView::SetGridColor(const OvMaths::FVector3& p_color)
-{
-	m_gridColor = p_color;
 }
 
 /*

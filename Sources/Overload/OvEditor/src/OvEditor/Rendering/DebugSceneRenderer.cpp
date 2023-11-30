@@ -50,6 +50,19 @@ OvEditor::Rendering::DebugSceneRenderer::DebugSceneRenderer(OvRendering::Context
 	InitMaterials();
 }
 
+void OvEditor::Rendering::DebugSceneRenderer::Draw()
+{
+	OVASSERT(HasDescriptor<DebugSceneDescriptor>(), "Missing DebugSceneDescriptor!");
+
+	auto& sceneDescriptor = GetDescriptor<SceneDescriptor>();
+	auto& debugSceneDescriptor = GetDescriptor<DebugSceneDescriptor>();
+
+	RenderGrid(sceneDescriptor.camera.GetPosition(), debugSceneDescriptor.gridColor);
+	OvCore::Rendering::SceneRenderer::Draw();
+	RenderCameras(sceneDescriptor.scene);
+	RenderLights(sceneDescriptor.scene);
+}
+
 void OvEditor::Rendering::DebugSceneRenderer::InitMaterials()
 {
 	/* Default Material */

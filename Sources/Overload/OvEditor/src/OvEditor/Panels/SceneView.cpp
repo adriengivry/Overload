@@ -21,10 +21,6 @@ OvEditor::Panels::SceneView::SceneView
 ) : AViewControllable(p_title, p_opened, p_windowSettings, true),
 	m_sceneManager(EDITOR_CONTEXT(sceneManager))
 {
-	m_renderer = std::make_unique<OvCore::Rendering::SceneRenderer>(*EDITOR_CONTEXT(driver));
-	// m_renderer->AddFeature<Rendering::EditorViewRenderFeature>();
-
-	m_camera.SetClearColor({ 0.098f, 0.098f, 0.098f });
 	m_camera.SetFar(5000.0f);
 
 	m_image->AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, OvUI::Widgets::Layout::Group*>>>("File").DataReceivedEvent += [this](auto p_data)
@@ -45,17 +41,6 @@ OvEditor::Panels::SceneView::SceneView
 			m_highlightedActor = std::nullopt;
 		}
 	};
-}
-
-void OvEditor::Panels::SceneView::InitFrame()
-{
-	if (auto currentScene = m_sceneManager.GetCurrentScene())
-	{
-		m_renderer->AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>({
-			*currentScene,
-			*GetCamera()
-		});
-	}
 }
 
 void OvEditor::Panels::SceneView::Update(float p_deltaTime)
@@ -81,6 +66,11 @@ void OvEditor::Panels::SceneView::Update(float p_deltaTime)
 			m_currentOperation = OvEditor::Core::EGizmoOperation::SCALE;
 		}
 	}
+}
+
+OvCore::SceneSystem::Scene* OvEditor::Panels::SceneView::GetScene()
+{
+	return m_sceneManager.GetCurrentScene();
 }
 
 /*

@@ -37,9 +37,9 @@ namespace OvEditor::Panels
 		);
 
 		/**
-		* Prepare the renderer for rendering
+		* Returns the scene used by this view
 		*/
-		virtual void InitFrame() override;
+		virtual OvCore::SceneSystem::Scene* GetScene();
 
 		/**
 		* Defines the resource to preview
