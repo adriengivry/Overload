@@ -87,12 +87,15 @@ const OvRendering::Data::FrameDescriptor& OvRendering::Core::ABaseRenderer::GetF
 
 void OvRendering::Core::ABaseRenderer::DrawEntity(const Entities::Drawable& p_drawable)
 {
-	if (p_drawable.material.HasShader() && p_drawable.material.GetGPUInstances() > 0)
+	auto material = p_drawable.material;
+	auto mesh = p_drawable.mesh;
+
+	if (mesh && material && material.get().HasShader() && material.get().GetGPUInstances() > 0)
 	{
 		m_driver.ApplyStateMask(p_drawable.stateMask);
-		p_drawable.material.Bind(m_emptyTexture);
-		DrawMesh(p_drawable.mesh, OvRendering::Settings::EPrimitiveMode::TRIANGLES, p_drawable.material.GetGPUInstances());
-		p_drawable.material.UnBind();
+		p_drawable.material.get().Bind(m_emptyTexture);
+		DrawMesh(mesh.get(), OvRendering::Settings::EPrimitiveMode::TRIANGLES, p_drawable.material.get().GetGPUInstances());
+		p_drawable.material.get().UnBind();
 	}
 }
 
@@ -149,13 +152,12 @@ void OvRendering::Core::ABaseRenderer::DrawModelWithSingleMaterial(
 
 		for (auto mesh : p_model.GetMeshes())
 		{
-			OvRendering::Entities::Drawable element{
-				p_modelMatrix,
-				*mesh,
-				material,
-				stateMask,
-				userMatrix
-			};
+			OvRendering::Entities::Drawable element;
+			element.modelMatrix = p_modelMatrix;
+			element.mesh = *mesh;
+			element.material = material;
+			element.stateMask = stateMask;
+			element.userMatrix = userMatrix;
 
 			DrawEntity(element);
 		}

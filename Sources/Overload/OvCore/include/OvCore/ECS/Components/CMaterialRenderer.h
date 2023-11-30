@@ -15,7 +15,7 @@
 #include "OvCore/Resources/Material.h"
 #include "OvCore/ECS/Components/AComponent.h"
 
-#define MAX_MATERIAL_COUNT 255
+#define MAX_MATERIAL_COUNT 255 //TODO: use constexpr
 
 namespace OvCore::ECS { class Actor; }
 

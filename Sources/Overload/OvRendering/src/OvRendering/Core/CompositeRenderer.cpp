@@ -73,8 +73,7 @@ void OvRendering::Core::CompositeRenderer::EndFrame()
 		feature->OnEndFrame();
 	}
 
-	// Consume descriptors
-	m_descriptors.clear();
+	ClearDescriptors();
 
 	return ABaseRenderer::EndFrame();
 }

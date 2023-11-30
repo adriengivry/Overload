@@ -28,6 +28,12 @@ namespace OvEditor::Rendering
 	{
 	public:
 		/**
+		* Constructor
+		* @param p_renderer
+		*/
+		GizmoRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer);
+
+		/**
 		* Render a gizmo at position
 		* @param p_position
 		* @param p_rotation
@@ -42,9 +48,6 @@ namespace OvEditor::Rendering
 			bool p_pickable,
 			int p_highlightedAxis = -1
 		);
-
-	protected:
-		GizmoRenderFeature(OvRendering::Core::CompositeRenderer& p_driver);
 
 	private:
 		OvCore::Resources::Material m_gizmoArrowMaterial;

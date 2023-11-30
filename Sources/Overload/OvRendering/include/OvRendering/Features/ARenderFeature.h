@@ -53,7 +53,7 @@ namespace OvRendering::Features
 		* Draw before the given render pass
 		* If the attached renderer also implements a drawing strategy for this pass,
 		* this pre-pass will be executed before
-		* @param p_renderPassMask
+		* @param p_renderPass
 		*/
 		virtual void DrawPrePass(OvRendering::Settings::ERenderPass p_renderPass);
 
@@ -61,7 +61,7 @@ namespace OvRendering::Features
 		* Draw for the given render pass
 		* If the attached renderer also implements a drawing strategy for this pass,
 		* the render feature draw pass will be executed last.
-		* @param p_renderPassMask
+		* @param p_renderPass
 		*/
 		virtual void DrawPass(OvRendering::Settings::ERenderPass p_renderPass);
 

@@ -11,6 +11,7 @@
 
 #include "OvRendering/Core/ABaseRenderer.h"
 #include "OvRendering/Features/ARenderFeature.h"
+#include "OvRendering/Data/Describable.h"
 
 #include <OvDebug/Assertion.h>
 
@@ -19,7 +20,7 @@ namespace OvRendering::Core
 	/**
 	* A renderer relying on composition to define rendering logic.
 	*/
-	class CompositeRenderer : public ABaseRenderer
+	class CompositeRenderer : public ABaseRenderer, public Data::Describable
 	{
 	public:
 		/**
@@ -83,29 +84,8 @@ namespace OvRendering::Core
 		template<typename T>
 		bool HasFeature() const;
 
-		/**
-		* Add a feature descriptor
-		* @param p_args (Parameter pack forwared to the extension constructor)
-		*/
-		template<typename T>
-		void AddDescriptor(T&& p_descriptor);
-
-		/**
-		* Retrieve the extension matching the given type
-		* @note Fails if the extension doesn't exist
-		*/
-		template<typename T>
-		T& GetDescriptor();
-
-		/**
-		* Return true if the an extension matching the given type has been found
-		*/
-		template<typename T>
-		bool HasDescriptor() const;
-
 	protected:
 		std::unordered_map<std::type_index, std::unique_ptr<Features::ARenderFeature>> m_features;
-		std::unordered_map<std::type_index, std::any> m_descriptors;
 	};
 }
 

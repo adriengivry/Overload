@@ -70,25 +70,6 @@ OvEditor::Rendering::DebugSceneRenderer::DebugSceneRenderer(OvRendering::Context
 	m_lightMaterial.SetBackfaceCulling(false);
 	m_lightMaterial.SetBlendable(true);
 	m_lightMaterial.SetDepthTest(false);
-
-	/* Stencil Fill Material */
-	m_stencilFillMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
-	m_stencilFillMaterial.SetBackfaceCulling(true);
-	m_stencilFillMaterial.SetDepthTest(false);
-	m_stencilFillMaterial.SetColorWriting(false);
-	m_stencilFillMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
-
-	/* Outline Material */
-	m_outlineMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
-	m_outlineMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
-	m_outlineMaterial.SetDepthTest(false);
-
-	/* Picking Material */
-	m_actorPickingMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
-	m_actorPickingMaterial.Set("u_Diffuse", FVector4(1.f, 1.f, 1.f, 1.0f));
-	m_actorPickingMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
-	m_actorPickingMaterial.SetFrontfaceCulling(false);
-	m_actorPickingMaterial.SetBackfaceCulling(false);
 }
 
 void OvEditor::Rendering::DebugSceneRenderer::DrawPass(OvRendering::Settings::ERenderPass p_pass)
@@ -101,17 +82,13 @@ void OvEditor::Rendering::DebugSceneRenderer::DrawPass(OvRendering::Settings::ER
 		auto& sceneDescriptor = GetDescriptor<SceneDescriptor>();
 		RenderCameras(sceneDescriptor.scene);
 		RenderLights(sceneDescriptor.scene);
+
+		if (EDITOR_EXEC(IsAnyActorSelected()))
+		{
+			auto& selectedActor = EDITOR_EXEC(GetSelectedActor());
+			DrawActorDebugElements(selectedActor);
+		}
 	}
-}
-
-void OvEditor::Rendering::DebugSceneRenderer::PreparePickingMaterial(OvCore::ECS::Actor& p_actor, OvCore::Resources::Material& p_material)
-{
-	uint32_t actorID = static_cast<uint32_t>(p_actor.GetID());
-
-	auto bytes = reinterpret_cast<uint8_t*>(&actorID);
-	auto color = FVector4{ bytes[0] / 255.0f, bytes[1] / 255.0f, bytes[2] / 255.0f, 1.0f };
-
-	p_material.Set("u_Diffuse", color);
 }
 
 OvMaths::FMatrix4 CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor)
@@ -120,96 +97,6 @@ OvMaths::FMatrix4 CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor)
 	auto rotation = FQuaternion::ToMatrix4(p_actor.transform.GetWorldRotation());
 
 	return translation * rotation;
-}
-
-void OvEditor::Rendering::DebugSceneRenderer::RenderSceneForActorPicking(OvCore::SceneSystem::Scene& p_scene)
-{
-	/* Render models */
-	for (auto modelRenderer : p_scene.GetFastAccessComponents().modelRenderers)
-	{
-		auto& actor = modelRenderer->owner;
-
-		if (actor.IsActive())
-		{
-			if (auto model = modelRenderer->GetModel())
-			{
-				if (auto materialRenderer = modelRenderer->owner.GetComponent<OvCore::ECS::Components::CMaterialRenderer>())
-				{
-					const OvCore::ECS::Components::CMaterialRenderer::MaterialList& materials = materialRenderer->GetMaterials();
-					const auto& modelMatrix = actor.transform.GetWorldMatrix();
-
-					PreparePickingMaterial(actor, m_actorPickingMaterial);
-
-					for (auto mesh : model->GetMeshes())
-					{
-						OvCore::Resources::Material* material = nullptr;
-
-						if (mesh->GetMaterialIndex() < MAX_MATERIAL_COUNT)
-						{
-							material = materials.at(mesh->GetMaterialIndex());
-							if (!material || !material->GetShader())
-								material = &m_emptyMaterial;
-						}
-
-						if (material)
-						{
-							m_actorPickingMaterial.SetBackfaceCulling(material->HasBackfaceCulling());
-							m_actorPickingMaterial.SetFrontfaceCulling(material->HasFrontfaceCulling());
-							m_actorPickingMaterial.SetColorWriting(material->HasColorWriting());
-							m_actorPickingMaterial.SetDepthTest(material->HasDepthTest());
-							m_actorPickingMaterial.SetDepthWriting(material->HasDepthWriting());
-
-							DrawEntity(OvRendering::Entities::Drawable{
-								modelMatrix,
-								*mesh,
-								m_actorPickingMaterial,
-								m_actorPickingMaterial.GenerateStateMask(),
-								OvMaths::FMatrix4::Identity
-							});
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/* Render cameras */
-	for (auto camera : p_scene.GetFastAccessComponents().cameras)
-	{
-		auto& actor = camera->owner;
-
-		if (actor.IsActive())
-		{
-			PreparePickingMaterial(actor, m_actorPickingMaterial);
-			auto& model = *EDITOR_CONTEXT(editorResources)->GetModel("Camera");
-			auto modelMatrix = CalculateCameraModelMatrix(actor);
-
-			DrawModelWithSingleMaterial(model, m_actorPickingMaterial, modelMatrix);
-		}
-	}
-
-	/* Render lights */
-	if (Settings::EditorSettings::LightBillboardScale > 0.001f)
-	{
-		m_driver.Clear(false, true, false);
-
-		m_lightMaterial.SetDepthTest(true);
-		m_lightMaterial.Set<float>("u_Scale", Settings::EditorSettings::LightBillboardScale * 0.1f);
-		m_lightMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
-
-		for (auto light : p_scene.GetFastAccessComponents().lights)
-		{
-			auto& actor = light->owner;
-
-			if (actor.IsActive())
-			{
-				PreparePickingMaterial(actor, m_lightMaterial);
-				auto& model = *EDITOR_CONTEXT(editorResources)->GetModel("Vertical_Plane");
-				auto modelMatrix = FMatrix4::Translation(actor.transform.GetWorldPosition());
-				DrawModelWithSingleMaterial(model, m_lightMaterial, modelMatrix);
-			}
-		}
-	}
 }
 
 void OvEditor::Rendering::DebugSceneRenderer::RenderCameras(OvCore::SceneSystem::Scene& p_scene)
@@ -275,93 +162,51 @@ void OvEditor::Rendering::DebugSceneRenderer::RenderLights(OvCore::SceneSystem::
 	}
 }
 
-void OvEditor::Rendering::DebugSceneRenderer::RenderModelToStencil(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model)
+void OvEditor::Rendering::DebugSceneRenderer::DrawActorDebugElements(OvCore::ECS::Actor& p_actor)
 {
-	m_driver.SetStencilMask(0xFF);
-	DrawModelWithSingleMaterial(p_model, m_stencilFillMaterial, p_worldMatrix);
-	m_driver.SetStencilMask(0x00);
-}
-
-void OvEditor::Rendering::DebugSceneRenderer::RenderModelOutline(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model, float p_width)
-{
-	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::NOTEQUAL, 1, 0xFF);
-	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::LINE);
-	m_driver.SetRasterizationLinesWidth(p_width);
-	DrawModelWithSingleMaterial(p_model, m_outlineMaterial, p_worldMatrix);
-	m_driver.SetRasterizationLinesWidth(1.f);
-	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::FILL);
-	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::ALWAYS, 1, 0xFF);
-}
-
-void OvEditor::Rendering::DebugSceneRenderer::RenderActorOutlinePass(OvCore::ECS::Actor& p_actor, bool p_toStencil, bool p_isSelected)
-{
-	float outlineWidth = p_isSelected ? 5.0f : 2.5f;
-
-	m_outlineMaterial.Set("u_Diffuse", p_isSelected ? FVector4(1.f, 0.7f, 0.f, 1.0f) : FVector4(1.f, 1.f, 0.f, 1.0f));
-
 	if (p_actor.IsActive())
 	{
 		/* Render static mesh outline and bounding spheres */
 		if (auto modelRenderer = p_actor.GetComponent<OvCore::ECS::Components::CModelRenderer>(); modelRenderer && modelRenderer->GetModel())
 		{
-			if (p_toStencil)
-				RenderModelToStencil(p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel());
-			else
-				RenderModelOutline(p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel(), outlineWidth);
-
-			if (p_isSelected && Settings::EditorSettings::ShowGeometryBounds && !p_toStencil)
-			{
-				RenderBoundingSpheres(*modelRenderer);
-			}
+			RenderBoundingSpheres(*modelRenderer);
 		}
 
 		/* Render camera component outline */
 		if (auto cameraComponent = p_actor.GetComponent<OvCore::ECS::Components::CCamera>(); cameraComponent)
 		{
 			auto model = CalculateCameraModelMatrix(p_actor);
-
-			if (p_toStencil)
-				RenderModelToStencil(model, *EDITOR_CONTEXT(editorResources)->GetModel("Camera"));
-			else
-				RenderModelOutline(model, *EDITOR_CONTEXT(editorResources)->GetModel("Camera"), outlineWidth);
-
-			if (p_isSelected && !p_toStencil)
-			{
-				RenderCameraFrustum(*cameraComponent);
-			}
+			RenderCameraFrustum(*cameraComponent);
+		}
+		
+		/* Render the actor collider */
+		if (p_actor.GetComponent<OvCore::ECS::Components::CPhysicalObject>())
+		{
+			RenderActorCollider(p_actor);
 		}
 
-		if (p_isSelected && !p_toStencil)
+		/* Render the actor ambient light */
+		if (auto ambientBoxComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientBoxLight>())
 		{
-			/* Render the actor collider */
-			if (p_actor.GetComponent<OvCore::ECS::Components::CPhysicalObject>())
-			{
-				RenderActorCollider(p_actor);
-			}
+			RenderAmbientBoxVolume(*ambientBoxComp);
+		}
 
-			/* Render the actor ambient light */
-			if (auto ambientBoxComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientBoxLight>())
-			{
-				RenderAmbientBoxVolume(*ambientBoxComp);
-			}
+		if (auto ambientSphereComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientSphereLight>())
+		{
+			RenderAmbientSphereVolume(*ambientSphereComp);
+		}
 
-			if (auto ambientSphereComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientSphereLight>())
+		if (OvEditor::Settings::EditorSettings::ShowLightBounds)
+		{
+			if (auto light = p_actor.GetComponent<OvCore::ECS::Components::CLight>())
 			{
-				RenderAmbientSphereVolume(*ambientSphereComp);
-			}
-
-			if (OvEditor::Settings::EditorSettings::ShowLightBounds)
-			{
-				if (auto light = p_actor.GetComponent<OvCore::ECS::Components::CLight>())
-				{
-					RenderLightBounds(*light);
-				}
+				RenderLightBounds(*light);
 			}
 		}
 
 		for (auto& child : p_actor.GetChildren())
 		{
-			RenderActorOutlinePass(*child, p_toStencil, p_isSelected);
+			DrawActorDebugElements(*child);
 		}
 	}
 }

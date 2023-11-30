@@ -22,17 +22,37 @@
 namespace OvEditor::Rendering
 {
 	/**
-	* Draw a grid
+	* Draw the scene for actor picking
 	*/
 	class PickingRenderFeature : public OvRendering::Features::ARenderFeature
 	{
 	public:
-		
+		/**
+		* Constructor
+		* @param p_renderer
+		*/
+		PickingRenderFeature(OvCore::Rendering::SceneRenderer& p_renderer);
 
-	protected:
-		PickingRenderFeature(OvRendering::Core::CompositeRenderer& p_driver);
+		/**
+		* Returns the render pass flags associated with this feature
+		*/
+		virtual OvRendering::Settings::ERenderPassMask GetRenderPassMask() const;
+
+		/**
+		* Draw for the given render pass
+		* @param p_renderPass
+		*/
+		virtual void DrawPass(OvRendering::Settings::ERenderPass p_renderPass);
 
 	private:
+		void DrawPickableModels(OvCore::SceneSystem::Scene& p_scene);
+		void DrawPickableCameras(OvCore::SceneSystem::Scene& p_scene);
+		void DrawPickableLights(OvCore::SceneSystem::Scene& p_scene);
+
+	private:
+		OvRendering::Buffers::Framebuffer m_actorPickingFramebuffer;
 		OvCore::Resources::Material m_actorPickingMaterial;
+		OvCore::Resources::Material m_emptyMaterial;
+		OvCore::Resources::Material m_lightMaterial;
 	};
 }

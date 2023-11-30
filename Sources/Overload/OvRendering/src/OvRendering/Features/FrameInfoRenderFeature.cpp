@@ -32,14 +32,14 @@ void OvRendering::Features::FrameInfoRenderFeature::OnAfterDraw(const OvRenderin
 	// TODO: Calculate vertex count from the primitive mode
 	constexpr uint32_t kVertexCountPerPolygon = 3;
 
-	const int instances = p_drawable.material.GetGPUInstances();
+	const int instances = p_drawable.material.get().GetGPUInstances();
 	
 	if (instances > 0)
 	{
 		++m_frameInfo.batchCount;
 		m_frameInfo.instanceCount += instances;
-		m_frameInfo.polyCount += (p_drawable.mesh.GetIndexCount() / kVertexCountPerPolygon) * instances;
-		m_frameInfo.vertexCount += p_drawable.mesh.GetVertexCount() * instances;
+		m_frameInfo.polyCount += (p_drawable.mesh.get().GetIndexCount() / kVertexCountPerPolygon) * instances;
+		m_frameInfo.vertexCount += p_drawable.mesh.get().GetVertexCount() * instances;
 	}
 }
 

@@ -153,21 +153,21 @@ void OvCore::Rendering::SceneRenderer::ParseScene()
 
 							if (material)
 							{
-								OvRendering::Entities::Drawable element{
-									transform.GetWorldMatrix(),
-									*mesh,
-									*material,
-									material->GenerateStateMask(),
-									materialRenderer->GetUserMatrix()
-								};
+								SceneDrawable drawable;
+								drawable.modelMatrix = transform.GetWorldMatrix();
+								drawable.mesh = *mesh;
+								drawable.material = *material;
+								drawable.stateMask = material->GenerateStateMask();
+								drawable.userMatrix = materialRenderer->GetUserMatrix();
+								drawable.actor = owner;
 
 								if (material->IsBlendable())
 								{
-									m_transparentDrawables.emplace(distanceToActor, element);
+									m_transparentDrawables.emplace(distanceToActor, drawable);
 								}
 								else
 								{
-									m_opaqueDrawables.emplace(distanceToActor, element);
+									m_opaqueDrawables.emplace(distanceToActor, drawable);
 								}
 							}
 						}

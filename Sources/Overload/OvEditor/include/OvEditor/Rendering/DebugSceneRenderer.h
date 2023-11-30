@@ -44,40 +44,7 @@ namespace OvEditor::Rendering
 		virtual void DrawPass(OvRendering::Settings::ERenderPass p_pass) override;
 
 	protected:
-		/**
-		* Prepare the picking material by send it the color corresponding to the given actor
-		* @param p_actor
-		* @param p_material
-		*/
-		void PreparePickingMaterial(OvCore::ECS::Actor& p_actor, OvCore::Resources::Material& p_material);
-		// TODO: Consider moving everything actor picking related to its own render feature
-
-		/**
-		* Render the scene for actor picking (Unlit version of the scene with colors indicating actor IDs)
-		* @param p_scene
-		*/
-		void RenderSceneForActorPicking(OvCore::SceneSystem::Scene& p_scene);
-
-		/**
-		* Render a model to the stencil buffer
-		*/
-		void RenderModelToStencil(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model);
-
-		/**
-		* Render a model outline using the data stored in the stencil buffer
-		* @param p_worldMatrix
-		* @param p_model
-		* @param p_width
-		*/
-		void RenderModelOutline(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model, float p_width);
-
-		/**
-		* Render the actor as a selected actor (Outline)
-		* @param p_actor
-		* @param p_toStencil
-		* @param p_isSelected
-		*/
-		void RenderActorOutlinePass(OvCore::ECS::Actor& p_actor, bool p_toStencil, bool p_isSelected = false);
+		void DrawActorDebugElements(OvCore::ECS::Actor& p_actor);
 
 		/**
 		* Draw frustum lines
@@ -109,6 +76,7 @@ namespace OvEditor::Rendering
 			const OvMaths::FVector3& h
 		);
 
+		// TODO: Rename all these methods to something like "Draw..."
 		void RenderCameras(OvCore::SceneSystem::Scene& p_scene);
 		void RenderLights(OvCore::SceneSystem::Scene& p_scene);
 		void RenderCameraPerspectiveFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera);
@@ -123,12 +91,9 @@ namespace OvEditor::Rendering
 	private:
 		OvRendering::Features::DebugShapeRenderFeature& m_debugShapeFeature;
 
-		OvCore::Resources::Material m_stencilFillMaterial;
-		OvCore::Resources::Material m_outlineMaterial;
 		OvCore::Resources::Material m_emptyMaterial;
 		OvCore::Resources::Material m_defaultMaterial;
 		OvCore::Resources::Material m_cameraMaterial;
 		OvCore::Resources::Material m_lightMaterial;
-		OvCore::Resources::Material m_actorPickingMaterial;
 	};
 }

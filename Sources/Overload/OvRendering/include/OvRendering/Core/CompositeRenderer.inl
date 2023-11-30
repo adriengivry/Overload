@@ -52,26 +52,4 @@ namespace OvRendering::Core
 		auto it = m_features.find(typeid(T));
 		return it != m_features.end();
 	}
-
-	template<typename T>
-	inline void CompositeRenderer::AddDescriptor(T&& p_descriptor)
-	{
-		OVASSERT(!HasDescriptor<T>(), "Descriptor already added");
-		m_descriptors.emplace(typeid(T), std::move(p_descriptor));
-	}
-
-	template<typename T>
-	inline T& CompositeRenderer::GetDescriptor()
-	{
-		auto it = m_descriptors.find(typeid(T));
-		OVASSERT(it != m_descriptors.end(), "Couldn't find a descriptor matching the given type T.");
-		return std::any_cast<T&>(it->second);
-	}
-
-	template<typename T>
-	inline bool CompositeRenderer::HasDescriptor() const
-	{
-		auto it = m_descriptors.find(typeid(T));
-		return it != m_descriptors.end();
-	}
 }
