@@ -57,11 +57,11 @@ void OvEditor::Core::Editor::SetupUI()
 	m_panelsManager.CreatePanel<Panels::Profiler>("Profiler", true, settings, 0.25f);
 	m_panelsManager.CreatePanel<Panels::FrameInfo>("Frame Info", true, settings);
 	m_panelsManager.CreatePanel<Panels::Console>("Console", true, settings);
+	m_panelsManager.CreatePanel<Panels::AssetView>("Asset View", false, settings);
 	m_panelsManager.CreatePanel<Panels::Hierarchy>("Hierarchy", true, settings);
 	m_panelsManager.CreatePanel<Panels::Inspector>("Inspector", true, settings);
 	m_panelsManager.CreatePanel<Panels::SceneView>("Scene View", true, settings);
 	m_panelsManager.CreatePanel<Panels::GameView>("Game View", true, settings);
-	m_panelsManager.CreatePanel<Panels::AssetView>("Asset View", false, settings);
 	m_panelsManager.CreatePanel<Panels::Toolbar>("Toolbar", true, settings);
 	m_panelsManager.CreatePanel<Panels::MaterialEditor>("Material Editor", false, settings);
 	m_panelsManager.CreatePanel<Panels::ProjectSettings>("Project Settings", false, settings);

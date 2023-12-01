@@ -21,6 +21,8 @@ OvEditor::Panels::SceneView::SceneView
 ) : AViewControllable(p_title, p_opened, p_windowSettings, true),
 	m_sceneManager(EDITOR_CONTEXT(sceneManager))
 {
+	m_renderer = std::make_unique<OvEditor::Rendering::DebugSceneRenderer>(*EDITOR_CONTEXT(driver));
+
 	m_camera.SetFar(5000.0f);
 
 	m_image->AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, OvUI::Widgets::Layout::Group*>>>("File").DataReceivedEvent += [this](auto p_data)

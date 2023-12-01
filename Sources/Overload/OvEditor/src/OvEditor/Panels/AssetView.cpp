@@ -12,6 +12,7 @@
 
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Panels/AssetView.h"
+#include "OvEditor/Rendering/GridRenderFeature.h"
 
 OvEditor::Panels::AssetView::AssetView
 (
@@ -20,6 +21,10 @@ OvEditor::Panels::AssetView::AssetView
 	const OvUI::Settings::PanelWindowSettings& p_windowSettings
 ) : AViewControllable(p_title, p_opened, p_windowSettings)
 {
+	m_renderer = std::make_unique<OvCore::Rendering::SceneRenderer>(*EDITOR_CONTEXT(driver));
+	m_renderer->AddFeature<OvRendering::Features::DebugShapeRenderFeature>();
+	m_renderer->AddFeature<OvEditor::Rendering::GridRenderFeature>();
+
 	m_camera.SetFar(5000.0f);
 
 	auto& directionalLight = m_scene.CreateActor("Directional Light");

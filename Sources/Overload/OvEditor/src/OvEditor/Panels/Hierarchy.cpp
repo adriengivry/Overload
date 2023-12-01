@@ -193,6 +193,7 @@ OvEditor::Panels::Hierarchy::Hierarchy
 	};
     m_sceneRoot->AddPlugin<ActorContextualMenu>(nullptr, *m_sceneRoot);
 
+	// TODO: This code is unsafe, if the hierarchy gets deleted before the last actor gets deleted, this might crash
 	EDITOR_EVENT(ActorUnselectedEvent) += std::bind(&Hierarchy::UnselectActorsWidgets, this);
 	EDITOR_CONTEXT(sceneManager).SceneUnloadEvent += std::bind(&Hierarchy::Clear, this);
 	OvCore::ECS::Actor::CreatedEvent += std::bind(&Hierarchy::AddActorByInstance, this, std::placeholders::_1);

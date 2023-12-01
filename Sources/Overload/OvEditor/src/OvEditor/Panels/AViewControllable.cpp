@@ -23,7 +23,6 @@ OvEditor::Panels::AViewControllable::AViewControllable(
 	AView(p_title, p_opened, p_windowSettings),
 	m_cameraController(*this, m_camera, p_enableFocusInputs)
 {
-	m_renderer = std::make_unique<OvEditor::Rendering::DebugSceneRenderer>(*EDITOR_CONTEXT(driver));
 	ResetCameraTransform();
 	ResetGridColor();
 	ResetClearColor();
