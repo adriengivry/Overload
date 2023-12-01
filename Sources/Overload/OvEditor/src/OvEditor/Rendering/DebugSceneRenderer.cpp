@@ -21,6 +21,9 @@
 
 #include "OvEditor/Rendering/DebugSceneRenderer.h"
 #include "OvEditor/Rendering/GridRenderFeature.h"
+#include "OvEditor/Rendering/OutlineRenderFeature.h"
+#include "OvEditor/Rendering/GizmoRenderFeature.h"
+#include "OvEditor/Rendering/PickingRenderFeature.h"
 #include "OvEditor/Core/EditorResources.h"
 #include "OvEditor/Panels/AView.h"
 #include "OvEditor/Panels/GameView.h"
@@ -37,11 +40,20 @@ const OvMaths::FVector3 LIGHT_VOLUME_COLOR		= { 1.0f, 1.0f, 0.0f };
 const OvMaths::FVector3 COLLIDER_COLOR			= { 0.0f, 1.0f, 0.0f };
 const OvMaths::FVector3 FRUSTUM_COLOR			= { 1.0f, 1.0f, 1.0f };
 
+const OvMaths::FVector4 kDefaultOutlineColor{ 1.0f, 0.7f, 0.0f, 1.0f };
+const OvMaths::FVector4 kSelectedOutlineColor{ 1.0f, 1.0f, 0.0f, 1.0f };
+
+constexpr float kDefaultOutlineWidth = 2.5f;
+constexpr float kSelectedOutlineWidth = 5.0f;
+
 OvEditor::Rendering::DebugSceneRenderer::DebugSceneRenderer(OvRendering::Context::Driver& p_driver) :
 	OvCore::Rendering::SceneRenderer(p_driver),
 	m_debugShapeFeature(AddFeature<OvRendering::Features::DebugShapeRenderFeature>())
 {
 	AddFeature<OvEditor::Rendering::GridRenderFeature>();
+	AddFeature<OvEditor::Rendering::OutlineRenderFeature>();
+	AddFeature<OvEditor::Rendering::GizmoRenderFeature>();
+	AddFeature<OvEditor::Rendering::PickingRenderFeature>();
 
 	// TODO: Do not use the driver directly heres
 	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::STENCIL_TEST, true);
@@ -49,15 +61,15 @@ OvEditor::Rendering::DebugSceneRenderer::DebugSceneRenderer(OvRendering::Context
 	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::ALWAYS, 1, 0xFF);
 
 	/* Default Material */
-	m_defaultMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Standard.glsl"]);
-	m_defaultMaterial.Set("u_Diffuse", FVector4(1.f, 1.f, 1.f, 1.f));
-	m_defaultMaterial.Set("u_Shininess", 100.0f);
-	m_defaultMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
+	//m_defaultMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Standard.glsl"]);
+	//m_defaultMaterial.Set("u_Diffuse", FVector4(1.f, 1.f, 1.f, 1.f));
+	//m_defaultMaterial.Set("u_Shininess", 100.0f);
+	//m_defaultMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
 
 	/* Empty Material */
-	m_emptyMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
-	m_emptyMaterial.Set("u_Diffuse", FVector4(1.f, 0.f, 1.f, 1.0f));
-	m_emptyMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
+	//m_emptyMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
+	//m_emptyMaterial.Set("u_Diffuse", FVector4(1.f, 0.f, 1.f, 1.0f));
+	//m_emptyMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
 
 	/* Camera Material */
 	m_cameraMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Lambert.glsl"]);
@@ -79,14 +91,26 @@ void OvEditor::Rendering::DebugSceneRenderer::DrawPass(OvRendering::Settings::ER
 	if (p_pass == OvRendering::Settings::ERenderPass::POST_TRANSPARENT)
 	{
 		OVASSERT(HasDescriptor<SceneDescriptor>(), "Missing SceneDescriptor!");
+		OVASSERT(HasDescriptor<DebugSceneDescriptor>(), "Missing DebugSceneDescriptor!");
+
 		auto& sceneDescriptor = GetDescriptor<SceneDescriptor>();
+		auto& debugSceneDescriptor = GetDescriptor<DebugSceneDescriptor>();
+
 		RenderCameras(sceneDescriptor.scene);
 		RenderLights(sceneDescriptor.scene);
 
-		if (EDITOR_EXEC(IsAnyActorSelected()))
+		if (debugSceneDescriptor.selectedActor)
 		{
-			auto& selectedActor = EDITOR_EXEC(GetSelectedActor());
+			auto& selectedActor = debugSceneDescriptor.selectedActor.get();
 			DrawActorDebugElements(selectedActor);
+			GetFeature<OutlineRenderFeature>().DrawOutline(selectedActor, kSelectedOutlineColor, kSelectedOutlineWidth);
+			GetFeature<GizmoRenderFeature>().DrawGizmo(
+				selectedActor.transform.GetWorldPosition(),
+				selectedActor.transform.GetWorldRotation(),
+				debugSceneDescriptor.gizmoOperation,
+				false,
+				debugSceneDescriptor.highlightedGizmoDirection
+			);
 		}
 	}
 }

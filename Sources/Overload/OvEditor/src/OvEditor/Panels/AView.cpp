@@ -78,23 +78,3 @@ std::pair<uint16_t, uint16_t> OvEditor::Panels::AView::GetSafeSize() const
 	auto result = GetSize() - OvMaths::FVector2{ 0.f, 25.f }; // 25 == title bar height
 	return { static_cast<uint16_t>(result.x), static_cast<uint16_t>(result.y) };
 }
-
-/*
-void OvEditor::Panels::AView::FillEngineUBO()
-{
-	auto& engineUBO = *EDITOR_CONTEXT(engineUBO);
-
-	auto[winWidth, winHeight] = GetSafeSize();
-
-	size_t offset = sizeof(OvMaths::FMatrix4); // We skip the model matrix (Which is a special case, modified every draw calls)
-	engineUBO.SetSubData(OvMaths::FMatrix4::Transpose(m_camera.GetViewMatrix()), std::ref(offset));
-	engineUBO.SetSubData(OvMaths::FMatrix4::Transpose(m_camera.GetProjectionMatrix()), std::ref(offset));
-	engineUBO.SetSubData(m_cameraPosition, std::ref(offset));
-}
-
-void OvEditor::Panels::AView::PrepareCamera()
-{
-	auto [winWidth, winHeight] = GetSafeSize();
-	m_camera.CacheMatrices(winWidth, winHeight, m_cameraPosition, m_cameraRotation);
-}
-*/

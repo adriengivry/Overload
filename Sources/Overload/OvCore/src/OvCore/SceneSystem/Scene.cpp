@@ -115,7 +115,7 @@ void OvCore::SceneSystem::Scene::CollectGarbages()
 	}), m_actors.end());
 }
 
-OvCore::ECS::Actor* OvCore::SceneSystem::Scene::FindActorByName(const std::string& p_name)
+OvCore::ECS::Actor* OvCore::SceneSystem::Scene::FindActorByName(const std::string& p_name) const
 {
 	auto result = std::find_if(m_actors.begin(), m_actors.end(), [p_name](OvCore::ECS::Actor* element)
 	{ 
@@ -128,7 +128,7 @@ OvCore::ECS::Actor* OvCore::SceneSystem::Scene::FindActorByName(const std::strin
 		return nullptr;
 }
 
-OvCore::ECS::Actor* OvCore::SceneSystem::Scene::FindActorByTag(const std::string & p_tag)
+OvCore::ECS::Actor* OvCore::SceneSystem::Scene::FindActorByTag(const std::string & p_tag) const
 {
 	auto result = std::find_if(m_actors.begin(), m_actors.end(), [p_tag](OvCore::ECS::Actor* element)
 	{
@@ -141,7 +141,7 @@ OvCore::ECS::Actor* OvCore::SceneSystem::Scene::FindActorByTag(const std::string
 		return nullptr;
 }
 
-OvCore::ECS::Actor* OvCore::SceneSystem::Scene::FindActorByID(int64_t p_id)
+OvCore::ECS::Actor* OvCore::SceneSystem::Scene::FindActorByID(int64_t p_id) const
 {
 	auto result = std::find_if(m_actors.begin(), m_actors.end(), [p_id](OvCore::ECS::Actor* element)
 	{
@@ -154,7 +154,7 @@ OvCore::ECS::Actor* OvCore::SceneSystem::Scene::FindActorByID(int64_t p_id)
 		return nullptr;
 }
 
-std::vector<std::reference_wrapper<OvCore::ECS::Actor>> OvCore::SceneSystem::Scene::FindActorsByName(const std::string & p_name)
+std::vector<std::reference_wrapper<OvCore::ECS::Actor>> OvCore::SceneSystem::Scene::FindActorsByName(const std::string & p_name) const
 {
 	std::vector<std::reference_wrapper<OvCore::ECS::Actor>> actors;
 
@@ -167,7 +167,7 @@ std::vector<std::reference_wrapper<OvCore::ECS::Actor>> OvCore::SceneSystem::Sce
 	return actors;
 }
 
-std::vector<std::reference_wrapper<OvCore::ECS::Actor>> OvCore::SceneSystem::Scene::FindActorsByTag(const std::string & p_tag)
+std::vector<std::reference_wrapper<OvCore::ECS::Actor>> OvCore::SceneSystem::Scene::FindActorsByTag(const std::string & p_tag) const
 {
 	std::vector<std::reference_wrapper<OvCore::ECS::Actor>> actors;
 
@@ -180,7 +180,7 @@ std::vector<std::reference_wrapper<OvCore::ECS::Actor>> OvCore::SceneSystem::Sce
 	return actors;
 }
 
-OvCore::ECS::Components::CCamera* OvCore::SceneSystem::Scene::FindMainCamera()
+OvCore::ECS::Components::CCamera* OvCore::SceneSystem::Scene::FindMainCamera() const
 {
 	for (OvCore::ECS::Components::CCamera* camera : m_fastAccessComponents.cameras)
 	{

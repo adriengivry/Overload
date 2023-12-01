@@ -32,24 +32,17 @@ namespace OvEditor::Panels
 		virtual void Update(float p_deltaTime) override;
 
 		/**
+		* Prepare the renderer for rendering
+		*/
+		virtual void InitFrame() override;
+
+		/**
 		* Returns the scene used by this view
 		*/
 		virtual OvCore::SceneSystem::Scene* GetScene();
 
-		/**
-		* Render the actual scene
-		* @param p_defaultStateMask
-		*/
-		// void RenderScene(OvRendering::Data::StateMask p_defaultStateMask);
-
-		/**
-		* Render the scene for actor picking (Using unlit colors)
-		*/
-		// void RenderSceneForActorPicking();
-
-		/**
-		* Render the scene for actor picking and handle the logic behind it
-		*/
+	private:
+		virtual void DrawFrame() override;
 		void HandleActorPicking();
 
 	private:
@@ -58,7 +51,7 @@ namespace OvEditor::Panels
 		OvEditor::Core::GizmoBehaviour m_gizmoOperations;
 		OvEditor::Core::EGizmoOperation m_currentOperation = OvEditor::Core::EGizmoOperation::TRANSLATE;
 
-		std::optional<std::reference_wrapper<OvCore::ECS::Actor>> m_highlightedActor;
+		OvTools::Utils::OptRef<OvCore::ECS::Actor> m_highlightedActor;
 		std::optional<OvEditor::Core::GizmoBehaviour::EDirection> m_highlightedGizmoDirection;
 	};
 }

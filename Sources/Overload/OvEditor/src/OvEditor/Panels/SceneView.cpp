@@ -6,8 +6,8 @@
 
 #include <OvUI/Plugins/DDTarget.h>
 
-#include <OvCore/Rendering/SceneRenderer.h>
-
+#include "OvEditor/Rendering/DebugSceneRenderer.h"
+#include "OvEditor/Rendering/PickingRenderFeature.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Panels/SceneView.h"
 #include "OvEditor/Panels/GameView.h"
@@ -36,9 +36,9 @@ OvEditor::Panels::SceneView::SceneView
 
 	OvCore::ECS::Actor::DestroyedEvent += [this](const OvCore::ECS::Actor& actor)
 	{
-		if (m_highlightedActor.has_value() && m_highlightedActor->get().GetID() == actor.GetID())
+		if (m_highlightedActor.has_value() && m_highlightedActor.get().GetID() == actor.GetID())
 		{
-			m_highlightedActor = std::nullopt;
+			m_highlightedActor.reset();
 		}
 	};
 }
@@ -66,6 +66,25 @@ void OvEditor::Panels::SceneView::Update(float p_deltaTime)
 			m_currentOperation = OvEditor::Core::EGizmoOperation::SCALE;
 		}
 	}
+}
+
+void OvEditor::Panels::SceneView::InitFrame()
+{
+	AViewControllable::InitFrame();
+
+	OvTools::Utils::OptRef<OvCore::ECS::Actor> selectedActor;
+
+	if (EDITOR_EXEC(IsAnyActorSelected()))
+	{
+		selectedActor = EDITOR_EXEC(GetSelectedActor());
+	}
+
+	m_renderer->AddDescriptor<Rendering::DebugSceneRenderer::DebugSceneDescriptor>({
+		m_currentOperation,
+		m_highlightedActor,
+		selectedActor,
+		m_highlightedGizmoDirection
+	});
 }
 
 OvCore::SceneSystem::Scene* OvEditor::Panels::SceneView::GetScene()
@@ -194,11 +213,17 @@ void OvEditor::Panels::SceneView::RenderSceneForActorPicking()
 }
 */
 
+void OvEditor::Panels::SceneView::DrawFrame()
+{
+	OvEditor::Panels::AViewControllable::DrawFrame();
+	HandleActorPicking();
+}
+
 bool IsResizing()
 {
 	auto cursor = ImGui::GetMouseCursor();
 
-	return 
+	return
 		cursor == ImGuiMouseCursor_ResizeEW ||
 		cursor == ImGuiMouseCursor_ResizeNS ||
 		cursor == ImGuiMouseCursor_ResizeNWSE ||
@@ -219,65 +244,64 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 
 	if (IsHovered() && !IsResizing())
 	{
-		// RenderSceneForActorPicking();
-
-		// Look actor under mouse
 		auto [mouseX, mouseY] = inputManager.GetMousePosition();
 		mouseX -= m_position.x;
 		mouseY -= m_position.y;
 		mouseY = GetSafeSize().second - mouseY + 25;
 
-		m_actorPickingFramebuffer.Bind();
-		uint8_t pixel[3];
-		EDITOR_CONTEXT(driver)->ReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, OvRendering::Settings::EPixelDataFormat::RGB, OvRendering::Settings::EPixelDataType::UNSIGNED_BYTE, pixel);
-		m_actorPickingFramebuffer.Unbind();
+		auto& scene = *GetScene();
+		auto& actorPickingFeature = m_renderer->GetFeature<Rendering::PickingRenderFeature>();
 
-		uint32_t actorID = (0 << 24) | (pixel[2] << 16) | (pixel[1] << 8) | (pixel[0] << 0);
-		auto actorUnderMouse = EDITOR_CONTEXT(sceneManager).GetCurrentScene()->FindActorByID(actorID);
-		auto direction = m_gizmoOperations.IsPicking() ? m_gizmoOperations.GetDirection() : EDITOR_EXEC(IsAnyActorSelected()) && pixel[0] == 255 && pixel[1] == 255 && pixel[2] >= 252 && pixel[2] <= 254 ? static_cast<OvEditor::Core::GizmoBehaviour::EDirection>(pixel[2] - 252) : std::optional<Core::GizmoBehaviour::EDirection>{};
+		auto pickingResult = actorPickingFeature.ReadbackPickingResult(
+			scene,
+			static_cast<uint32_t>(mouseX),
+			static_cast<uint32_t>(mouseY)
+		);
 
 		m_highlightedActor = {};
 		m_highlightedGizmoDirection = {};
 
-		if (!m_cameraController.IsRightMousePressed())
+		if (!m_cameraController.IsRightMousePressed() && pickingResult.has_value())
 		{
-			if (direction.has_value())
+			if (const auto pval = std::get_if<OvTools::Utils::OptRef<OvCore::ECS::Actor>>(&pickingResult.value()))
 			{
-				m_highlightedGizmoDirection = direction;
-
+				m_highlightedActor = *pval;
 			}
-			else if (actorUnderMouse != nullptr)
+			else if (const auto pval = std::get_if<OvEditor::Core::GizmoBehaviour::EDirection>(&pickingResult.value()))
 			{
-				m_highlightedActor = std::ref(*actorUnderMouse);
+				m_highlightedGizmoDirection = *pval;
 			}
 		}
+		else
+		{
+			m_highlightedActor = {};
+			m_highlightedGizmoDirection = {};
+		}
 
-		/* Click */
 		if (inputManager.IsMouseButtonPressed(EMouseButton::MOUSE_BUTTON_LEFT) && !m_cameraController.IsRightMousePressed())
 		{
-			/* Gizmo picking */
-			if (direction.has_value())
+			if (m_highlightedGizmoDirection)
 			{
-				m_gizmoOperations.StartPicking(EDITOR_EXEC(GetSelectedActor()), m_camera.GetPosition(), m_currentOperation, direction.value());
+				m_gizmoOperations.StartPicking(
+					EDITOR_EXEC(GetSelectedActor()),
+					m_camera.GetPosition(),
+					m_currentOperation,
+					m_highlightedGizmoDirection.value());
 			}
-			/* Actor picking */
+			else if (m_highlightedActor)
+			{
+				EDITOR_EXEC(SelectActor(m_highlightedActor.get()));
+			}
 			else
 			{
-
-				if (actorUnderMouse)
-				{
-					EDITOR_EXEC(SelectActor(*actorUnderMouse));
-				}
-				else
-				{
-					EDITOR_EXEC(UnselectActor());
-				}
+				EDITOR_EXEC(UnselectActor());
 			}
 		}
 	}
 	else
 	{
 		m_highlightedActor = std::nullopt;
+		m_highlightedGizmoDirection = std::nullopt;
 	}
 
 	if (m_gizmoOperations.IsPicking())

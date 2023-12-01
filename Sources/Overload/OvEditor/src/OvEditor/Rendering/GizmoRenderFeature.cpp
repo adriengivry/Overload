@@ -40,12 +40,24 @@ OvEditor::Rendering::GizmoRenderFeature::GizmoRenderFeature(OvRendering::Core::C
 	m_gizmoBallMaterial.SetShader(EDITOR_CONTEXT(editorResources)->GetShader("Gizmo"));
 	m_gizmoBallMaterial.Set("u_IsBall", true);
 	m_gizmoBallMaterial.Set("u_IsPickable", false);
+}
 
-	/* Gizmo Pickable Material */
-	m_gizmoPickingMaterial.SetShader(EDITOR_CONTEXT(editorResources)->GetShader("Gizmo"));
-	m_gizmoPickingMaterial.SetGPUInstances(3);
-	m_gizmoPickingMaterial.Set("u_IsBall", false);
-	m_gizmoPickingMaterial.Set("u_IsPickable", true);
+std::string GetArrowModelName(OvEditor::Core::EGizmoOperation p_operation)
+{
+	using namespace OvEditor::Core;
+
+	switch (p_operation)
+	{
+		default:
+		case EGizmoOperation::TRANSLATE: return "Arrow_Translate";
+		case EGizmoOperation::ROTATE: return "Arrow_Rotate";
+		case EGizmoOperation::SCALE: return "Arrow_Scale";
+	}
+}
+
+int GetAxisIndexFromDirection(std::optional<OvEditor::Core::GizmoBehaviour::EDirection> p_direction)
+{
+	return p_direction ? static_cast<int>(p_direction.value()) : -1;
 }
 
 void OvEditor::Rendering::GizmoRenderFeature::DrawGizmo(
@@ -53,47 +65,35 @@ void OvEditor::Rendering::GizmoRenderFeature::DrawGizmo(
 	const OvMaths::FQuaternion& p_rotation,
 	OvEditor::Core::EGizmoOperation p_operation,
 	bool p_pickable,
-	int p_highlightedAxis
+	std::optional<OvEditor::Core::GizmoBehaviour::EDirection> p_highlightedDirection
 )
 {
-	using namespace OvMaths;
+	auto modelMatrix =
+		OvMaths::FMatrix4::Translation(p_position) *
+		OvMaths::FQuaternion::ToMatrix4(OvMaths::FQuaternion::Normalize(p_rotation));
 
-	FMatrix4 model = FMatrix4::Translation(p_position) * FQuaternion::ToMatrix4(FQuaternion::Normalize(p_rotation));
-
-	OvRendering::Resources::Model* arrowModel = nullptr;
-
-	if (!p_pickable)
+	if (auto sphereModel = EDITOR_CONTEXT(editorResources)->GetModel("Sphere"))
 	{
-		FMatrix4 sphereModel = model * OvMaths::FMatrix4::Scaling({ 0.1f, 0.1f, 0.1f });
+		auto sphereModelMatrix = modelMatrix * OvMaths::FMatrix4::Scaling({ 0.1f, 0.1f, 0.1f });
 
 		m_renderer.DrawModelWithSingleMaterial(
-			*EDITOR_CONTEXT(editorResources)->GetModel("Sphere"),
+			*sphereModel,
 			m_gizmoBallMaterial,
-			sphereModel
+			sphereModelMatrix
 		);
-
-		m_gizmoArrowMaterial.Set("u_HighlightedAxis", p_highlightedAxis);
-
-		switch (p_operation)
-		{
-		case OvEditor::Core::EGizmoOperation::TRANSLATE:
-			arrowModel = EDITOR_CONTEXT(editorResources)->GetModel("Arrow_Translate");
-			break;
-		case OvEditor::Core::EGizmoOperation::ROTATE:
-			arrowModel = EDITOR_CONTEXT(editorResources)->GetModel("Arrow_Rotate");
-			break;
-		case OvEditor::Core::EGizmoOperation::SCALE:
-			arrowModel = EDITOR_CONTEXT(editorResources)->GetModel("Arrow_Scale");
-			break;
-		}
 	}
-	else
-	{
-		arrowModel = EDITOR_CONTEXT(editorResources)->GetModel("Arrow_Picking");
-	}
+	
+	auto arrowModelName = GetArrowModelName(p_operation);
 
-	if (arrowModel)
+	if (auto arrowModel = EDITOR_CONTEXT(editorResources)->GetModel(arrowModelName))
 	{
-		m_renderer.DrawModelWithSingleMaterial(*arrowModel, p_pickable ? m_gizmoPickingMaterial : m_gizmoArrowMaterial, model);
+		const auto axisIndex = GetAxisIndexFromDirection(p_highlightedDirection);
+		m_gizmoArrowMaterial.Set("u_HighlightedAxis", axisIndex);
+
+		m_renderer.DrawModelWithSingleMaterial(
+			*arrowModel,
+			m_gizmoArrowMaterial,
+			modelMatrix
+		);
 	}
 }

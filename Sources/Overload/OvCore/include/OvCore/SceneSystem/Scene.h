@@ -98,36 +98,36 @@ namespace OvCore::SceneSystem
 		* Return the first actor identified by the given name, or nullptr on fail
 		* @param p_name
 		*/
-		ECS::Actor* FindActorByName(const std::string& p_name);
+		ECS::Actor* FindActorByName(const std::string& p_name) const;
 
 		/**
 		* Return the first actor identified by the given tag, or nullptr on fail
 		* @param p_tag
 		*/
-		ECS::Actor* FindActorByTag(const std::string& p_tag);
+		ECS::Actor* FindActorByTag(const std::string& p_tag) const;
 
 		/**
-		* Return the actor identified by the given ID (Returns 0 on fail)
+		* Return the actor identified by the given ID (Returns nullptr on fail)
 		* @param p_id
 		*/
-		ECS::Actor* FindActorByID(int64_t p_id);
+		ECS::Actor* FindActorByID(int64_t p_id) const;
 
 		/**
 		* Return every actors identified by the given name
 		* @param p_name
 		*/
-		std::vector<std::reference_wrapper<ECS::Actor>> FindActorsByName(const std::string& p_name);
+		std::vector<std::reference_wrapper<ECS::Actor>> FindActorsByName(const std::string& p_name) const;
 
 		/**
 		* Return every actors identified by the given tag
 		* @param p_tag
 		*/
-		std::vector<std::reference_wrapper<ECS::Actor>> FindActorsByTag(const std::string& p_tag);
+		std::vector<std::reference_wrapper<ECS::Actor>> FindActorsByTag(const std::string& p_tag) const;
 
 		/**
 		* Parse the scene to find the main camera
 		*/
-		OvCore::ECS::Components::CCamera* FindMainCamera();
+		OvCore::ECS::Components::CCamera* FindMainCamera() const;
 
 		/**
 		* Callback method called everytime a component is added on an actor of the scene

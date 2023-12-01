@@ -39,19 +39,18 @@ namespace OvEditor::Rendering
 		* @param p_rotation
 		* @param p_operation
 		* @param p_pickable (Determine the shader to use to render the gizmo)
-		* @param p_highlightedAxis (-1 to highlight no axis, 0 for X, 1 for Y, 2 for Z)
+		* @param p_highlightedDirection
 		*/
 		void DrawGizmo(
 			const OvMaths::FVector3& p_position,
 			const OvMaths::FQuaternion& p_rotation,
 			OvEditor::Core::EGizmoOperation p_operation,
 			bool p_pickable,
-			int p_highlightedAxis = -1
+			std::optional<OvEditor::Core::GizmoBehaviour::EDirection> p_highlightedDirection
 		);
 
 	private:
 		OvCore::Resources::Material m_gizmoArrowMaterial;
 		OvCore::Resources::Material m_gizmoBallMaterial;
-		OvCore::Resources::Material m_gizmoPickingMaterial;
 	};
 }

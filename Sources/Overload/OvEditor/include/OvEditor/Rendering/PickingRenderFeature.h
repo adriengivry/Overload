@@ -18,6 +18,7 @@
 #include <OvCore/Rendering/SceneRenderer.h>
 
 #include "OvEditor/Core/Context.h"
+#include "OvEditor/Core/GizmoBehaviour.h"
 
 namespace OvEditor::Rendering
 {
@@ -27,11 +28,17 @@ namespace OvEditor::Rendering
 	class PickingRenderFeature : public OvRendering::Features::ARenderFeature
 	{
 	public:
+		using PickingResult =
+			std::optional<
+			std::variant<OvTools::Utils::OptRef<OvCore::ECS::Actor>,
+			OvEditor::Core::GizmoBehaviour::EDirection>
+			>;
+
 		/**
 		* Constructor
 		* @param p_renderer
 		*/
-		PickingRenderFeature(OvCore::Rendering::SceneRenderer& p_renderer);
+		PickingRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer);
 
 		/**
 		* Returns the render pass flags associated with this feature
@@ -44,15 +51,28 @@ namespace OvEditor::Rendering
 		*/
 		virtual void DrawPass(OvRendering::Settings::ERenderPass p_renderPass);
 
+		/**
+		* Return the picking result at the given position
+		* @param p_scene
+		* @param p_x
+		* @param p_y
+		*/
+		PickingResult ReadbackPickingResult(const OvCore::SceneSystem::Scene& p_scene, uint32_t p_x, uint32_t p_y);
+
 	private:
 		void DrawPickableModels(OvCore::SceneSystem::Scene& p_scene);
 		void DrawPickableCameras(OvCore::SceneSystem::Scene& p_scene);
 		void DrawPickableLights(OvCore::SceneSystem::Scene& p_scene);
+		void DrawPickableGizmo(
+			const OvMaths::FVector3& p_position,
+			const OvMaths::FQuaternion& p_rotation,
+			OvEditor::Core::EGizmoOperation p_operation
+		);
 
 	private:
 		OvRendering::Buffers::Framebuffer m_actorPickingFramebuffer;
 		OvCore::Resources::Material m_actorPickingMaterial;
-		OvCore::Resources::Material m_emptyMaterial;
 		OvCore::Resources::Material m_lightMaterial;
+		OvCore::Resources::Material m_gizmoPickingMaterial;
 	};
 }

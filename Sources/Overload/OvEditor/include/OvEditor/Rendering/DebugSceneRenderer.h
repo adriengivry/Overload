@@ -16,10 +16,10 @@
 #include <OvCore/ECS/Components/CAmbientBoxLight.h>
 #include <OvCore/ECS/Components/CAmbientSphereLight.h>
 #include <OvCore/Rendering/SceneRenderer.h>
+#include "OvEditor/Core/GizmoBehaviour.h"
 
 #include "OvEditor/Core/Context.h"
 
-namespace OvEditor::Core { enum class EGizmoOperation; }
 namespace OvEditor::Panels { class AView; }
 
 namespace OvEditor::Rendering
@@ -31,6 +31,14 @@ namespace OvEditor::Rendering
 	class DebugSceneRenderer : public OvCore::Rendering::SceneRenderer
 	{
 	public:
+		struct DebugSceneDescriptor
+		{
+			OvEditor::Core::EGizmoOperation gizmoOperation;
+			OvTools::Utils::OptRef<OvCore::ECS::Actor> highlightedActor;
+			OvTools::Utils::OptRef<OvCore::ECS::Actor> selectedActor;
+			std::optional<OvEditor::Core::GizmoBehaviour::EDirection> highlightedGizmoDirection;
+		};
+
 		/**
 		* Constructor of the Renderer
 		* @param p_driver

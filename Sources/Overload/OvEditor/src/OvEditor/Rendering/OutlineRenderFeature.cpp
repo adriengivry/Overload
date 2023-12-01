@@ -10,7 +10,7 @@
 
 #include <OvCore/ECS/Components/CMaterialRenderer.h>
 
-OvEditor::Rendering::OutlineRenderFeature::OutlineRenderFeature(OvCore::Rendering::SceneRenderer& p_renderer) :
+OvEditor::Rendering::OutlineRenderFeature::OutlineRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer) :
 	OvRendering::Features::ARenderFeature(p_renderer)
 {
 	/* Stencil Fill Material */
@@ -26,16 +26,18 @@ OvEditor::Rendering::OutlineRenderFeature::OutlineRenderFeature(OvCore::Renderin
 	m_outlineMaterial.SetDepthTest(false);
 }
 
-void OvEditor::Rendering::OutlineRenderFeature::DrawOutline(OvCore::ECS::Actor& p_actor)
+void OvEditor::Rendering::OutlineRenderFeature::DrawOutline(
+	OvCore::ECS::Actor& p_actor,
+	const OvMaths::FVector4& p_color,
+	float p_thickness
+)
 {
 	DrawStencilPass(p_actor);
-	DrawOutlinePass(p_actor);
+	DrawOutlinePass(p_actor, p_color, p_thickness);
 }
 
 void OvEditor::Rendering::OutlineRenderFeature::DrawStencilPass(OvCore::ECS::Actor& p_actor)
 {
-	constexpr bool kSelected = true;
-
 	if (p_actor.IsActive())
 	{
 		/* Render static mesh outline and bounding spheres */
@@ -56,19 +58,20 @@ void OvEditor::Rendering::OutlineRenderFeature::DrawStencilPass(OvCore::ECS::Act
 	}
 }
 
-void OvEditor::Rendering::OutlineRenderFeature::DrawOutlinePass(OvCore::ECS::Actor& p_actor)
+void OvEditor::Rendering::OutlineRenderFeature::DrawOutlinePass(
+	OvCore::ECS::Actor& p_actor,
+	const OvMaths::FVector4& p_color,
+	float p_thickness
+)
 {
-	constexpr bool kSelected = true;
-	constexpr float kOutlineWidth = kSelected ? 5.0f : 2.5f;
-
-	m_outlineMaterial.Set("u_Diffuse", kSelected ? OvMaths::FVector4(1.f, 0.7f, 0.f, 1.0f) : OvMaths::FVector4(1.f, 1.f, 0.f, 1.0f));
+	m_outlineMaterial.Set("u_Diffuse", p_color);
 
 	if (p_actor.IsActive())
 	{
 		/* Render static mesh outline and bounding spheres */
 		if (auto modelRenderer = p_actor.GetComponent<OvCore::ECS::Components::CModelRenderer>(); modelRenderer && modelRenderer->GetModel())
 		{
-			RenderModelOutline(p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel(), kOutlineWidth);
+			RenderModelOutline(p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel(), p_thickness);
 		}
 
 		/* Render camera component outline */
@@ -78,12 +81,12 @@ void OvEditor::Rendering::OutlineRenderFeature::DrawOutlinePass(OvCore::ECS::Act
 			auto rotation = OvMaths::FQuaternion::ToMatrix4(p_actor.transform.GetWorldRotation());
 			auto model = translation * rotation;
 
-			RenderModelOutline(model, *EDITOR_CONTEXT(editorResources)->GetModel("Camera"), kOutlineWidth);
+			RenderModelOutline(model, *EDITOR_CONTEXT(editorResources)->GetModel("Camera"), p_thickness);
 		}
 
 		for (auto& child : p_actor.GetChildren())
 		{
-			DrawOutlinePass(*child);
+			DrawOutlinePass(*child, p_color, p_thickness);
 		}
 	}
 }

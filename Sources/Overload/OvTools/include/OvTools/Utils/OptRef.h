@@ -46,7 +46,7 @@ namespace OvTools::Utils
 
         void reset()
         {
-            return m_storage = std::nullopt;
+            m_storage = std::nullopt;
         }
 
         explicit operator bool() const
