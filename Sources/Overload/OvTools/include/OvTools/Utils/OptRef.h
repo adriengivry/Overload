@@ -20,13 +20,19 @@ namespace OvTools::Utils
         // Constructors
         OptRef() : m_storage() {}
         OptRef(T& value) : m_storage(std::ref(value)) {}
-        OptRef(T* ptr) { ptr ? m_storage(std::ref(*ptr)) : m_storage(); }
+        OptRef(T* ptr) { if (ptr) { m_storage(std::ref(*ptr)); }}
         OptRef(std::nullopt_t) : m_storage() {}
         OptRef(const OptRef& other) : m_storage(other.m_storage) {}
 
         OptRef& operator=(const OptRef& other)
         {
             m_storage = other.m_storage;
+            return *this;
+        }
+
+        OptRef& operator=(T* ptr)
+        {
+            m_storage = ptr ? std::optional(std::ref(*ptr)) : std::nullopt;
             return *this;
         }
 
