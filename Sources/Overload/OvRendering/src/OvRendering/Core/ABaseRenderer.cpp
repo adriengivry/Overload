@@ -11,6 +11,8 @@
 
 std::atomic_bool OvRendering::Core::ABaseRenderer::s_isDrawing{ false };
 
+const OvRendering::Entities::Camera kDefaultCamera;
+
 OvRendering::Core::ABaseRenderer::ABaseRenderer(Context::Driver& p_driver) : 
 	m_driver(p_driver),
 	m_isDrawing(false),
@@ -26,6 +28,7 @@ OvRendering::Core::ABaseRenderer::~ABaseRenderer()
 void OvRendering::Core::ABaseRenderer::BeginFrame(const Data::FrameDescriptor& p_frameDescriptor)
 {
 	OVASSERT(!s_isDrawing, "Cannot call BeginFrame() when previous frame hasn't finished.");
+	OVASSERT(p_frameDescriptor.IsValid(), "Invalid FrameDescriptor!");
 
 	m_frameDescriptor = p_frameDescriptor;
 
@@ -34,7 +37,7 @@ void OvRendering::Core::ABaseRenderer::BeginFrame(const Data::FrameDescriptor& p
 
 	if (p_frameDescriptor.outputBuffer)
 	{
-		p_frameDescriptor.outputBuffer->Bind();
+		p_frameDescriptor.outputBuffer.value().Bind();
 	}
 
 	m_driver.SetViewPort(0, 0, p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
@@ -42,12 +45,14 @@ void OvRendering::Core::ABaseRenderer::BeginFrame(const Data::FrameDescriptor& p
 	if (p_frameDescriptor.clearColorBuffer || p_frameDescriptor.clearDepthBuffer || p_frameDescriptor.clearStencilBuffer)
 	{
 		Clear(
-			p_frameDescriptor.clearColor,
+			p_frameDescriptor.camera.value().GetClearColor(),
 			p_frameDescriptor.clearColorBuffer,
 			p_frameDescriptor.clearDepthBuffer,
 			p_frameDescriptor.clearStencilBuffer
 		);
 	}
+
+	p_frameDescriptor.camera->CacheMatrices(p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
 
 	m_isDrawing = true;
 	s_isDrawing.store(true);
@@ -59,9 +64,9 @@ void OvRendering::Core::ABaseRenderer::EndFrame()
 
 	m_driver.ApplyStateMask(m_previousStateMask);
 
-	if (m_frameDescriptor.value().outputBuffer)
+	if (m_frameDescriptor.outputBuffer)
 	{
-		m_frameDescriptor.value().outputBuffer->Unbind();
+		m_frameDescriptor.outputBuffer.value().Unbind();
 	}
 
 	m_isDrawing = false;
@@ -81,8 +86,8 @@ void OvRendering::Core::ABaseRenderer::Clear(const OvMaths::FVector3& p_color, b
 
 const OvRendering::Data::FrameDescriptor& OvRendering::Core::ABaseRenderer::GetFrameDescriptor() const
 {
-	OVASSERT(m_frameDescriptor.has_value(), "Cannot call GetFrameDescriptor() outside of a frame");
-	return m_frameDescriptor.value();
+	OVASSERT(m_isDrawing, "Cannot call GetFrameDescriptor() outside of a frame");
+	return m_frameDescriptor;
 }
 
 void OvRendering::Core::ABaseRenderer::DrawEntity(const Entities::Drawable& p_drawable)
@@ -90,12 +95,12 @@ void OvRendering::Core::ABaseRenderer::DrawEntity(const Entities::Drawable& p_dr
 	auto material = p_drawable.material;
 	auto mesh = p_drawable.mesh;
 
-	if (mesh && material && material.get().HasShader() && material.get().GetGPUInstances() > 0)
+	if (mesh && material && material.value().HasShader() && material.value().GetGPUInstances() > 0)
 	{
 		m_driver.ApplyStateMask(p_drawable.stateMask);
-		p_drawable.material.get().Bind(m_emptyTexture);
-		DrawMesh(mesh.get(), OvRendering::Settings::EPrimitiveMode::TRIANGLES, p_drawable.material.get().GetGPUInstances());
-		p_drawable.material.get().UnBind();
+		p_drawable.material.value().Bind(m_emptyTexture);
+		DrawMesh(mesh.value(), OvRendering::Settings::EPrimitiveMode::TRIANGLES, p_drawable.material.value().GetGPUInstances());
+		p_drawable.material.value().UnBind();
 	}
 }
 

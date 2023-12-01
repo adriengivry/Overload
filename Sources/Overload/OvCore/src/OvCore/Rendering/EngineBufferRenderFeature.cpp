@@ -28,17 +28,13 @@ OvCore::Rendering::EngineBufferRenderFeature::EngineBufferRenderFeature(OvRender
 
 void OvCore::Rendering::EngineBufferRenderFeature::OnBeginFrame(const OvRendering::Data::FrameDescriptor& p_frameDescriptor)
 {
-	OVASSERT(m_renderer.HasDescriptor<EngineBufferDescriptor>(), "Cannot find EngineBufferDescriptor attached to this renderer");
-
-	auto& descriptor = m_renderer.GetDescriptor<EngineBufferDescriptor>();
-
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	auto elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTime - m_startTime);
 
 	size_t offset = sizeof(OvMaths::FMatrix4);
-	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(descriptor.camera.GetViewMatrix()), std::ref(offset));
-	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(descriptor.camera.GetProjectionMatrix()), std::ref(offset));
-	m_engineBuffer->SetSubData(descriptor.camera.GetPosition(), std::ref(offset));
+	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(p_frameDescriptor.camera->GetViewMatrix()), std::ref(offset));
+	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(p_frameDescriptor.camera->GetProjectionMatrix()), std::ref(offset));
+	m_engineBuffer->SetSubData(p_frameDescriptor.camera->GetPosition(), std::ref(offset));
 	m_engineBuffer->SetSubData(elapsedTime.count(), std::ref(offset));
 	m_engineBuffer->Bind(0);
 }

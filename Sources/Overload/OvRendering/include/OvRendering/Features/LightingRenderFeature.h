@@ -24,7 +24,6 @@ namespace OvRendering::Features
 		struct LightingDescriptor
 		{
 			LightSet lights;
-			std::optional<OvRendering::Data::Frustum> frustum;
 		};
 
 		/**

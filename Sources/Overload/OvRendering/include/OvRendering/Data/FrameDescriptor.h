@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <OvTools/Utils/OptRef.h>
+
 #include "OvRendering/Buffers/Framebuffer.h"
 #include "OvRendering/Entities/Camera.h"
 
@@ -16,12 +18,21 @@ namespace OvRendering::Data
 	*/
 	struct FrameDescriptor
 	{
-		OvMaths::FVector3 clearColor = OvMaths::FVector3::Zero;
+		// TODO: Move clearXBuffer to Camera entity
 		bool clearColorBuffer = true;
 		bool clearDepthBuffer = true;
 		bool clearStencilBuffer = false;
 		uint16_t renderWidth = 0;
 		uint16_t renderHeight = 0;
-		Buffers::Framebuffer* outputBuffer = nullptr;
+		OvTools::Utils::OptRef<OvRendering::Entities::Camera> camera;
+		OvTools::Utils::OptRef<Buffers::Framebuffer> outputBuffer;
+
+		/**
+		* Ensures that the data provided in the frame descriptor is valid
+		*/
+		bool IsValid() const
+		{
+			return camera.has_value();
+		}
 	};
 }

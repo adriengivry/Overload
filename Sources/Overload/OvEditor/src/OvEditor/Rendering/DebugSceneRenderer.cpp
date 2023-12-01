@@ -101,7 +101,7 @@ void OvEditor::Rendering::DebugSceneRenderer::DrawPass(OvRendering::Settings::ER
 
 		if (debugSceneDescriptor.selectedActor)
 		{
-			auto& selectedActor = debugSceneDescriptor.selectedActor.get();
+			auto& selectedActor = debugSceneDescriptor.selectedActor.value();
 			DrawActorDebugElements(selectedActor);
 			GetFeature<OutlineRenderFeature>().DrawOutline(selectedActor, kSelectedOutlineColor, kSelectedOutlineWidth);
 			GetFeature<GizmoRenderFeature>().DrawGizmo(

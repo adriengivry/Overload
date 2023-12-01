@@ -21,11 +21,6 @@ namespace OvCore::Rendering
 	class EngineBufferRenderFeature : public OvRendering::Features::ARenderFeature
 	{
 	public:
-		struct EngineBufferDescriptor
-		{
-			OvRendering::Entities::Camera& camera;
-		};
-
 		/**
 		* Constructor
 		* @param p_renderer

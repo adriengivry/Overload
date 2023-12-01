@@ -44,20 +44,13 @@ void OvCore::Rendering::SceneRenderer::BeginFrame(const OvRendering::Data::Frame
 
 	auto& sceneDescriptor = GetDescriptor<SceneDescriptor>();
 
-	sceneDescriptor.camera.CacheMatrices(p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
-
-	AddDescriptor<OvCore::Rendering::EngineBufferRenderFeature::EngineBufferDescriptor>({
-		sceneDescriptor.camera
-	});
-
 	AddDescriptor<OvRendering::Features::LightingRenderFeature::LightingDescriptor>({
 		FindActiveLights(sceneDescriptor.scene),
-		sceneDescriptor.camera.HasFrustumLightCulling() ? std::optional(sceneDescriptor.camera.GetFrustum()) : std::nullopt
 	});
 
-	ParseScene();
-
 	OvRendering::Core::CompositeRenderer::BeginFrame(p_frameDescriptor);
+
+	ParseScene();
 }
 
 void OvCore::Rendering::SceneRenderer::DrawPass(OvRendering::Settings::ERenderPass p_pass)
@@ -85,9 +78,10 @@ void OvCore::Rendering::SceneRenderer::ParseScene()
 	m_opaqueDrawables.clear();
 	m_transparentDrawables.clear();
 
+	auto& camera = m_frameDescriptor.camera.value();
+
 	auto& sceneDescriptor = GetDescriptor<SceneDescriptor>();
 	auto& scene = sceneDescriptor.scene;
-	auto& camera = sceneDescriptor.camera;
 	auto& materialOverride = sceneDescriptor.materialOverride;
 	std::optional<OvRendering::Data::Frustum> frustum = std::nullopt;
 

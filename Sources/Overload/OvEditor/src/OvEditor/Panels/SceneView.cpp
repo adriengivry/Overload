@@ -38,7 +38,7 @@ OvEditor::Panels::SceneView::SceneView
 
 	OvCore::ECS::Actor::DestroyedEvent += [this](const OvCore::ECS::Actor& actor)
 	{
-		if (m_highlightedActor.has_value() && m_highlightedActor.get().GetID() == actor.GetID())
+		if (m_highlightedActor.has_value() && m_highlightedActor.value().GetID() == actor.GetID())
 		{
 			m_highlightedActor.reset();
 		}
@@ -292,7 +292,7 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 			}
 			else if (m_highlightedActor)
 			{
-				EDITOR_EXEC(SelectActor(m_highlightedActor.get()));
+				EDITOR_EXEC(SelectActor(m_highlightedActor.value()));
 			}
 			else
 			{

@@ -10,6 +10,8 @@
 #include <OvMaths/FMatrix4.h>
 #include <OvMaths/FQuaternion.h>
 
+#include <OvTools/Utils/OptRef.h>
+
 #include "OvRendering/Data/Frustum.h"
 #include "OvRendering/Settings/EProjectionMode.h"
 #include "OvRendering/Entities/Entity.h"
@@ -101,9 +103,19 @@ namespace OvRendering::Entities
 		const OvMaths::FMatrix4& GetViewMatrix() const;
 
 		/**
-		* Retursn the cached frustum
+		* Returns the cached frustum
 		*/
 		const OvRendering::Data::Frustum& GetFrustum() const;
+
+		/**
+		* Returns the frustum of the camera used for lights culling
+		*/
+		OvTools::Utils::OptRef<const OvRendering::Data::Frustum> GetGeometryFrustum() const;
+
+		/**
+		* Returns the frustum of the camera used for lights culling
+		*/
+		OvTools::Utils::OptRef<const OvRendering::Data::Frustum> GetLightFrustum() const;
 
 		/**
 		* Returns true if the frustum culling for geometry is enabled

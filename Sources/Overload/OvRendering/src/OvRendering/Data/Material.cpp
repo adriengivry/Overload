@@ -8,6 +8,9 @@
 #include "OvRendering/Buffers/UniformBuffer.h"
 #include "OvRendering/Resources/Texture.h"
 
+
+//TODO: Add constructor with a shader reference
+
 void OvRendering::Data::Material::SetShader(OvRendering::Resources::Shader* p_shader)
 {
 	m_shader = p_shader;

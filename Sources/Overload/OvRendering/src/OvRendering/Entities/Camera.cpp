@@ -95,6 +95,26 @@ const OvRendering::Data::Frustum& OvRendering::Entities::Camera::GetFrustum() co
 	return m_frustum;
 }
 
+OvTools::Utils::OptRef<const OvRendering::Data::Frustum> OvRendering::Entities::Camera::GetGeometryFrustum() const
+{
+	if (m_frustumGeometryCulling)
+	{
+		return m_frustum;
+	}
+
+	return std::nullopt;
+}
+
+OvTools::Utils::OptRef<const OvRendering::Data::Frustum> OvRendering::Entities::Camera::GetLightFrustum() const
+{
+	if (m_frustumLightCulling)
+	{
+		return m_frustum;
+	}
+
+	return std::nullopt;
+}
+
 bool OvRendering::Entities::Camera::HasFrustumGeometryCulling() const
 {
 	return m_frustumGeometryCulling;

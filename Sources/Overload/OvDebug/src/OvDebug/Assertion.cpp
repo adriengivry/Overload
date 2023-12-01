@@ -6,7 +6,7 @@
 
 #include "OvDebug/Assertion.h"
 
-#include <assert.h>
+#include <cassert>
 
 void OvDebug::Assertion::Assert(bool p_condition, const std::string& p_message)
 {

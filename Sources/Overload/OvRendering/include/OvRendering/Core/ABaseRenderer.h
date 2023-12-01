@@ -96,7 +96,7 @@ namespace OvRendering::Core
 		);
 
 	protected:
-		std::optional<Data::FrameDescriptor> m_frameDescriptor;
+		Data::FrameDescriptor m_frameDescriptor;
 		Context::Driver& m_driver;
 		OvRendering::Resources::Texture* m_emptyTexture;
 		OvRendering::Data::StateMask m_previousStateMask;

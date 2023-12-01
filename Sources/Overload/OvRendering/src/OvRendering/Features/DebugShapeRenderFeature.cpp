@@ -42,7 +42,7 @@ uniform mat4 viewProjection;
 void main()
 {
 	vec3 position = gl_VertexID == 0 ? start : end;
-    gl_Position = viewProjection * vec4(position, 1.0);
+	gl_Position = viewProjection * vec4(position, 1.0);
 }
 
 )";
@@ -75,7 +75,7 @@ void main()
 {
 	vec3 position = gl_VertexID == 0 ? start : end;
 	fragPos = position;
-    gl_Position = viewProjection * vec4(position, 1.0);
+	gl_Position = viewProjection * vec4(position, 1.0);
 }
 
 )";
@@ -98,9 +98,9 @@ float AlphaFromAttenuation()
 	vec3 fakeViewPos = viewPos;
 	fakeViewPos.y = 0;
 
-    const float distanceToLight = max(max(length(viewPos - fragPos) - fadeThreshold, 0) - viewPos.y, 0);
-    const float attenuation = (linear * distanceToLight + quadratic * (distanceToLight * distanceToLight));
-    return 1.0 / attenuation;
+	const float distanceToLight = max(max(length(viewPos - fragPos) - fadeThreshold, 0) - viewPos.y, 0);
+	const float attenuation = (linear * distanceToLight + quadratic * (distanceToLight * distanceToLight));
+	return 1.0 / attenuation;
 }
 
 void main()
@@ -116,6 +116,14 @@ OvRendering::Features::DebugShapeRenderFeature::~DebugShapeRenderFeature()
 {
 	delete m_lineMesh;
 	OvRendering::Resources::Loaders::ShaderLoader::Destroy(m_lineShader);
+}
+
+void OvRendering::Features::DebugShapeRenderFeature::OnBeginFrame(const Data::FrameDescriptor& p_frameDescriptor)
+{
+	SetViewProjection(
+		p_frameDescriptor.camera->GetProjectionMatrix() *
+		p_frameDescriptor.camera->GetViewMatrix()
+	);
 }
 
 void OvRendering::Features::DebugShapeRenderFeature::SetViewProjection(const OvMaths::FMatrix4& p_viewProjection)

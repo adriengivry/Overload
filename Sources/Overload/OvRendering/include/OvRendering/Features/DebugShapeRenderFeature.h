@@ -28,6 +28,12 @@ namespace OvRendering::Features
 		virtual ~DebugShapeRenderFeature();
 
 		/**
+		* Invoked when the BeginFrame is called on the associated base renderer
+		* @param p_frameDescriptor
+		*/
+		virtual void OnBeginFrame(const Data::FrameDescriptor& p_frameDescriptor);
+
+		/**
 		* Defines the view projection to use when drawing
 		* @param p_viewProjection
 		*/

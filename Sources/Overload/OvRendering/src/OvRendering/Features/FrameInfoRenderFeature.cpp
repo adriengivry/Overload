@@ -8,7 +8,7 @@
 #include "OvRendering/Core/CompositeRenderer.h"
 
 OvRendering::Features::FrameInfoRenderFeature::FrameInfoRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer)
-	: ARenderFeature(p_renderer)
+	: ARenderFeature(p_renderer), m_isFrameInfoDataValid(false)
 {
 }
 
@@ -32,14 +32,14 @@ void OvRendering::Features::FrameInfoRenderFeature::OnAfterDraw(const OvRenderin
 	// TODO: Calculate vertex count from the primitive mode
 	constexpr uint32_t kVertexCountPerPolygon = 3;
 
-	const int instances = p_drawable.material.get().GetGPUInstances();
+	const int instances = p_drawable.material.value().GetGPUInstances();
 	
 	if (instances > 0)
 	{
 		++m_frameInfo.batchCount;
 		m_frameInfo.instanceCount += instances;
-		m_frameInfo.polyCount += (p_drawable.mesh.get().GetIndexCount() / kVertexCountPerPolygon) * instances;
-		m_frameInfo.vertexCount += p_drawable.mesh.get().GetVertexCount() * instances;
+		m_frameInfo.polyCount += (p_drawable.mesh.value().GetIndexCount() / kVertexCountPerPolygon) * instances;
+		m_frameInfo.vertexCount += p_drawable.mesh.value().GetVertexCount() * instances;
 	}
 }
 

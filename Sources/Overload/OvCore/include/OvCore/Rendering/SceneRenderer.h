@@ -36,7 +36,6 @@ namespace OvCore::Rendering
 		struct SceneDescriptor
 		{
 			OvCore::SceneSystem::Scene& scene;
-			OvRendering::Entities::Camera& camera;
 			std::optional<OvRendering::Data::Frustum> frustumOverride;
 			std::optional<std::reference_wrapper<OvCore::Resources::Material>> materialOverride;
 		};

@@ -64,7 +64,7 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPass(OvRendering::Settings::
 
 	if (debugSceneDescriptor.selectedActor)
 	{
-		auto& selectedActor = debugSceneDescriptor.selectedActor.get();
+		auto& selectedActor = debugSceneDescriptor.selectedActor.value();
 
 		DrawPickableGizmo(
 			selectedActor.transform.GetWorldPosition(),
@@ -77,7 +77,7 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPass(OvRendering::Settings::
 
 	if (auto output = frameDescriptor.outputBuffer)
 	{
-		output->Bind();
+		output.value().Bind();
 	}
 }
 

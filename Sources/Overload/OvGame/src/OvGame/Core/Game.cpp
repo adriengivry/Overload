@@ -69,11 +69,10 @@ void RenderCurrentScene(
 
 			p_renderer.AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>({
 				*currentScene,
-				camera->GetCamera()
 			});
 
 			OvRendering::Data::FrameDescriptor frameDescriptor;
-			frameDescriptor.clearColor = camera->GetClearColor();
+			frameDescriptor.camera = camera->GetCamera();
 			frameDescriptor.renderWidth = windowWidth;
 			frameDescriptor.renderHeight = windowHeight;
 

@@ -52,15 +52,14 @@ void OvEditor::Panels::AView::Render()
 		InitFrame();
 
 		m_renderer->AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>({
-			*scene,
-			*camera
+			*scene
 		});
 
 		OvRendering::Data::FrameDescriptor frameDescriptor;
-		frameDescriptor.clearColor = camera ? camera->GetClearColor() : OvMaths::FVector3::Zero;
 		frameDescriptor.renderWidth = winWidth;
 		frameDescriptor.renderHeight = winHeight;
-		frameDescriptor.outputBuffer = &m_fbo;
+		frameDescriptor.outputBuffer = m_fbo;
+		frameDescriptor.camera = camera;
 
 		m_renderer->BeginFrame(frameDescriptor);
 		DrawFrame();

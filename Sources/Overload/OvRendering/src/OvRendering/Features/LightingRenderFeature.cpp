@@ -31,12 +31,14 @@ void OvRendering::Features::LightingRenderFeature::OnBeginFrame(const Data::Fram
 	OVASSERT(m_renderer.HasDescriptor<LightingDescriptor>(), "Cannot find LightingDescriptor attached to this renderer");
 
 	auto& lightDescriptor = m_renderer.GetDescriptor<LightingDescriptor>();
+	auto& frameDescriptor = m_renderer.GetFrameDescriptor();
 
 	std::vector<OvMaths::FMatrix4> lightMatrices;
+	auto frustum = frameDescriptor.camera->GetLightFrustum();
 
 	for (auto light : lightDescriptor.lights)
 	{
-		if (!lightDescriptor.frustum.has_value() || IsLightInFrustum(light.get(), lightDescriptor.frustum.value()))
+		if (!frustum || IsLightInFrustum(light.get(), frustum.value()))
 		{
 			lightMatrices.push_back(light.get().GenerateMatrix());
 		}

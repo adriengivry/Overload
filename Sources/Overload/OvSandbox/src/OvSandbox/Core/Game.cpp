@@ -13,6 +13,7 @@
 
 #ifdef _DEBUG
 #include <OvRendering/Features/FrameInfoRenderFeature.h>
+#include <OvRendering/Features/DebugShapeRenderFeature.h>
 #endif
 
 #include <OvCore/ECS/Components/CCamera.h>
@@ -37,6 +38,7 @@ OvSandbox::Core::Game::Game(Context & p_context) :
 	m_canvas.AddPanel(m_gameProfiler);
 	m_canvas.AddPanel(m_frameInfo);
 	m_sceneRenderer.AddFeature<OvRendering::Features::FrameInfoRenderFeature>();
+	m_sceneRenderer.AddFeature<OvRendering::Features::DebugShapeRenderFeature>();
 	#endif
 
 	m_context.sceneManager.LoadEmptyLightedScene();
@@ -87,16 +89,21 @@ void RenderCurrentScene(
 
 			p_renderer.AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>({
 				*currentScene,
-				camera->GetCamera()
 			});
 
 			OvRendering::Data::FrameDescriptor frameDescriptor;
-			frameDescriptor.clearColor = camera->GetClearColor();
+			frameDescriptor.camera = camera->GetCamera();
 			frameDescriptor.renderWidth = windowWidth;
 			frameDescriptor.renderHeight = windowHeight;
 
 			p_renderer.BeginFrame(frameDescriptor);
 			p_renderer.Draw();
+			p_renderer.GetFeature<OvRendering::Features::DebugShapeRenderFeature>().DrawLine(
+				{0.0f, -100.0f, 0.0f}, {0.0f, 100.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, 10.0f);
+			p_renderer.GetFeature<OvRendering::Features::DebugShapeRenderFeature>().DrawLine(
+				{ -100.0f, 0.0f, 0.0f }, { 100.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, 10.0f);
+			p_renderer.GetFeature<OvRendering::Features::DebugShapeRenderFeature>().DrawLine(
+				{ 0.0f, 0.0f, -100.0f }, { 0.0f, 0.0f, 100.0f }, { 0.0f, 0.0f, 1.0f }, 10.0f);
 			p_renderer.EndFrame();
 		}
 	}
