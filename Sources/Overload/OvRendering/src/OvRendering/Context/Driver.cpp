@@ -111,12 +111,22 @@ void OvRendering::Context::Driver::SetClearColor(float p_red, float p_green, flo
 
 void OvRendering::Context::Driver::Clear(bool p_colorBuffer, bool p_depthBuffer, bool p_stencilBuffer) const
 {
-	glClear
-	(
-		(p_colorBuffer ? GL_COLOR_BUFFER_BIT : 0) |
-		(p_depthBuffer ? GL_DEPTH_BUFFER_BIT : 0) |
-		(p_stencilBuffer ? GL_STENCIL_BUFFER_BIT : 0)
-	);
+	GLbitfield clearMask = 0;
+
+	if (p_colorBuffer) clearMask |= GL_COLOR_BUFFER_BIT;
+	if (p_depthBuffer) clearMask |= GL_DEPTH_BUFFER_BIT;
+	if (p_stencilBuffer) clearMask |= GL_STENCIL_BUFFER_BIT;
+
+	if (clearMask != 0)
+	{
+		if ((clearMask & GL_STENCIL_BUFFER_BIT) != 0)
+		{
+			glStencilMask(~0); // Allow writing operations, which effectively allow clearing the stencil buffer
+		}
+
+		glDisable(GL_SCISSOR_TEST); // Necessary to avoid scissor test to prevent us from properly clearing the buffer
+		glClear(clearMask);
+	}
 }
 
 void OvRendering::Context::Driver::SetRasterizationLinesWidth(float p_width) const

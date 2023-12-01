@@ -18,7 +18,7 @@ OvEditor::Panels::SceneView::SceneView
 	const std::string& p_title,
 	bool p_opened,
 	const OvUI::Settings::PanelWindowSettings& p_windowSettings
-) : AViewControllable(p_title, p_opened, p_windowSettings, true),
+) : AViewControllable(p_title, p_opened, p_windowSettings),
 	m_sceneManager(EDITOR_CONTEXT(sceneManager))
 {
 	m_renderer = std::make_unique<OvEditor::Rendering::DebugSceneRenderer>(*EDITOR_CONTEXT(driver));

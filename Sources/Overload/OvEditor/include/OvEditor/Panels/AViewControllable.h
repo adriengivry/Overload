@@ -19,13 +19,11 @@ namespace OvEditor::Panels
 		* @param p_title
 		* @param p_opened
 		* @param p_windowSettings
-		* @param p_enableFocusInputs
 		*/
 		AViewControllable(
 			const std::string& p_title,
 			bool p_opened,
-			const OvUI::Settings::PanelWindowSettings& p_windowSettings,
-			bool p_enableFocusInputs = false
+			const OvUI::Settings::PanelWindowSettings& p_windowSettings
 		);
 
 		/**

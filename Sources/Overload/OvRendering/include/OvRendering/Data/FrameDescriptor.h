@@ -18,10 +18,6 @@ namespace OvRendering::Data
 	*/
 	struct FrameDescriptor
 	{
-		// TODO: Move clearXBuffer to Camera entity
-		bool clearColorBuffer = true;
-		bool clearDepthBuffer = true;
-		bool clearStencilBuffer = false;
 		uint16_t renderWidth = 0;
 		uint16_t renderHeight = 0;
 		OvTools::Utils::OptRef<OvRendering::Entities::Camera> camera;

@@ -17,6 +17,9 @@ OvRendering::Entities::Camera::Camera(OvMaths::FTransform* p_transform) :
 	m_near(0.1f),
 	m_far(100.f),
 	m_clearColor(0.f, 0.f, 0.f),
+	m_clearColorBuffer(true),
+	m_clearDepthBuffer(true),
+	m_clearStencilBuffer(true),
 	m_frustumGeometryCulling(false),
 	m_frustumLightCulling(false),
 	m_frustum{}
@@ -78,6 +81,21 @@ float OvRendering::Entities::Camera::GetFar() const
 const OvMaths::FVector3 & OvRendering::Entities::Camera::GetClearColor() const
 {
 	return m_clearColor;
+}
+
+bool OvRendering::Entities::Camera::GetClearColorBuffer() const
+{
+	return m_clearColorBuffer;
+}
+
+bool OvRendering::Entities::Camera::GetClearDepthBuffer() const
+{
+	return m_clearDepthBuffer;
+}
+
+bool OvRendering::Entities::Camera::GetClearStencilBuffer() const
+{
+	return m_clearStencilBuffer;
 }
 
 const OvMaths::FMatrix4& OvRendering::Entities::Camera::GetProjectionMatrix() const
@@ -163,6 +181,21 @@ void OvRendering::Entities::Camera::SetFar(float p_value)
 void OvRendering::Entities::Camera::SetClearColor(const OvMaths::FVector3 & p_clearColor)
 {
 	m_clearColor = p_clearColor;
+}
+
+void OvRendering::Entities::Camera::SetClearColorBuffer(bool p_value)
+{
+	m_clearColorBuffer = p_value;
+}
+
+void OvRendering::Entities::Camera::SetClearDepthBuffer(bool p_value)
+{
+	m_clearDepthBuffer = p_value;
+}
+
+void OvRendering::Entities::Camera::SetClearStencilBuffer(bool p_value)
+{
+	m_clearStencilBuffer = p_value;
 }
 
 void OvRendering::Entities::Camera::SetFrustumGeometryCulling(bool p_enable)

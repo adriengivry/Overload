@@ -27,12 +27,10 @@ namespace OvEditor::Core
 		* Constructor
 		* @param p_view
 		* @param p_camera
-		* @param p_enableFocusInputs
 		*/
 		CameraController(
 			OvEditor::Panels::AView& p_view,
-			OvRendering::Entities::Camera& p_camera,
-			bool p_enableFocusInputs = false
+			OvRendering::Entities::Camera& p_camera
 		);
 
 		/**
@@ -114,8 +112,6 @@ namespace OvEditor::Core
 		OvRendering::Entities::Camera& m_camera;
 
 		std::queue<std::tuple<OvMaths::FVector3, OvMaths::FQuaternion>> m_cameraDestinations;
-
-		bool m_enableFocusInputs;
 
 		bool m_leftMousePressed = false;
 		bool m_middleMousePressed = false;

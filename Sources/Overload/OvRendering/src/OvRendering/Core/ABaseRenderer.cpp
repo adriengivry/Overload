@@ -42,15 +42,12 @@ void OvRendering::Core::ABaseRenderer::BeginFrame(const Data::FrameDescriptor& p
 
 	m_driver.SetViewPort(0, 0, p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
 
-	if (p_frameDescriptor.clearColorBuffer || p_frameDescriptor.clearDepthBuffer || p_frameDescriptor.clearStencilBuffer)
-	{
-		Clear(
-			p_frameDescriptor.camera.value().GetClearColor(),
-			p_frameDescriptor.clearColorBuffer,
-			p_frameDescriptor.clearDepthBuffer,
-			p_frameDescriptor.clearStencilBuffer
-		);
-	}
+	Clear(
+		p_frameDescriptor.camera.value().GetClearColor(),
+		p_frameDescriptor.camera->GetClearColorBuffer(),
+		p_frameDescriptor.camera->GetClearDepthBuffer(),
+		p_frameDescriptor.camera->GetClearStencilBuffer()
+	);
 
 	p_frameDescriptor.camera->CacheMatrices(p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
 
@@ -80,8 +77,11 @@ OvRendering::Context::Driver& OvRendering::Core::ABaseRenderer::GetDriver() cons
 
 void OvRendering::Core::ABaseRenderer::Clear(const OvMaths::FVector3& p_color, bool p_colorBuffer, bool p_depthBuffer, bool p_stencilBuffer)
 {
-	m_driver.SetClearColor(p_color.x, p_color.y, p_color.z);
-	m_driver.Clear(p_colorBuffer, p_depthBuffer, p_stencilBuffer);
+	if (p_colorBuffer || p_depthBuffer || p_stencilBuffer)
+	{
+		m_driver.SetClearColor(p_color.x, p_color.y, p_color.z);
+		m_driver.Clear(p_colorBuffer, p_depthBuffer, p_stencilBuffer);
+	}
 }
 
 const OvRendering::Data::FrameDescriptor& OvRendering::Core::ABaseRenderer::GetFrameDescriptor() const

@@ -18,14 +18,12 @@
 
 OvEditor::Core::CameraController::CameraController(
 	OvEditor::Panels::AView& p_view,
-	OvRendering::Entities::Camera& p_camera,
-	bool p_enableFocusInputs
+	OvRendering::Entities::Camera& p_camera
 ) :
 	m_inputManager(*EDITOR_CONTEXT(inputManager)),
 	m_window(*EDITOR_CONTEXT(window)),
 	m_view(p_view),
-	m_camera(p_camera),
-	m_enableFocusInputs(p_enableFocusInputs)
+	m_camera(p_camera)
 {
 	m_camera.SetFov(60.0f);
 }
@@ -102,7 +100,7 @@ void OvEditor::Core::CameraController::HandleInputs(float p_deltaTime)
 
 		ImGui::GetIO().DisableMouseUpdate = m_rightMousePressed || m_middleMousePressed;
 
-		if (!ImGui::IsAnyItemActive() && m_enableFocusInputs)
+		if (!ImGui::IsAnyItemActive())
 		{
 			if (auto target = GetTargetActor())
 			{

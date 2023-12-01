@@ -38,6 +38,33 @@ void OvEditor::Rendering::OutlineRenderFeature::DrawOutline(
 
 void OvEditor::Rendering::OutlineRenderFeature::DrawStencilPass(OvCore::ECS::Actor& p_actor)
 {
+	m_driver.SetStencilMask(0xFF); // Enable writing to the stencil buffer
+	DrawActorToStencil(p_actor);
+	m_driver.SetStencilMask(0x00); // Disable writing to the stencil buffer
+}
+
+void OvEditor::Rendering::OutlineRenderFeature::DrawOutlinePass(OvCore::ECS::Actor& p_actor, const OvMaths::FVector4& p_color, float p_thickness)
+{
+	// Prepare the driver for stencil test
+	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::STENCIL_TEST, true);
+	m_driver.SetStencilOperations(OvRendering::Settings::EOperation::KEEP, OvRendering::Settings::EOperation::KEEP, OvRendering::Settings::EOperation::REPLACE);
+	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::NOTEQUAL, 1, 0xFF);
+	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::LINE);
+	m_driver.SetRasterizationLinesWidth(p_thickness);
+
+	// Prepare the outline material
+	m_outlineMaterial.Set("u_Diffuse", p_color);
+
+	DrawActorOutline(p_actor);
+
+	// Reset driver settings (Could be skipped if the driver state mask was properly implemented)
+	m_driver.SetRasterizationLinesWidth(1.f);
+	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::FILL);
+	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::ALWAYS, 1, 0xFF);
+}
+
+void OvEditor::Rendering::OutlineRenderFeature::DrawActorToStencil(OvCore::ECS::Actor& p_actor)
+{
 	if (p_actor.IsActive())
 	{
 		/* Render static mesh outline and bounding spheres */
@@ -52,59 +79,41 @@ void OvEditor::Rendering::OutlineRenderFeature::DrawStencilPass(OvCore::ECS::Act
 			auto translation = OvMaths::FMatrix4::Translation(p_actor.transform.GetWorldPosition());
 			auto rotation = OvMaths::FQuaternion::ToMatrix4(p_actor.transform.GetWorldRotation());
 			auto model = translation * rotation;
-
 			DrawModelToStencil(model, *EDITOR_CONTEXT(editorResources)->GetModel("Camera"));
 		}
 	}
 }
 
-void OvEditor::Rendering::OutlineRenderFeature::DrawOutlinePass(
-	OvCore::ECS::Actor& p_actor,
-	const OvMaths::FVector4& p_color,
-	float p_thickness
-)
+void OvEditor::Rendering::OutlineRenderFeature::DrawActorOutline(OvCore::ECS::Actor& p_actor)
 {
-	m_outlineMaterial.Set("u_Diffuse", p_color);
-
 	if (p_actor.IsActive())
 	{
-		/* Render static mesh outline and bounding spheres */
 		if (auto modelRenderer = p_actor.GetComponent<OvCore::ECS::Components::CModelRenderer>(); modelRenderer && modelRenderer->GetModel())
 		{
-			RenderModelOutline(p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel(), p_thickness);
+			DrawModelOutline(p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel());
 		}
 
-		/* Render camera component outline */
 		if (auto cameraComponent = p_actor.GetComponent<OvCore::ECS::Components::CCamera>(); cameraComponent)
 		{
 			auto translation = OvMaths::FMatrix4::Translation(p_actor.transform.GetWorldPosition());
 			auto rotation = OvMaths::FQuaternion::ToMatrix4(p_actor.transform.GetWorldRotation());
 			auto model = translation * rotation;
-
-			RenderModelOutline(model, *EDITOR_CONTEXT(editorResources)->GetModel("Camera"), p_thickness);
+			DrawModelOutline(model, *EDITOR_CONTEXT(editorResources)->GetModel("Camera"));
 		}
 
 		for (auto& child : p_actor.GetChildren())
 		{
-			DrawOutlinePass(*child, p_color, p_thickness);
+			DrawActorOutline(*child);
 		}
 	}
 }
 
 void OvEditor::Rendering::OutlineRenderFeature::DrawModelToStencil(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model)
 {
-	m_driver.SetStencilMask(0xFF);
 	m_renderer.DrawModelWithSingleMaterial(p_model, m_stencilFillMaterial, p_worldMatrix);
-	m_driver.SetStencilMask(0x00);
 }
 
-void OvEditor::Rendering::OutlineRenderFeature::RenderModelOutline(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model, float p_width)
+void OvEditor::Rendering::OutlineRenderFeature::DrawModelOutline(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model)
 {
-	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::NOTEQUAL, 1, 0xFF);
-	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::LINE);
-	m_driver.SetRasterizationLinesWidth(p_width);
 	m_renderer.DrawModelWithSingleMaterial(p_model, m_outlineMaterial, p_worldMatrix);
-	m_driver.SetRasterizationLinesWidth(1.f);
-	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::FILL);
-	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::ALWAYS, 1, 0xFF);
 }

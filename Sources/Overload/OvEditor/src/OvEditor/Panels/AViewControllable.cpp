@@ -17,11 +17,10 @@ const OvMaths::FQuaternion kDefaultCameraRotation({ 0.0f, 135.0f, 0.0f });
 OvEditor::Panels::AViewControllable::AViewControllable(
 	const std::string& p_title,
 	bool p_opened,
-	const OvUI::Settings::PanelWindowSettings& p_windowSettings,
-	bool p_enableFocusInputs
+	const OvUI::Settings::PanelWindowSettings& p_windowSettings
 ) :
 	AView(p_title, p_opened, p_windowSettings),
-	m_cameraController(*this, m_camera, p_enableFocusInputs)
+	m_cameraController(*this, m_camera)
 {
 	ResetCameraTransform();
 	ResetGridColor();

@@ -93,6 +93,21 @@ namespace OvRendering::Entities
 		const OvMaths::FVector3& GetClearColor() const;
 
 		/**
+		* Returns true if the camera is setup to clear the color buffer
+		*/
+		bool GetClearColorBuffer() const;
+
+		/**
+		* Returns true if the camera is setup to clear the depth buffer
+		*/
+		bool GetClearDepthBuffer() const;
+
+		/**
+		* Returns true if the camera is setup to clear the stencil buffer 
+		*/
+		bool GetClearStencilBuffer() const;
+
+		/**
 		* Returns the cached projection matrix
 		*/
 		const OvMaths::FMatrix4& GetProjectionMatrix() const;
@@ -175,6 +190,24 @@ namespace OvRendering::Entities
 		void SetClearColor(const OvMaths::FVector3& p_clearColor);
 
 		/**
+		* Sets if the camera should request the color buffer to be cleared
+		* @param p_value
+		*/
+		void SetClearColorBuffer(bool p_value);
+
+		/**
+		* Sets if the camera should request the depth buffer to be cleared
+		* @param p_value
+		*/
+		void SetClearDepthBuffer(bool p_value);
+
+		/**
+		* Sets if the camera should request the stencil buffer to be cleared
+		* @param p_value
+		*/
+		void SetClearStencilBuffer(bool p_value);
+
+		/**
 		* Defines if the camera should apply frustum culling to geometry while rendering
 		* @param p_enable
 		*/
@@ -207,9 +240,14 @@ namespace OvRendering::Entities
 		float m_near;
 		float m_far;
 
+		bool m_frustumLightCulling;
+		bool m_frustumGeometryCulling;
+
 		OvMaths::FVector3 m_clearColor;
 
-		bool m_frustumGeometryCulling;
-		bool m_frustumLightCulling;
+		// Buffer clearing falgs
+		bool m_clearColorBuffer;
+		bool m_clearDepthBuffer;
+		bool m_clearStencilBuffer;
 	};
 }

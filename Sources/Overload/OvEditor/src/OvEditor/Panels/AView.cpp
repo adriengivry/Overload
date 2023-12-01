@@ -58,8 +58,8 @@ void OvEditor::Panels::AView::Render()
 		OvRendering::Data::FrameDescriptor frameDescriptor;
 		frameDescriptor.renderWidth = winWidth;
 		frameDescriptor.renderHeight = winHeight;
-		frameDescriptor.outputBuffer = m_fbo;
 		frameDescriptor.camera = camera;
+		frameDescriptor.outputBuffer = m_fbo;
 
 		m_renderer->BeginFrame(frameDescriptor);
 		DrawFrame();

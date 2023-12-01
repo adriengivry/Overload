@@ -72,9 +72,9 @@ void RenderCurrentScene(
 			});
 
 			OvRendering::Data::FrameDescriptor frameDescriptor;
-			frameDescriptor.camera = camera->GetCamera();
 			frameDescriptor.renderWidth = windowWidth;
 			frameDescriptor.renderHeight = windowHeight;
+			frameDescriptor.camera = camera->GetCamera();
 
 			p_renderer.BeginFrame(frameDescriptor);
 			p_renderer.Draw();

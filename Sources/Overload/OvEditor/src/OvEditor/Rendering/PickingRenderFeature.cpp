@@ -215,6 +215,7 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPickableLights(OvCore::Scene
 
 void OvEditor::Rendering::PickingRenderFeature::DrawPickableGizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, OvEditor::Core::EGizmoOperation p_operation)
 {
+	// TODO: Fix model matrix, looks like the drawn model is massive
 	auto modelMatrix =
 		OvMaths::FMatrix4::Translation(p_position) *
 		OvMaths::FQuaternion::ToMatrix4(OvMaths::FQuaternion::Normalize(p_rotation));
