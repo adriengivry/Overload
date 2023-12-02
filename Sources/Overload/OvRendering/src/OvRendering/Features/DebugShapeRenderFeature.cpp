@@ -145,11 +145,9 @@ void OvRendering::Features::DebugShapeRenderFeature::DrawLine(const OvMaths::FVe
 	m_lineShader->SetUniformVec3("end", p_end);
 	m_lineShader->SetUniformVec3("color", p_color);
 
-	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::LINE);
-	m_driver.SetRasterizationLinesWidth(p_lineWidth);
+	m_renderer.pso.rasterizationMode = Settings::ERasterizationMode::LINE;
+	m_renderer.pso.rasterizationLinesWidth = p_lineWidth;
 	m_renderer.DrawMesh(*m_lineMesh, Settings::EPrimitiveMode::LINES);
-	m_driver.SetRasterizationLinesWidth(1.0f);
-	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::FILL);
 
 	m_lineShader->Unbind();
 }
@@ -163,9 +161,9 @@ void OvRendering::Features::DebugShapeRenderFeature::DrawGrid(const OvMaths::FVe
 	m_gridShader->SetUniformFloat("quadratic", p_quadratic);
 	m_gridShader->SetUniformFloat("fadeThreshold", p_fadeThreshold);
 
-	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::LINE);
-	m_driver.SetRasterizationLinesWidth(p_lineWidth);
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::BLEND, true);
+	m_renderer.pso.rasterizationMode = Settings::ERasterizationMode::LINE;
+	m_renderer.pso.rasterizationLinesWidth = p_lineWidth;
+	m_renderer.pso.blending = true;
 
 	for (int32_t i = -p_gridSize + 1; i < p_gridSize; ++i)
 	{
@@ -178,8 +176,5 @@ void OvRendering::Features::DebugShapeRenderFeature::DrawGrid(const OvMaths::FVe
 		m_renderer.DrawMesh(*m_lineMesh, Settings::EPrimitiveMode::LINES);
 	}
 
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::BLEND, false);
-	m_driver.SetRasterizationLinesWidth(1.0f);
-	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::FILL);
 	m_gridShader->Unbind();
 }

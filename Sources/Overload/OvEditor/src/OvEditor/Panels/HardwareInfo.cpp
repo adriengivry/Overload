@@ -28,10 +28,10 @@ OvEditor::Panels::HardwareInfo::HardwareInfo
 	auto& driver = *EDITOR_CONTEXT(driver).get();
 
 	// Display some static information about the graphics driver
-	CreateWidget<OvUI::Widgets::Texts::Text>("Vendor: " + driver.GetString(GL_VENDOR));
-	CreateWidget<OvUI::Widgets::Texts::Text>("Hardware: " + driver.GetString(GL_RENDERER));
-	CreateWidget<OvUI::Widgets::Texts::Text>("OpenGL Version: " + driver.GetString(GL_VERSION));
-	CreateWidget<OvUI::Widgets::Texts::Text>("GLSL Version: " + driver.GetString(GL_SHADING_LANGUAGE_VERSION));
+	CreateWidget<OvUI::Widgets::Texts::Text>("Vendor: " + std::string(driver.GetVendor()));
+	CreateWidget<OvUI::Widgets::Texts::Text>("Hardware: " + std::string(driver.GetHardware()));
+	CreateWidget<OvUI::Widgets::Texts::Text>("OpenGL Version: " + std::string(driver.GetVersion()));
+	CreateWidget<OvUI::Widgets::Texts::Text>("GLSL Version: " + std::string(driver.GetShadingLanguageVersion()));
 
 	m_cpuUsage = &CreateWidget<Plots::PlotLines>();
 	m_gpuUsage = &CreateWidget<Plots::PlotLines>();

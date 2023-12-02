@@ -55,22 +55,6 @@ OvEditor::Rendering::DebugSceneRenderer::DebugSceneRenderer(OvRendering::Context
 	AddFeature<OvEditor::Rendering::GizmoRenderFeature>();
 	AddFeature<OvEditor::Rendering::PickingRenderFeature>();
 
-	// TODO: Do not use the driver directly heres
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::STENCIL_TEST, true);
-	m_driver.SetStencilOperations(OvRendering::Settings::EOperation::KEEP, OvRendering::Settings::EOperation::KEEP, OvRendering::Settings::EOperation::REPLACE);
-	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::ALWAYS, 1, 0xFF);
-
-	/* Default Material */
-	//m_defaultMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Standard.glsl"]);
-	//m_defaultMaterial.Set("u_Diffuse", FVector4(1.f, 1.f, 1.f, 1.f));
-	//m_defaultMaterial.Set("u_Shininess", 100.0f);
-	//m_defaultMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
-
-	/* Empty Material */
-	//m_emptyMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
-	//m_emptyMaterial.Set("u_Diffuse", FVector4(1.f, 0.f, 1.f, 1.0f));
-	//m_emptyMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
-
 	/* Camera Material */
 	m_cameraMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Lambert.glsl"]);
 	m_cameraMaterial.Set("u_Diffuse", FVector4(0.0f, 0.3f, 0.7f, 1.0f));
@@ -368,8 +352,8 @@ void OvEditor::Rendering::DebugSceneRenderer::RenderActorCollider(OvCore::ECS::A
 	using namespace OvCore::ECS::Components;
 	using namespace OvPhysics::Entities;
 
-	bool depthTestBackup = m_driver.GetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST);
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, false);
+	const bool previousDepthTest = pso.depthTest;
+	pso.depthTest = false;
 
 	/* Draw the box collider if any */
 	if (auto boxColliderComponent = p_actor.GetComponent<OvCore::ECS::Components::CPhysicalBox>(); boxColliderComponent)
@@ -446,14 +430,13 @@ void OvEditor::Rendering::DebugSceneRenderer::RenderActorCollider(OvCore::ECS::A
 		m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ 0.f, -halfHeight, radius }),	center + rotation * (OvMaths::FVector3{ 0.f, +halfHeight, radius }), OvMaths::FVector3{ 0.f, 1.f, 0.f }, 1.f);
 	}
 
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, depthTestBackup);
-	m_driver.SetRasterizationLinesWidth(1.0f);
+	pso.depthTest = previousDepthTest;
 }
 
 void OvEditor::Rendering::DebugSceneRenderer::RenderLightBounds(OvCore::ECS::Components::CLight& p_light)
 {
-	bool depthTestBackup = m_driver.GetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST);
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, false);
+	const bool previousDepthTest = pso.depthTest;
+	pso.depthTest = false;
 
 	auto& data = p_light.GetData();
 
@@ -471,13 +454,13 @@ void OvEditor::Rendering::DebugSceneRenderer::RenderLightBounds(OvCore::ECS::Com
 		}
 	}
 
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, depthTestBackup);
+	pso.depthTest = previousDepthTest;
 }
 
 void OvEditor::Rendering::DebugSceneRenderer::RenderAmbientBoxVolume(OvCore::ECS::Components::CAmbientBoxLight & p_ambientBoxLight)
 {
-	bool depthTestBackup = m_driver.GetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST);
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, false);
+	const bool previousDepthTest = pso.depthTest;
+	pso.depthTest = false;
 
 	auto& data = p_ambientBoxLight.GetData();
 
@@ -503,13 +486,13 @@ void OvEditor::Rendering::DebugSceneRenderer::RenderAmbientBoxVolume(OvCore::ECS
 	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ -halfSize.x, -halfSize.y, +halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, -halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
 	m_debugShapeFeature.DrawLine(center + OvMaths::FVector3{ -halfSize.x, +halfSize.y, +halfSize.z }, center + OvMaths::FVector3{ +halfSize.x, +halfSize.y, +halfSize.z }, LIGHT_VOLUME_COLOR, 1.f);
 
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, depthTestBackup);
+	pso.depthTest = previousDepthTest;
 }
 
 void OvEditor::Rendering::DebugSceneRenderer::RenderAmbientSphereVolume(OvCore::ECS::Components::CAmbientSphereLight & p_ambientSphereLight)
 {
-	bool depthTestBackup = m_driver.GetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST);
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, false);
+	const bool previousDepthTest = pso.depthTest;
+	pso.depthTest = false;
 
 	auto& data = p_ambientSphereLight.GetData();
 
@@ -524,7 +507,7 @@ void OvEditor::Rendering::DebugSceneRenderer::RenderAmbientSphereVolume(OvCore::
 		m_debugShapeFeature.DrawLine(center + rotation * (OvMaths::FVector3{ cos(i * (3.14f / 180.0f)), 0.f, sin(i * (3.14f / 180.0f)) } *radius), center + rotation * (OvMaths::FVector3{ cos((i + 10.0f) * (3.14f / 180.0f)), 0.f, sin((i + 10.0f) * (3.14f / 180.0f)) } *radius), LIGHT_VOLUME_COLOR, 1.f);
 	}
 
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, depthTestBackup);
+	pso.depthTest = previousDepthTest;
 }
 
 void OvEditor::Rendering::DebugSceneRenderer::RenderBoundingSpheres(OvCore::ECS::Components::CModelRenderer& p_modelRenderer)
@@ -532,8 +515,8 @@ void OvEditor::Rendering::DebugSceneRenderer::RenderBoundingSpheres(OvCore::ECS:
 	using namespace OvCore::ECS::Components;
 	using namespace OvPhysics::Entities;
 
-	bool depthTestBackup = m_driver.GetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST);
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, false);
+	const bool previousDepthTest = pso.depthTest;
+	pso.depthTest = false;
 
 	/* Draw the sphere collider if any */
 	if (auto model = p_modelRenderer.GetModel())
@@ -587,7 +570,6 @@ void OvEditor::Rendering::DebugSceneRenderer::RenderBoundingSpheres(OvCore::ECS:
 		}
 	}
 
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::DEPTH_TEST, depthTestBackup);
-	m_driver.SetRasterizationLinesWidth(1.0f);
+	pso.depthTest = previousDepthTest;
 }
 

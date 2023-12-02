@@ -23,6 +23,5 @@ namespace OvRendering::Core
 	public:
 		virtual void BeginFrame(const Data::FrameDescriptor& p_frameDescriptor) = 0;
 		virtual void EndFrame() = 0;
-		virtual Context::Driver& GetDriver() const = 0;
 	};
 }

@@ -52,8 +52,10 @@ OvSandbox::Core::Context::Context() :
 
 	/* Graphics context creation */
 	driver = std::make_unique<OvRendering::Context::Driver>(OvRendering::Settings::DriverSettings{ false });
-	driver->SetCapability(OvRendering::Settings::ERenderingCapability::MULTISAMPLE, true);
-
+	OvRendering::Data::PipelineState pso = driver->GetPipelineState();
+	pso.multisample = true;
+	driver->SetPipelineState(pso);
+	
 	uiManager = std::make_unique<OvUI::Core::UIManager>(window->GetGlfwWindow(), OvUI::Styling::EStyle::ALTERNATIVE_DARK);
 	uiManager->LoadFont("Ruda_Big", engineAssetsPath + "Fonts\\Ruda-Bold.ttf", 16);
 	uiManager->LoadFont("Ruda_Small", engineAssetsPath + "Fonts\\Ruda-Bold.ttf", 12);

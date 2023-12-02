@@ -62,7 +62,9 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 
 	/* Graphics context creation */
 	driver = std::make_unique<OvRendering::Context::Driver>(OvRendering::Settings::DriverSettings{ true });
-	driver->SetCapability(OvRendering::Settings::ERenderingCapability::MULTISAMPLE, true);
+	OvRendering::Data::PipelineState pso = driver->GetPipelineState();
+	pso.multisample = true;
+	driver->SetPipelineState(pso);
 
 	std::filesystem::create_directories(std::string(getenv("APPDATA")) + "\\OverloadTech\\OvEditor\\");
 

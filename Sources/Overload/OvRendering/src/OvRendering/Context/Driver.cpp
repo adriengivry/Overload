@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <OvDebug/Logger.h>
+#include <OvDebug/Assertion.h>
 
 #include "OvRendering/Context/Driver.h"
 
@@ -65,27 +66,249 @@ void GLDebugMessageCallback(uint32_t source, uint32_t type, uint32_t id, uint32_
 	}
 }
 
-void InitGlew()
+bool InitGlew()
 {
 	const GLenum error = glewInit();
+
 	if (error != GLEW_OK)
 	{
 		std::string message = "Error Init GLEW: ";
 		std::string glewError = reinterpret_cast<const char*>(glewGetErrorString(error));
 		OVLOG_INFO(message + glewError);
+		return false;
 	}
+
+	return true;
 }
 
-OvRendering::Context::Driver::Driver(const Settings::DriverSettings& p_driverSettings)
+void SetClearColor(float p_red, float p_green, float p_blue, float p_alpha)
 {
-	InitGlew();
-	
-	m_isActive = true;
+	glClearColor(p_red, p_green, p_blue, p_alpha);
+}
 
+void SetRasterizationLinesWidth(float p_width)
+{
+	glLineWidth(p_width);
+}
+
+void SetRasterizationMode(OvRendering::Settings::ERasterizationMode p_rasterizationMode)
+{
+	glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(p_rasterizationMode));
+}
+
+void SetCapability(OvRendering::Settings::ERenderingCapability p_capability, bool p_value)
+{
+	(p_value ? glEnable : glDisable)(static_cast<GLenum>(p_capability));
+}
+
+bool GetCapability(OvRendering::Settings::ERenderingCapability p_capability)
+{
+	return glIsEnabled(static_cast<GLenum>(p_capability));
+}
+
+void SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm p_algorithm, int32_t p_reference, uint32_t p_mask)
+{
+	glStencilFunc(static_cast<GLenum>(p_algorithm), p_reference, p_mask);
+}
+
+void SetDepthAlgorithm(OvRendering::Settings::EComparaisonAlgorithm p_algorithm)
+{
+	glDepthFunc(static_cast<GLenum>(p_algorithm));
+}
+
+void SetStencilMask(uint32_t p_mask)
+{
+	glStencilMask(p_mask);
+}
+
+void SetStencilOperations(
+	OvRendering::Settings::EOperation p_stencilFail,
+	OvRendering::Settings::EOperation p_depthFail,
+	OvRendering::Settings::EOperation p_bothPass
+)
+{
+	glStencilOp(static_cast<GLenum>(p_stencilFail), static_cast<GLenum>(p_depthFail), static_cast<GLenum>(p_bothPass));
+}
+
+void SetCullFace(OvRendering::Settings::ECullFace p_cullFace)
+{
+	glCullFace(static_cast<GLenum>(p_cullFace));
+}
+
+void SetDepthWriting(bool p_enable)
+{
+	glDepthMask(p_enable);
+}
+
+void SetColorWriting(bool p_enableRed, bool p_enableGreen, bool p_enableBlue, bool p_enableAlpha)
+{
+	glColorMask(p_enableRed, p_enableGreen, p_enableBlue, p_enableAlpha);
+}
+
+void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+	glViewport(x, y, width, height);
+}
+
+bool GetBool(uint32_t p_parameter)
+{
+	GLboolean result;
+	glGetBooleanv(p_parameter, &result);
+	return static_cast<bool>(result);
+}
+
+bool GetBool(uint32_t p_parameter, uint32_t p_index)
+{
+	GLboolean result;
+	glGetBooleani_v(p_parameter, p_index, &result);
+	return static_cast<bool>(result);
+}
+
+int GetInt(uint32_t p_parameter)
+{
+	GLint result;
+	glGetIntegerv(p_parameter, &result);
+	return static_cast<int>(result);
+}
+
+int GetInt(uint32_t p_parameter, uint32_t p_index)
+{
+	GLint result;
+	glGetIntegeri_v(p_parameter, p_index, &result);
+	return static_cast<int>(result);
+}
+
+float GetFloat(uint32_t p_parameter)
+{
+	GLfloat result;
+	glGetFloatv(p_parameter, &result);
+	return static_cast<float>(result);
+}
+
+float GetFloat(uint32_t p_parameter, uint32_t p_index)
+{
+	GLfloat result;
+	glGetFloati_v(p_parameter, p_index, &result);
+	return static_cast<float>(result);
+}
+
+double GetDouble(uint32_t p_parameter)
+{
+	GLdouble result;
+	glGetDoublev(p_parameter, &result);
+	return static_cast<double>(result);
+}
+
+double GetDouble(uint32_t p_parameter, uint32_t p_index)
+{
+	GLdouble result;
+	glGetDoublei_v(p_parameter, p_index, &result);
+	return static_cast<double>(result);
+}
+
+int64_t GetInt64(uint32_t p_parameter)
+{
+	GLint64 result;
+	glGetInteger64v(p_parameter, &result);
+	return static_cast<int64_t>(result);
+}
+
+int64_t GetInt64(uint32_t p_parameter, uint32_t p_index)
+{
+	GLint64 result;
+	glGetInteger64i_v(p_parameter, p_index, &result);
+	return static_cast<int64_t>(result);
+}
+
+std::string GetString(uint32_t p_parameter)
+{
+	const GLubyte* result = glGetString(p_parameter);
+	return result ? reinterpret_cast<const char*>(result) : std::string();
+}
+
+std::string GetString(uint32_t p_parameter, uint32_t p_index)
+{
+	const GLubyte* result = glGetStringi(p_parameter, p_index);
+	return result ? reinterpret_cast<const char*>(result) : std::string();
+}
+
+/**
+* Very expensive! Call it once, and make sure you always keep track of state changes
+*/
+OvRendering::Data::PipelineState RetrieveOpenGLPipelineState()
+{
+	using namespace OvRendering::Settings;
+
+	OvRendering::Data::PipelineState pso;
+
+	// Rasterization
+	pso.rasterizationMode = static_cast<ERasterizationMode>(GetInt(GL_POLYGON_MODE));
+	pso.rasterizationLinesWidth = GetFloat(GL_LINE_WIDTH);
+
+	// Color write mask
+	GLboolean colorWriteMask[4];
+	glGetBooleanv(GL_COLOR_WRITEMASK, colorWriteMask);
+	pso.colorWriting[0] = colorWriteMask[0];
+	pso.colorWriting[1] = colorWriteMask[1];
+	pso.colorWriting[2] = colorWriteMask[2];
+	pso.colorWriting[3] = colorWriteMask[3];
+
+	// Capability
+	pso.depthWriting = GetBool(GL_DEPTH_WRITEMASK);
+	pso.blending = GetBool(GL_BLEND);
+	pso.culling = GetBool(GL_CULL_FACE);
+	pso.dither = GetBool(GL_DITHER);
+	pso.polygonOffsetFill = GetBool(GL_POLYGON_OFFSET_FILL);
+	pso.sampleAlphaToCoverage = GetBool(GL_SAMPLE_ALPHA_TO_COVERAGE);
+	pso.depthTest = GetBool(GL_DEPTH_TEST);
+	pso.scissorTest = GetBool(GL_SCISSOR_TEST);
+	pso.stencilTest = GetBool(GL_STENCIL_TEST);
+	pso.multisample = GetBool(GL_MULTISAMPLE);
+
+	// Clear
+	GLfloat clearColor[4];
+	glGetFloatv(GL_COLOR_CLEAR_VALUE, clearColor);
+	pso.clearR = clearColor[0];
+	pso.clearG = clearColor[1];
+	pso.clearB = clearColor[2];
+	pso.clearA = clearColor[3];
+
+	// Stencil
+	pso.stencilAlgorithm = static_cast<EComparaisonAlgorithm>(GetInt(GL_STENCIL_FUNC));
+	pso.stencilAlgorithmReference = GetInt(GL_STENCIL_REF);
+	pso.stencilAlgorithmMask = static_cast<uint32_t>(GetInt(GL_STENCIL_VALUE_MASK));
+
+	pso.stencilMask = static_cast<uint32_t>(GetInt(GL_STENCIL_WRITEMASK));
+
+	pso.stencilFailOp = static_cast<EOperation>(GetInt(GL_STENCIL_FAIL));
+	pso.depthFailOp = static_cast<EOperation>(GetInt(GL_STENCIL_PASS_DEPTH_FAIL));
+	pso.bothPassOp = static_cast<EOperation>(GetInt(GL_STENCIL_PASS_DEPTH_PASS));
+
+	// Depth
+	pso.depthAlgorithm = static_cast<EComparaisonAlgorithm>(GetInt(GL_DEPTH_FUNC));
+
+	// Culling
+	pso.cullFace = static_cast<ECullFace>(GetInt(GL_CULL_FACE_MODE));
+
+	// View
+	GLint viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	pso.viewportX = viewport[0];
+	pso.viewportY = viewport[1];
+	pso.viewportW = viewport[2];
+	pso.viewportH = viewport[3];
+
+	return pso;
+}
+
+OvRendering::Context::Driver::Driver(const OvRendering::Settings::DriverSettings& p_driverSettings)
+{
+	OVASSERT(InitGlew(), "Failed to initialized Glew!");
+	
 	if (p_driverSettings.debugMode)
 	{
 		GLint flags;
-		glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+		glGetIntegerv(GL_CONTEXT_FLAGS, &flags); //TODO: That doesn't seem right, we should set the integerv not get it?
 		if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
 		{
 			glEnable(GL_DEBUG_OUTPUT);
@@ -97,16 +320,14 @@ OvRendering::Context::Driver::Driver(const Settings::DriverSettings& p_driverSet
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glCullFace(GL_BACK);
-}
 
-bool OvRendering::Context::Driver::IsActive() const
-{
-	return m_isActive;
-}
+	m_initialState = RetrieveOpenGLPipelineState();
+	m_pipelineState = m_initialState;
 
-void OvRendering::Context::Driver::SetClearColor(float p_red, float p_green, float p_blue, float p_alpha) const
-{
-	glClearColor(p_red, p_green, p_blue, p_alpha);
+	m_vendor = GetString(GL_VENDOR);
+	m_hardware = GetString(GL_RENDERER);
+	m_version = GetString(GL_VERSION);
+	m_shadingLanguageVersion = GetString(GL_SHADING_LANGUAGE_VERSION);
 }
 
 void OvRendering::Context::Driver::Clear(bool p_colorBuffer, bool p_depthBuffer, bool p_stencilBuffer) const
@@ -119,166 +340,21 @@ void OvRendering::Context::Driver::Clear(bool p_colorBuffer, bool p_depthBuffer,
 
 	if (clearMask != 0)
 	{
-		if ((clearMask & GL_STENCIL_BUFFER_BIT) != 0)
-		{
-			glStencilMask(~0); // Allow writing operations, which effectively allow clearing the stencil buffer
-		}
-
-		glDisable(GL_SCISSOR_TEST); // Necessary to avoid scissor test to prevent us from properly clearing the buffer
 		glClear(clearMask);
 	}
 }
 
-void OvRendering::Context::Driver::SetRasterizationLinesWidth(float p_width) const
-{
-	glLineWidth(p_width);
-}
-
-void OvRendering::Context::Driver::SetRasterizationMode(Settings::ERasterizationMode p_rasterizationMode) const
-{
-	glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(p_rasterizationMode));
-}
-
-void OvRendering::Context::Driver::SetCapability(Settings::ERenderingCapability p_capability, bool p_value) const
-{
-	(p_value ? glEnable : glDisable)(static_cast<GLenum>(p_capability));
-}
-
-bool OvRendering::Context::Driver::GetCapability(Settings::ERenderingCapability p_capability) const
-{
-	return glIsEnabled(static_cast<GLenum>(p_capability));
-}
-
-void OvRendering::Context::Driver::SetStencilAlgorithm(Settings::EComparaisonAlgorithm p_algorithm, int32_t p_reference, uint32_t p_mask) const
-{
-	glStencilFunc(static_cast<GLenum>(p_algorithm), p_reference, p_mask);
-}
-
-void OvRendering::Context::Driver::SetDepthAlgorithm(Settings::EComparaisonAlgorithm p_algorithm) const
-{
-	glDepthFunc(static_cast<GLenum>(p_algorithm));
-}
-
-void OvRendering::Context::Driver::SetStencilMask(uint32_t p_mask) const
-{
-	glStencilMask(p_mask);
-}
-
-void OvRendering::Context::Driver::SetStencilOperations(Settings::EOperation p_stencilFail, Settings::EOperation p_depthFail, Settings::EOperation p_bothPass) const
-{
-	glStencilOp(static_cast<GLenum>(p_stencilFail), static_cast<GLenum>(p_depthFail), static_cast<GLenum>(p_bothPass));
-}
-
-void OvRendering::Context::Driver::SetCullFace(Settings::ECullFace p_cullFace) const
-{
-	glCullFace(static_cast<GLenum>(p_cullFace));
-}
-
-void OvRendering::Context::Driver::SetDepthWriting(bool p_enable) const
-{
-	glDepthMask(p_enable);
-}
-
-void OvRendering::Context::Driver::SetColorWriting(bool p_enableRed, bool p_enableGreen, bool p_enableBlue, bool p_enableAlpha) const
-{
-	glColorMask(p_enableRed, p_enableGreen, p_enableBlue, p_enableAlpha);
-}
-
-void OvRendering::Context::Driver::SetColorWriting(bool p_enable) const
-{
-	glColorMask(p_enable, p_enable, p_enable, p_enable);
-}
-
-void OvRendering::Context::Driver::SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) const
-{
-	glViewport(x, y, width, height);
-}
-
-void OvRendering::Context::Driver::ReadPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height, Settings::EPixelDataFormat format, Settings::EPixelDataType type, void* data) const
+void OvRendering::Context::Driver::ReadPixels(
+	uint32_t x,
+	uint32_t y,
+	uint32_t width,
+	uint32_t height,
+	OvRendering::Settings::EPixelDataFormat format,
+	OvRendering::Settings::EPixelDataType type,
+	void* data
+) const
 {
 	glReadPixels(x, y, width, height, static_cast<GLenum>(format), static_cast<GLenum>(type), data);
-}
-
-bool OvRendering::Context::Driver::GetBool(uint32_t p_parameter) const
-{
-	GLboolean result;
-	glGetBooleanv(p_parameter, &result);
-	return static_cast<bool>(result);
-}
-
-bool OvRendering::Context::Driver::GetBool(uint32_t p_parameter, uint32_t p_index) const
-{
-	GLboolean result;
-	glGetBooleani_v(p_parameter, p_index, &result);
-	return static_cast<bool>(result);
-}
-
-int OvRendering::Context::Driver::GetInt(uint32_t p_parameter) const
-{
-	GLint result;
-	glGetIntegerv(p_parameter, &result);
-	return static_cast<int>(result);
-}
-
-int OvRendering::Context::Driver::GetInt(uint32_t p_parameter, uint32_t p_index) const
-{
-	GLint result;
-	glGetIntegeri_v(p_parameter, p_index, &result);
-	return static_cast<int>(result);
-}
-
-float OvRendering::Context::Driver::GetFloat(uint32_t p_parameter) const
-{
-	GLfloat result;
-	glGetFloatv(p_parameter, &result);
-	return static_cast<float>(result);
-}
-
-float OvRendering::Context::Driver::GetFloat(uint32_t p_parameter, uint32_t p_index) const
-{
-	GLfloat result;
-	glGetFloati_v(p_parameter, p_index, &result);
-	return static_cast<float>(result);
-}
-
-double OvRendering::Context::Driver::GetDouble(uint32_t p_parameter) const
-{
-	GLdouble result;
-	glGetDoublev(p_parameter, &result);
-	return static_cast<double>(result);
-}
-
-double OvRendering::Context::Driver::GetDouble(uint32_t p_parameter, uint32_t p_index) const
-{
-	GLdouble result;
-	glGetDoublei_v(p_parameter, p_index, &result);
-	return static_cast<double>(result);
-}
-
-int64_t OvRendering::Context::Driver::GetInt64(uint32_t p_parameter) const
-{
-	GLint64 result;
-	glGetInteger64v(p_parameter, &result);
-	return static_cast<int64_t>(result);
-}
-
-int64_t OvRendering::Context::Driver::GetInt64(uint32_t p_parameter, uint32_t p_index) const
-{
-	GLint64 result;
-	glGetInteger64i_v(p_parameter, p_index, &result);
-	return static_cast<int64_t>(result);
-}
-
-std::string OvRendering::Context::Driver::GetString(uint32_t p_parameter) const
-{
-	const GLubyte* result = glGetString(p_parameter);
-	return result ? reinterpret_cast<const char*>(result) : std::string();
-}
-
-std::string OvRendering::Context::Driver::GetString(uint32_t p_parameter, uint32_t p_index) const
-{
-	const GLubyte* result = glGetStringi(p_parameter, p_index);
-	return result ? reinterpret_cast<const char*>(result) : std::string();
 }
 
 void OvRendering::Context::Driver::DrawElements(Settings::EPrimitiveMode p_primitiveMode, uint32_t p_indexCount) const
@@ -301,50 +377,88 @@ void OvRendering::Context::Driver::DrawArraysInstanced(Settings::EPrimitiveMode 
 	glDrawArraysInstanced(static_cast<GLenum>(p_primitiveMode), 0, p_vertexCount, p_instances);
 }
 
-// TODO: Rename to something that is more explicit
-void OvRendering::Context::Driver::UpdateStateMask()
+void OvRendering::Context::Driver::SetPipelineState(const OvRendering::Data::PipelineState& p_state)
 {
 	using namespace OvRendering::Settings;
 
-	GLboolean colorWriteMask[4];
-	glGetBooleanv(GL_COLOR_WRITEMASK, colorWriteMask);
+	auto& i = p_state;
+	auto& o = m_pipelineState;
 
-	m_stateMask.depthWriting = GetBool(GL_DEPTH_WRITEMASK);
-	m_stateMask.colorWriting = colorWriteMask[0];
-	m_stateMask.blendable = GetCapability(ERenderingCapability::BLEND);
-	m_stateMask.culling = GetCapability(ERenderingCapability::CULL_FACE);
-	m_stateMask.depthTest = GetCapability(ERenderingCapability::DEPTH_TEST);
+	// Rasterization
+	if (i.rasterizationMode != o.rasterizationMode) SetRasterizationMode(i.rasterizationMode);
+	if (i.rasterizationLinesWidth != o.rasterizationLinesWidth) SetRasterizationLinesWidth(i.rasterizationLinesWidth);
 
-	ECullFace cullFace = static_cast<ECullFace>(GetInt(GL_CULL_FACE));
-	m_stateMask.backfaceCulling = cullFace == ECullFace::FRONT_AND_BACK || cullFace == ECullFace::BACK;
-	m_stateMask.frontfaceCulling = cullFace == ECullFace::FRONT_AND_BACK || cullFace == ECullFace::FRONT;
+	if (i.colorWriting != o.colorWriting) SetColorWriting(i.colorWriting[0], i.colorWriting[1], i.colorWriting[2], i.colorWriting[3]);
+	if (i.depthWriting != o.depthWriting) SetDepthWriting(i.depthWriting);
+
+	if (i.blending != o.blending) SetCapability(ERenderingCapability::BLEND, i.blending);
+	if (i.culling != o.culling) SetCapability(ERenderingCapability::CULL_FACE, i.culling);
+	if (i.dither != o.dither) SetCapability(ERenderingCapability::DITHER, i.dither);
+	if (i.polygonOffsetFill != o.polygonOffsetFill) SetCapability(ERenderingCapability::POLYGON_OFFSET_FILL, i.polygonOffsetFill);
+	if (i.sampleAlphaToCoverage != o.sampleAlphaToCoverage) SetCapability(ERenderingCapability::SAMPLE_ALPHA_TO_COVERAGE, i.sampleAlphaToCoverage);
+	if (i.depthTest != o.depthTest) SetCapability(ERenderingCapability::DEPTH_TEST, i.depthTest);
+	if (i.scissorTest != o.scissorTest) SetCapability(ERenderingCapability::SCISSOR_TEST, i.scissorTest);
+	if (i.stencilTest != o.stencilTest) SetCapability(ERenderingCapability::STENCIL_TEST, i.stencilTest);
+	if (i.multisample != o.multisample) SetCapability(ERenderingCapability::MULTISAMPLE, i.multisample);
+
+	// Clear
+	if (i.clearR != o.clearR || i.clearG != o.clearG || i.clearB != o.clearB || i.clearA != o.clearA)
+		SetClearColor(i.clearR, i.clearG, i.clearB, i.clearA);
+
+	// Stencil algorithm
+	if (i.stencilAlgorithm != o.stencilAlgorithm ||
+		i.stencilAlgorithmReference != o.stencilAlgorithmReference ||
+		i.stencilAlgorithmMask != o.stencilAlgorithmMask)
+		SetStencilAlgorithm(i.stencilAlgorithm, i.stencilAlgorithmReference, i.stencilAlgorithmMask);
+
+	if (i.stencilMask != o.stencilMask) SetStencilMask(i.stencilMask);
+	if (i.stencilFailOp != o.stencilFailOp || i.depthFailOp != o.depthFailOp || i.bothPassOp != o.bothPassOp) SetStencilOperations(i.stencilFailOp, i.depthFailOp, i.bothPassOp);
+
+	// Depth
+	if (i.depthAlgorithm != o.depthAlgorithm) SetDepthAlgorithm(i.depthAlgorithm);
+
+	// Culling
+	if (i.cullFace != o.cullFace) SetCullFace(i.cullFace);
+
+	// View
+	if (i.viewportX != o.viewportX || i.viewportY != o.viewportY || i.viewportW != o.viewportW || i.viewportH != o.viewportH)
+		SetViewport(i.viewportX, i.viewportY, i.viewportW, i.viewportH);
+
+	m_pipelineState = p_state;
 }
 
-const OvRendering::Data::StateMask OvRendering::Context::Driver::GetStateMask() const
+const OvRendering::Data::PipelineState& OvRendering::Context::Driver::GetPipelineState() const
 {
-	return m_stateMask;
+	return m_pipelineState;
 }
 
-void OvRendering::Context::Driver::ApplyStateMask(Data::StateMask p_mask)
+OvRendering::Data::PipelineState OvRendering::Context::Driver::CreatePipelineState(OvRendering::Settings::EPipelineStateCreationMode p_creationMode) const
 {
-	auto current = m_stateMask.mask;
-	auto target = p_mask.mask;
-
-	if (target != current)
+	switch (p_creationMode)
 	{
-		using namespace OvRendering::Settings;
-		if ((target & 0x01) != (current & 0x01))	SetDepthWriting(target & 0x01);
-		if ((target & 0x02) != (current & 0x02))	SetColorWriting(target & 0x02);
-		if ((target & 0x04) != (current & 0x04))	SetCapability(ERenderingCapability::BLEND, target & 0x04);
-		if ((target & 0x08) != (current & 0x08))	SetCapability(ERenderingCapability::CULL_FACE, target & 0x8);
-		if ((target & 0x10) != (current & 0x10))	SetCapability(ERenderingCapability::DEPTH_TEST, target & 0x10);
-		if ((target & 0x08) && ((target & 0x20) != (current & 0x20) || (target & 0x40) != (current & 0x40)))
-		{
-			int backBit = target & 0x20;
-			int frontBit = target & 0x40;
-			SetCullFace(backBit && frontBit ? ECullFace::FRONT_AND_BACK : (backBit ? ECullFace::BACK : ECullFace::FRONT));
-		}
-
-		m_stateMask.mask = p_mask.mask;
+		case OvRendering::Settings::EPipelineStateCreationMode::INITIAL: return m_initialState;
+		case OvRendering::Settings::EPipelineStateCreationMode::CURRENT: return m_pipelineState;
 	}
+
+	return OvRendering::Data::PipelineState{};
+}
+
+std::string_view OvRendering::Context::Driver::GetVendor() const
+{
+	return m_vendor;
+}
+
+std::string_view OvRendering::Context::Driver::GetHardware() const
+{
+	return m_hardware;
+}
+
+std::string_view OvRendering::Context::Driver::GetVersion() const
+{
+	return m_version;
+}
+
+std::string_view OvRendering::Context::Driver::GetShadingLanguageVersion() const
+{
+	return m_shadingLanguageVersion;
 }

@@ -53,7 +53,9 @@ OvGame::Core::Context::Context() :
 
 	/* Graphics context creation */
 	driver = std::make_unique<OvRendering::Context::Driver>(OvRendering::Settings::DriverSettings{ false });
-	driver->SetCapability(OvRendering::Settings::ERenderingCapability::MULTISAMPLE, projectSettings.Get<bool>("multisampling"));
+	OvRendering::Data::PipelineState pso = driver->GetPipelineState();
+	pso.multisample = projectSettings.Get<bool>("multisampling");
+	driver->SetPipelineState(pso);
 
 	uiManager = std::make_unique<OvUI::Core::UIManager>(window->GetGlfwWindow(), OvUI::Styling::EStyle::ALTERNATIVE_DARK);
 	uiManager->LoadFont("Ruda_Big", engineAssetsPath + "Fonts\\Ruda-Bold.ttf", 16);

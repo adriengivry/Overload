@@ -9,7 +9,7 @@
 #include "OvRendering/Core/CompositeRenderer.h"
 
 OvRendering::Features::ARenderFeature::ARenderFeature(Core::CompositeRenderer& p_renderer)
-	: m_renderer(p_renderer), m_driver(p_renderer.GetDriver())
+	: m_renderer(p_renderer)
 {
 }
 

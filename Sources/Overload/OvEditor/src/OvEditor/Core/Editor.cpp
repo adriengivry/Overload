@@ -77,10 +77,7 @@ void OvEditor::Core::Editor::SetupUI()
 void OvEditor::Core::Editor::PreUpdate()
 {
 	PROFILER_SPY("Editor Pre-Update");
-
 	m_context.device->PollEvents();
-	m_context.driver->SetClearColor(0.f, 0.f, 0.f);
-	m_context.driver->Clear();
 }
 
 void OvEditor::Core::Editor::Update(float p_deltaTime)

@@ -25,6 +25,8 @@ namespace OvRendering::Core
 	class ABaseRenderer : public IRenderer
 	{
 	public:
+		OvRendering::Data::PipelineState pso;
+
 		/**
 		* Constructor of the base renderer
 		* @param p_driver
@@ -48,9 +50,17 @@ namespace OvRendering::Core
 		virtual void EndFrame();
 
 		/**
-		* Returns the driver associated with this renderer
-		*/
-		virtual Context::Driver& GetDriver() const;
+		 * Read a block of pixels from the frame buffer.
+		 * @param x
+		 * @param y
+		 * @param width
+		 * @param height
+		 * @param format
+		 * @param type
+		 * @param data
+		 */
+		// TODO: Move yout of the base renderer, or rework
+		void ReadPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height, Settings::EPixelDataFormat format, Settings::EPixelDataType type, void* data) const;
 
 		/**
 		* Clear the screen
@@ -96,10 +106,13 @@ namespace OvRendering::Core
 		);
 
 	protected:
+		virtual void SubmitCurrentPipelineState();
+
+	protected:
 		Data::FrameDescriptor m_frameDescriptor;
 		Context::Driver& m_driver;
 		OvRendering::Resources::Texture* m_emptyTexture;
-		OvRendering::Data::StateMask m_previousStateMask;
+		OvRendering::Data::PipelineState m_initialPipelineState;
 		bool m_isDrawing;
 
 	private:

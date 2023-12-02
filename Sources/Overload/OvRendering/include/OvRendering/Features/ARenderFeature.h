@@ -79,6 +79,5 @@ namespace OvRendering::Features
 
 	protected:
 		Core::CompositeRenderer& m_renderer;
-		Context::Driver& m_driver;
 	};
 }

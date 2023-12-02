@@ -38,29 +38,28 @@ void OvEditor::Rendering::OutlineRenderFeature::DrawOutline(
 
 void OvEditor::Rendering::OutlineRenderFeature::DrawStencilPass(OvCore::ECS::Actor& p_actor)
 {
-	m_driver.SetStencilMask(0xFF); // Enable writing to the stencil buffer
+	m_renderer.pso.stencilMask = 0xFF; // Enable writing to the stencil buffer
 	DrawActorToStencil(p_actor);
-	m_driver.SetStencilMask(0x00); // Disable writing to the stencil buffer
+	m_renderer.pso.stencilMask = 0x00; // Disable writing to the stencil buffer
 }
 
 void OvEditor::Rendering::OutlineRenderFeature::DrawOutlinePass(OvCore::ECS::Actor& p_actor, const OvMaths::FVector4& p_color, float p_thickness)
 {
-	// Prepare the driver for stencil test
-	m_driver.SetCapability(OvRendering::Settings::ERenderingCapability::STENCIL_TEST, true);
-	m_driver.SetStencilOperations(OvRendering::Settings::EOperation::KEEP, OvRendering::Settings::EOperation::KEEP, OvRendering::Settings::EOperation::REPLACE);
-	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::NOTEQUAL, 1, 0xFF);
-	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::LINE);
-	m_driver.SetRasterizationLinesWidth(p_thickness);
+	// Setup PSO
+	m_renderer.pso.stencilTest = true;
+	m_renderer.pso.stencilFailOp = OvRendering::Settings::EOperation::KEEP;
+	m_renderer.pso.depthFailOp = OvRendering::Settings::EOperation::KEEP;
+	m_renderer.pso.bothPassOp = OvRendering::Settings::EOperation::REPLACE;
+	m_renderer.pso.stencilAlgorithm = OvRendering::Settings::EComparaisonAlgorithm::NOTEQUAL;
+	m_renderer.pso.stencilAlgorithmReference = 1;
+	m_renderer.pso.stencilAlgorithmMask = 0xFF;
+	m_renderer.pso.rasterizationMode = OvRendering::Settings::ERasterizationMode::LINE;
+	m_renderer.pso.rasterizationLinesWidth = p_thickness;
 
 	// Prepare the outline material
 	m_outlineMaterial.Set("u_Diffuse", p_color);
 
 	DrawActorOutline(p_actor);
-
-	// Reset driver settings (Could be skipped if the driver state mask was properly implemented)
-	m_driver.SetRasterizationLinesWidth(1.f);
-	m_driver.SetRasterizationMode(OvRendering::Settings::ERasterizationMode::FILL);
-	m_driver.SetStencilAlgorithm(OvRendering::Settings::EComparaisonAlgorithm::ALWAYS, 1, 0xFF);
 }
 
 void OvEditor::Rendering::OutlineRenderFeature::DrawActorToStencil(OvCore::ECS::Actor& p_actor)
