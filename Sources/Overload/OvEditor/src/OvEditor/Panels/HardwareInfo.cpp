@@ -58,6 +58,8 @@ OvEditor::Panels::HardwareInfo::HardwareInfo
 
 OvEditor::Panels::HardwareInfo::~HardwareInfo()
 {
+	RemoveAllWidgets();
+
 	delete m_hardwareInfo;
 }
 
