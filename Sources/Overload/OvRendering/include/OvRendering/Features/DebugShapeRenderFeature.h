@@ -41,15 +41,23 @@ namespace OvRendering::Features
 
 		/**
 		* Draw a line in world space
+		* @param p_pso
 		* @param p_start
 		* @param p_end
 		* @param p_color
 		* @param p_lineWidth
 		*/
-		void DrawLine(const OvMaths::FVector3& p_start, const OvMaths::FVector3& p_end, const OvMaths::FVector3& p_color, float p_lineWidth = 1.0f);
+		void DrawLine(
+			OvRendering::Data::PipelineState p_pso,
+			const OvMaths::FVector3& p_start,
+			const OvMaths::FVector3& p_end,
+			const OvMaths::FVector3& p_color,
+			float p_lineWidth = 1.0f
+		);
 
 		/**
 		* Draw a grid in world space
+		* @param p_pso
 		* @param p_viewPos
 		* @param p_color
 		* @param p_gridSize
@@ -58,7 +66,16 @@ namespace OvRendering::Features
 		* @param p_fadeThreshold
 		* @param p_lineWidth
 		*/
-		void DrawGrid(const OvMaths::FVector3& p_viewPos, const OvMaths::FVector3& p_color, int32_t p_gridSize = 50, float p_linear = 0.0f, float p_quadratic = 0.0f, float p_fadeThreshold = 0.0f, float p_lineWidth = 1.0f);
+		void DrawGrid(
+			OvRendering::Data::PipelineState p_pso,
+			const OvMaths::FVector3& p_viewPos,
+			const OvMaths::FVector3& p_color,
+			int32_t p_gridSize = 50,
+			float p_linear = 0.0f,
+			float p_quadratic = 0.0f,
+			float p_fadeThreshold = 0.0f,
+			float p_lineWidth = 1.0f
+		);
 
 	private:
 		OvRendering::Resources::Shader* m_lineShader = nullptr;

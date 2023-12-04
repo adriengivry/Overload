@@ -10,6 +10,9 @@
 
 #include <OvCore/ECS/Components/CMaterialRenderer.h>
 
+constexpr uint32_t kStencilMask = 0xFF;
+constexpr int32_t kStencilReference = 1;
+
 OvEditor::Rendering::OutlineRenderFeature::OutlineRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer) :
 	OvRendering::Features::ARenderFeature(p_renderer)
 {
@@ -38,38 +41,48 @@ void OvEditor::Rendering::OutlineRenderFeature::DrawOutline(
 
 void OvEditor::Rendering::OutlineRenderFeature::DrawStencilPass(OvCore::ECS::Actor& p_actor)
 {
-	m_renderer.pso.stencilMask = 0xFF; // Enable writing to the stencil buffer
-	DrawActorToStencil(p_actor);
-	m_renderer.pso.stencilMask = 0x00; // Disable writing to the stencil buffer
+	auto pso = m_renderer.CreatePipelineState();
+
+	pso.stencilTest = true;
+	pso.stencilMask = kStencilMask;
+	pso.stencilAlgorithmReference = kStencilReference;
+	pso.stencilAlgorithmMask = kStencilMask;
+	pso.stencilFailOp = OvRendering::Settings::EOperation::REPLACE;
+	pso.depthFailOp = OvRendering::Settings::EOperation::REPLACE;
+	pso.bothPassOp = OvRendering::Settings::EOperation::REPLACE;
+	pso.colorWriting = false;
+
+	DrawActorToStencil(pso, p_actor);
 }
 
 void OvEditor::Rendering::OutlineRenderFeature::DrawOutlinePass(OvCore::ECS::Actor& p_actor, const OvMaths::FVector4& p_color, float p_thickness)
 {
-	// Setup PSO
-	m_renderer.pso.stencilTest = true;
-	m_renderer.pso.stencilFailOp = OvRendering::Settings::EOperation::KEEP;
-	m_renderer.pso.depthFailOp = OvRendering::Settings::EOperation::KEEP;
-	m_renderer.pso.bothPassOp = OvRendering::Settings::EOperation::REPLACE;
-	m_renderer.pso.stencilAlgorithm = OvRendering::Settings::EComparaisonAlgorithm::NOTEQUAL;
-	m_renderer.pso.stencilAlgorithmReference = 1;
-	m_renderer.pso.stencilAlgorithmMask = 0xFF;
-	m_renderer.pso.rasterizationMode = OvRendering::Settings::ERasterizationMode::LINE;
-	m_renderer.pso.rasterizationLinesWidth = p_thickness;
+	auto pso = m_renderer.CreatePipelineState();
+
+	pso.stencilTest = true;
+	pso.stencilFailOp = OvRendering::Settings::EOperation::KEEP;
+	pso.depthFailOp = OvRendering::Settings::EOperation::KEEP;
+	pso.bothPassOp = OvRendering::Settings::EOperation::REPLACE;
+	pso.stencilAlgorithm = OvRendering::Settings::EComparaisonAlgorithm::NOTEQUAL;
+	pso.stencilAlgorithmReference = kStencilReference;
+	pso.stencilAlgorithmMask = kStencilMask;
+	pso.rasterizationMode = OvRendering::Settings::ERasterizationMode::LINE;
+	pso.rasterizationLinesWidth = p_thickness;
 
 	// Prepare the outline material
 	m_outlineMaterial.Set("u_Diffuse", p_color);
 
-	DrawActorOutline(p_actor);
+	DrawActorOutline(pso, p_actor);
 }
 
-void OvEditor::Rendering::OutlineRenderFeature::DrawActorToStencil(OvCore::ECS::Actor& p_actor)
+void OvEditor::Rendering::OutlineRenderFeature::DrawActorToStencil(OvRendering::Data::PipelineState p_pso, OvCore::ECS::Actor& p_actor)
 {
 	if (p_actor.IsActive())
 	{
 		/* Render static mesh outline and bounding spheres */
 		if (auto modelRenderer = p_actor.GetComponent<OvCore::ECS::Components::CModelRenderer>(); modelRenderer && modelRenderer->GetModel())
 		{
-			DrawModelToStencil(p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel());
+			DrawModelToStencil(p_pso, p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel());
 		}
 
 		/* Render camera component outline */
@@ -78,18 +91,18 @@ void OvEditor::Rendering::OutlineRenderFeature::DrawActorToStencil(OvCore::ECS::
 			auto translation = OvMaths::FMatrix4::Translation(p_actor.transform.GetWorldPosition());
 			auto rotation = OvMaths::FQuaternion::ToMatrix4(p_actor.transform.GetWorldRotation());
 			auto model = translation * rotation;
-			DrawModelToStencil(model, *EDITOR_CONTEXT(editorResources)->GetModel("Camera"));
+			DrawModelToStencil(p_pso, model, *EDITOR_CONTEXT(editorResources)->GetModel("Camera"));
 		}
 	}
 }
 
-void OvEditor::Rendering::OutlineRenderFeature::DrawActorOutline(OvCore::ECS::Actor& p_actor)
+void OvEditor::Rendering::OutlineRenderFeature::DrawActorOutline(OvRendering::Data::PipelineState p_pso, OvCore::ECS::Actor& p_actor)
 {
 	if (p_actor.IsActive())
 	{
 		if (auto modelRenderer = p_actor.GetComponent<OvCore::ECS::Components::CModelRenderer>(); modelRenderer && modelRenderer->GetModel())
 		{
-			DrawModelOutline(p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel());
+			DrawModelOutline(p_pso, p_actor.transform.GetWorldMatrix(), *modelRenderer->GetModel());
 		}
 
 		if (auto cameraComponent = p_actor.GetComponent<OvCore::ECS::Components::CCamera>(); cameraComponent)
@@ -97,22 +110,30 @@ void OvEditor::Rendering::OutlineRenderFeature::DrawActorOutline(OvCore::ECS::Ac
 			auto translation = OvMaths::FMatrix4::Translation(p_actor.transform.GetWorldPosition());
 			auto rotation = OvMaths::FQuaternion::ToMatrix4(p_actor.transform.GetWorldRotation());
 			auto model = translation * rotation;
-			DrawModelOutline(model, *EDITOR_CONTEXT(editorResources)->GetModel("Camera"));
+			DrawModelOutline(p_pso, model, *EDITOR_CONTEXT(editorResources)->GetModel("Camera"));
 		}
 
 		for (auto& child : p_actor.GetChildren())
 		{
-			DrawActorOutline(*child);
+			DrawActorOutline(p_pso, *child);
 		}
 	}
 }
 
-void OvEditor::Rendering::OutlineRenderFeature::DrawModelToStencil(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model)
+void OvEditor::Rendering::OutlineRenderFeature::DrawModelToStencil(
+	OvRendering::Data::PipelineState p_pso,
+	const OvMaths::FMatrix4& p_worldMatrix,
+	OvRendering::Resources::Model& p_model
+)
 {
-	m_renderer.DrawModelWithSingleMaterial(p_model, m_stencilFillMaterial, p_worldMatrix);
+	m_renderer.DrawModelWithSingleMaterial(p_pso, p_model, m_stencilFillMaterial, p_worldMatrix);
 }
 
-void OvEditor::Rendering::OutlineRenderFeature::DrawModelOutline(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model)
+void OvEditor::Rendering::OutlineRenderFeature::DrawModelOutline(
+	OvRendering::Data::PipelineState p_pso,
+	const OvMaths::FMatrix4& p_worldMatrix,
+	OvRendering::Resources::Model& p_model
+)
 {
-	m_renderer.DrawModelWithSingleMaterial(p_model, m_outlineMaterial, p_worldMatrix);
+	m_renderer.DrawModelWithSingleMaterial(p_pso, p_model, m_outlineMaterial, p_worldMatrix);
 }

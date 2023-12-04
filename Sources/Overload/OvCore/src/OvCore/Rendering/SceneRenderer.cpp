@@ -55,18 +55,20 @@ void OvCore::Rendering::SceneRenderer::BeginFrame(const OvRendering::Data::Frame
 
 void OvCore::Rendering::SceneRenderer::DrawPass(OvRendering::Settings::ERenderPass p_pass)
 {
+	auto pso = CreatePipelineState();
+
 	if (p_pass == OvRendering::Settings::ERenderPass::OPAQUE)
 	{
 		for (const auto& [distance, drawable] : m_opaqueDrawables)
 		{
-			DrawEntity(drawable);
+			DrawEntity(pso, drawable);
 		}
 	}
 	else if (p_pass == OvRendering::Settings::ERenderPass::TRANSPARENT)
 	{
 		for (const auto& [distance, drawable] : m_transparentDrawables)
 		{
-			DrawEntity(drawable);
+			DrawEntity(pso, drawable);
 		}
 	}
 }

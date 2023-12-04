@@ -98,12 +98,13 @@ void RenderCurrentScene(
 
 			p_renderer.BeginFrame(frameDescriptor);
 			p_renderer.Draw();
+			auto pso = p_renderer.CreatePipelineState();
 			p_renderer.GetFeature<OvRendering::Features::DebugShapeRenderFeature>().DrawLine(
-				{0.0f, -100.0f, 0.0f}, {0.0f, 100.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, 10.0f);
+				pso, {0.0f, -100.0f, 0.0f}, {0.0f, 100.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, 10.0f);
 			p_renderer.GetFeature<OvRendering::Features::DebugShapeRenderFeature>().DrawLine(
-				{ -100.0f, 0.0f, 0.0f }, { 100.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, 10.0f);
+				pso, { -100.0f, 0.0f, 0.0f }, { 100.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, 10.0f);
 			p_renderer.GetFeature<OvRendering::Features::DebugShapeRenderFeature>().DrawLine(
-				{ 0.0f, 0.0f, -100.0f }, { 0.0f, 0.0f, 100.0f }, { 0.0f, 0.0f, 1.0f }, 10.0f);
+				pso, { 0.0f, 0.0f, -100.0f }, { 0.0f, 0.0f, 100.0f }, { 0.0f, 0.0f, 1.0f }, 10.0f);
 			p_renderer.EndFrame();
 		}
 	}

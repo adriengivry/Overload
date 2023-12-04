@@ -68,6 +68,8 @@ void OvEditor::Rendering::GizmoRenderFeature::DrawGizmo(
 	std::optional<OvEditor::Core::GizmoBehaviour::EDirection> p_highlightedDirection
 )
 {
+	auto pso = m_renderer.CreatePipelineState();
+
 	auto modelMatrix =
 		OvMaths::FMatrix4::Translation(p_position) *
 		OvMaths::FQuaternion::ToMatrix4(OvMaths::FQuaternion::Normalize(p_rotation));
@@ -77,6 +79,7 @@ void OvEditor::Rendering::GizmoRenderFeature::DrawGizmo(
 		auto sphereModelMatrix = modelMatrix * OvMaths::FMatrix4::Scaling({ 0.1f, 0.1f, 0.1f });
 
 		m_renderer.DrawModelWithSingleMaterial(
+			pso,
 			*sphereModel,
 			m_gizmoBallMaterial,
 			sphereModelMatrix
@@ -91,6 +94,7 @@ void OvEditor::Rendering::GizmoRenderFeature::DrawGizmo(
 		m_gizmoArrowMaterial.Set("u_HighlightedAxis", axisIndex);
 
 		m_renderer.DrawModelWithSingleMaterial(
+			pso,
 			*arrowModel,
 			m_gizmoArrowMaterial,
 			modelMatrix

@@ -32,20 +32,17 @@ void OvRendering::Core::ABaseRenderer::BeginFrame(const Data::FrameDescriptor& p
 
 	m_frameDescriptor = p_frameDescriptor;
 
-	m_initialPipelineState = m_driver.CreatePipelineState(Settings::EPipelineStateCreationMode::CURRENT);
-	pso = m_initialPipelineState;
-
 	if (p_frameDescriptor.outputBuffer)
 	{
 		p_frameDescriptor.outputBuffer.value().Bind();
 	}
 
-	pso.viewportX = 0;
-	pso.viewportY = 0;
-	pso.viewportW = p_frameDescriptor.renderWidth;
-	pso.viewportH = p_frameDescriptor.renderHeight;
+	m_basePipelineState = m_driver.CreatePipelineState();
+	m_basePipelineState.viewportW = p_frameDescriptor.renderWidth;
+	m_basePipelineState.viewportH = p_frameDescriptor.renderHeight;
 
 	Clear(
+		m_basePipelineState,
 		p_frameDescriptor.camera.value().GetClearColor(),
 		p_frameDescriptor.camera->GetClearColorBuffer(),
 		p_frameDescriptor.camera->GetClearDepthBuffer(),
@@ -62,8 +59,6 @@ void OvRendering::Core::ABaseRenderer::EndFrame()
 {
 	OVASSERT(s_isDrawing, "Cannot call EndFrame() before calling BeginFrame()");
 
-	m_driver.SetPipelineState(m_initialPipelineState);
-
 	if (m_frameDescriptor.outputBuffer)
 	{
 		m_frameDescriptor.outputBuffer.value().Unbind();
@@ -73,62 +68,85 @@ void OvRendering::Core::ABaseRenderer::EndFrame()
 	s_isDrawing.store(false);
 }
 
-void OvRendering::Core::ABaseRenderer::ReadPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height, Settings::EPixelDataFormat format, Settings::EPixelDataType type, void* data) const
-{
-	return m_driver.ReadPixels(x, y, width, height, format, type, data);
-}
-
-void OvRendering::Core::ABaseRenderer::Clear(const OvMaths::FVector3& p_color, bool p_colorBuffer, bool p_depthBuffer, bool p_stencilBuffer)
-{
-	if (p_colorBuffer || p_depthBuffer || p_stencilBuffer)
-	{
-		pso.clearR = p_color.x;
-		pso.clearG = p_color.y;
-		pso.clearB = p_color.z;
-
-		if (p_stencilBuffer)
-		{
-			pso.stencilMask = ~0;
-		}
-
-		pso.scissorTest = false;
-
-		SubmitCurrentPipelineState();
-		m_driver.Clear(p_colorBuffer, p_depthBuffer, p_stencilBuffer);
-	}
-}
-
 const OvRendering::Data::FrameDescriptor& OvRendering::Core::ABaseRenderer::GetFrameDescriptor() const
 {
 	OVASSERT(m_isDrawing, "Cannot call GetFrameDescriptor() outside of a frame");
 	return m_frameDescriptor;
 }
 
-void OvRendering::Core::ABaseRenderer::DrawEntity(const Entities::Drawable& p_drawable)
+OvRendering::Data::PipelineState OvRendering::Core::ABaseRenderer::CreatePipelineState() const
+{
+	return m_basePipelineState;
+}
+
+void OvRendering::Core::ABaseRenderer::ReadPixels(
+	OvRendering::Data::PipelineState p_pso, // TODO: No need for PSO here
+	uint32_t p_x,
+	uint32_t p_y,
+	uint32_t p_width,
+	uint32_t p_height,
+	Settings::EPixelDataFormat p_format,
+	Settings::EPixelDataType p_type,
+	void* p_data
+) const
+{
+	return m_driver.ReadPixels(p_x, p_y, p_width, p_height, p_format, p_type, p_data);
+}
+
+void OvRendering::Core::ABaseRenderer::Clear(
+	OvRendering::Data::PipelineState p_pso,
+	const OvMaths::FVector3& p_color,
+	bool p_colorBuffer,
+	bool p_depthBuffer,
+	bool p_stencilBuffer
+)
+{
+	if (p_colorBuffer || p_depthBuffer || p_stencilBuffer)
+	{
+		p_pso.clearR = p_color.x;
+		p_pso.clearG = p_color.y;
+		p_pso.clearB = p_color.z;
+
+		if (p_stencilBuffer)
+		{
+			p_pso.stencilMask = ~0;
+		}
+
+		p_pso.scissorTest = false;
+
+		m_driver.SetPipelineState(p_pso);
+		m_driver.Clear(p_colorBuffer, p_depthBuffer, p_stencilBuffer);
+	}
+}
+
+void OvRendering::Core::ABaseRenderer::DrawEntity(
+	OvRendering::Data::PipelineState p_pso,
+	const Entities::Drawable& p_drawable
+)
 {
 	auto material = p_drawable.material;
 	auto mesh = p_drawable.mesh;
 
 	if (mesh && material && material.value().HasShader() && material.value().GetGPUInstances() > 0)
 	{
-		pso.depthWriting = p_drawable.stateMask.depthWriting;
-		pso.colorWriting[0] = p_drawable.stateMask.colorWriting;
-		pso.colorWriting[1] = p_drawable.stateMask.colorWriting;
-		pso.colorWriting[2] = p_drawable.stateMask.colorWriting;
-		pso.colorWriting[3] = p_drawable.stateMask.colorWriting;
-		pso.blending = p_drawable.stateMask.blendable;
-		pso.culling = p_drawable.stateMask.culling;
-		pso.depthTest = p_drawable.stateMask.depthTest;
+		p_pso.depthWriting = p_drawable.stateMask.depthWriting;
+		p_pso.colorWriting[0] = p_drawable.stateMask.colorWriting;
+		p_pso.colorWriting[1] = p_drawable.stateMask.colorWriting;
+		p_pso.colorWriting[2] = p_drawable.stateMask.colorWriting;
+		p_pso.colorWriting[3] = p_drawable.stateMask.colorWriting;
+		p_pso.blending = p_drawable.stateMask.blendable;
+		p_pso.culling = p_drawable.stateMask.culling;
+		p_pso.depthTest = p_drawable.stateMask.depthTest;
 
 		if (p_drawable.stateMask.culling)
 		{
 			if (p_drawable.stateMask.backfaceCulling && p_drawable.stateMask.frontfaceCulling)
 			{
-				pso.cullFace = Settings::ECullFace::FRONT_AND_BACK;
+				p_pso.cullFace = Settings::ECullFace::FRONT_AND_BACK;
 			}
 			else
 			{
-				pso.cullFace =
+				p_pso.cullFace =
 					p_drawable.stateMask.backfaceCulling ?
 					Settings::ECullFace::BACK :
 					Settings::ECullFace::FRONT;
@@ -136,16 +154,21 @@ void OvRendering::Core::ABaseRenderer::DrawEntity(const Entities::Drawable& p_dr
 		}
 
 		p_drawable.material.value().Bind(m_emptyTexture);
-		DrawMesh(mesh.value(), OvRendering::Settings::EPrimitiveMode::TRIANGLES, p_drawable.material.value().GetGPUInstances());
+		DrawMesh(p_pso, mesh.value(), OvRendering::Settings::EPrimitiveMode::TRIANGLES, p_drawable.material.value().GetGPUInstances());
 		p_drawable.material.value().UnBind();
 	}
 }
 
-void OvRendering::Core::ABaseRenderer::DrawMesh(const Resources::IMesh& p_mesh, Settings::EPrimitiveMode p_primitiveMode, uint32_t p_instances)
+void OvRendering::Core::ABaseRenderer::DrawMesh(
+	OvRendering::Data::PipelineState p_pso,
+	const Resources::IMesh& p_mesh,
+	Settings::EPrimitiveMode p_primitiveMode,
+	uint32_t p_instances
+)
 {
 	if (p_instances > 0)
 	{
-		SubmitCurrentPipelineState();
+		m_driver.SetPipelineState(p_pso);
 
 		p_mesh.Bind();
 		
@@ -177,6 +200,7 @@ void OvRendering::Core::ABaseRenderer::DrawMesh(const Resources::IMesh& p_mesh, 
 }
 
 void OvRendering::Core::ABaseRenderer::DrawModelWithSingleMaterial(
+	OvRendering::Data::PipelineState p_pso,
 	OvRendering::Resources::Model& p_model,
 	OvRendering::Data::Material& p_material,
 	const OvMaths::FMatrix4& p_modelMatrix,
@@ -203,12 +227,7 @@ void OvRendering::Core::ABaseRenderer::DrawModelWithSingleMaterial(
 			element.stateMask = stateMask;
 			element.userMatrix = userMatrix;
 
-			DrawEntity(element);
+			DrawEntity(p_pso, element);
 		}
 	}
-}
-
-void OvRendering::Core::ABaseRenderer::SubmitCurrentPipelineState()
-{
-	m_driver.SetPipelineState(pso);
 }

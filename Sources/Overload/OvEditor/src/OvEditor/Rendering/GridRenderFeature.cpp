@@ -31,6 +31,8 @@ void OvEditor::Rendering::GridRenderFeature::DrawPass(OvRendering::Settings::ERe
 	auto& gridDescriptor = m_renderer.GetDescriptor<GridDescriptor>();
 	auto& debugShapeRenderer = m_renderer.GetFeature<OvRendering::Features::DebugShapeRenderFeature>();
 
+	auto pso = m_renderer.CreatePipelineState();
+
 	constexpr float gridSize = 5000.0f;
 
 	OvMaths::FMatrix4 model =
@@ -38,11 +40,11 @@ void OvEditor::Rendering::GridRenderFeature::DrawPass(OvRendering::Settings::ERe
 		OvMaths::FMatrix4::Scaling({ gridSize * 2.0f, 1.f, gridSize * 2.0f });
 
 	m_gridMaterial.Set("u_Color", gridDescriptor.gridColor);
-	m_renderer.DrawModelWithSingleMaterial(*EDITOR_CONTEXT(editorResources)->GetModel("Plane"), m_gridMaterial, model);
+	m_renderer.DrawModelWithSingleMaterial(pso, *EDITOR_CONTEXT(editorResources)->GetModel("Plane"), m_gridMaterial, model);
 
-	debugShapeRenderer.DrawLine(OvMaths::FVector3(-gridSize + gridDescriptor.viewPosition.x, 0.0f, 0.0f), OvMaths::FVector3(gridSize + gridDescriptor.viewPosition.x, 0.0f, 0.0f), OvMaths::FVector3(1.0f, 0.0f, 0.0f), 1.0f);
-	debugShapeRenderer.DrawLine(OvMaths::FVector3(0.0f, -gridSize + gridDescriptor.viewPosition.y, 0.0f), OvMaths::FVector3(0.0f, gridSize + gridDescriptor.viewPosition.y, 0.0f), OvMaths::FVector3(0.0f, 1.0f, 0.0f), 1.0f);
-	debugShapeRenderer.DrawLine(OvMaths::FVector3(0.0f, 0.0f, -gridSize + gridDescriptor.viewPosition.z), OvMaths::FVector3(0.0f, 0.0f, gridSize + gridDescriptor.viewPosition.z), OvMaths::FVector3(0.0f, 0.0f, 1.0f), 1.0f);
+	debugShapeRenderer.DrawLine(pso, OvMaths::FVector3(-gridSize + gridDescriptor.viewPosition.x, 0.0f, 0.0f), OvMaths::FVector3(gridSize + gridDescriptor.viewPosition.x, 0.0f, 0.0f), OvMaths::FVector3(1.0f, 0.0f, 0.0f), 1.0f);
+	debugShapeRenderer.DrawLine(pso, OvMaths::FVector3(0.0f, -gridSize + gridDescriptor.viewPosition.y, 0.0f), OvMaths::FVector3(0.0f, gridSize + gridDescriptor.viewPosition.y, 0.0f), OvMaths::FVector3(0.0f, 1.0f, 0.0f), 1.0f);
+	debugShapeRenderer.DrawLine(pso, OvMaths::FVector3(0.0f, 0.0f, -gridSize + gridDescriptor.viewPosition.z), OvMaths::FVector3(0.0f, 0.0f, gridSize + gridDescriptor.viewPosition.z), OvMaths::FVector3(0.0f, 0.0f, 1.0f), 1.0f);
 }
 
 OvRendering::Settings::ERenderPassMask OvEditor::Rendering::GridRenderFeature::GetRenderPassMask() const

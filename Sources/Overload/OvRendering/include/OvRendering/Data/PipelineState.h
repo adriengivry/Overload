@@ -28,51 +28,51 @@ namespace OvRendering::Data
 	struct PipelineState
 	{
 		// Rasterization state
-		Settings::ERasterizationMode rasterizationMode;
-		float rasterizationLinesWidth;
+		Settings::ERasterizationMode rasterizationMode = Settings::ERasterizationMode::FILL;
+		float rasterizationLinesWidth = 1.0f;
 
 		// Color writing mask
-		std::bitset<4> colorWriting;
+		std::bitset<4> colorWriting = ~0;
 
 		// Capability state
-		bool depthWriting;
-		bool blending;
-		bool culling;
-		bool dither;
-		bool polygonOffsetFill;
-		bool sampleAlphaToCoverage;
-		bool depthTest;
-		bool scissorTest;
-		bool stencilTest;
-		bool multisample;
+		bool depthWriting = true;
+		bool blending = false;
+		bool culling = true;
+		bool dither = false;
+		bool polygonOffsetFill = false;
+		bool sampleAlphaToCoverage = false;
+		bool depthTest = true;
+		bool scissorTest = false;
+		bool stencilTest = false;
+		bool multisample = true;
 
 		// Clear
-		float clearR;
-		float clearG;
-		float clearB;
-		float clearA;
+		float clearR = 0.0f;
+		float clearG = 0.0f;
+		float clearB = 0.0f;
+		float clearA = 0.0f;
 
 		// Stencil func state
-		Settings::EComparaisonAlgorithm stencilAlgorithm;
-		int32_t stencilAlgorithmReference;
-		uint32_t stencilAlgorithmMask;
+		Settings::EComparaisonAlgorithm stencilAlgorithm = Settings::EComparaisonAlgorithm::ALWAYS;
+		int32_t stencilAlgorithmReference = 0;
+		uint32_t stencilAlgorithmMask = 0xFF;
 
-		uint32_t stencilMask;
+		uint32_t stencilMask = 0xFF;
 
-		Settings::EOperation stencilFailOp;
-		Settings::EOperation depthFailOp;
-		Settings::EOperation bothPassOp;
+		Settings::EOperation stencilFailOp = Settings::EOperation::KEEP;
+		Settings::EOperation depthFailOp = Settings::EOperation::KEEP;
+		Settings::EOperation bothPassOp = Settings::EOperation::KEEP;
 
 		// Depth state
-		Settings::EComparaisonAlgorithm depthAlgorithm;
+		Settings::EComparaisonAlgorithm depthAlgorithm = Settings::EComparaisonAlgorithm::LESS;
 
 		// Culling state
-		Settings::ECullFace cullFace;
+		Settings::ECullFace cullFace = Settings::ECullFace::BACK;
 
 		// View state
-		uint32_t viewportX;
-		uint32_t viewportY;
-		uint32_t viewportW;
-		uint32_t viewportH;
+		uint32_t viewportX = 0;
+		uint32_t viewportY = 0;
+		uint32_t viewportW = 0;
+		uint32_t viewportH = 0;
 	};
 }

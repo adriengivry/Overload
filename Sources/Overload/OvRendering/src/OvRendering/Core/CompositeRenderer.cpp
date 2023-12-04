@@ -78,14 +78,17 @@ void OvRendering::Core::CompositeRenderer::EndFrame()
 	return ABaseRenderer::EndFrame();
 }
 
-void OvRendering::Core::CompositeRenderer::DrawEntity(const Entities::Drawable& p_drawable)
+void OvRendering::Core::CompositeRenderer::DrawEntity(
+	OvRendering::Data::PipelineState p_pso,
+	const Entities::Drawable& p_drawable
+)
 {
 	for (const auto& [_, feature] : m_features)
 	{
 		feature->OnBeforeDraw(p_drawable);
 	}
 
-	ABaseRenderer::DrawEntity(p_drawable);
+	ABaseRenderer::DrawEntity(p_pso, p_drawable);
 
 	for (const auto& [_, feature] : m_features)
 	{

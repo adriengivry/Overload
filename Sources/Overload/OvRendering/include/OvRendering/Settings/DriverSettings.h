@@ -6,6 +6,10 @@
 
 #pragma once
 
+#include <optional>
+
+#include "OvRendering/Data/PipelineState.h"
+
 namespace OvRendering::Settings
 {
 	/**
@@ -14,5 +18,6 @@ namespace OvRendering::Settings
 	struct DriverSettings
 	{
 		bool debugMode = false;
+		std::optional<OvRendering::Data::PipelineState> defaultPipelineState = std::nullopt;
 	};
 }

@@ -54,9 +54,13 @@ namespace OvRendering::Core
 
 		/**
 		* Draw a drawable entity
+		* @param p_pso
 		* @param p_drawable
 		*/
-		virtual void DrawEntity(const Entities::Drawable& p_drawable) override;
+		virtual void DrawEntity(
+			OvRendering::Data::PipelineState p_pso,
+			const Entities::Drawable& p_drawable
+		) override;
 
 		/**
 		* Add a render feature to the renderer

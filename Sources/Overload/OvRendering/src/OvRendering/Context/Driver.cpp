@@ -304,6 +304,11 @@ OvRendering::Data::PipelineState RetrieveOpenGLPipelineState()
 OvRendering::Context::Driver::Driver(const OvRendering::Settings::DriverSettings& p_driverSettings)
 {
 	OVASSERT(InitGlew(), "Failed to initialized Glew!");
+
+	if (p_driverSettings.defaultPipelineState)
+	{
+		m_defaultPipelineState = p_driverSettings.defaultPipelineState.value();
+	}
 	
 	if (p_driverSettings.debugMode)
 	{
@@ -321,8 +326,8 @@ OvRendering::Context::Driver::Driver(const OvRendering::Settings::DriverSettings
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glCullFace(GL_BACK);
 
-	m_initialState = RetrieveOpenGLPipelineState();
-	m_pipelineState = m_initialState;
+	m_pipelineState = RetrieveOpenGLPipelineState();
+	SetPipelineState(m_defaultPipelineState);
 
 	m_vendor = GetString(GL_VENDOR);
 	m_hardware = GetString(GL_RENDERER);
@@ -345,16 +350,16 @@ void OvRendering::Context::Driver::Clear(bool p_colorBuffer, bool p_depthBuffer,
 }
 
 void OvRendering::Context::Driver::ReadPixels(
-	uint32_t x,
-	uint32_t y,
-	uint32_t width,
-	uint32_t height,
-	OvRendering::Settings::EPixelDataFormat format,
-	OvRendering::Settings::EPixelDataType type,
-	void* data
+	uint32_t p_x,
+	uint32_t p_y,
+	uint32_t p_width,
+	uint32_t p_height,
+	OvRendering::Settings::EPixelDataFormat p_format,
+	OvRendering::Settings::EPixelDataType p_type,
+	void* p_data
 ) const
 {
-	glReadPixels(x, y, width, height, static_cast<GLenum>(format), static_cast<GLenum>(type), data);
+	glReadPixels(p_x, p_y, p_width, p_height, static_cast<GLenum>(p_format), static_cast<GLenum>(p_type), p_data);
 }
 
 void OvRendering::Context::Driver::DrawElements(Settings::EPrimitiveMode p_primitiveMode, uint32_t p_indexCount) const
@@ -382,49 +387,54 @@ void OvRendering::Context::Driver::SetPipelineState(const OvRendering::Data::Pip
 	using namespace OvRendering::Settings;
 
 	auto& i = p_state;
-	auto& o = m_pipelineState;
+	auto& c = m_pipelineState;
 
 	// Rasterization
-	if (i.rasterizationMode != o.rasterizationMode) SetRasterizationMode(i.rasterizationMode);
-	if (i.rasterizationLinesWidth != o.rasterizationLinesWidth) SetRasterizationLinesWidth(i.rasterizationLinesWidth);
+	if (i.rasterizationMode != c.rasterizationMode) SetRasterizationMode(i.rasterizationMode);
+	if (i.rasterizationLinesWidth != c.rasterizationLinesWidth) SetRasterizationLinesWidth(i.rasterizationLinesWidth);
 
-	if (i.colorWriting != o.colorWriting) SetColorWriting(i.colorWriting[0], i.colorWriting[1], i.colorWriting[2], i.colorWriting[3]);
-	if (i.depthWriting != o.depthWriting) SetDepthWriting(i.depthWriting);
+	if (i.colorWriting != c.colorWriting) SetColorWriting(i.colorWriting[0], i.colorWriting[1], i.colorWriting[2], i.colorWriting[3]);
+	if (i.depthWriting != c.depthWriting) SetDepthWriting(i.depthWriting);
 
-	if (i.blending != o.blending) SetCapability(ERenderingCapability::BLEND, i.blending);
-	if (i.culling != o.culling) SetCapability(ERenderingCapability::CULL_FACE, i.culling);
-	if (i.dither != o.dither) SetCapability(ERenderingCapability::DITHER, i.dither);
-	if (i.polygonOffsetFill != o.polygonOffsetFill) SetCapability(ERenderingCapability::POLYGON_OFFSET_FILL, i.polygonOffsetFill);
-	if (i.sampleAlphaToCoverage != o.sampleAlphaToCoverage) SetCapability(ERenderingCapability::SAMPLE_ALPHA_TO_COVERAGE, i.sampleAlphaToCoverage);
-	if (i.depthTest != o.depthTest) SetCapability(ERenderingCapability::DEPTH_TEST, i.depthTest);
-	if (i.scissorTest != o.scissorTest) SetCapability(ERenderingCapability::SCISSOR_TEST, i.scissorTest);
-	if (i.stencilTest != o.stencilTest) SetCapability(ERenderingCapability::STENCIL_TEST, i.stencilTest);
-	if (i.multisample != o.multisample) SetCapability(ERenderingCapability::MULTISAMPLE, i.multisample);
+	if (i.blending != c.blending) SetCapability(ERenderingCapability::BLEND, i.blending);
+	if (i.culling != c.culling) SetCapability(ERenderingCapability::CULL_FACE, i.culling);
+	if (i.dither != c.dither) SetCapability(ERenderingCapability::DITHER, i.dither);
+	if (i.polygonOffsetFill != c.polygonOffsetFill) SetCapability(ERenderingCapability::POLYGON_OFFSET_FILL, i.polygonOffsetFill);
+	if (i.sampleAlphaToCoverage != c.sampleAlphaToCoverage) SetCapability(ERenderingCapability::SAMPLE_ALPHA_TO_COVERAGE, i.sampleAlphaToCoverage);
+	if (i.depthTest != c.depthTest) SetCapability(ERenderingCapability::DEPTH_TEST, i.depthTest);
+	if (i.scissorTest != c.scissorTest) SetCapability(ERenderingCapability::SCISSOR_TEST, i.scissorTest);
+	if (i.stencilTest != c.stencilTest) SetCapability(ERenderingCapability::STENCIL_TEST, i.stencilTest);
+	if (i.multisample != c.multisample) SetCapability(ERenderingCapability::MULTISAMPLE, i.multisample);
 
 	// Clear
-	if (i.clearR != o.clearR || i.clearG != o.clearG || i.clearB != o.clearB || i.clearA != o.clearA)
+	if (i.clearR != c.clearR || i.clearG != c.clearG || i.clearB != c.clearB || i.clearA != c.clearA)
 		SetClearColor(i.clearR, i.clearG, i.clearB, i.clearA);
 
 	// Stencil algorithm
-	if (i.stencilAlgorithm != o.stencilAlgorithm ||
-		i.stencilAlgorithmReference != o.stencilAlgorithmReference ||
-		i.stencilAlgorithmMask != o.stencilAlgorithmMask)
+	if (i.stencilAlgorithm != c.stencilAlgorithm ||
+		i.stencilAlgorithmReference != c.stencilAlgorithmReference ||
+		i.stencilAlgorithmMask != c.stencilAlgorithmMask)
 		SetStencilAlgorithm(i.stencilAlgorithm, i.stencilAlgorithmReference, i.stencilAlgorithmMask);
 
-	if (i.stencilMask != o.stencilMask) SetStencilMask(i.stencilMask);
-	if (i.stencilFailOp != o.stencilFailOp || i.depthFailOp != o.depthFailOp || i.bothPassOp != o.bothPassOp) SetStencilOperations(i.stencilFailOp, i.depthFailOp, i.bothPassOp);
+	if (i.stencilMask != c.stencilMask) SetStencilMask(i.stencilMask);
+	if (i.stencilFailOp != c.stencilFailOp || i.depthFailOp != c.depthFailOp || i.bothPassOp != c.bothPassOp) SetStencilOperations(i.stencilFailOp, i.depthFailOp, i.bothPassOp);
 
 	// Depth
-	if (i.depthAlgorithm != o.depthAlgorithm) SetDepthAlgorithm(i.depthAlgorithm);
+	if (i.depthAlgorithm != c.depthAlgorithm) SetDepthAlgorithm(i.depthAlgorithm);
 
 	// Culling
-	if (i.cullFace != o.cullFace) SetCullFace(i.cullFace);
+	if (i.cullFace != c.cullFace) SetCullFace(i.cullFace);
 
 	// View
-	if (i.viewportX != o.viewportX || i.viewportY != o.viewportY || i.viewportW != o.viewportW || i.viewportH != o.viewportH)
+	if (i.viewportX != c.viewportX || i.viewportY != c.viewportY || i.viewportW != c.viewportW || i.viewportH != c.viewportH)
 		SetViewport(i.viewportX, i.viewportY, i.viewportW, i.viewportH);
 
 	m_pipelineState = p_state;
+}
+
+void OvRendering::Context::Driver::ResetPipelineState()
+{
+	SetPipelineState(m_defaultPipelineState);
 }
 
 const OvRendering::Data::PipelineState& OvRendering::Context::Driver::GetPipelineState() const
@@ -432,15 +442,9 @@ const OvRendering::Data::PipelineState& OvRendering::Context::Driver::GetPipelin
 	return m_pipelineState;
 }
 
-OvRendering::Data::PipelineState OvRendering::Context::Driver::CreatePipelineState(OvRendering::Settings::EPipelineStateCreationMode p_creationMode) const
+OvRendering::Data::PipelineState OvRendering::Context::Driver::CreatePipelineState() const
 {
-	switch (p_creationMode)
-	{
-		case OvRendering::Settings::EPipelineStateCreationMode::INITIAL: return m_initialState;
-		case OvRendering::Settings::EPipelineStateCreationMode::CURRENT: return m_pipelineState;
-	}
-
-	return OvRendering::Data::PipelineState{};
+	return m_defaultPipelineState;
 }
 
 std::string_view OvRendering::Context::Driver::GetVendor() const

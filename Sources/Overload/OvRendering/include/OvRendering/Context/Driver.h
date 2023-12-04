@@ -18,7 +18,6 @@
 #include "OvRendering/Settings/ECullingOptions.h"
 #include "OvRendering/Settings/EPixelDataFormat.h"
 #include "OvRendering/Settings/EPixelDataType.h"
-#include "OvRendering/Settings/EPipelineStateCreationMode.h"
 #include "OvRendering/Data/PipelineState.h"
 
 namespace OvRendering::Context
@@ -51,15 +50,23 @@ namespace OvRendering::Context
 
 		/**
 		 * Read a block of pixels from the frame buffer.
-		 * @param x
-		 * @param y
-		 * @param width
-		 * @param height
-		 * @param format
-		 * @param type
-		 * @param data
+		 * @param p_x
+		 * @param p_y
+		 * @param p_width
+		 * @param p_height
+		 * @param p_format
+		 * @param p_type
+		 * @param p_data
 		 */
-		void ReadPixels(uint32_t x, uint32_t y, uint32_t width, uint32_t height, Settings::EPixelDataFormat format, Settings::EPixelDataType type, void* data) const;
+		void ReadPixels(
+			uint32_t p_x,
+			uint32_t p_y,
+			uint32_t p_width,
+			uint32_t p_height,
+			Settings::EPixelDataFormat p_format,
+			Settings::EPixelDataType p_type,
+			void* p_data
+		) const;
 
 		/**
 		* Issue a draw call command (EBO) using the given primitive mode
@@ -100,15 +107,20 @@ namespace OvRendering::Context
 		void SetPipelineState(const Data::PipelineState& p_state);
 
 		/**
+		* Reset the pipeline state to its default state
+		* @param p_state
+		*/
+		void ResetPipelineState();
+
+		/**
 		* Return the current pipeline state
 		*/
 		const Data::PipelineState& GetPipelineState() const;
 
 		/**
-		* Create a pipeline state object from the current pipeline state
-		* @param p_creationMode (Define how the pipeline state object should be initialized)
+		* Create a pipeline state from the default state
 		*/
-		Data::PipelineState CreatePipelineState(OvRendering::Settings::EPipelineStateCreationMode p_creationMode) const;
+		Data::PipelineState CreatePipelineState() const;
 
 		/**
 		* Returns the vendor
@@ -136,7 +148,7 @@ namespace OvRendering::Context
 		std::string m_version;
 		std::string m_shadingLanguageVersion;
 
-		Data::PipelineState m_initialState;
+		Data::PipelineState m_defaultPipelineState;
 		Data::PipelineState m_pipelineState;
 	};
 }

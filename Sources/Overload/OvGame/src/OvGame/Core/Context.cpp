@@ -51,11 +51,18 @@ OvGame::Core::Context::Context() :
 
 	device->SetVsync(projectSettings.Get<bool>("vsync"));
 
+	OvRendering::Data::PipelineState basePSO;
+	basePSO.multisample = projectSettings.Get<bool>("multisampling");
+
 	/* Graphics context creation */
-	driver = std::make_unique<OvRendering::Context::Driver>(OvRendering::Settings::DriverSettings{ false });
-	OvRendering::Data::PipelineState pso = driver->GetPipelineState();
-	pso.multisample = projectSettings.Get<bool>("multisampling");
-	driver->SetPipelineState(pso);
+	driver = std::make_unique<OvRendering::Context::Driver>(OvRendering::Settings::DriverSettings{
+#ifdef _DEBUG
+		true,
+#else
+		false
+#endif
+		basePSO
+	});
 
 	uiManager = std::make_unique<OvUI::Core::UIManager>(window->GetGlfwWindow(), OvUI::Styling::EStyle::ALTERNATIVE_DARK);
 	uiManager->LoadFont("Ruda_Big", engineAssetsPath + "Fonts\\Ruda-Bold.ttf", 16);

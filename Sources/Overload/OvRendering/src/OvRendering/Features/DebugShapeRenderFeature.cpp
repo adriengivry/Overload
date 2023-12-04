@@ -137,7 +137,13 @@ void OvRendering::Features::DebugShapeRenderFeature::SetViewProjection(const OvM
 	m_gridShader->Unbind();
 }
 
-void OvRendering::Features::DebugShapeRenderFeature::DrawLine(const OvMaths::FVector3& p_start, const OvMaths::FVector3& p_end, const OvMaths::FVector3& p_color, float p_lineWidth)
+void OvRendering::Features::DebugShapeRenderFeature::DrawLine(
+	OvRendering::Data::PipelineState p_pso,
+	const OvMaths::FVector3& p_start,
+	const OvMaths::FVector3& p_end,
+	const OvMaths::FVector3& p_color,
+	float p_lineWidth
+)
 {
 	m_lineShader->Bind();
 
@@ -145,14 +151,23 @@ void OvRendering::Features::DebugShapeRenderFeature::DrawLine(const OvMaths::FVe
 	m_lineShader->SetUniformVec3("end", p_end);
 	m_lineShader->SetUniformVec3("color", p_color);
 
-	m_renderer.pso.rasterizationMode = Settings::ERasterizationMode::LINE;
-	m_renderer.pso.rasterizationLinesWidth = p_lineWidth;
-	m_renderer.DrawMesh(*m_lineMesh, Settings::EPrimitiveMode::LINES);
+	p_pso.rasterizationMode = Settings::ERasterizationMode::LINE;
+	p_pso.rasterizationLinesWidth = p_lineWidth;
+	m_renderer.DrawMesh(p_pso, *m_lineMesh, Settings::EPrimitiveMode::LINES);
 
 	m_lineShader->Unbind();
 }
 
-void OvRendering::Features::DebugShapeRenderFeature::DrawGrid(const OvMaths::FVector3& p_viewPos, const OvMaths::FVector3& p_color, int32_t p_gridSize, float p_linear, float p_quadratic, float p_fadeThreshold, float p_lineWidth)
+void OvRendering::Features::DebugShapeRenderFeature::DrawGrid(
+	OvRendering::Data::PipelineState p_pso,
+	const OvMaths::FVector3& p_viewPos,
+	const OvMaths::FVector3& p_color,
+	int32_t p_gridSize,
+	float p_linear,
+	float p_quadratic,
+	float p_fadeThreshold,
+	float p_lineWidth
+)
 {
 	m_gridShader->Bind();
 	m_gridShader->SetUniformVec3("color", p_color);
@@ -161,19 +176,19 @@ void OvRendering::Features::DebugShapeRenderFeature::DrawGrid(const OvMaths::FVe
 	m_gridShader->SetUniformFloat("quadratic", p_quadratic);
 	m_gridShader->SetUniformFloat("fadeThreshold", p_fadeThreshold);
 
-	m_renderer.pso.rasterizationMode = Settings::ERasterizationMode::LINE;
-	m_renderer.pso.rasterizationLinesWidth = p_lineWidth;
-	m_renderer.pso.blending = true;
+	p_pso.rasterizationMode = Settings::ERasterizationMode::LINE;
+	p_pso.rasterizationLinesWidth = p_lineWidth;
+	p_pso.blending = true;
 
 	for (int32_t i = -p_gridSize + 1; i < p_gridSize; ++i)
 	{
 		m_gridShader->SetUniformVec3("start", { -(float)p_gridSize + std::floor(p_viewPos.x), 0.f, (float)i + std::floor(p_viewPos.z) });
 		m_gridShader->SetUniformVec3("end", { (float)p_gridSize + std::floor(p_viewPos.x), 0.f, (float)i + std::floor(p_viewPos.z) });
-		m_renderer.DrawMesh(*m_lineMesh, Settings::EPrimitiveMode::LINES);
+		m_renderer.DrawMesh(p_pso, *m_lineMesh, Settings::EPrimitiveMode::LINES);
 
 		m_gridShader->SetUniformVec3("start", { (float)i + std::floor(p_viewPos.x), 0.f, -(float)p_gridSize + std::floor(p_viewPos.z) });
 		m_gridShader->SetUniformVec3("end", { (float)i + std::floor(p_viewPos.x), 0.f, (float)p_gridSize + std::floor(p_viewPos.z) });
-		m_renderer.DrawMesh(*m_lineMesh, Settings::EPrimitiveMode::LINES);
+		m_renderer.DrawMesh(p_pso, *m_lineMesh, Settings::EPrimitiveMode::LINES);
 	}
 
 	m_gridShader->Unbind();

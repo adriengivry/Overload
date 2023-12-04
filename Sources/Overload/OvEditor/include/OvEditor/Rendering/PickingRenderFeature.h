@@ -57,13 +57,18 @@ namespace OvEditor::Rendering
 		* @param p_x
 		* @param p_y
 		*/
-		PickingResult ReadbackPickingResult(const OvCore::SceneSystem::Scene& p_scene, uint32_t p_x, uint32_t p_y);
+		PickingResult ReadbackPickingResult(
+			const OvCore::SceneSystem::Scene& p_scene,
+			uint32_t p_x,
+			uint32_t p_y
+		);
 
 	private:
-		void DrawPickableModels(OvCore::SceneSystem::Scene& p_scene);
-		void DrawPickableCameras(OvCore::SceneSystem::Scene& p_scene);
-		void DrawPickableLights(OvCore::SceneSystem::Scene& p_scene);
+		void DrawPickableModels(OvRendering::Data::PipelineState p_pso, OvCore::SceneSystem::Scene& p_scene);
+		void DrawPickableCameras(OvRendering::Data::PipelineState p_pso, OvCore::SceneSystem::Scene& p_scene);
+		void DrawPickableLights(OvRendering::Data::PipelineState p_pso, OvCore::SceneSystem::Scene& p_scene);
 		void DrawPickableGizmo(
+			OvRendering::Data::PipelineState p_pso,
 			const OvMaths::FVector3& p_position,
 			const OvMaths::FQuaternion& p_rotation,
 			OvEditor::Core::EGizmoOperation p_operation

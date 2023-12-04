@@ -55,17 +55,20 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPass(OvRendering::Settings::
 
 	m_actorPickingFramebuffer.Bind();
 	
-	m_renderer.Clear({ 0.0f, 0.0f, 0.0f }, true, true, true);
+	auto pso = m_renderer.CreatePipelineState();
 
-	DrawPickableModels(scene);
-	DrawPickableCameras(scene);
-	DrawPickableLights(scene);
+	m_renderer.Clear(pso, { 0.0f, 0.0f, 0.0f }, true, true, true);
+
+	DrawPickableModels(pso, scene);
+	DrawPickableCameras(pso, scene);
+	DrawPickableLights(pso, scene);
 
 	if (debugSceneDescriptor.selectedActor)
 	{
 		auto& selectedActor = debugSceneDescriptor.selectedActor.value();
 
 		DrawPickableGizmo(
+			pso,
 			selectedActor.transform.GetWorldPosition(),
 			selectedActor.transform.GetWorldRotation(),
 			debugSceneDescriptor.gizmoOperation
@@ -100,7 +103,10 @@ OvEditor::Rendering::PickingRenderFeature::PickingResult OvEditor::Rendering::Pi
 
 	m_actorPickingFramebuffer.Bind();
 
+	auto pso = m_renderer.CreatePipelineState();
+
 	m_renderer.ReadPixels(
+		pso,
 		p_x, p_y, 1, 1,
 		OvRendering::Settings::EPixelDataFormat::RGB,
 		OvRendering::Settings::EPixelDataType::UNSIGNED_BYTE,
@@ -129,7 +135,10 @@ OvEditor::Rendering::PickingRenderFeature::PickingResult OvEditor::Rendering::Pi
 	return std::nullopt;
 }
 
-void OvEditor::Rendering::PickingRenderFeature::DrawPickableModels(OvCore::SceneSystem::Scene& p_scene)
+void OvEditor::Rendering::PickingRenderFeature::DrawPickableModels(
+	OvRendering::Data::PipelineState p_pso,
+	OvCore::SceneSystem::Scene& p_scene
+)
 {
 	for (auto modelRenderer : p_scene.GetFastAccessComponents().modelRenderers)
 	{
@@ -160,7 +169,7 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPickableModels(OvCore::Scene
 									drawable.material = m_actorPickingMaterial;
 									drawable.stateMask = material->GenerateStateMask();
 
-									m_renderer.DrawEntity(drawable);
+									m_renderer.DrawEntity(p_pso, drawable);
 								}
 							}
 						}
@@ -171,7 +180,10 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPickableModels(OvCore::Scene
 	}
 }
 
-void OvEditor::Rendering::PickingRenderFeature::DrawPickableCameras(OvCore::SceneSystem::Scene& p_scene)
+void OvEditor::Rendering::PickingRenderFeature::DrawPickableCameras(
+	OvRendering::Data::PipelineState p_pso,
+	OvCore::SceneSystem::Scene& p_scene
+)
 {
 	for (auto camera : p_scene.GetFastAccessComponents().cameras)
 	{
@@ -184,16 +196,19 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPickableCameras(OvCore::Scen
 			auto translation = OvMaths::FMatrix4::Translation(actor.transform.GetWorldPosition());
 			auto rotation = OvMaths::FQuaternion::ToMatrix4(actor.transform.GetWorldRotation());
 			auto modelMatrix = translation * rotation;
-			m_renderer.DrawModelWithSingleMaterial(cameraModel, m_actorPickingMaterial, modelMatrix);
+			m_renderer.DrawModelWithSingleMaterial(p_pso, cameraModel, m_actorPickingMaterial, modelMatrix);
 		}
 	}
 }
 
-void OvEditor::Rendering::PickingRenderFeature::DrawPickableLights(OvCore::SceneSystem::Scene& p_scene)
+void OvEditor::Rendering::PickingRenderFeature::DrawPickableLights(
+	OvRendering::Data::PipelineState p_pso,
+	OvCore::SceneSystem::Scene& p_scene
+)
 {
 	if (Settings::EditorSettings::LightBillboardScale > 0.001f)
 	{
-		m_renderer.Clear(OvMaths::FVector3::Zero, false, true, false);
+		m_renderer.Clear(p_pso, OvMaths::FVector3::Zero, false, true, false);
 
 		m_lightMaterial.Set<float>("u_Scale", Settings::EditorSettings::LightBillboardScale * 0.1f);
 
@@ -206,13 +221,18 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPickableLights(OvCore::Scene
 				PreparePickingMaterial(actor, m_lightMaterial);
 				auto& lightModel = *EDITOR_CONTEXT(editorResources)->GetModel("Vertical_Plane");
 				auto modelMatrix = OvMaths::FMatrix4::Translation(actor.transform.GetWorldPosition());
-				m_renderer.DrawModelWithSingleMaterial(lightModel, m_lightMaterial, modelMatrix);
+				m_renderer.DrawModelWithSingleMaterial(p_pso, lightModel, m_lightMaterial, modelMatrix);
 			}
 		}
 	}
 }
 
-void OvEditor::Rendering::PickingRenderFeature::DrawPickableGizmo(const OvMaths::FVector3& p_position, const OvMaths::FQuaternion& p_rotation, OvEditor::Core::EGizmoOperation p_operation)
+void OvEditor::Rendering::PickingRenderFeature::DrawPickableGizmo(
+	OvRendering::Data::PipelineState p_pso,
+	const OvMaths::FVector3& p_position,
+	const OvMaths::FQuaternion& p_rotation,
+	OvEditor::Core::EGizmoOperation p_operation
+)
 {
 	// TODO: Fix model matrix, looks like the drawn model is massive
 	auto modelMatrix =
@@ -220,5 +240,5 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPickableGizmo(const OvMaths:
 		OvMaths::FQuaternion::ToMatrix4(OvMaths::FQuaternion::Normalize(p_rotation));
 
 	auto arrowModel = EDITOR_CONTEXT(editorResources)->GetModel("Arrow_Picking");
-	m_renderer.DrawModelWithSingleMaterial(*arrowModel, m_gizmoPickingMaterial, modelMatrix);
+	m_renderer.DrawModelWithSingleMaterial(p_pso, *arrowModel, m_gizmoPickingMaterial, modelMatrix);
 }

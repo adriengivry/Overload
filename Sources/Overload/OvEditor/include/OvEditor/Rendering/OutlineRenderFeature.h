@@ -45,10 +45,10 @@ namespace OvEditor::Rendering
 		void DrawStencilPass(OvCore::ECS::Actor& p_actor);
 		void DrawOutlinePass(OvCore::ECS::Actor& p_actor, const OvMaths::FVector4& p_color, float p_thickness);
 		
-		void DrawActorToStencil(OvCore::ECS::Actor& p_actor);
-		void DrawActorOutline(OvCore::ECS::Actor& p_actor);
-		void DrawModelToStencil(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model);
-		void DrawModelOutline(const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model);
+		void DrawActorToStencil(OvRendering::Data::PipelineState p_pso, OvCore::ECS::Actor& p_actor);
+		void DrawActorOutline(OvRendering::Data::PipelineState p_pso, OvCore::ECS::Actor& p_actor);
+		void DrawModelToStencil(OvRendering::Data::PipelineState p_pso, const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model);
+		void DrawModelOutline(OvRendering::Data::PipelineState p_pso, const OvMaths::FMatrix4& p_worldMatrix, OvRendering::Resources::Model& p_model);
 
 	private:
 		OvCore::Resources::Material m_stencilFillMaterial;

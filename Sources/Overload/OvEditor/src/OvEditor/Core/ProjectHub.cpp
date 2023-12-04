@@ -294,9 +294,6 @@ void OvEditor::Core::ProjectHub::SetupContext()
 
 	/* Graphics context creation */
 	m_driver = std::make_unique<OvRendering::Context::Driver>(OvRendering::Settings::DriverSettings{ false });
-	OvRendering::Data::PipelineState pso = m_driver->GetPipelineState();
-	pso.multisample = true;
-	m_driver->SetPipelineState(pso);
 
 	m_uiManager = std::make_unique<OvUI::Core::UIManager>(m_window->GetGlfwWindow(), OvUI::Styling::EStyle::ALTERNATIVE_DARK);
 	m_uiManager->LoadFont("Ruda_Big", "Data\\Editor\\Fonts\\Ruda-Bold.ttf", 18);
