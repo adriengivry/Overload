@@ -91,7 +91,7 @@ namespace OvRendering::Core
 			bool p_colorBuffer,
 			bool p_depthBuffer,
 			bool p_stencilBuffer,
-			const OvMaths::FVector3& p_color = OvMaths::FVector3::Zero
+			const OvMaths::FVector4& p_color = OvMaths::FVector4::Zero
 		);
 
 		/**

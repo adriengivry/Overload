@@ -19,11 +19,6 @@
 #include "OvRendering/Settings/EPixelDataFormat.h"
 #include "OvRendering/Settings/EPixelDataType.h"
 
-namespace OvRendering::Context
-{
-	class Driver;
-}
-
 namespace OvRendering::Data
 {
 	/**

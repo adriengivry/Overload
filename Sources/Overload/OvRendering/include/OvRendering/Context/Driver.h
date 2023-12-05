@@ -8,6 +8,7 @@
 
 #include <string>
 #include <array>
+#include <memory>
 
 #include "OvRendering/Settings/DriverSettings.h"
 #include "OvRendering/Settings/ERenderingCapability.h"
@@ -23,6 +24,8 @@
 
 #include <OvMaths/FVector4.h>
 #include <OvTools/Utils/OptRef.h>
+
+class DriverImpl;
 
 namespace OvRendering::Context
 {
@@ -41,7 +44,7 @@ namespace OvRendering::Context
 		/**
 		* Destroy the driver
 		*/
-		~Driver() = default;
+		~Driver();
 
 		/**
 		* Set the viewport
@@ -69,8 +72,8 @@ namespace OvRendering::Context
 			bool p_colorBuffer,
 			bool p_depthBuffer,
 			bool p_stencilBuffer,
-			OvTools::Utils::OptRef<const OvMaths::FVector4> p_color
-		) const;
+			const OvMaths::FVector4& p_color = OvMaths::FVector4::Zero 
+		);
 
 		/**
 		 * Read a block of pixels from the currently bound framebuffer (or backbuffer).
@@ -171,7 +174,6 @@ namespace OvRendering::Context
 		std::string m_hardware;
 		std::string m_version;
 		std::string m_shadingLanguageVersion;
-
 		Data::PipelineState m_defaultPipelineState;
 		Data::PipelineState m_pipelineState;
 	};

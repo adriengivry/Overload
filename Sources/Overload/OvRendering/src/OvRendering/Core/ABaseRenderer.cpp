@@ -94,25 +94,10 @@ void OvRendering::Core::ABaseRenderer::Clear(
 	bool p_colorBuffer,
 	bool p_depthBuffer,
 	bool p_stencilBuffer,
-	const OvMaths::FVector3& p_color
+	const OvMaths::FVector4& p_color
 )
 {
-	auto pso = CreatePipelineState();
-
-	if (p_colorBuffer || p_depthBuffer || p_stencilBuffer)
-	{
-		if (p_stencilBuffer)
-		{
-			pso.stencilWriteMask = ~0;
-		}
-
-		pso.scissorTest = false;
-
-		const auto color = OvMaths::FVector4{ p_color.x, p_color.y, p_color.z, 1.0f };
-
-		m_driver.SetPipelineState(pso);
-		m_driver.Clear(p_colorBuffer, p_depthBuffer, p_stencilBuffer, color);
-	}
+	m_driver.Clear(p_colorBuffer, p_depthBuffer, p_stencilBuffer, p_color);
 }
 
 void OvRendering::Core::ABaseRenderer::DrawEntity(
