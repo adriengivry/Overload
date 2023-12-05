@@ -57,7 +57,7 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPass(OvRendering::Settings::
 	
 	auto pso = m_renderer.CreatePipelineState();
 
-	m_renderer.Clear(pso, { 0.0f, 0.0f, 0.0f }, true, true, true);
+	m_renderer.Clear(true, true, true);
 
 	DrawPickableModels(pso, scene);
 	DrawPickableCameras(pso, scene);
@@ -106,7 +106,6 @@ OvEditor::Rendering::PickingRenderFeature::PickingResult OvEditor::Rendering::Pi
 	auto pso = m_renderer.CreatePipelineState();
 
 	m_renderer.ReadPixels(
-		pso,
 		p_x, p_y, 1, 1,
 		OvRendering::Settings::EPixelDataFormat::RGB,
 		OvRendering::Settings::EPixelDataType::UNSIGNED_BYTE,
@@ -208,7 +207,7 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPickableLights(
 {
 	if (Settings::EditorSettings::LightBillboardScale > 0.001f)
 	{
-		m_renderer.Clear(p_pso, OvMaths::FVector3::Zero, false, true, false);
+		m_renderer.Clear(false, true, false);
 
 		m_lightMaterial.Set<float>("u_Scale", Settings::EditorSettings::LightBillboardScale * 0.1f);
 

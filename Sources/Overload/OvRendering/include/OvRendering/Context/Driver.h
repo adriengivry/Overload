@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <array>
 
 #include "OvRendering/Settings/DriverSettings.h"
 #include "OvRendering/Settings/ERenderingCapability.h"
@@ -19,6 +20,9 @@
 #include "OvRendering/Settings/EPixelDataFormat.h"
 #include "OvRendering/Settings/EPixelDataType.h"
 #include "OvRendering/Data/PipelineState.h"
+
+#include <OvMaths/FVector4.h>
+#include <OvTools/Utils/OptRef.h>
 
 namespace OvRendering::Context
 {
@@ -40,16 +44,36 @@ namespace OvRendering::Context
 		~Driver() = default;
 
 		/**
+		* Set the viewport
+		* @param p_x
+		* @param p_y
+		* @param p_width
+		* @param p_height
+		*/
+		void SetViewport(
+			uint32_t p_x,
+			uint32_t p_y,
+			uint32_t p_width,
+			uint32_t p_height
+		);
+
+		/**
 		* Clear the screen using the previously defined clear color (With Renderer::SetClearColor()) or by
 		* using the OpenGL default one.
 		* @param p_colorBuffer
 		* @param p_depthBuffer
 		* @param p_stencilBuffer
+		* @param p_color
 		*/
-		void Clear(bool p_colorBuffer = true, bool p_depthBuffer = true, bool p_stencilBuffer = true) const;
+		void Clear(
+			bool p_colorBuffer,
+			bool p_depthBuffer,
+			bool p_stencilBuffer,
+			OvTools::Utils::OptRef<const OvMaths::FVector4> p_color
+		) const;
 
 		/**
-		 * Read a block of pixels from the frame buffer.
+		 * Read a block of pixels from the currently bound framebuffer (or backbuffer).
 		 * @param p_x
 		 * @param p_y
 		 * @param p_width
@@ -104,7 +128,7 @@ namespace OvRendering::Context
 		* Set the pipeline state to match the given PSO
 		* @param p_state
 		*/
-		void SetPipelineState(const Data::PipelineState& p_state);
+		void SetPipelineState(Data::PipelineState p_state);
 
 		/**
 		* Reset the pipeline state to its default state

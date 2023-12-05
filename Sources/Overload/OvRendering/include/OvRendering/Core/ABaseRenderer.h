@@ -61,7 +61,6 @@ namespace OvRendering::Core
 
 		/**
 		 * Read a block of pixels from the frame buffer.
-		 * @param p_pso
 		 * @param p_x
 		 * @param p_y
 		 * @param p_width
@@ -72,7 +71,6 @@ namespace OvRendering::Core
 		 */
 		// TODO: Move out of the base renderer, or rework
 		void ReadPixels(
-			OvRendering::Data::PipelineState p_pso,
 			uint32_t p_x,
 			uint32_t p_y,
 			uint32_t p_width,
@@ -84,18 +82,16 @@ namespace OvRendering::Core
 
 		/**
 		* Clear the screen
-		* @param p_pso
-		* @param p_color
 		* @param p_colorBuffer
 		* @param p_depthBuffer
 		* @param p_stencilBuffer
+		* @param p_color
 		*/
 		virtual void Clear(
-			OvRendering::Data::PipelineState p_pso,
-			const OvMaths::FVector3& p_color,
 			bool p_colorBuffer,
 			bool p_depthBuffer,
-			bool p_stencilBuffer
+			bool p_stencilBuffer,
+			const OvMaths::FVector3& p_color = OvMaths::FVector3::Zero
 		);
 
 		/**

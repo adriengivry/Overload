@@ -55,31 +55,8 @@ namespace OvRendering::Features
 			float p_lineWidth = 1.0f
 		);
 
-		/**
-		* Draw a grid in world space
-		* @param p_pso
-		* @param p_viewPos
-		* @param p_color
-		* @param p_gridSize
-		* @param p_linear
-		* @param p_quadratic
-		* @param p_fadeThreshold
-		* @param p_lineWidth
-		*/
-		void DrawGrid(
-			OvRendering::Data::PipelineState p_pso,
-			const OvMaths::FVector3& p_viewPos,
-			const OvMaths::FVector3& p_color,
-			int32_t p_gridSize = 50,
-			float p_linear = 0.0f,
-			float p_quadratic = 0.0f,
-			float p_fadeThreshold = 0.0f,
-			float p_lineWidth = 1.0f
-		);
-
 	private:
 		OvRendering::Resources::Shader* m_lineShader = nullptr;
-		OvRendering::Resources::Shader* m_gridShader = nullptr;
 		OvRendering::Resources::Mesh* m_lineMesh = nullptr;
 	};
 }

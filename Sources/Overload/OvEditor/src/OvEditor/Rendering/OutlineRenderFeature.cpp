@@ -10,6 +10,8 @@
 
 #include <OvCore/ECS/Components/CMaterialRenderer.h>
 
+#include <OvRendering/Utils/Conversions.h>
+
 constexpr uint32_t kStencilMask = 0xFF;
 constexpr int32_t kStencilReference = 1;
 
@@ -44,13 +46,13 @@ void OvEditor::Rendering::OutlineRenderFeature::DrawStencilPass(OvCore::ECS::Act
 	auto pso = m_renderer.CreatePipelineState();
 
 	pso.stencilTest = true;
-	pso.stencilMask = kStencilMask;
-	pso.stencilAlgorithmReference = kStencilReference;
-	pso.stencilAlgorithmMask = kStencilMask;
-	pso.stencilFailOp = OvRendering::Settings::EOperation::REPLACE;
-	pso.depthFailOp = OvRendering::Settings::EOperation::REPLACE;
-	pso.bothPassOp = OvRendering::Settings::EOperation::REPLACE;
-	pso.colorWriting = false;
+	pso.stencilWriteMask = kStencilMask;
+	pso.stencilFuncRef = kStencilReference;
+	pso.stencilFuncMask = kStencilMask;
+	pso.stencilOpFail = OvRendering::Settings::EOperation::REPLACE;
+	pso.depthOpFail = OvRendering::Settings::EOperation::REPLACE;
+	pso.bothOpFail = OvRendering::Settings::EOperation::REPLACE;
+	pso.colorWriting.mask = 0x00;
 
 	DrawActorToStencil(pso, p_actor);
 }
@@ -60,14 +62,14 @@ void OvEditor::Rendering::OutlineRenderFeature::DrawOutlinePass(OvCore::ECS::Act
 	auto pso = m_renderer.CreatePipelineState();
 
 	pso.stencilTest = true;
-	pso.stencilFailOp = OvRendering::Settings::EOperation::KEEP;
-	pso.depthFailOp = OvRendering::Settings::EOperation::KEEP;
-	pso.bothPassOp = OvRendering::Settings::EOperation::REPLACE;
-	pso.stencilAlgorithm = OvRendering::Settings::EComparaisonAlgorithm::NOTEQUAL;
-	pso.stencilAlgorithmReference = kStencilReference;
-	pso.stencilAlgorithmMask = kStencilMask;
+	pso.stencilOpFail = OvRendering::Settings::EOperation::KEEP;
+	pso.depthOpFail = OvRendering::Settings::EOperation::KEEP;
+	pso.bothOpFail = OvRendering::Settings::EOperation::REPLACE;
+	pso.stencilFuncOp = OvRendering::Settings::EComparaisonAlgorithm::NOTEQUAL;
+	pso.stencilFuncRef = kStencilReference;
+	pso.stencilFuncMask = kStencilMask;
 	pso.rasterizationMode = OvRendering::Settings::ERasterizationMode::LINE;
-	pso.rasterizationLinesWidth = p_thickness;
+	pso.lineWidthPow2 = OvRendering::Utils::Conversions::FloatToPow2(p_thickness);
 
 	// Prepare the outline material
 	m_outlineMaterial.Set("u_Diffuse", p_color);

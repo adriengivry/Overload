@@ -88,7 +88,7 @@ void OvEditor::Rendering::DebugSceneRenderer::DrawPass(OvRendering::Settings::ER
 			auto& selectedActor = debugSceneDescriptor.selectedActor.value();
 			DrawActorDebugElements(selectedActor);
 			GetFeature<OutlineRenderFeature>().DrawOutline(selectedActor, kSelectedOutlineColor, kSelectedOutlineWidth);
-			Clear(CreatePipelineState(), OvMaths::FVector3::Zero, false, true, false);
+			Clear(false, true, false, OvMaths::FVector3::Zero);
 			GetFeature<GizmoRenderFeature>().DrawGizmo(
 				selectedActor.transform.GetWorldPosition(),
 				selectedActor.transform.GetWorldRotation(),

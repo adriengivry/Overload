@@ -38,15 +38,13 @@ void OvRendering::Core::ABaseRenderer::BeginFrame(const Data::FrameDescriptor& p
 	}
 
 	m_basePipelineState = m_driver.CreatePipelineState();
-	m_basePipelineState.viewportW = p_frameDescriptor.renderWidth;
-	m_basePipelineState.viewportH = p_frameDescriptor.renderHeight;
+	m_driver.SetViewport(0, 0, p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
 
 	Clear(
-		m_basePipelineState,
-		p_frameDescriptor.camera.value().GetClearColor(),
 		p_frameDescriptor.camera->GetClearColorBuffer(),
 		p_frameDescriptor.camera->GetClearDepthBuffer(),
-		p_frameDescriptor.camera->GetClearStencilBuffer()
+		p_frameDescriptor.camera->GetClearStencilBuffer(),
+		p_frameDescriptor.camera.value().GetClearColor()
 	);
 
 	p_frameDescriptor.camera->CacheMatrices(p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
@@ -80,7 +78,6 @@ OvRendering::Data::PipelineState OvRendering::Core::ABaseRenderer::CreatePipelin
 }
 
 void OvRendering::Core::ABaseRenderer::ReadPixels(
-	OvRendering::Data::PipelineState p_pso, // TODO: No need for PSO here
 	uint32_t p_x,
 	uint32_t p_y,
 	uint32_t p_width,
@@ -94,28 +91,27 @@ void OvRendering::Core::ABaseRenderer::ReadPixels(
 }
 
 void OvRendering::Core::ABaseRenderer::Clear(
-	OvRendering::Data::PipelineState p_pso,
-	const OvMaths::FVector3& p_color,
 	bool p_colorBuffer,
 	bool p_depthBuffer,
-	bool p_stencilBuffer
+	bool p_stencilBuffer,
+	const OvMaths::FVector3& p_color
 )
 {
+	auto pso = CreatePipelineState();
+
 	if (p_colorBuffer || p_depthBuffer || p_stencilBuffer)
 	{
-		p_pso.clearR = p_color.x;
-		p_pso.clearG = p_color.y;
-		p_pso.clearB = p_color.z;
-
 		if (p_stencilBuffer)
 		{
-			p_pso.stencilMask = ~0;
+			pso.stencilWriteMask = ~0;
 		}
 
-		p_pso.scissorTest = false;
+		pso.scissorTest = false;
 
-		m_driver.SetPipelineState(p_pso);
-		m_driver.Clear(p_colorBuffer, p_depthBuffer, p_stencilBuffer);
+		const auto color = OvMaths::FVector4{ p_color.x, p_color.y, p_color.z, 1.0f };
+
+		m_driver.SetPipelineState(pso);
+		m_driver.Clear(p_colorBuffer, p_depthBuffer, p_stencilBuffer, color);
 	}
 }
 
@@ -130,10 +126,7 @@ void OvRendering::Core::ABaseRenderer::DrawEntity(
 	if (mesh && material && material.value().HasShader() && material.value().GetGPUInstances() > 0)
 	{
 		p_pso.depthWriting = p_drawable.stateMask.depthWriting;
-		p_pso.colorWriting[0] = p_drawable.stateMask.colorWriting;
-		p_pso.colorWriting[1] = p_drawable.stateMask.colorWriting;
-		p_pso.colorWriting[2] = p_drawable.stateMask.colorWriting;
-		p_pso.colorWriting[3] = p_drawable.stateMask.colorWriting;
+		p_pso.colorWriting.mask = p_drawable.stateMask.colorWriting ? 0xFF : 0x00;
 		p_pso.blending = p_drawable.stateMask.blendable;
 		p_pso.culling = p_drawable.stateMask.culling;
 		p_pso.depthTest = p_drawable.stateMask.depthTest;

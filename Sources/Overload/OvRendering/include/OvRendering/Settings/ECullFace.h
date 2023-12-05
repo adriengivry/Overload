@@ -13,10 +13,10 @@ namespace OvRendering::Settings
 	/**
 	* OpenGL cullface enum wrapper
 	*/
-	enum class ECullFace
+	enum class ECullFace : uint8_t
 	{
-		FRONT			= 0x0404,
-		BACK			= 0x0405,
-		FRONT_AND_BACK	= 0x0408
+		FRONT,
+		BACK,
+		FRONT_AND_BACK
 	};
 }
