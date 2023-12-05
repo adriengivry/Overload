@@ -22,7 +22,7 @@
 namespace OvRendering::HAL
 {
 	template<Settings::EGraphicsBackend Backend>
-	class GraphicsAPI
+	class GraphicsAPI final
 	{
 	public:
 		std::optional<OvRendering::Data::PipelineState> Init(bool debug);
@@ -52,21 +52,21 @@ namespace OvRendering::HAL
 		void SetDepthAlgorithm(OvRendering::Settings::EComparaisonAlgorithm p_algorithm);
 		void SetStencilMask(uint32_t p_mask);
 
-		virtual void SetStencilOperations(
+		void SetStencilOperations(
 			OvRendering::Settings::EOperation p_stencilFail,
 			OvRendering::Settings::EOperation p_depthFail,
 			OvRendering::Settings::EOperation p_bothPass
 		);
 
-		virtual void SetCullFace(OvRendering::Settings::ECullFace p_cullFace);
-		virtual void SetDepthWriting(bool p_enable);
-		virtual void SetColorWriting(bool p_enableRed, bool p_enableGreen, bool p_enableBlue, bool p_enableAlpha);
-		virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+		void SetCullFace(OvRendering::Settings::ECullFace p_cullFace);
+		void SetDepthWriting(bool p_enable);
+		void SetColorWriting(bool p_enableRed, bool p_enableGreen, bool p_enableBlue, bool p_enableAlpha);
+		void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
-		virtual std::string GetVendor();
-		virtual std::string GetHardware();
-		virtual std::string GetVersion();
-		virtual std::string GetShadingLanguageVersion();
+		std::string GetVendor();
+		std::string GetHardware();
+		std::string GetVersion();
+		std::string GetShadingLanguageVersion();
 	};
 
 	using Null = OvRendering::HAL::GraphicsAPI<OvRendering::Settings::EGraphicsBackend::Null>;

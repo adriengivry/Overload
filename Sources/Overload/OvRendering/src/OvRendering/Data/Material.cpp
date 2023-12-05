@@ -11,6 +11,11 @@
 
 //TODO: Add constructor with a shader reference
 
+OvRendering::Data::Material::Material(OvRendering::Resources::Shader* p_shader)
+{
+	SetShader(p_shader);
+}
+
 void OvRendering::Data::Material::SetShader(OvRendering::Resources::Shader* p_shader)
 {
 	m_shader = p_shader;

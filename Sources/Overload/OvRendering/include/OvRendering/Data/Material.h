@@ -22,13 +22,11 @@ namespace OvRendering::Data
 	class Material
 	{
 	public:
-		Material() = default;
-
 		/**
-		* Creates a material with a shader
+		* Creates a material
 		* @param p_shader
 		*/
-		Material(const OvRendering::Resources::Shader& p_shader);
+		Material(OvRendering::Resources::Shader* p_shader = nullptr);
 
 		/**
 		* Defines the shader to attach to this material instance
