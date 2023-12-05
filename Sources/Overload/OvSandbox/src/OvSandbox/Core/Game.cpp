@@ -13,8 +13,9 @@
 
 #ifdef _DEBUG
 #include <OvRendering/Features/FrameInfoRenderFeature.h>
-#include <OvRendering/Features/DebugShapeRenderFeature.h>
 #endif
+
+#include <OvRendering/Features/DebugShapeRenderFeature.h>
 
 #include <OvCore/ECS/Components/CCamera.h>
 #include <OvCore/ECS/Components/CMaterialRenderer.h>
@@ -38,8 +39,9 @@ OvSandbox::Core::Game::Game(Context & p_context) :
 	m_canvas.AddPanel(m_gameProfiler);
 	m_canvas.AddPanel(m_frameInfo);
 	m_sceneRenderer.AddFeature<OvRendering::Features::FrameInfoRenderFeature>();
-	m_sceneRenderer.AddFeature<OvRendering::Features::DebugShapeRenderFeature>();
 	#endif
+
+	m_sceneRenderer.AddFeature<OvRendering::Features::DebugShapeRenderFeature>();
 
 	m_context.sceneManager.LoadEmptyLightedScene();
 
