@@ -59,7 +59,7 @@ OvGame::Core::Context::Context() :
 #ifdef _DEBUG
 		true,
 #else
-		false
+		false,
 #endif
 		basePSO
 	});
