@@ -28,9 +28,13 @@ namespace OvCore::Rendering
 	class SceneRenderer : public OvRendering::Core::CompositeRenderer
 	{
 	public:
-		struct SceneDrawable : public OvRendering::Entities::Drawable
+		using OpaqueDrawables = std::multimap<float, OvRendering::Entities::Drawable, std::less<float>>;
+		using TransparentDrawables = std::multimap<float, OvRendering::Entities::Drawable, std::greater<float>>;
+
+		struct AllDrawables
 		{
-			OvTools::Utils::OptRef<OvCore::ECS::Actor> actor;
+			OpaqueDrawables opaques;
+			TransparentDrawables transparents;
 		};
 
 		struct SceneDescriptor
@@ -52,20 +56,7 @@ namespace OvCore::Rendering
 		*/
 		virtual void BeginFrame(const OvRendering::Data::FrameDescriptor& p_frameDescriptor) override;
 
-		/**
-		* Draw the given render pass
-		* @param 
-		*/
-		virtual void DrawPass(OvRendering::Settings::ERenderPass p_pass);
-
-	private:
-		void ParseScene();
-
-		using OpaqueDrawables = std::multimap<float, SceneDrawable, std::less<float>>;
-		using TransparentDrawables = std::multimap<float, SceneDrawable, std::greater<float>>;
-		using AllDrawables = std::pair<OpaqueDrawables, TransparentDrawables>;
-
-		OpaqueDrawables m_opaqueDrawables;
-		TransparentDrawables m_transparentDrawables;
+	protected:
+		AllDrawables ParseScene();
 	};
 }

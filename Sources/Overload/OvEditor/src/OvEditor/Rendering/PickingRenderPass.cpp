@@ -4,15 +4,15 @@
 * @licence: MIT
 */
 
-#include "OvEditor/Rendering/PickingRenderFeature.h"
+#include "OvEditor/Rendering/PickingRenderPass.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Settings/EditorSettings.h"
 #include "OvEditor/Rendering/DebugSceneRenderer.h"
 
 #include <OvCore/ECS/Components/CMaterialRenderer.h>
 
-OvEditor::Rendering::PickingRenderFeature::PickingRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer) :
-	OvRendering::Features::ARenderFeature(p_renderer)
+OvEditor::Rendering::PickingRenderPass::PickingRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) :
+	OvRendering::Core::ARenderPass(p_renderer)
 {
 	/* Light Material */
 	m_lightMaterial.SetShader(EDITOR_CONTEXT(editorResources)->GetShader("Billboard"));
@@ -32,12 +32,48 @@ OvEditor::Rendering::PickingRenderFeature::PickingRenderFeature(OvRendering::Cor
 	m_actorPickingMaterial.SetBackfaceCulling(false);
 }
 
-OvRendering::Settings::ERenderPassMask OvEditor::Rendering::PickingRenderFeature::GetRenderPassMask() const
+OvEditor::Rendering::PickingRenderPass::PickingResult OvEditor::Rendering::PickingRenderPass::ReadbackPickingResult(
+	const OvCore::SceneSystem::Scene& p_scene,
+	uint32_t p_x,
+	uint32_t p_y
+)
 {
-	return OvRendering::Settings::ERenderPassMask::PRE_PROCESSING;
+	uint8_t pixel[3];
+
+	m_actorPickingFramebuffer.Bind();
+
+	auto pso = m_renderer.CreatePipelineState();
+
+	m_renderer.ReadPixels(
+		p_x, p_y, 1, 1,
+		OvRendering::Settings::EPixelDataFormat::RGB,
+		OvRendering::Settings::EPixelDataType::UNSIGNED_BYTE,
+		pixel
+	);
+
+	m_actorPickingFramebuffer.Unbind();
+
+	uint32_t actorID = (0 << 24) | (pixel[2] << 16) | (pixel[1] << 8) | (pixel[0] << 0);
+	auto actorUnderMouse = p_scene.FindActorByID(actorID);
+
+	if (actorUnderMouse)
+	{
+		return OvTools::Utils::OptRef(*actorUnderMouse);
+	}
+	else if (
+		pixel[0] == 255 &&
+		pixel[1] == 255 &&
+		pixel[2] >= 252 &&
+		pixel[2] <= 254
+		)
+	{
+		return static_cast<OvEditor::Core::GizmoBehaviour::EDirection>(pixel[2] - 252);
+	}
+
+	return std::nullopt;
 }
 
-void OvEditor::Rendering::PickingRenderFeature::DrawPass(OvRendering::Settings::ERenderPass p_renderPass)
+void OvEditor::Rendering::PickingRenderPass::Draw(OvRendering::Data::PipelineState p_pso)
 {
 	// TODO: Make sure we only renderer when the view is hovered and not being resized
 
@@ -93,48 +129,7 @@ void PreparePickingMaterial(OvCore::ECS::Actor& p_actor, OvCore::Resources::Mate
 	p_material.Set("u_Diffuse", color);
 }
 
-OvEditor::Rendering::PickingRenderFeature::PickingResult OvEditor::Rendering::PickingRenderFeature::ReadbackPickingResult(
-	const OvCore::SceneSystem::Scene& p_scene,
-	uint32_t p_x,
-	uint32_t p_y
-)
-{
-	uint8_t pixel[3];
-
-	m_actorPickingFramebuffer.Bind();
-
-	auto pso = m_renderer.CreatePipelineState();
-
-	m_renderer.ReadPixels(
-		p_x, p_y, 1, 1,
-		OvRendering::Settings::EPixelDataFormat::RGB,
-		OvRendering::Settings::EPixelDataType::UNSIGNED_BYTE,
-		pixel
-	);
-
-	m_actorPickingFramebuffer.Unbind();
-
-	uint32_t actorID = (0 << 24) | (pixel[2] << 16) | (pixel[1] << 8) | (pixel[0] << 0);
-	auto actorUnderMouse = p_scene.FindActorByID(actorID);
-
-	if (actorUnderMouse)
-	{
-		return OvTools::Utils::OptRef(*actorUnderMouse);
-	}
-	else if (
-		pixel[0] == 255 &&
-		pixel[1] == 255 &&
-		pixel[2] >= 252 &&
-		pixel[2] <= 254
-		)
-	{
-		return static_cast<OvEditor::Core::GizmoBehaviour::EDirection>(pixel[2] - 252);
-	}
-
-	return std::nullopt;
-}
-
-void OvEditor::Rendering::PickingRenderFeature::DrawPickableModels(
+void OvEditor::Rendering::PickingRenderPass::DrawPickableModels(
 	OvRendering::Data::PipelineState p_pso,
 	OvCore::SceneSystem::Scene& p_scene
 )
@@ -179,7 +174,7 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPickableModels(
 	}
 }
 
-void OvEditor::Rendering::PickingRenderFeature::DrawPickableCameras(
+void OvEditor::Rendering::PickingRenderPass::DrawPickableCameras(
 	OvRendering::Data::PipelineState p_pso,
 	OvCore::SceneSystem::Scene& p_scene
 )
@@ -200,7 +195,7 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPickableCameras(
 	}
 }
 
-void OvEditor::Rendering::PickingRenderFeature::DrawPickableLights(
+void OvEditor::Rendering::PickingRenderPass::DrawPickableLights(
 	OvRendering::Data::PipelineState p_pso,
 	OvCore::SceneSystem::Scene& p_scene
 )
@@ -226,7 +221,7 @@ void OvEditor::Rendering::PickingRenderFeature::DrawPickableLights(
 	}
 }
 
-void OvEditor::Rendering::PickingRenderFeature::DrawPickableGizmo(
+void OvEditor::Rendering::PickingRenderPass::DrawPickableGizmo(
 	OvRendering::Data::PipelineState p_pso,
 	const OvMaths::FVector3& p_position,
 	const OvMaths::FQuaternion& p_rotation,

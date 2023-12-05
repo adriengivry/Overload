@@ -12,7 +12,7 @@
 
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Panels/AssetView.h"
-#include "OvEditor/Rendering/GridRenderFeature.h"
+#include "OvEditor/Rendering/GridRenderPass.h"
 
 OvEditor::Panels::AssetView::AssetView
 (
@@ -23,7 +23,7 @@ OvEditor::Panels::AssetView::AssetView
 {
 	m_renderer = std::make_unique<OvCore::Rendering::SceneRenderer>(*EDITOR_CONTEXT(driver));
 	m_renderer->AddFeature<OvRendering::Features::DebugShapeRenderFeature>();
-	m_renderer->AddFeature<OvEditor::Rendering::GridRenderFeature>();
+	m_renderer->AddPass<OvEditor::Rendering::GridRenderPass>("Grid", OvRendering::Settings::ERenderPassOrder::First);
 
 	m_camera.SetFar(5000.0f);
 

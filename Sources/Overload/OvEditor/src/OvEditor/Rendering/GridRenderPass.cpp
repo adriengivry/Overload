@@ -11,10 +11,10 @@
 #include "OvEditor/Core/EditorResources.h"
 
 #include "OvEditor/Core/EditorActions.h"
-#include "OvEditor/Rendering/GridRenderFeature.h"
+#include "OvEditor/Rendering/GridRenderPass.h"
 
-OvEditor::Rendering::GridRenderFeature::GridRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer) :
-	OvRendering::Features::ARenderFeature(p_renderer)
+OvEditor::Rendering::GridRenderPass::GridRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) :
+	OvRendering::Core::ARenderPass(p_renderer)
 {
 	/* Grid Material */
 	m_gridMaterial.SetShader(EDITOR_CONTEXT(editorResources)->GetShader("Grid"));
@@ -23,7 +23,7 @@ OvEditor::Rendering::GridRenderFeature::GridRenderFeature(OvRendering::Core::Com
 	m_gridMaterial.SetDepthTest(false);
 }
 
-void OvEditor::Rendering::GridRenderFeature::DrawPass(OvRendering::Settings::ERenderPass p_pass)
+void OvEditor::Rendering::GridRenderPass::Draw(OvRendering::Data::PipelineState p_pso)
 {
 	OVASSERT(m_renderer.HasDescriptor<GridDescriptor>(), "Cannot find GridDescriptor attached to this renderer");
 	OVASSERT(m_renderer.HasFeature<OvRendering::Features::DebugShapeRenderFeature>(), "Cannot find DebugShapeRenderFeature attached to this renderer");
@@ -45,9 +45,4 @@ void OvEditor::Rendering::GridRenderFeature::DrawPass(OvRendering::Settings::ERe
 	debugShapeRenderer.DrawLine(pso, OvMaths::FVector3(-gridSize + gridDescriptor.viewPosition.x, 0.0f, 0.0f), OvMaths::FVector3(gridSize + gridDescriptor.viewPosition.x, 0.0f, 0.0f), OvMaths::FVector3(1.0f, 0.0f, 0.0f), 1.0f);
 	debugShapeRenderer.DrawLine(pso, OvMaths::FVector3(0.0f, -gridSize + gridDescriptor.viewPosition.y, 0.0f), OvMaths::FVector3(0.0f, gridSize + gridDescriptor.viewPosition.y, 0.0f), OvMaths::FVector3(0.0f, 1.0f, 0.0f), 1.0f);
 	debugShapeRenderer.DrawLine(pso, OvMaths::FVector3(0.0f, 0.0f, -gridSize + gridDescriptor.viewPosition.z), OvMaths::FVector3(0.0f, 0.0f, gridSize + gridDescriptor.viewPosition.z), OvMaths::FVector3(0.0f, 0.0f, 1.0f), 1.0f);
-}
-
-OvRendering::Settings::ERenderPassMask OvEditor::Rendering::GridRenderFeature::GetRenderPassMask() const
-{
-	return OvRendering::Settings::ERenderPassMask::PRE_OPAQUE;
 }

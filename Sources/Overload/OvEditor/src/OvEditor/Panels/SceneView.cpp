@@ -7,7 +7,7 @@
 #include <OvUI/Plugins/DDTarget.h>
 
 #include "OvEditor/Rendering/DebugSceneRenderer.h"
-#include "OvEditor/Rendering/PickingRenderFeature.h"
+#include "OvEditor/Rendering/PickingRenderPass.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Panels/SceneView.h"
 #include "OvEditor/Panels/GameView.h"
@@ -131,7 +131,8 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 		mouseY = GetSafeSize().second - mouseY + 25;
 
 		auto& scene = *GetScene();
-		auto& actorPickingFeature = m_renderer->GetFeature<Rendering::PickingRenderFeature>();
+		
+		auto& actorPickingFeature = m_renderer->GetPass<Rendering::PickingRenderPass>("Picking");
 
 		auto pickingResult = actorPickingFeature.ReadbackPickingResult(
 			scene,

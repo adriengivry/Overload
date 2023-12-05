@@ -6,7 +6,7 @@
 
 #include "OvEditor/Panels/AViewControllable.h"
 #include "OvEditor/Rendering/DebugSceneRenderer.h"
-#include "OvEditor/Rendering/GridRenderFeature.h"
+#include "OvEditor/Rendering/GridRenderPass.h"
 #include "OvEditor/Core/EditorActions.h"
 
 const OvMaths::FVector3 kDefaultGridColor{ 0.176f, 0.176f, 0.176f };
@@ -35,7 +35,7 @@ void OvEditor::Panels::AViewControllable::Update(float p_deltaTime)
 
 void OvEditor::Panels::AViewControllable::InitFrame()
 {
-	m_renderer->AddDescriptor<Rendering::GridRenderFeature::GridDescriptor>({
+	m_renderer->AddDescriptor<Rendering::GridRenderPass::GridDescriptor>({
 		m_gridColor,
 		m_camera.GetPosition()
 	});

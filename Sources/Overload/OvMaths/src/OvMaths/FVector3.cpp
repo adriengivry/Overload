@@ -60,6 +60,11 @@ OvMaths::FVector3& OvMaths::FVector3::operator-=(const FVector3& p_other)
 	return *this;
 }
 
+OvMaths::FVector3 OvMaths::FVector3::operator*(const OvMaths::FVector3& p_other) const
+{
+	return Multiply(*this, p_other);
+}
+
 OvMaths::FVector3 OvMaths::FVector3::operator*(float p_scalar) const
 {
 	return Multiply(*this, p_scalar);
@@ -68,6 +73,12 @@ OvMaths::FVector3 OvMaths::FVector3::operator*(float p_scalar) const
 OvMaths::FVector3& OvMaths::FVector3::operator*=(float p_scalar)
 {
 	*this = Multiply(*this, p_scalar);
+	return *this;
+}
+
+OvMaths::FVector3& OvMaths::FVector3::operator*=(const OvMaths::FVector3& p_other)
+{
+	*this = Multiply(*this, p_other);
 	return *this;
 }
 
@@ -122,6 +133,16 @@ OvMaths::FVector3 OvMaths::FVector3::Multiply(const FVector3& p_target, float p_
 		p_target.x * p_scalar,
 		p_target.y * p_scalar,
 		p_target.z * p_scalar
+	);
+}
+
+OvMaths::FVector3 OvMaths::FVector3::Multiply(const FVector3& p_left, const FVector3& p_right)
+{
+	return FVector3
+	(
+		p_left.x * p_right.x,
+		p_left.y * p_right.y,
+		p_left.z * p_right.z
 	);
 }
 

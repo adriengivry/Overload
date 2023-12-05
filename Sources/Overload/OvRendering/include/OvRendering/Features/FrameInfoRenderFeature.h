@@ -24,21 +24,9 @@ namespace OvRendering::Features
 		FrameInfoRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer);
 
 		/**
-		* Invoked when a frame begins. Take care of initializing the frame info data
-		* @param p_frameDescriptor
+		* Destructor
 		*/
-		virtual void OnBeginFrame(const Data::FrameDescriptor& p_frameDescriptor) override;
-
-		/**
-		* Invoked when a frame ends. Validate the frame info data
-		*/
-		virtual void OnEndFrame() override;
-
-		/**
-		* Invoked after drawing an entity. Append drawing info to the frame info.
-		* @param p_drawable
-		*/
-		virtual void OnAfterDraw(const OvRendering::Entities::Drawable& p_drawable) override;
+		virtual ~FrameInfoRenderFeature();
 
 		/**
 		* Return a reference to the last frame info
@@ -46,8 +34,14 @@ namespace OvRendering::Features
 		*/
 		const OvRendering::Data::FrameInfo& GetFrameInfo() const;
 
+	protected:
+		virtual void OnBeginFrame(const Data::FrameDescriptor& p_frameDescriptor) override;
+		virtual void OnEndFrame() override;
+		virtual void OnAfterDraw(const OvRendering::Entities::Drawable& p_drawable) override;
+
 	private:
 		bool m_isFrameInfoDataValid;
 		OvRendering::Data::FrameInfo m_frameInfo;
+		OvTools::Eventing::ListenerID m_postDrawListener;
 	};
 }

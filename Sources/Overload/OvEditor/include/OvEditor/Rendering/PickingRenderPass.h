@@ -25,7 +25,7 @@ namespace OvEditor::Rendering
 	/**
 	* Draw the scene for actor picking
 	*/
-	class PickingRenderFeature : public OvRendering::Features::ARenderFeature
+	class PickingRenderPass : public OvRendering::Core::ARenderPass
 	{
 	public:
 		using PickingResult =
@@ -38,18 +38,7 @@ namespace OvEditor::Rendering
 		* Constructor
 		* @param p_renderer
 		*/
-		PickingRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer);
-
-		/**
-		* Returns the render pass flags associated with this feature
-		*/
-		virtual OvRendering::Settings::ERenderPassMask GetRenderPassMask() const;
-
-		/**
-		* Draw for the given render pass
-		* @param p_renderPass
-		*/
-		virtual void DrawPass(OvRendering::Settings::ERenderPass p_renderPass);
+		PickingRenderPass(OvRendering::Core::CompositeRenderer& p_renderer);
 
 		/**
 		* Return the picking result at the given position
@@ -64,6 +53,7 @@ namespace OvEditor::Rendering
 		);
 
 	private:
+		virtual void Draw(OvRendering::Data::PipelineState p_pso) override;
 		void DrawPickableModels(OvRendering::Data::PipelineState p_pso, OvCore::SceneSystem::Scene& p_scene);
 		void DrawPickableCameras(OvRendering::Data::PipelineState p_pso, OvCore::SceneSystem::Scene& p_scene);
 		void DrawPickableLights(OvRendering::Data::PipelineState p_pso, OvCore::SceneSystem::Scene& p_scene);

@@ -24,7 +24,7 @@ namespace OvEditor::Rendering
 	/**
 	* Draw a grid
 	*/
-	class GridRenderFeature : public OvRendering::Features::ARenderFeature
+	class GridRenderPass : public OvRendering::Core::ARenderPass
 	{
 	public:
 		struct GridDescriptor
@@ -37,18 +37,10 @@ namespace OvEditor::Rendering
 		* Constructor
 		* @param p_renderer
 		*/
-		GridRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer);
+		GridRenderPass(OvRendering::Core::CompositeRenderer& p_renderer);
 
-		/**
-		* Returns the render pass mask used by the grid
-		*/
-		virtual OvRendering::Settings::ERenderPassMask GetRenderPassMask() const;
-
-		/**
-		* Draw the grid
-		* @param p_pass
-		*/
-		virtual void DrawPass(OvRendering::Settings::ERenderPass p_pass) override;
+	protected:
+		virtual void Draw(OvRendering::Data::PipelineState p_pso) override;
 
 	private:
 		OvCore::Resources::Material m_gridMaterial;

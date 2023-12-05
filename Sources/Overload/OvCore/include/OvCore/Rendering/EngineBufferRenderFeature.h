@@ -27,24 +27,12 @@ namespace OvCore::Rendering
 		*/
 		EngineBufferRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer);
 
-		/**
-		* Invoked at the beginning of a frame, bind the engine buffer and update elapsed time
-		* @param p_frameDescriptor
-		*/
+	protected:
 		virtual void OnBeginFrame(const OvRendering::Data::FrameDescriptor& p_frameDescriptor) override;
-
-		/**
-		* Invoked at the end of a frame, unbind the engine buffer
-		*/
 		virtual void OnEndFrame() override;
+		virtual void OnBeforeDraw(OvRendering::Data::PipelineState& p_pso, const OvRendering::Entities::Drawable& p_drawable) override;
 
-		/**
-		* Invoked before drawing, handle uploading entity data to the GPU
-		* @param p_drawable
-		*/
-		virtual void OnBeforeDraw(const OvRendering::Entities::Drawable& p_drawable) override;
-
-	private:
+	protected:
 		std::chrono::high_resolution_clock::time_point m_startTime;
 		std::unique_ptr<OvRendering::Buffers::UniformBuffer> m_engineBuffer;
 	};

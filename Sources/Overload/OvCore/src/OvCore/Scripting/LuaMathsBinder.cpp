@@ -61,7 +61,11 @@ void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
 		sol::meta_function::addition, &FVector3::operator+,
 		sol::meta_function::subtraction, sol::resolve<FVector3(const FVector3&) const>(&FVector3::operator-),
 		sol::meta_function::unary_minus, sol::resolve<FVector3() const>(&FVector3::operator-),
-		sol::meta_function::multiplication, &FVector3::operator*,
+		sol::meta_function::multiplication, sol::overload
+		(
+			sol::resolve<FVector3(float) const>(&FVector3::operator*),
+			sol::resolve<FVector3(const FVector3&) const>(&FVector3::operator*)
+		),
 		sol::meta_function::division, &FVector3::operator/,
 		sol::meta_function::to_string, [](const FVector3& target) { return "(" + std::to_string(target.x) + "," + std::to_string(target.y) + "," + std::to_string(target.z) + ")"; },
 

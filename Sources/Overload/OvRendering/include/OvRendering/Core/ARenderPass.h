@@ -10,27 +10,28 @@
 
 #include "OvRendering/Data/FrameDescriptor.h"
 #include "OvRendering/Entities/Drawable.h"
+#include "OvRendering/Settings/ERenderPassOrder.h"
 
 namespace OvRendering::Core
 {
 	class CompositeRenderer;
 }
 
-namespace OvRendering::Features
+namespace OvRendering::Core
 {
-	class ARenderFeature
+	class ARenderPass
 	{
 	public:
 		/**
 		* Constructor
 		* @param p_renderer
 		*/
-		ARenderFeature(Core::CompositeRenderer& p_renderer);
+		ARenderPass(Core::CompositeRenderer& p_renderer);
 
 		/**
 		* Destructor
 		*/
-		virtual ~ARenderFeature() = default; // TODO: Maybe make protected
+		virtual ~ARenderPass() = default;
 
 	protected:
 		/**
@@ -45,16 +46,10 @@ namespace OvRendering::Features
 		virtual void OnEndFrame();
 
 		/**
-		* Invoked before drawing a drawable entity
-		* @param p_drawable
+		* Draw for the render pass
+		* @param p_pso
 		*/
-		virtual void OnBeforeDraw(Data::PipelineState& p_pso, const Entities::Drawable& p_drawable);
-
-		/**
-		* Invoked after drawing a drawable entity
-		* @param p_drawable
-		*/
-		virtual void OnAfterDraw(const Entities::Drawable& p_drawable);
+		virtual void Draw(OvRendering::Data::PipelineState p_pso) = 0;
 
 		Core::CompositeRenderer& m_renderer;
 

@@ -21,61 +21,37 @@ void OvRendering::Core::CompositeRenderer::BeginFrame(const Data::FrameDescripto
 	{
 		feature->OnBeginFrame(p_frameDescriptor);
 	}
+
+	for (const auto& [_, pass] : m_passes)
+	{
+		pass.second->OnBeginFrame(p_frameDescriptor);
+	}
 }
 
 void OvRendering::Core::CompositeRenderer::Draw()
 {
-	// TODO: Replace that so that a renderer can have some passes enabled/disabled
-	Settings::ERenderPassMask renderPassMask = Settings::ERenderPassMask::ALL;
+	auto pso = CreatePipelineState();
 
-	constexpr auto firstPass = static_cast<uint32_t>(Settings::ERenderPass::FIRST);
-	constexpr auto lastPass = static_cast<uint32_t>(Settings::ERenderPass::LAST);
-
-	for (auto i = firstPass; i <= lastPass; i <<= 1)
+	for (const auto& [_, pass] : m_passes)
 	{
-		auto renderPass = static_cast<Settings::ERenderPass>(i);
-
-		if (Settings::IsFlagSet(renderPassMask, renderPass))
-		{
-			for (const auto& [_, feature] : m_features)
-			{
-				if (Settings::IsFlagSet(feature->GetRenderPassMask(), renderPass))
-				{
-					// Render feature draw pre-pass
-					feature->DrawPrePass(renderPass);
-				}
-			}
-
-			// Renderer draw pass
-			DrawPass(renderPass);
-
-			for (const auto& [_, feature] : m_features)
-			{
-				if (Settings::IsFlagSet(feature->GetRenderPassMask(), renderPass))
-				{
-					// Render feature draw pass
-					feature->DrawPass(renderPass);
-				}
-			}
-		}
+		pass.second->Draw(pso);
 	}
-}
-
-void OvRendering::Core::CompositeRenderer::DrawPass(OvRendering::Settings::ERenderPass p_pass)
-{
-
 }
 
 void OvRendering::Core::CompositeRenderer::EndFrame()
 {
+	for (const auto& [_, pass] : m_passes)
+	{
+		pass.second->OnEndFrame();
+	}
+
 	for (const auto& [_, feature] : m_features)
 	{
 		feature->OnEndFrame();
 	}
 
 	ClearDescriptors();
-
-	return ABaseRenderer::EndFrame();
+	ABaseRenderer::EndFrame();
 }
 
 void OvRendering::Core::CompositeRenderer::DrawEntity(
@@ -85,11 +61,11 @@ void OvRendering::Core::CompositeRenderer::DrawEntity(
 {
 	for (const auto& [_, feature] : m_features)
 	{
-		feature->OnBeforeDraw(p_drawable);
+		feature->OnBeforeDraw(p_pso, p_drawable);
 	}
 
 	ABaseRenderer::DrawEntity(p_pso, p_drawable);
-
+	
 	for (const auto& [_, feature] : m_features)
 	{
 		feature->OnAfterDraw(p_drawable);

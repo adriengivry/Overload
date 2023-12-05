@@ -28,12 +28,6 @@ namespace OvRendering::Features
 		virtual ~DebugShapeRenderFeature();
 
 		/**
-		* Invoked when the BeginFrame is called on the associated base renderer
-		* @param p_frameDescriptor
-		*/
-		virtual void OnBeginFrame(const Data::FrameDescriptor& p_frameDescriptor);
-
-		/**
 		* Defines the view projection to use when drawing
 		* @param p_viewProjection
 		*/
@@ -54,6 +48,65 @@ namespace OvRendering::Features
 			const OvMaths::FVector3& p_color,
 			float p_lineWidth = 1.0f
 		);
+
+		/**
+		* Draw a box in world space
+		* @param p_pso
+		* @param p_position
+		* @param p_rotation
+		* @param p_size
+		* @param p_color
+		* @param p_lineWidth
+		*/
+		void DrawBox(
+			OvRendering::Data::PipelineState p_pso,
+			const OvMaths::FVector3& p_position,
+			const OvMaths::FQuaternion& p_rotation,
+			const OvMaths::FVector3& p_size,
+			const OvMaths::FVector3& p_color,
+			float p_lineWidth = 1.0f
+		);
+
+		/**
+		* Draw a sphere in world space
+		* @param p_pso
+		* @param p_position
+		* @param p_rotation
+		* @param p_radius
+		* @param p_color
+		* @param p_lineWidth
+		*/
+		void DrawSphere(
+			OvRendering::Data::PipelineState p_pso,
+			const OvMaths::FVector3& p_position,
+			const OvMaths::FQuaternion& p_rotation,
+			float p_radius,
+			const OvMaths::FVector3& p_color,
+			float p_lineWidth = 1.0f
+		);
+
+		/**
+		* Draw a capsule in world space
+		* @param p_pso
+		* @param p_position
+		* @param p_rotation
+		* @param p_radius
+		* @param p_height
+		* @param p_color
+		* @param p_lineWidth
+		*/
+		void DrawCapsule(
+			OvRendering::Data::PipelineState p_pso,
+			const OvMaths::FVector3& p_position,
+			const OvMaths::FQuaternion& p_rotation,
+			float p_radius,
+			float p_height,
+			const OvMaths::FVector3& p_color,
+			float p_lineWidth = 1.0f
+		);
+
+	protected:
+		virtual void OnBeginFrame(const Data::FrameDescriptor& p_frameDescriptor) override;
 
 	private:
 		OvRendering::Resources::Shader* m_lineShader = nullptr;

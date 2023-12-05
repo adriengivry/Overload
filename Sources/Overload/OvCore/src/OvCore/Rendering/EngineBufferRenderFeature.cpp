@@ -44,7 +44,7 @@ void OvCore::Rendering::EngineBufferRenderFeature::OnEndFrame()
 	m_engineBuffer->Unbind();
 }
 
-void OvCore::Rendering::EngineBufferRenderFeature::OnBeforeDraw(const OvRendering::Entities::Drawable& p_drawable)
+void OvCore::Rendering::EngineBufferRenderFeature::OnBeforeDraw(OvRendering::Data::PipelineState& p_pso, const OvRendering::Entities::Drawable& p_drawable)
 {
 	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(p_drawable.modelMatrix), 0);
 	m_engineBuffer->SetSubData

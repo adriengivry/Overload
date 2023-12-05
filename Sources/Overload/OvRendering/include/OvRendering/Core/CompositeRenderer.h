@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "OvRendering/Core/ABaseRenderer.h"
+#include "OvRendering/Core/ARenderPass.h"
 #include "OvRendering/Features/ARenderFeature.h"
 #include "OvRendering/Data/Describable.h"
 
@@ -23,6 +24,9 @@ namespace OvRendering::Core
 	class CompositeRenderer : public ABaseRenderer, public Data::Describable
 	{
 	public:
+		OvTools::Eventing::Event<OvRendering::Data::PipelineState&, const Entities::Drawable&> preDrawEntityEvent;
+		OvTools::Eventing::Event<const Entities::Drawable&> postDrawEntityEvent;
+
 		/**
 		* Constructor of the base renderer
 		* @param p_driver
@@ -42,15 +46,9 @@ namespace OvRendering::Core
 		virtual void Draw() final;
 
 		/**
-		* Draw the given render pass
-		* @param p_pass
-		*/
-		virtual void DrawPass(OvRendering::Settings::ERenderPass p_pass);
-
-		/**
 		* End Frame
 		*/
-		virtual void EndFrame();
+		virtual void EndFrame() override;
 
 		/**
 		* Draw a drawable entity
@@ -88,8 +86,25 @@ namespace OvRendering::Core
 		template<typename T>
 		bool HasFeature() const;
 
+		/**
+		* Add a render pass to the renderer
+		* @param p_name
+		* @param p_order
+		* @param p_args (Parameter pack forwared to the render pass constructor)
+		*/
+		template<typename T, typename ... Args>
+		T& AddPass(const std::string& p_name, uint32_t p_order, Args&&... p_args);
+
+		/**
+		* Retrieve the render passing matching the given pass name
+		* @param p_name
+		*/
+		template<typename T>
+		T& GetPass(const std::string& p_name);
+
 	protected:
 		std::unordered_map<std::type_index, std::unique_ptr<Features::ARenderFeature>> m_features;
+		std::multimap<uint32_t, std::pair<std::string, std::unique_ptr<Core::ARenderPass>>> m_passes;
 	};
 }
 

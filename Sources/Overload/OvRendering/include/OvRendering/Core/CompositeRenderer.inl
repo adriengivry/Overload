@@ -52,4 +52,30 @@ namespace OvRendering::Core
 		auto it = m_features.find(typeid(T));
 		return it != m_features.end();
 	}
+
+	template<typename T, typename ...Args>
+	inline T& CompositeRenderer::AddPass(const std::string& p_name, uint32_t p_order, Args&& ...p_args)
+	{
+		OVASSERT(!m_isDrawing, "You cannot add a render pass while drawing.");
+		static_assert(std::is_base_of<ARenderPass, T>::value, "T must inherit from ARenderPass");
+		// TODO: Add validation, make sure every pass has a unique name
+		T* pass = new T(*this, std::forward<Args>(args)...);
+		m_passes.emplace(p_order, std::make_pair(p_name, std::unique_ptr<ARenderPass>(pass)));
+		return dynamic_cast<T&>(*pass);
+	}
+
+	template<typename T>
+	inline T& CompositeRenderer::GetPass(const std::string& p_name)
+	{
+		static_assert(std::is_base_of<ARenderPass, T>::value, "T should derive from ARenderPass");
+		for (const auto& [_, pass] : m_passes)
+		{
+			if (pass.first == p_name)
+			{
+				return dynamic_cast<T&>(*pass.second.get());
+			}
+		}
+
+		OVASSERT(true, "Couldn't find a render pass matching the given type T.");
+	}
 }

@@ -45,12 +45,6 @@ namespace OvEditor::Rendering
 		*/
 		DebugSceneRenderer(OvRendering::Context::Driver& p_driver);
 
-		/**
-		* Add the debug drawing logic on top of SceneRenderer draw method
-		* @param p_pass
-		*/
-		virtual void DrawPass(OvRendering::Settings::ERenderPass p_pass) override;
-
 	protected:
 		void DrawActorDebugElements(OvCore::ECS::Actor& p_actor);
 
@@ -101,7 +95,5 @@ namespace OvEditor::Rendering
 
 		OvCore::Resources::Material m_emptyMaterial;
 		OvCore::Resources::Material m_defaultMaterial;
-		OvCore::Resources::Material m_cameraMaterial;
-		OvCore::Resources::Material m_lightMaterial;
 	};
 }

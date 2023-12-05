@@ -14,11 +14,53 @@
 #include "OvCore/ECS/Components/CModelRenderer.h"
 #include "OvCore/ECS/Components/CMaterialRenderer.h"
 
+struct SceneRenderPassDescriptor
+{
+	OvCore::Rendering::SceneRenderer::AllDrawables drawables;
+};
+
+class OpaqueRenderPass : public OvRendering::Core::ARenderPass
+{
+public:
+	OpaqueRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) : OvRendering::Core::ARenderPass(p_renderer) {}
+
+protected:
+	virtual void Draw(OvRendering::Data::PipelineState p_pso) override
+	{
+		auto& sceneContent = m_renderer.GetDescriptor<SceneRenderPassDescriptor>();
+
+		for (const auto& [distance, drawable] : sceneContent.drawables.opaques)
+		{
+			m_renderer.DrawEntity(p_pso, drawable);
+		}
+	}
+};
+
+class TransparentRenderPass : public OvRendering::Core::ARenderPass
+{
+public:
+	TransparentRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) : OvRendering::Core::ARenderPass(p_renderer) {}
+
+protected:
+	virtual void Draw(OvRendering::Data::PipelineState p_pso) override
+	{
+		auto& sceneContent = m_renderer.GetDescriptor<SceneRenderPassDescriptor>();
+
+		for (const auto& [distance, drawable] : sceneContent.drawables.transparents)
+		{
+			m_renderer.DrawEntity(p_pso, drawable);
+		}
+	}
+};
+
 OvCore::Rendering::SceneRenderer::SceneRenderer(OvRendering::Context::Driver& p_driver)
 	: OvRendering::Core::CompositeRenderer(p_driver)
 {
 	AddFeature<EngineBufferRenderFeature>();
 	AddFeature<OvRendering::Features::LightingRenderFeature>();
+
+	AddPass<OpaqueRenderPass>("Opaques", OvRendering::Settings::ERenderPassOrder::Opaque);
+	AddPass<TransparentRenderPass>("Transparents", OvRendering::Settings::ERenderPassOrder::Transparent);
 }
 
 OvRendering::Features::LightingRenderFeature::LightSet FindActiveLights(const OvCore::SceneSystem::Scene& p_scene)
@@ -50,35 +92,17 @@ void OvCore::Rendering::SceneRenderer::BeginFrame(const OvRendering::Data::Frame
 
 	OvRendering::Core::CompositeRenderer::BeginFrame(p_frameDescriptor);
 
-	ParseScene();
+	AddDescriptor<SceneRenderPassDescriptor>({
+		ParseScene()
+	});
 }
 
-void OvCore::Rendering::SceneRenderer::DrawPass(OvRendering::Settings::ERenderPass p_pass)
-{
-	auto pso = CreatePipelineState();
-
-	if (p_pass == OvRendering::Settings::ERenderPass::OPAQUE)
-	{
-		for (const auto& [distance, drawable] : m_opaqueDrawables)
-		{
-			DrawEntity(pso, drawable);
-		}
-	}
-	else if (p_pass == OvRendering::Settings::ERenderPass::TRANSPARENT)
-	{
-		for (const auto& [distance, drawable] : m_transparentDrawables)
-		{
-			DrawEntity(pso, drawable);
-		}
-	}
-}
-
-void OvCore::Rendering::SceneRenderer::ParseScene()
+OvCore::Rendering::SceneRenderer::AllDrawables OvCore::Rendering::SceneRenderer::ParseScene()
 {
 	using namespace OvCore::ECS::Components;
 
-	m_opaqueDrawables.clear();
-	m_transparentDrawables.clear();
+	OpaqueDrawables opaques;
+	TransparentDrawables transparents;
 
 	auto& camera = m_frameDescriptor.camera.value();
 
@@ -149,21 +173,20 @@ void OvCore::Rendering::SceneRenderer::ParseScene()
 
 							if (material)
 							{
-								SceneDrawable drawable;
+								OvRendering::Entities::Drawable drawable;
 								drawable.modelMatrix = transform.GetWorldMatrix();
 								drawable.mesh = *mesh;
 								drawable.material = *material;
 								drawable.stateMask = material->GenerateStateMask();
 								drawable.userMatrix = materialRenderer->GetUserMatrix();
-								drawable.actor = owner;
 
 								if (material->IsBlendable())
 								{
-									m_transparentDrawables.emplace(distanceToActor, drawable);
+									transparents.emplace(distanceToActor, drawable);
 								}
 								else
 								{
-									m_opaqueDrawables.emplace(distanceToActor, drawable);
+									opaques.emplace(distanceToActor, drawable);
 								}
 							}
 						}
@@ -172,4 +195,6 @@ void OvCore::Rendering::SceneRenderer::ParseScene()
 			}
 		}
 	}
+
+	return { opaques, transparents };
 }
