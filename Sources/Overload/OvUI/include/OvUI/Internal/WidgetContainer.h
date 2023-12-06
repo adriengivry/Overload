@@ -6,10 +6,10 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "OvUI/Widgets/AWidget.h"
-#include "OvUI/Internal/EMemoryMode.h"
 
 namespace OvUI::Internal
 {
@@ -32,9 +32,8 @@ namespace OvUI::Internal
 
 		/**
 		* Consider a widget
-		* @param p_manageMemory
 		*/
-		void ConsiderWidget(Widgets::AWidget& p_widget, bool p_manageMemory = true);
+		void ConsiderWidget(Widgets::AWidget& p_widget);
 
 		/**
 		* Unconsider a widget
@@ -52,10 +51,10 @@ namespace OvUI::Internal
 		*/
 		void DrawWidgets();
 
-        /**
-        * Allow the user to reverse the draw order of this widget container
-        */
-        void ReverseDrawOrder(bool reversed = true);
+		/**
+		* Allow the user to reverse the draw order of this widget container
+		*/
+		void ReverseDrawOrder(bool reversed = true);
 
 		/**
 		* Create a widget
@@ -64,19 +63,19 @@ namespace OvUI::Internal
 		template <typename T, typename ... Args>
 		T& CreateWidget(Args&&... p_args)
 		{
-			m_widgets.emplace_back(new T(p_args...), Internal::EMemoryMode::INTERNAL_MANAGMENT);
-			T& instance = *reinterpret_cast<T*>(m_widgets.back().first);
+			m_widgets.emplace_back(std::make_shared<T>(p_args...));
+			T& instance = *std::dynamic_pointer_cast<T>(m_widgets.back());
 			instance.SetParent(this);
 			return instance;
 		}
 
 		/**
-		* Returns the widgets and their memory management mode
+		* Returns the widgets
 		*/
-		std::vector<std::pair<OvUI::Widgets::AWidget*, Internal::EMemoryMode>>& GetWidgets();
+		std::vector<std::shared_ptr<Widgets::AWidget>>& GetWidgets();
 
 	protected:
-		std::vector<std::pair<OvUI::Widgets::AWidget*, Internal::EMemoryMode>> m_widgets;
-        bool m_reversedDrawOrder = false;
+		std::vector<std::shared_ptr<Widgets::AWidget>> m_widgets;
+		bool m_reversedDrawOrder = false;
 	};
 }
