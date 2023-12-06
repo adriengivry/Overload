@@ -6,19 +6,13 @@
 
 #pragma once
 
-// TODO: Move constants to cpp
-#define PI 3.14159265359f
-#define EPSILON 0.00001f
-
 #include <stdint.h>
 
 #include "OvMaths/FVector3.h"
 #include "OvMaths/FVector4.h"
 
-
 namespace OvMaths
 {
-
 	/**
 	* Forward declaration due to circular reference
 	*/

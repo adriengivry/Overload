@@ -15,8 +15,6 @@ namespace OvRendering::Data
 	*/
 	struct StateMask
 	{
-		// TODO: Add more common driver settings to the state mask (rasterization mode, line width...)
-		// Also maybe move ApplyStateMask method to here, taking a driver as a parameter
 		union
 		{
 			struct
@@ -24,7 +22,6 @@ namespace OvRendering::Data
 				uint8_t depthWriting : 1;
 				uint8_t colorWriting : 1;
 				uint8_t blendable : 1;
-				uint8_t culling : 1;
 				uint8_t depthTest : 1;
 				uint8_t backfaceCulling : 1;
 				uint8_t frontfaceCulling : 1;
@@ -32,20 +29,5 @@ namespace OvRendering::Data
 
 			uint8_t mask;
 		};
-
-		StateMask() : mask(0) {}
-
-		StateMask(uint8_t mask) : mask(mask) {}
-
-		StateMask(bool p_depthWriting, bool p_colorWriting, bool p_blendable, bool p_backfaceCulling, bool p_frontfaceCulling, bool p_depthTest)
-		{
-			depthWriting = p_depthWriting;
-			colorWriting = p_colorWriting;
-			blendable = p_blendable;
-			culling = (p_backfaceCulling || p_frontfaceCulling);
-			depthTest = p_depthTest;
-			backfaceCulling = p_backfaceCulling;
-			frontfaceCulling = p_frontfaceCulling;
-		}
 	};
 }

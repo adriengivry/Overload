@@ -15,7 +15,7 @@
 #include "OvCore/Resources/Material.h"
 #include "OvCore/ECS/Components/AComponent.h"
 
-#define MAX_MATERIAL_COUNT 255 //TODO: use constexpr
+constexpr uint8_t kMaxMaterialCount = 0xFF;
 
 namespace OvCore::ECS { class Actor; }
 
@@ -27,8 +27,8 @@ namespace OvCore::ECS::Components
 	class CMaterialRenderer : public AComponent
 	{
 	public:
-		using MaterialList = std::array<OvCore::Resources::Material*, MAX_MATERIAL_COUNT>;
-		using MaterialField = std::array<std::array<OvUI::Widgets::AWidget*, 3>, MAX_MATERIAL_COUNT>;
+		using MaterialList = std::array<OvCore::Resources::Material*, kMaxMaterialCount>;
+		using MaterialField = std::array<std::array<OvUI::Widgets::AWidget*, 3>, kMaxMaterialCount>;
 
 		/**
 		* Constructor
@@ -130,7 +130,7 @@ namespace OvCore::ECS::Components
 	private:
 		MaterialList m_materials;
 		MaterialField m_materialFields;
-		std::array<std::string, MAX_MATERIAL_COUNT> m_materialNames;
+		std::array<std::string, kMaxMaterialCount> m_materialNames;
 		OvMaths::FMatrix4 m_userMatrix;
 	};
 }

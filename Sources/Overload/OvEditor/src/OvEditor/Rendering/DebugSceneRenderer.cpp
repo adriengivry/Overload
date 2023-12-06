@@ -192,7 +192,7 @@ protected:
 
 				if (modelRenderer && modelRenderer->GetModel())
 				{
-					RenderBoundingSpheres(*modelRenderer);
+					DrawBoundingSpheres(*modelRenderer);
 				}
 			}
 
@@ -200,31 +200,31 @@ protected:
 			if (auto cameraComponent = p_actor.GetComponent<OvCore::ECS::Components::CCamera>(); cameraComponent)
 			{
 				auto model = CalculateCameraModelMatrix(p_actor);
-				RenderCameraFrustum(*cameraComponent);
+				DrawCameraFrustum(*cameraComponent);
 			}
 
 			/* Render the actor collider */
 			if (p_actor.GetComponent<OvCore::ECS::Components::CPhysicalObject>())
 			{
-				RenderActorCollider(p_actor);
+				DrawActorCollider(p_actor);
 			}
 
 			/* Render the actor ambient light */
 			if (auto ambientBoxComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientBoxLight>())
 			{
-				RenderAmbientBoxVolume(*ambientBoxComp);
+				DrawAmbientBoxVolume(*ambientBoxComp);
 			}
 
 			if (auto ambientSphereComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientSphereLight>())
 			{
-				RenderAmbientSphereVolume(*ambientSphereComp);
+				DrawAmbientSphereVolume(*ambientSphereComp);
 			}
 
 			if (OvEditor::Settings::EditorSettings::ShowLightBounds)
 			{
 				if (auto light = p_actor.GetComponent<OvCore::ECS::Components::CLight>())
 				{
-					RenderLightBounds(*light);
+					DrawLightBounds(*light);
 				}
 			}
 
@@ -280,7 +280,7 @@ protected:
 		draw(d + forward * near, h + forward * far, 0);
 	}
 
-	void RenderCameraPerspectiveFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera)
+	void DrawCameraPerspectiveFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera)
 	{
 		const auto& owner = p_camera.owner;
 		auto& camera = p_camera.GetCamera();
@@ -289,7 +289,7 @@ protected:
 		const auto& cameraRotation = owner.transform.GetWorldRotation();
 		const auto& cameraForward = owner.transform.GetWorldForward();
 
-		camera.CacheMatrices(p_size.first, p_size.second); // TODO: We shouldn't cache matrices mid air, we could use another funciton to get the matrices/calculate
+		camera.CacheMatrices(p_size.first, p_size.second); // TODO: We shouldn't cache matrices mid air, we could use another function to get the matrices/calculate
 		const auto proj = FMatrix4::Transpose(camera.GetProjectionMatrix());
 		const auto near = camera.GetNear();
 		const auto far = camera.GetFar();
@@ -316,7 +316,7 @@ protected:
 		DrawFrustumLines(cameraPos, cameraForward, near, far, a, b, c, d, e, f, g, h);
 	}
 
-	void RenderCameraOrthographicFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera)
+	void DrawCameraOrthographicFrustum(std::pair<uint16_t, uint16_t>& p_size, OvCore::ECS::Components::CCamera& p_camera)
 	{
 		auto& owner = p_camera.owner;
 		auto& camera = p_camera.GetCamera();
@@ -343,7 +343,7 @@ protected:
 		DrawFrustumLines(cameraPos, cameraForward, near, far, a, b, c, d, a, b, c, d);
 	}
 
-	void RenderCameraFrustum(OvCore::ECS::Components::CCamera& p_camera)
+	void DrawCameraFrustum(OvCore::ECS::Components::CCamera& p_camera)
 	{
 		auto& gameView = EDITOR_PANEL(OvEditor::Panels::GameView, "Game View");
 		auto gameViewSize = gameView.GetSafeSize();
@@ -356,16 +356,16 @@ protected:
 		switch (p_camera.GetProjectionMode())
 		{
 		case OvRendering::Settings::EProjectionMode::ORTHOGRAPHIC:
-			RenderCameraOrthographicFrustum(gameViewSize, p_camera);
+			DrawCameraOrthographicFrustum(gameViewSize, p_camera);
 			break;
 
 		case OvRendering::Settings::EProjectionMode::PERSPECTIVE:
-			RenderCameraPerspectiveFrustum(gameViewSize, p_camera);
+			DrawCameraPerspectiveFrustum(gameViewSize, p_camera);
 			break;
 		}
 	}
 
-	void RenderActorCollider(OvCore::ECS::Actor& p_actor)
+	void DrawActorCollider(OvCore::ECS::Actor& p_actor)
 	{
 		using namespace OvCore::ECS::Components;
 		using namespace OvPhysics::Entities;
@@ -421,7 +421,7 @@ protected:
 		}
 	}
 
-	void RenderLightBounds(OvCore::ECS::Components::CLight& p_light)
+	void DrawLightBounds(OvCore::ECS::Components::CLight& p_light)
 	{
 		auto pso = m_renderer.CreatePipelineState();
 		pso.depthTest = false;
@@ -438,7 +438,7 @@ protected:
 		);
 	}
 
-	void RenderAmbientBoxVolume(OvCore::ECS::Components::CAmbientBoxLight& p_ambientBoxLight)
+	void DrawAmbientBoxVolume(OvCore::ECS::Components::CAmbientBoxLight& p_ambientBoxLight)
 	{
 		auto pso = m_renderer.CreatePipelineState();
 		pso.depthTest = false;
@@ -455,7 +455,7 @@ protected:
 		);
 	}
 
-	void RenderAmbientSphereVolume(OvCore::ECS::Components::CAmbientSphereLight& p_ambientSphereLight)
+	void DrawAmbientSphereVolume(OvCore::ECS::Components::CAmbientSphereLight& p_ambientSphereLight)
 	{
 		auto pso = m_renderer.CreatePipelineState();
 		pso.depthTest = false;
@@ -472,7 +472,7 @@ protected:
 		);
 	}
 
-	void RenderBoundingSpheres(OvCore::ECS::Components::CModelRenderer& p_modelRenderer)
+	void DrawBoundingSpheres(OvCore::ECS::Components::CModelRenderer& p_modelRenderer)
 	{
 		using namespace OvCore::ECS::Components;
 		using namespace OvPhysics::Entities;
@@ -535,9 +535,9 @@ protected:
 };
 
 OvEditor::Rendering::DebugSceneRenderer::DebugSceneRenderer(OvRendering::Context::Driver& p_driver) :
-	OvCore::Rendering::SceneRenderer(p_driver),
-	m_debugShapeFeature(AddFeature<OvRendering::Features::DebugShapeRenderFeature>())
+	OvCore::Rendering::SceneRenderer(p_driver)
 {
+	AddFeature<OvRendering::Features::DebugShapeRenderFeature>();
 	AddFeature<OvEditor::Rendering::OutlineRenderFeature>();
 	AddFeature<OvEditor::Rendering::GizmoRenderFeature>();
 

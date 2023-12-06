@@ -12,8 +12,6 @@
 
 namespace OvRendering::Features
 {
-	//TODO: Rename into something like FrameStats or FrameAnalysis
-	// If so, also rename the FrameInfo struct (The FrameInfo struct should be moved to inside of this class I guess)
 	class FrameInfoRenderFeature : public OvRendering::Features::ARenderFeature
 	{
 	public:

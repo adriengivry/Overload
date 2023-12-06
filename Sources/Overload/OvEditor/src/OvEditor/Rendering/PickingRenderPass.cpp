@@ -151,7 +151,7 @@ void OvEditor::Rendering::PickingRenderPass::DrawPickableModels(
 
 					for (auto mesh : model->GetMeshes())
 					{
-						if (mesh->GetMaterialIndex() < MAX_MATERIAL_COUNT)
+						if (mesh->GetMaterialIndex() < kMaxMaterialCount)
 						{
 							if (auto material = materials.at(mesh->GetMaterialIndex()))
 							{
@@ -228,7 +228,6 @@ void OvEditor::Rendering::PickingRenderPass::DrawPickableGizmo(
 	OvEditor::Core::EGizmoOperation p_operation
 )
 {
-	// TODO: Fix model matrix, looks like the drawn model is massive
 	auto modelMatrix =
 		OvMaths::FMatrix4::Translation(p_position) *
 		OvMaths::FQuaternion::ToMatrix4(OvMaths::FQuaternion::Normalize(p_rotation));

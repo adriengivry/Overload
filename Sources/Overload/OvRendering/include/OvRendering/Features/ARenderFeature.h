@@ -30,7 +30,7 @@ namespace OvRendering::Features
 		/**
 		* Destructor
 		*/
-		virtual ~ARenderFeature() = default; // TODO: Maybe make protected
+		virtual ~ARenderFeature() = default;
 
 	protected:
 		/**

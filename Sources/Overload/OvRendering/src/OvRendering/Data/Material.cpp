@@ -177,14 +177,14 @@ int OvRendering::Data::Material::GetGPUInstances() const
 
 const OvRendering::Data::StateMask OvRendering::Data::Material::GenerateStateMask() const
 {
-	return StateMask(
-		m_depthWriting,
-		m_colorWriting,
-		m_blendable,
-		m_backfaceCulling,
-		m_frontfaceCulling,
-		m_depthTest
-	);
+	StateMask stateMask;
+	stateMask.depthWriting = m_depthWriting;
+	stateMask.colorWriting = m_colorWriting;
+	stateMask.blendable = m_blendable;
+	stateMask.depthTest = m_depthTest;
+	stateMask.frontfaceCulling = m_frontfaceCulling;
+	stateMask.backfaceCulling = m_backfaceCulling;
+	return stateMask;
 }
 
 std::map<std::string, std::any>& OvRendering::Data::Material::GetUniformsData()

@@ -113,10 +113,10 @@ void OvRendering::Core::ABaseRenderer::DrawEntity(
 		p_pso.depthWriting = p_drawable.stateMask.depthWriting;
 		p_pso.colorWriting.mask = p_drawable.stateMask.colorWriting ? 0xFF : 0x00;
 		p_pso.blending = p_drawable.stateMask.blendable;
-		p_pso.culling = p_drawable.stateMask.culling;
+		p_pso.culling = p_drawable.stateMask.frontfaceCulling || p_drawable.stateMask.backfaceCulling;
 		p_pso.depthTest = p_drawable.stateMask.depthTest;
 
-		if (p_drawable.stateMask.culling)
+		if (p_pso.culling)
 		{
 			if (p_drawable.stateMask.backfaceCulling && p_drawable.stateMask.frontfaceCulling)
 			{

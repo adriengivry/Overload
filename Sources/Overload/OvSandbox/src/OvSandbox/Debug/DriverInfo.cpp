@@ -6,8 +6,6 @@
 
 #ifdef _DEBUG
 
-#include <gl/glew.h> // TODO: Not great, we should wrap all the glew calls into the driver
-
 #include "OvSandbox/Debug/DriverInfo.h"
 
 OvSandbox::Debug::DriverInfo::DriverInfo(OvRendering::Context::Driver& p_driver, OvWindowing::Window& p_window)

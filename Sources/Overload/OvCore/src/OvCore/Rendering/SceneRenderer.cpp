@@ -164,7 +164,7 @@ OvCore::Rendering::SceneRenderer::AllDrawables OvCore::Rendering::SceneRenderer:
 						{
 							OvCore::Resources::Material* material = nullptr;
 
-							if (mesh->GetMaterialIndex() < MAX_MATERIAL_COUNT)
+							if (mesh->GetMaterialIndex() < kMaxMaterialCount)
 							{
 								material = materials.at(mesh->GetMaterialIndex());
 								if (!material || !material->GetShader())
