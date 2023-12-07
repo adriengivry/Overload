@@ -18,7 +18,7 @@ namespace OvRendering::Core
 		static_assert(std::is_base_of<Features::ARenderFeature, T>::value, "T must inherit from ARenderFeature");
 		T* feature = new T(*this, std::forward<Args>(args)...);
 		m_features.emplace(typeid(T), feature);
-		return dynamic_cast<T&>(*feature);
+		return *feature;
 	}
 
 	template<typename T>
@@ -61,7 +61,7 @@ namespace OvRendering::Core
 		// TODO: Add validation, make sure every pass has a unique name
 		T* pass = new T(*this, std::forward<Args>(args)...);
 		m_passes.emplace(p_order, std::make_pair(p_name, std::unique_ptr<ARenderPass>(pass)));
-		return dynamic_cast<T&>(*pass);
+		return *pass;
 	}
 
 	template<typename T>
