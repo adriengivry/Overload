@@ -16,6 +16,9 @@ namespace OvRendering::Core
 
 namespace OvRendering::Features
 {
+	/**
+	* Extension of the composite renderer that provides new rendering capabilities
+	*/
 	class ARenderFeature
 	{
 	public:

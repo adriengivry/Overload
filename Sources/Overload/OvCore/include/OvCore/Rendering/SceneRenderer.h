@@ -23,7 +23,7 @@
 namespace OvCore::Rendering
 {
 	/**
-	* Extension of the ImmediateRenderer adding support for the scene system
+	* Extension of the CompositeRenderer adding support for the scene system (parsing/drawing entities)
 	*/
 	class SceneRenderer : public OvRendering::Core::CompositeRenderer
 	{

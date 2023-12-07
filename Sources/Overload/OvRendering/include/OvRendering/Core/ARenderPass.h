@@ -16,6 +16,9 @@ namespace OvRendering::Core
 
 namespace OvRendering::Core
 {
+	/**
+	* Defines a rendering step in the graphics pipeline
+	*/
 	class ARenderPass
 	{
 	public:
