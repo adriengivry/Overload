@@ -151,22 +151,20 @@ void OvEditor::Rendering::PickingRenderPass::DrawPickableModels(
 
 					for (auto mesh : model->GetMeshes())
 					{
-						if (mesh->GetMaterialIndex() < kMaxMaterialCount)
-						{
-							if (auto material = materials.at(mesh->GetMaterialIndex()))
-							{
-								if (material && material->GetShader())
-								{
-									OvRendering::Entities::Drawable drawable;
-									drawable.modelMatrix = modelMatrix;
-									drawable.mesh = *mesh;
-									drawable.material = m_actorPickingMaterial;
-									drawable.stateMask = material->GenerateStateMask();
+						auto stateMask = m_actorPickingMaterial.GenerateStateMask();
 
-									m_renderer.DrawEntity(p_pso, drawable);
-								}
-							}
+						// Override the state mask to use the material state mask (if this one is valid)
+						if (auto material = materials.at(mesh->GetMaterialIndex()); material && material->IsValid())
+						{
+							stateMask = material->GenerateStateMask();
 						}
+
+						OvRendering::Entities::Drawable drawable;
+						drawable.modelMatrix = modelMatrix;
+						drawable.mesh = *mesh;
+						drawable.material = m_actorPickingMaterial;
+						drawable.stateMask = stateMask;
+						m_renderer.DrawEntity(p_pso, drawable);
 					}
 				}
 			}

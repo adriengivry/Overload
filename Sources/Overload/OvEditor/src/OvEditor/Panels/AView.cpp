@@ -36,9 +36,9 @@ void OvEditor::Panels::AView::_Draw_Impl()
 
 void OvEditor::Panels::AView::InitFrame()
 {
-	// Views should probably override this method
-	// and add appropriate descriptors for their
-	// respective renderers.
+	m_renderer->AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>(
+		CreateSceneDescriptor()
+	);
 }
 
 void OvEditor::Panels::AView::Render()
@@ -50,10 +50,6 @@ void OvEditor::Panels::AView::Render()
 	if (winWidth > 0 && winHeight > 0 && camera && scene)
 	{
 		InitFrame();
-
-		m_renderer->AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>({
-			*scene
-		});
 
 		OvRendering::Data::FrameDescriptor frameDescriptor;
 		frameDescriptor.renderWidth = winWidth;
@@ -81,4 +77,15 @@ std::pair<uint16_t, uint16_t> OvEditor::Panels::AView::GetSafeSize() const
 const OvCore::Rendering::SceneRenderer& OvEditor::Panels::AView::GetRenderer() const
 {
 	return *m_renderer.get();
+}
+
+OvCore::Rendering::SceneRenderer::SceneDescriptor OvEditor::Panels::AView::CreateSceneDescriptor()
+{
+	auto scene = GetScene();
+
+	OVASSERT(scene, "No scene assigned to this view!");
+
+	return {
+		*scene
+	};
 }

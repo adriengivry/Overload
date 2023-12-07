@@ -123,14 +123,12 @@ namespace OvRendering::Core
 		* @param p_model
 		* @param p_material
 		* @param p_modelMatrix
-		* @param p_fallbackMaterial (material to use if the given material is invalid)
 		*/
 		virtual void DrawModelWithSingleMaterial(
 			OvRendering::Data::PipelineState p_pso,
 			OvRendering::Resources::Model& p_model,
 			OvRendering::Data::Material& p_material,
-			const OvMaths::FMatrix4& p_modelMatrix,
-			std::optional<std::reference_wrapper<OvRendering::Data::Material>> p_fallbackMaterial = std::nullopt
+			const OvMaths::FMatrix4& p_modelMatrix
 		);
 
 	protected:

@@ -48,7 +48,6 @@ namespace OvEditor::Panels
 
 		/**
 		* Prepare the renderer for rendering
-		* @note Views should probably override this method and add appropriate descriptors for their respective renderers.
 		*/
 		virtual void InitFrame();
 
@@ -82,6 +81,9 @@ namespace OvEditor::Panels
 		* Returns the renderer used by this view
 		*/
 		const OvCore::Rendering::SceneRenderer& GetRenderer() const;
+
+	protected:
+		virtual OvCore::Rendering::SceneRenderer::SceneDescriptor CreateSceneDescriptor();
 
 	protected:
 		OvUI::Widgets::Visual::Image* m_image;

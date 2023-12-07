@@ -105,6 +105,11 @@ bool OvRendering::Data::Material::HasShader() const
 	return m_shader;
 }
 
+bool OvRendering::Data::Material::IsValid() const
+{
+	return HasShader();
+}
+
 void OvRendering::Data::Material::SetBlendable(bool p_transparent)
 {
 	m_blendable = p_transparent;

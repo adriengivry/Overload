@@ -35,6 +35,8 @@ void OvEditor::Panels::AViewControllable::Update(float p_deltaTime)
 
 void OvEditor::Panels::AViewControllable::InitFrame()
 {
+	AView::InitFrame();
+
 	m_renderer->AddDescriptor<Rendering::GridRenderPass::GridDescriptor>({
 		m_gridColor,
 		m_camera.GetPosition()

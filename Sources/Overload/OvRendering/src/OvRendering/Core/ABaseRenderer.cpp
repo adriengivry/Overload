@@ -108,7 +108,9 @@ void OvRendering::Core::ABaseRenderer::DrawEntity(
 	auto material = p_drawable.material;
 	auto mesh = p_drawable.mesh;
 
-	if (mesh && material && material.value().HasShader() && material.value().GetGPUInstances() > 0)
+	const auto gpuInstances = material.value().GetGPUInstances();
+
+	if (mesh && material && material->IsValid() && gpuInstances > 0)
 	{
 		p_pso.depthWriting = p_drawable.stateMask.depthWriting;
 		p_pso.colorWriting.mask = p_drawable.stateMask.colorWriting ? 0xFF : 0x00;
@@ -131,9 +133,9 @@ void OvRendering::Core::ABaseRenderer::DrawEntity(
 			}
 		}
 
-		p_drawable.material.value().Bind(m_emptyTexture);
-		DrawMesh(p_pso, mesh.value(), OvRendering::Settings::EPrimitiveMode::TRIANGLES, p_drawable.material.value().GetGPUInstances());
-		p_drawable.material.value().UnBind();
+		material->Bind(m_emptyTexture);
+		DrawMesh(p_pso, mesh.value(), Settings::EPrimitiveMode::TRIANGLES, gpuInstances);
+		material->UnBind();
 	}
 }
 
@@ -181,31 +183,21 @@ void OvRendering::Core::ABaseRenderer::DrawModelWithSingleMaterial(
 	OvRendering::Data::PipelineState p_pso,
 	OvRendering::Resources::Model& p_model,
 	OvRendering::Data::Material& p_material,
-	const OvMaths::FMatrix4& p_modelMatrix,
-	std::optional<std::reference_wrapper<OvRendering::Data::Material>> p_fallbackMaterial
+	const OvMaths::FMatrix4& p_modelMatrix
 )
 {
-	std::optional<std::reference_wrapper<Data::Material>> targetMaterial =
-		p_material.GetShader() ?
-		std::ref(p_material) :
-		p_fallbackMaterial;
+	auto stateMask = p_material.GenerateStateMask();
+	auto userMatrix = OvMaths::FMatrix4::Identity;
 
-	if (targetMaterial)
+	for (auto mesh : p_model.GetMeshes())
 	{
-		Data::Material& material = targetMaterial.value().get();
-		Data::StateMask stateMask = material.GenerateStateMask();
-		OvMaths::FMatrix4 userMatrix = OvMaths::FMatrix4::Identity;
+		OvRendering::Entities::Drawable element;
+		element.modelMatrix = p_modelMatrix;
+		element.mesh = *mesh;
+		element.material = p_material;
+		element.stateMask = stateMask;
+		element.userMatrix = userMatrix;
 
-		for (auto mesh : p_model.GetMeshes())
-		{
-			OvRendering::Entities::Drawable element;
-			element.modelMatrix = p_modelMatrix;
-			element.mesh = *mesh;
-			element.material = material;
-			element.stateMask = stateMask;
-			element.userMatrix = userMatrix;
-
-			DrawEntity(p_pso, element);
-		}
+		DrawEntity(p_pso, element);
 	}
 }

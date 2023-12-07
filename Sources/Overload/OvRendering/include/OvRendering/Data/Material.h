@@ -74,6 +74,11 @@ namespace OvRendering::Data
 		bool HasShader() const;
 
 		/**
+		* Returns true if the material is valid
+		*/
+		bool IsValid() const;
+
+		/**
 		* Defines if the material is blendable
 		* @param p_blendable
 		*/

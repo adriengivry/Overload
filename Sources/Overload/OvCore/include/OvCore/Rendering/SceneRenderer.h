@@ -41,7 +41,8 @@ namespace OvCore::Rendering
 		{
 			OvCore::SceneSystem::Scene& scene;
 			std::optional<OvRendering::Data::Frustum> frustumOverride;
-			std::optional<std::reference_wrapper<OvCore::Resources::Material>> materialOverride;
+			OvTools::Utils::OptRef<OvRendering::Data::Material> overrideMaterial;
+			OvTools::Utils::OptRef<OvRendering::Data::Material> fallbackMaterial;
 		};
 
 		/**

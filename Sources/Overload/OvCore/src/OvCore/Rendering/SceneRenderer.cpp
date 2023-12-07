@@ -108,7 +108,8 @@ OvCore::Rendering::SceneRenderer::AllDrawables OvCore::Rendering::SceneRenderer:
 
 	auto& sceneDescriptor = GetDescriptor<SceneDescriptor>();
 	auto& scene = sceneDescriptor.scene;
-	auto& materialOverride = sceneDescriptor.materialOverride;
+	auto overrideMaterial = sceneDescriptor.overrideMaterial;
+	auto fallbackMaterial = sceneDescriptor.fallbackMaterial;
 	std::optional<OvRendering::Data::Frustum> frustum = std::nullopt;
 
 	if (camera.HasFrustumGeometryCulling())
@@ -162,21 +163,34 @@ OvCore::Rendering::SceneRenderer::AllDrawables OvCore::Rendering::SceneRenderer:
 
 						for (const auto& mesh : meshes)
 						{
-							OvCore::Resources::Material* material = nullptr;
+							OvTools::Utils::OptRef<OvRendering::Data::Material> material;
 
 							if (mesh->GetMaterialIndex() < kMaxMaterialCount)
 							{
-								material = materials.at(mesh->GetMaterialIndex());
-								if (!material || !material->GetShader())
-									material = materialOverride ? &materialOverride.value().get() : nullptr;
+								if (overrideMaterial && overrideMaterial->IsValid())
+								{
+									material = overrideMaterial.value();
+								}
+								else
+								{
+									material = materials.at(mesh->GetMaterialIndex());
+								}
+
+								const bool isMaterialValid = material && material->IsValid();
+								const bool hasValidFallbackMaterial = fallbackMaterial && fallbackMaterial->IsValid();
+
+								if (!isMaterialValid && hasValidFallbackMaterial)
+								{
+									material = fallbackMaterial;
+								}
 							}
 
-							if (material)
+							if (material && material->IsValid())
 							{
 								OvRendering::Entities::Drawable drawable;
 								drawable.modelMatrix = transform.GetWorldMatrix();
 								drawable.mesh = *mesh;
-								drawable.material = *material;
+								drawable.material = material;
 								drawable.stateMask = material->GenerateStateMask();
 								drawable.userMatrix = materialRenderer->GetUserMatrix();
 

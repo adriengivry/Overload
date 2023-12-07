@@ -41,6 +41,9 @@ namespace OvEditor::Panels
 		*/
 		virtual OvCore::SceneSystem::Scene* GetScene();
 
+	protected:
+		virtual OvCore::Rendering::SceneRenderer::SceneDescriptor CreateSceneDescriptor() override;
+
 	private:
 		virtual void DrawFrame() override;
 		void HandleActorPicking();
@@ -50,6 +53,7 @@ namespace OvEditor::Panels
 		OvRendering::Buffers::Framebuffer m_actorPickingFramebuffer;
 		OvEditor::Core::GizmoBehaviour m_gizmoOperations;
 		OvEditor::Core::EGizmoOperation m_currentOperation = OvEditor::Core::EGizmoOperation::TRANSLATE;
+		OvCore::Resources::Material m_fallbackMaterial;
 
 		OvTools::Utils::OptRef<OvCore::ECS::Actor> m_highlightedActor;
 		std::optional<OvEditor::Core::GizmoBehaviour::EDirection> m_highlightedGizmoDirection;

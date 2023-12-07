@@ -25,6 +25,10 @@ OvEditor::Panels::SceneView::SceneView
 
 	m_camera.SetFar(5000.0f);
 
+	m_fallbackMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
+	m_fallbackMaterial.Set<OvMaths::FVector4>("u_Diffuse", { 1.f, 0.f, 1.f, 1.0f });
+	m_fallbackMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
+
 	m_image->AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, OvUI::Widgets::Layout::Group*>>>("File").DataReceivedEvent += [this](auto p_data)
 	{
 		std::string path = p_data.first;
@@ -92,6 +96,13 @@ void OvEditor::Panels::SceneView::InitFrame()
 OvCore::SceneSystem::Scene* OvEditor::Panels::SceneView::GetScene()
 {
 	return m_sceneManager.GetCurrentScene();
+}
+
+OvCore::Rendering::SceneRenderer::SceneDescriptor OvEditor::Panels::SceneView::CreateSceneDescriptor()
+{
+	auto descriptor = AViewControllable::CreateSceneDescriptor();
+	descriptor.fallbackMaterial = m_fallbackMaterial;
+	return descriptor;
 }
 
 void OvEditor::Panels::SceneView::DrawFrame()
