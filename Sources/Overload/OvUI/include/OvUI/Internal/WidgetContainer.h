@@ -20,6 +20,16 @@ namespace OvUI::Internal
 	{
 	public:
 		/**
+		* Constructor
+		*/
+		WidgetContainer() = default;
+
+		/**
+		* Destructor. Handle the memory de-allocation of every widgets that are internally managed
+		*/
+		virtual ~WidgetContainer();
+
+		/**
 		* Remove a widget from the container
 		* @param p_widget
 		*/

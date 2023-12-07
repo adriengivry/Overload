@@ -8,6 +8,11 @@
 
 #include "OvUI/Internal/WidgetContainer.h"
 
+OvUI::Internal::WidgetContainer::~WidgetContainer()
+{
+	RemoveAllWidgets();
+}
+
 void OvUI::Internal::WidgetContainer::RemoveWidget(Widgets::AWidget& p_widget)
 {
 	auto found = std::find_if(m_widgets.begin(), m_widgets.end(), [&p_widget](std::pair<OvUI::Widgets::AWidget*, Internal::EMemoryMode>& p_pair)
