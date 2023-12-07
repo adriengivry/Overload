@@ -4,6 +4,8 @@
 * @licence: MIT
 */
 
+#include <OvRendering/Features/FrameInfoRenderFeature.h>
+
 #include <OvCore/ECS/Components/CCamera.h>
 #include <OvCore/Rendering/SceneRenderer.h>
 
@@ -21,6 +23,7 @@ OvEditor::Panels::GameView::GameView
 	m_sceneManager(EDITOR_CONTEXT(sceneManager))
 {
 	m_renderer = std::make_unique<OvCore::Rendering::SceneRenderer>(*EDITOR_CONTEXT(driver));
+	m_renderer->AddFeature<OvRendering::Features::FrameInfoRenderFeature>();
 
 	OvRendering::Buffers::UniformBuffer test(1024, 1);
 }

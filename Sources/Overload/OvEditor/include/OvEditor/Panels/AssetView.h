@@ -73,7 +73,7 @@ namespace OvEditor::Panels
 		/**
 		* Return the currently previewed resource
 		*/
-		ViewableResource GetResource() const; // TODO: Consider removing this getter (and storing the m_resource at all)
+		const ViewableResource& GetResource() const;
 
 	private:
 		OvCore::Resources::Material m_defaultMaterial;

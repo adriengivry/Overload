@@ -77,3 +77,8 @@ std::pair<uint16_t, uint16_t> OvEditor::Panels::AView::GetSafeSize() const
 	auto result = GetSize() - OvMaths::FVector2{ 0.f, 25.f }; // 25 == title bar height
 	return { static_cast<uint16_t>(result.x), static_cast<uint16_t>(result.y) };
 }
+
+const OvCore::Rendering::SceneRenderer& OvEditor::Panels::AView::GetRenderer() const
+{
+	return *m_renderer.get();
+}

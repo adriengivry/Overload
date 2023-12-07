@@ -37,7 +37,7 @@ namespace OvRendering::Core
 	}
 
 	template<typename T>
-	inline T& CompositeRenderer::GetFeature()
+	inline T& CompositeRenderer::GetFeature() const
 	{
 		static_assert(std::is_base_of<Features::ARenderFeature, T>::value, "T should derive from ARenderFeature");
 		auto it = m_features.find(typeid(T));
@@ -65,7 +65,7 @@ namespace OvRendering::Core
 	}
 
 	template<typename T>
-	inline T& CompositeRenderer::GetPass(const std::string& p_name)
+	inline T& CompositeRenderer::GetPass(const std::string& p_name) const
 	{
 		static_assert(std::is_base_of<ARenderPass, T>::value, "T should derive from ARenderPass");
 		for (const auto& [_, pass] : m_passes)

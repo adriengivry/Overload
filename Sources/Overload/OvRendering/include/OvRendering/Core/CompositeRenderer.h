@@ -78,7 +78,7 @@ namespace OvRendering::Core
 		* @note Fails if the feature doesn't exist
 		*/
 		template<typename T>
-		T& GetFeature();
+		T& GetFeature() const;
 
 		/**
 		* Return true if the a feature matching the given type has been found
@@ -100,7 +100,7 @@ namespace OvRendering::Core
 		* @param p_name
 		*/
 		template<typename T>
-		T& GetPass(const std::string& p_name);
+		T& GetPass(const std::string& p_name) const;
 
 	protected:
 		std::unordered_map<std::type_index, std::unique_ptr<Features::ARenderFeature>> m_features;

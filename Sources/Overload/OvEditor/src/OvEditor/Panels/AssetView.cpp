@@ -4,8 +4,12 @@
 * @licence: MIT
 */
 
+#include <OvRendering/Features/FrameInfoRenderFeature.h>
+
 #include <OvTools/Utils/PathParser.h>
+
 #include <OvUI/Plugins/DDTarget.h>
+
 #include <OvCore/ECS/Components/CDirectionalLight.h>
 #include <OvCore/ECS/Components/CAmbientSphereLight.h>
 #include <OvCore/Rendering/SceneRenderer.h>
@@ -23,6 +27,8 @@ OvEditor::Panels::AssetView::AssetView
 {
 	m_renderer = std::make_unique<OvCore::Rendering::SceneRenderer>(*EDITOR_CONTEXT(driver));
 	m_renderer->AddFeature<OvRendering::Features::DebugShapeRenderFeature>();
+	m_renderer->AddFeature<OvRendering::Features::FrameInfoRenderFeature>();
+
 	m_renderer->AddPass<OvEditor::Rendering::GridRenderPass>("Grid", OvRendering::Settings::ERenderPassOrder::First);
 
 	m_camera.SetFar(5000.0f);
@@ -138,7 +144,7 @@ void OvEditor::Panels::AssetView::SetMaterial(OvCore::Resources::Material& p_mat
 	m_cameraController.MoveToTarget(*m_assetActor);
 }
 
-OvEditor::Panels::AssetView::ViewableResource OvEditor::Panels::AssetView::GetResource() const
+const OvEditor::Panels::AssetView::ViewableResource& OvEditor::Panels::AssetView::GetResource() const
 {
 	return m_resource;
 }

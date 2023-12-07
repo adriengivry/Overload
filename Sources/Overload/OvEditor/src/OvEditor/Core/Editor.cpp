@@ -166,6 +166,8 @@ void OvEditor::Core::Editor::UpdateEditorPanels(float p_deltaTime)
 	auto& frameInfo = m_panelsManager.GetPanelAs<OvEditor::Panels::FrameInfo>("Frame Info");
 	auto& hardwareInfo = m_panelsManager.GetPanelAs<OvEditor::Panels::HardwareInfo>("Hardware Info");
 	auto& sceneView = m_panelsManager.GetPanelAs<OvEditor::Panels::SceneView>("Scene View");
+	auto& gameView = m_panelsManager.GetPanelAs<OvEditor::Panels::GameView>("Game View");
+	auto& assetView = m_panelsManager.GetPanelAs<OvEditor::Panels::AssetView>("Asset View");
 
 	menuBar.HandleShortcuts(p_deltaTime);
 
@@ -175,7 +177,23 @@ void OvEditor::Core::Editor::UpdateEditorPanels(float p_deltaTime)
 	if (frameInfo.IsOpened())
 	{
 		PROFILER_SPY("Frame Info Update");
-		frameInfo.Update({}); // TODO: Fix FrameInfo (Get it from SceneView or GameView end frame I guess)
+
+		if (sceneView.IsFocused())
+		{
+			frameInfo.Update(sceneView);
+		}
+		else if (gameView.IsFocused())
+		{
+			frameInfo.Update(gameView);
+		}
+		else if (assetView.IsFocused())
+		{
+			frameInfo.Update(assetView);
+		}
+		else
+		{
+			frameInfo.Update(std::nullopt);
+		}
 	}
 
 	if (profiler.IsOpened())

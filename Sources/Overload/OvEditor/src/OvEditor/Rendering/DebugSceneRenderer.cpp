@@ -14,6 +14,7 @@
 #include <OvCore/ECS/Components/CSpotLight.h>
 
 #include <OvRendering/Features/DebugShapeRenderFeature.h>
+#include <OvRendering/Features/FrameInfoRenderFeature.h>
 
 #include <OvAnalytics/Profiling/ProfilerSpy.h>
 
@@ -537,6 +538,7 @@ protected:
 OvEditor::Rendering::DebugSceneRenderer::DebugSceneRenderer(OvRendering::Context::Driver& p_driver) :
 	OvCore::Rendering::SceneRenderer(p_driver)
 {
+	AddFeature<OvRendering::Features::FrameInfoRenderFeature>();
 	AddFeature<OvRendering::Features::DebugShapeRenderFeature>();
 	AddFeature<OvEditor::Rendering::OutlineRenderFeature>();
 	AddFeature<OvEditor::Rendering::GizmoRenderFeature>();

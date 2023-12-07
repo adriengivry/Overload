@@ -78,6 +78,11 @@ namespace OvEditor::Panels
 		*/
 		std::pair<uint16_t, uint16_t> GetSafeSize() const;
 
+		/**
+		* Returns the renderer used by this view
+		*/
+		const OvCore::Rendering::SceneRenderer& GetRenderer() const;
+
 	protected:
 		OvUI::Widgets::Visual::Image* m_image;
 

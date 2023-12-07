@@ -31,14 +31,17 @@ namespace OvGame::Debug
 
 		/**
 		* Update the data
-		* @parma p_frameInfo
+		* @param p_frameInfo
 		*/
 		void Update(const OvRendering::Data::FrameInfo& p_frameInfo);
 
 	private:
 		OvWindowing::Window& m_window;
 
-		OvUI::Widgets::Texts::TextColored* m_frameInfo[3];
+		OvUI::Widgets::Texts::TextColored& m_batchText;
+		OvUI::Widgets::Texts::TextColored& m_instanceText;
+		OvUI::Widgets::Texts::TextColored& m_polyText;
+		OvUI::Widgets::Texts::TextColored& m_vertexText;
 	};
 }
 
