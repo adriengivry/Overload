@@ -54,17 +54,17 @@ OvMaths::FMatrix4 CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor)
 	return translation * rotation;
 }
 
-std::optional<std::string> GetLightTypeTextureName(OvRendering::Entities::Light::Type type)
+std::optional<std::string> GetLightTypeTextureName(OvRendering::Settings::ELightType type)
 {
-	using namespace OvRendering::Entities;
+	using namespace OvRendering::Settings;
 
 	switch (type)
 	{
-	case Light::Type::POINT: return "Bill_Point_Light";
-	case Light::Type::SPOT: return "Bill_Spot_Light";
-	case Light::Type::DIRECTIONAL: return "Bill_Directional_Light";
-	case Light::Type::AMBIENT_BOX: return "Bill_Ambient_Box_Light";
-	case Light::Type::AMBIENT_SPHERE: return "Bill_Ambient_Sphere_Light";
+	case ELightType::POINT: return "Bill_Point_Light";
+	case ELightType::SPOT: return "Bill_Spot_Light";
+	case ELightType::DIRECTIONAL: return "Bill_Directional_Light";
+	case ELightType::AMBIENT_BOX: return "Bill_Ambient_Box_Light";
+	case ELightType::AMBIENT_SPHERE: return "Bill_Ambient_Sphere_Light";
 	}
 
 	return std::nullopt;
@@ -130,8 +130,7 @@ protected:
 				auto& model = *EDITOR_CONTEXT(editorResources)->GetModel("Vertical_Plane");
 				auto modelMatrix = OvMaths::FMatrix4::Translation(actor.transform.GetWorldPosition());
 
-				auto lightType = static_cast<OvRendering::Entities::Light::Type>(static_cast<int>(light->GetData().type));
-				auto lightTypeTextureName = GetLightTypeTextureName(lightType);
+				auto lightTypeTextureName = GetLightTypeTextureName(light->GetData().type);
 
 				auto lightTexture =
 					lightTypeTextureName ?
@@ -431,8 +430,8 @@ protected:
 
 		m_debugShapeFeature.DrawSphere(
 			pso,
-			data.GetTransform().GetWorldPosition(),
-			data.GetTransform().GetWorldRotation(),
+			data.transform->GetWorldPosition(),
+			data.transform->GetWorldRotation(),
 			data.GetEffectRange(),
 			kDebugBoundsColor,
 			1.0f
@@ -449,7 +448,7 @@ protected:
 		m_debugShapeFeature.DrawBox(
 			pso,
 			p_ambientBoxLight.owner.transform.GetWorldPosition(),
-			data.GetTransform().GetWorldRotation(),
+			data.transform->GetWorldRotation(),
 			{ data.constant, data.linear, data.quadratic },
 			data.GetEffectRange(),
 			1.0f

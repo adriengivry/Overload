@@ -15,7 +15,7 @@ OvRendering::Features::LightingRenderFeature::LightingRenderFeature(Core::Compos
 
 bool IsLightInFrustum(const OvRendering::Entities::Light& p_light, const OvRendering::Data::Frustum& p_frustum)
 {
-	const auto& position = p_light.GetTransform().GetWorldPosition();
+	const auto& position = p_light.transform->GetWorldPosition();
 	const auto effectRange = p_light.GetEffectRange();
 
 	// We always consider lights that have an +inf range (Not necessary to test if they are in frustum)

@@ -12,7 +12,7 @@
 #include "OvCore/ECS/Actor.h"
 
 OvCore::ECS::Components::CCamera::CCamera(ECS::Actor& p_owner)
-	: AComponent(p_owner), m_camera(&p_owner.transform.GetFTransform())
+	: AComponent(p_owner), m_camera{ p_owner.transform.GetFTransform() }
 {
 	/* Default clear color for the CCamera (Different from Camera default clear color) */
 	SetClearColor({ 0.1921569f, 0.3019608f, 0.4745098f });

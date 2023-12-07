@@ -478,7 +478,7 @@ OvMaths::FVector3 OvEditor::Core::EditorActions::CalculateActorSpawnPoint(float 
 
 	if (auto camera = sceneView.GetCamera())
 	{
-		return camera->GetPosition() + camera->GetTransform().GetWorldForward() * p_distanceToCamera;
+		return camera->GetPosition() + camera->transform->GetWorldForward() * p_distanceToCamera;
 	}
 
 	return OvMaths::FVector3::Zero;

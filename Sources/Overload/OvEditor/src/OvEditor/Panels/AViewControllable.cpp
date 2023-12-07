@@ -43,9 +43,8 @@ void OvEditor::Panels::AViewControllable::InitFrame()
 
 void OvEditor::Panels::AViewControllable::ResetCameraTransform()
 {
-	auto& transform = m_camera.GetTransform();
-	transform.SetWorldPosition(kDefaultCameraPosition);
-	transform.SetWorldRotation(kDefaultCameraRotation);
+	m_camera.transform->SetWorldPosition(kDefaultCameraPosition);
+	m_camera.transform->SetWorldRotation(kDefaultCameraRotation);
 }
 
 OvEditor::Core::CameraController& OvEditor::Panels::AViewControllable::GetCameraController()

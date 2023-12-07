@@ -10,6 +10,8 @@
 #include <optional>
 #include <stdexcept>
 
+#include "OvTools/Utils/OptRef.h"
+
 namespace OvTools::Utils
 {
 	/**
@@ -26,11 +28,11 @@ namespace OvTools::Utils
 		* Construct the ReferenceOrValue instance
 		* @param p_instance
 		*/
-		ReferenceOrValue(T* p_instance = nullptr)
+		ReferenceOrValue(OptRef<T> p_ref = std::nullopt)
 		{
-			if (p_instance)
+			if (p_ref)
 			{
-				m_data = p_instance;
+				m_data = &p_ref.value();
 			}
 			else
 			{
@@ -65,6 +67,16 @@ namespace OvTools::Utils
 				return *pval;
 			else
 				return *std::get<T*>(m_data);
+		}
+
+		T const* operator->() const
+		{
+			return &Get();
+		}
+
+		T* operator->()
+		{
+			return &GetRef();
 		}
 
 		/**

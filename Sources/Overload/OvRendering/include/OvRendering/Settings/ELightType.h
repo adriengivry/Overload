@@ -11,11 +11,14 @@
 namespace OvRendering::Settings
 {
 	/**
-	* Enumerate graphics backend implementations
+	* Light types
 	*/
-	enum class EGraphicsBackend : uint8_t
+	enum class ELightType : uint8_t
 	{
-		Null,
-		OpenGL
+		POINT,
+		DIRECTIONAL,
+		SPOT,
+		AMBIENT_BOX,
+		AMBIENT_SPHERE
 	};
 }

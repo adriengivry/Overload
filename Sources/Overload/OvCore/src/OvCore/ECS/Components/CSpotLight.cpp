@@ -17,7 +17,7 @@
 OvCore::ECS::Components::CSpotLight::CSpotLight(ECS::Actor & p_owner) :
 	CLight(p_owner)
 {
-	m_data.type = static_cast<float>(OvRendering::Entities::Light::Type::SPOT);
+	m_data.type = OvRendering::Settings::ELightType::SPOT;
 }
 
 std::string OvCore::ECS::Components::CSpotLight::GetName()

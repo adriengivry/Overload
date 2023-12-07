@@ -28,7 +28,7 @@ namespace OvRendering::Entities
 		* Constructor
 		* @param p_transform
 		*/
-		Camera(OvMaths::FTransform* p_transform = nullptr);
+		Camera(OvTools::Utils::OptRef<OvMaths::FTransform> p_transform = std::nullopt);
 
 		/**
 		* Cache the projection, view and frustum matrices

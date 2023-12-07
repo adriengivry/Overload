@@ -69,7 +69,6 @@ namespace OvRendering::Core
 		 * @param p_type
 		 * @param p_data
 		 */
-		// TODO: Move out of the base renderer, or rework
 		void ReadPixels(
 			uint32_t p_x,
 			uint32_t p_y,

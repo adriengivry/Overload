@@ -9,8 +9,8 @@
 #include "OvRendering/Entities/Camera.h"
 #include "OvMaths/FMatrix4.h"
 
-OvRendering::Entities::Camera::Camera(OvMaths::FTransform* p_transform) :
-	Entity(p_transform),
+OvRendering::Entities::Camera::Camera(OvTools::Utils::OptRef<OvMaths::FTransform> p_transform) :
+	Entity{ p_transform },
     m_projectionMode(Settings::EProjectionMode::PERSPECTIVE),
 	m_fov(45.0f),
     m_size(5.0f),
@@ -50,12 +50,12 @@ void OvRendering::Entities::Camera::CacheFrustum(const OvMaths::FMatrix4& p_view
 
 const OvMaths::FVector3& OvRendering::Entities::Camera::GetPosition() const
 {
-	return GetTransform().GetWorldPosition();
+	return transform->GetWorldPosition();
 }
 
 const OvMaths::FQuaternion& OvRendering::Entities::Camera::GetRotation() const
 {
-	return GetTransform().GetWorldRotation();
+	return transform->GetWorldRotation();
 }
 
 float OvRendering::Entities::Camera::GetFov() const
@@ -150,12 +150,12 @@ OvRendering::Settings::EProjectionMode OvRendering::Entities::Camera::GetProject
 
 void OvRendering::Entities::Camera::SetPosition(const OvMaths::FVector3& p_position)
 {
-	GetTransform().SetWorldPosition(p_position);
+	transform->SetWorldPosition(p_position);
 }
 
 void OvRendering::Entities::Camera::SetRotation(const OvMaths::FQuaternion& p_rotation)
 {
-	GetTransform().SetWorldRotation(p_rotation);
+	transform->SetWorldRotation(p_rotation);
 }
 
 void OvRendering::Entities::Camera::SetFov(float p_value)
@@ -235,10 +235,10 @@ OvMaths::FMatrix4 OvRendering::Entities::Camera::CalculateProjectionMatrix(uint1
 
 OvMaths::FMatrix4 OvRendering::Entities::Camera::CalculateViewMatrix() const
 {
-	const OvMaths::FVector3& position = GetTransform().GetWorldPosition();
-	const OvMaths::FQuaternion& rotation = GetTransform().GetWorldRotation();
-	const OvMaths::FVector3& up = GetTransform().GetWorldUp();
-	const OvMaths::FVector3& forward = GetTransform().GetWorldForward();
+	const OvMaths::FVector3& position = transform->GetWorldPosition();
+	const OvMaths::FQuaternion& rotation = transform->GetWorldRotation();
+	const OvMaths::FVector3& up = transform->GetWorldUp();
+	const OvMaths::FVector3& forward = transform->GetWorldForward();
 
 	return OvMaths::FMatrix4::CreateView(
 		position.x, position.y, position.z,

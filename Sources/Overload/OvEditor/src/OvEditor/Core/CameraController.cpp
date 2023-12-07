@@ -286,8 +286,8 @@ void OvEditor::Core::CameraController::HandleCameraPanning(const OvMaths::FVecto
 
 	auto mouseOffset = p_mouseOffset * m_cameraDragSpeed;
 
-	m_camera.SetPosition(m_camera.GetPosition() + m_camera.GetTransform().GetWorldRight() * mouseOffset.x);
-	m_camera.SetPosition(m_camera.GetPosition() - m_camera.GetTransform().GetWorldUp() * mouseOffset.y);
+	m_camera.SetPosition(m_camera.GetPosition() + m_camera.transform->GetWorldRight() * mouseOffset.x);
+	m_camera.SetPosition(m_camera.GetPosition() - m_camera.transform->GetWorldUp() * mouseOffset.y);
 }
 
 OvMaths::FVector3 RemoveRoll(const OvMaths::FVector3& p_ypr)
@@ -338,7 +338,7 @@ void OvEditor::Core::CameraController::HandleCameraOrbit(
 
 void OvEditor::Core::CameraController::HandleCameraZoom()
 {
-	m_camera.SetPosition(m_camera.GetPosition() + m_camera.GetTransform().GetWorldForward() * ImGui::GetIO().MouseWheel);
+	m_camera.SetPosition(m_camera.GetPosition() + m_camera.transform->GetWorldForward() * ImGui::GetIO().MouseWheel);
 }
 
 void OvEditor::Core::CameraController::HandleCameraFPSMouse(const OvMaths::FVector2& p_mouseOffset, bool p_firstMouse)
@@ -368,13 +368,13 @@ void OvEditor::Core::CameraController::HandleCameraFPSKeyboard(float p_deltaTime
 		float velocity = m_cameraMoveSpeed * p_deltaTime * (run ? 2.0f : 1.0f);
 
 		if (m_inputManager.GetKeyState(OvWindowing::Inputs::EKey::KEY_W) == OvWindowing::Inputs::EKeyState::KEY_DOWN)
-			m_targetSpeed += m_camera.GetTransform().GetWorldForward() * velocity;
+			m_targetSpeed += m_camera.transform->GetWorldForward() * velocity;
 		if (m_inputManager.GetKeyState(OvWindowing::Inputs::EKey::KEY_S) == OvWindowing::Inputs::EKeyState::KEY_DOWN)
-			m_targetSpeed += m_camera.GetTransform().GetWorldForward() * -velocity;
+			m_targetSpeed += m_camera.transform->GetWorldForward() * -velocity;
 		if (m_inputManager.GetKeyState(OvWindowing::Inputs::EKey::KEY_A) == OvWindowing::Inputs::EKeyState::KEY_DOWN)
-			m_targetSpeed += m_camera.GetTransform().GetWorldRight() * velocity;
+			m_targetSpeed += m_camera.transform->GetWorldRight() * velocity;
 		if (m_inputManager.GetKeyState(OvWindowing::Inputs::EKey::KEY_D) == OvWindowing::Inputs::EKeyState::KEY_DOWN)
-			m_targetSpeed += m_camera.GetTransform().GetWorldRight() * -velocity;
+			m_targetSpeed += m_camera.transform->GetWorldRight() * -velocity;
 		if (m_inputManager.GetKeyState(OvWindowing::Inputs::EKey::KEY_E) == OvWindowing::Inputs::EKeyState::KEY_DOWN)
 			m_targetSpeed += {0.0f, velocity, 0.0f};
 		if (m_inputManager.GetKeyState(OvWindowing::Inputs::EKey::KEY_Q) == OvWindowing::Inputs::EKeyState::KEY_DOWN)
