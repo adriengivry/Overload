@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "OvRendering/Context/Driver.h"
-#include "OvRendering/Buffers/EAccessSpecifier.h"
+#include "OvRendering/Settings/EAccessSpecifier.h"
 
 namespace OvRendering::Resources { class Shader; }
 
@@ -24,7 +24,7 @@ namespace OvRendering::Buffers
 		/**
 		* Create a SSBO with the given access specifier hint
 		*/
-		ShaderStorageBuffer(EAccessSpecifier p_accessSpecifier);
+		ShaderStorageBuffer(Settings::EAccessSpecifier p_accessSpecifier);
 
 		/**
 		* Destroy the SSBO

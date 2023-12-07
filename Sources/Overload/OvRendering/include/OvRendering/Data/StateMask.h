@@ -11,7 +11,7 @@
 namespace OvRendering::Data
 {
 	/**
-	* Represents the current driver state and allow for efficient context switches
+	* State mask used by materials to override some Pipeline State settings.
 	*/
 	struct StateMask
 	{

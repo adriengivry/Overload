@@ -6,12 +6,12 @@
 
 #pragma once
 
-
+#include <cstdint>
 
 namespace OvRendering::Settings
 {
 	/**
-	* OpenGL operation enum wrapper
+	* Graphics operations (for stencil/depth buffers)
 	*/
 	enum class EOperation : uint8_t
 	{

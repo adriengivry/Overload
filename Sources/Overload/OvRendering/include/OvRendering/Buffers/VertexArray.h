@@ -7,24 +7,10 @@
 #pragma once
 
 #include "OvRendering/Buffers/VertexBuffer.h"
+#include "OvRendering/Settings/EDataType.h"
 
 namespace OvRendering::Buffers
 {
-	/**
-	* Wraps from OpenGL types enum
-	*/
-	enum class EType
-	{
-		BYTE			= 0x1400,
-		UNISGNED_BYTE	= 0x1401,
-		SHORT			= 0x1402,
-		UNSIGNED_SHORT	= 0x1403,
-		INT				= 0x1404,
-		UNSIGNED_INT	= 0x1405,
-		FLOAT			= 0x1406,
-		DOUBLE			= 0x140A
-	};
-
 	/**
 	* Wraps OpenGL VAO
 	*/
@@ -51,7 +37,14 @@ namespace OvRendering::Buffers
 		* @param p_offset
 		*/
 		template <class T>
-		void BindAttribute(uint32_t p_attribute, VertexBuffer<T>& p_vertexBuffer, EType p_type, uint64_t p_count, uint64_t p_stride, intptr_t p_offset) const;
+		void BindAttribute(
+			uint32_t p_attribute,
+			VertexBuffer<T>& p_vertexBuffer,
+			Settings::EDataType p_type,
+			uint64_t p_count,
+			uint64_t p_stride,
+			intptr_t p_offset
+		) const;
 
 		/**
 		* Bind the buffer

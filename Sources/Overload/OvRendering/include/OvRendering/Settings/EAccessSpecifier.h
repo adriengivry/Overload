@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace OvRendering::Buffers
+namespace OvRendering::Settings
 {
 	/**
 	* Defines some access hints that buffers can use

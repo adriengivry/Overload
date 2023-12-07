@@ -6,14 +6,14 @@
 
 #pragma once
 
-
+#include <cstdint>
 
 namespace OvRendering::Settings
 {
 	/**
 	* Rendering Capabilities
 	*/
-	enum class ERenderingCapability
+	enum class ERenderingCapability : uint8_t
 	{
 		BLEND,						// Blend the computed fragment color values with the values in the color buffers. See glBlendFunc.
 		CULL_FACE,					// Cull polygons based on their winding in window coordinates.

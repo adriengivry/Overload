@@ -6,15 +6,7 @@
 
 #pragma once
 
-#include <optional>
-
 #include "OvRendering/Data/FrameDescriptor.h"
-#include "OvRendering/Context/Driver.h"
-
-namespace OvRendering::Data
-{
-	struct FrameInfo;
-}
 
 namespace OvRendering::Core
 {
@@ -22,6 +14,7 @@ namespace OvRendering::Core
 	{
 	public:
 		virtual void BeginFrame(const Data::FrameDescriptor& p_frameDescriptor) = 0;
+		virtual void Draw() = 0;
 		virtual void EndFrame() = 0;
 	};
 }

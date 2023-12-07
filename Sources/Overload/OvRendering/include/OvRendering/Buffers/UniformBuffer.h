@@ -10,7 +10,7 @@
 #include <string>
 
 #include "OvRendering/Context/Driver.h"
-#include "OvRendering/Buffers/EAccessSpecifier.h"
+#include "OvRendering/Settings/EAccessSpecifier.h"
 
 namespace OvRendering::Resources { class Shader; }
 
@@ -29,7 +29,11 @@ namespace OvRendering::Buffers
 		* @parma p_offset (The offset of the UBO, sizeof previouses UBO if the binding point is != 0)
 		* @param p_accessSpecifier
 		*/
-		UniformBuffer(size_t p_size, uint32_t p_bindingPoint = 0, uint32_t p_offset = 0, EAccessSpecifier p_accessSpecifier = EAccessSpecifier::DYNAMIC_DRAW);
+		UniformBuffer(
+			size_t p_size,
+			uint32_t p_bindingPoint = 0,
+			uint32_t p_offset = 0,
+			Settings::EAccessSpecifier p_accessSpecifier = Settings::EAccessSpecifier::DYNAMIC_DRAW);
 
 		/**
 		* Destructor of the UniformBuffer

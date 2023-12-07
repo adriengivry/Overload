@@ -6,12 +6,12 @@
 
 #pragma once
 
-
+#include <cstdint>
 
 namespace OvRendering::Settings
 {
 	/**
-	* OpenGL cullface enum wrapper
+	* Enumeration of cullable face
 	*/
 	enum class ECullFace : uint8_t
 	{

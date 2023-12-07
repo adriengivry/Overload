@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include <optional>
-
 #include "OvRendering/Data/FrameDescriptor.h"
 #include "OvRendering/Entities/Drawable.h"
 

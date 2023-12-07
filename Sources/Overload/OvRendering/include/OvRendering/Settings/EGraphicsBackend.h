@@ -15,7 +15,7 @@ namespace OvRendering::Settings
 	*/
 	enum class EGraphicsBackend : uint8_t
 	{
-		Null,
-		OpenGL
+		NONE,
+		OPENGL
 	};
 }

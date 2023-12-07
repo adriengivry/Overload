@@ -20,7 +20,7 @@ OvCore::Rendering::EngineBufferRenderFeature::EngineBufferRenderFeature(OvRender
 		sizeof(float) +
 		sizeof(OvMaths::FMatrix4),
 		0, 0,
-		OvRendering::Buffers::EAccessSpecifier::STREAM_DRAW
+		OvRendering::Settings::EAccessSpecifier::STREAM_DRAW
 	);
 
 	m_startTime = std::chrono::high_resolution_clock::now();

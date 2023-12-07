@@ -120,7 +120,7 @@ bool IsResizing()
 		cursor == ImGuiMouseCursor_ResizeNS ||
 		cursor == ImGuiMouseCursor_ResizeNWSE ||
 		cursor == ImGuiMouseCursor_ResizeNESW ||
-		cursor == ImGuiMouseCursor_ResizeAll;;
+		cursor == ImGuiMouseCursor_ResizeAll;
 }
 
 void OvEditor::Panels::SceneView::HandleActorPicking()

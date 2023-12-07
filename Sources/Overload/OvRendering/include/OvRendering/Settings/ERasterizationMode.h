@@ -6,7 +6,7 @@
 
 #pragma once
 
-
+#include <cstdint>
 
 namespace OvRendering::Settings
 {

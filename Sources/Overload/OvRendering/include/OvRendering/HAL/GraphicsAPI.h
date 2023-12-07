@@ -69,6 +69,6 @@ namespace OvRendering::HAL
 		std::string GetShadingLanguageVersion();
 	};
 
-	using Null = OvRendering::HAL::GraphicsAPI<OvRendering::Settings::EGraphicsBackend::Null>;
-	using OpenGL = OvRendering::HAL::GraphicsAPI<OvRendering::Settings::EGraphicsBackend::OpenGL>;
+	using Null = OvRendering::HAL::GraphicsAPI<OvRendering::Settings::EGraphicsBackend::NONE>;
+	using OpenGL = OvRendering::HAL::GraphicsAPI<OvRendering::Settings::EGraphicsBackend::OPENGL>;
 }

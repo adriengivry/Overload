@@ -6,12 +6,12 @@
 
 #pragma once
 
-
+#include <cstdint>
 
 namespace OvRendering::Settings
 {
 	/**
-	* OpenGL comparaison algorithm enum wrapper
+	* Comparaison algorithm used by depth/stencil operations
 	*/
 	enum class EComparaisonAlgorithm : uint8_t
 	{

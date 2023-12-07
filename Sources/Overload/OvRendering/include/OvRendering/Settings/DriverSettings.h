@@ -7,7 +7,6 @@
 #pragma once
 
 #include <optional>
-#include <array>
 
 #include "OvRendering/Data/PipelineState.h"
 

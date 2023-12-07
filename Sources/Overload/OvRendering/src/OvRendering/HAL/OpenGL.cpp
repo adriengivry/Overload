@@ -76,6 +76,26 @@ constexpr GLenum ToGLEnum(OvRendering::Settings::ERenderingCapability value)
 	return {};
 }
 
+constexpr GLenum ToGLEnum(OvRendering::Settings::EPrimitiveMode value)
+{
+	switch (value)
+	{
+	case OvRendering::Settings::EPrimitiveMode::POINTS: return GL_POINTS;
+	case OvRendering::Settings::EPrimitiveMode::LINES: return GL_LINES;
+	case OvRendering::Settings::EPrimitiveMode::LINE_LOOP: return GL_LINE_LOOP;
+	case OvRendering::Settings::EPrimitiveMode::LINE_STRIP: return GL_LINE_STRIP;
+	case OvRendering::Settings::EPrimitiveMode::TRIANGLES: return GL_TRIANGLES;
+	case OvRendering::Settings::EPrimitiveMode::TRIANGLE_STRIP: return GL_TRIANGLE_STRIP;
+	case OvRendering::Settings::EPrimitiveMode::TRIANGLE_FAN: return GL_TRIANGLE_FAN;
+	case OvRendering::Settings::EPrimitiveMode::LINES_ADJACENCY: return GL_LINES_ADJACENCY;
+	case OvRendering::Settings::EPrimitiveMode::LINE_STRIP_ADJACENCY: return GL_LINE_STRIP_ADJACENCY;
+	case OvRendering::Settings::EPrimitiveMode::PATCHES: return GL_PATCHES;
+	}
+
+	static_assert(true);
+	return {};
+}
+
 void GLDebugMessageCallback(uint32_t source, uint32_t type, uint32_t id, uint32_t severity, int32_t length, const char* message, const void* userParam)
 {
 	// ignore non-significant error/warning codes
@@ -331,25 +351,25 @@ namespace OvRendering::HAL
 	template<>
 	void OpenGL::DrawElements(OvRendering::Settings::EPrimitiveMode p_primitiveMode, uint32_t p_indexCount)
 	{
-		glDrawElements(static_cast<GLenum>(p_primitiveMode), p_indexCount, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(ToGLEnum(p_primitiveMode), p_indexCount, GL_UNSIGNED_INT, nullptr);
 	}
 
 	template<>
 	void OpenGL::DrawElementsInstanced(OvRendering::Settings::EPrimitiveMode p_primitiveMode, uint32_t p_indexCount, uint32_t p_instances)
 	{
-		glDrawElementsInstanced(static_cast<GLenum>(p_primitiveMode), p_indexCount, GL_UNSIGNED_INT, nullptr, p_instances);
+		glDrawElementsInstanced(ToGLEnum(p_primitiveMode), p_indexCount, GL_UNSIGNED_INT, nullptr, p_instances);
 	}
 
 	template<>
 	void OpenGL::DrawArrays(OvRendering::Settings::EPrimitiveMode p_primitiveMode, uint32_t p_vertexCount)
 	{
-		glDrawArrays(static_cast<GLenum>(p_primitiveMode), 0, p_vertexCount);
+		glDrawArrays(ToGLEnum(p_primitiveMode), 0, p_vertexCount);
 	}
 
 	template<>
 	void OpenGL::DrawArraysInstanced(OvRendering::Settings::EPrimitiveMode p_primitiveMode, uint32_t p_vertexCount, uint32_t p_instances)
 	{
-		glDrawArraysInstanced(static_cast<GLenum>(p_primitiveMode), 0, p_vertexCount, p_instances);
+		glDrawArraysInstanced(ToGLEnum(p_primitiveMode), 0, p_vertexCount, p_instances);
 	}
 
 	template<>

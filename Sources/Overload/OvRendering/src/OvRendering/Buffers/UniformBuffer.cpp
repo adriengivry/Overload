@@ -13,7 +13,7 @@ OvRendering::Buffers::UniformBuffer::UniformBuffer(
 	size_t p_size,
 	uint32_t p_bindingPoint,
 	uint32_t p_offset,
-	EAccessSpecifier p_accessSpecifier
+	Settings::EAccessSpecifier p_accessSpecifier
 ) : m_bindingPoint(p_bindingPoint)
 {
 	glGenBuffers(1, &m_bufferID);

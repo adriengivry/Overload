@@ -6,10 +6,7 @@
 
 #pragma once
 
-#include <optional>
-
 #include "OvRendering/Data/FrameDescriptor.h"
-#include "OvRendering/Entities/Drawable.h"
 #include "OvRendering/Settings/ERenderPassOrder.h"
 
 namespace OvRendering::Core

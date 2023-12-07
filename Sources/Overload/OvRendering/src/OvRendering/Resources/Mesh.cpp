@@ -80,11 +80,11 @@ void OvRendering::Resources::Mesh::CreateBuffers(const std::vector<Geometry::Ver
 
 	uint64_t vertexSize = sizeof(Geometry::Vertex);
 
-	m_vertexArray.BindAttribute(0, *m_vertexBuffer, Buffers::EType::FLOAT, 3, vertexSize, 0);
-	m_vertexArray.BindAttribute(1, *m_vertexBuffer,	Buffers::EType::FLOAT, 2, vertexSize, sizeof(float) * 3);
-	m_vertexArray.BindAttribute(2, *m_vertexBuffer,	Buffers::EType::FLOAT, 3, vertexSize, sizeof(float) * 5);
-	m_vertexArray.BindAttribute(3, *m_vertexBuffer,	Buffers::EType::FLOAT, 3, vertexSize, sizeof(float) * 8);
-	m_vertexArray.BindAttribute(4, *m_vertexBuffer,	Buffers::EType::FLOAT, 3, vertexSize, sizeof(float) * 11);
+	m_vertexArray.BindAttribute(0, *m_vertexBuffer, Settings::EDataType::FLOAT, 3, vertexSize, 0);
+	m_vertexArray.BindAttribute(1, *m_vertexBuffer, Settings::EDataType::FLOAT, 2, vertexSize, sizeof(float) * 3);
+	m_vertexArray.BindAttribute(2, *m_vertexBuffer, Settings::EDataType::FLOAT, 3, vertexSize, sizeof(float) * 5);
+	m_vertexArray.BindAttribute(3, *m_vertexBuffer, Settings::EDataType::FLOAT, 3, vertexSize, sizeof(float) * 8);
+	m_vertexArray.BindAttribute(4, *m_vertexBuffer, Settings::EDataType::FLOAT, 3, vertexSize, sizeof(float) * 11);
 }
 
 void OvRendering::Resources::Mesh::ComputeBoundingSphere(const std::vector<Geometry::Vertex>& p_vertices)
