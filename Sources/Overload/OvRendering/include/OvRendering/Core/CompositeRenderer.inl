@@ -58,7 +58,8 @@ namespace OvRendering::Core
 	{
 		OVASSERT(!m_isDrawing, "You cannot add a render pass while drawing.");
 		static_assert(std::is_base_of<ARenderPass, T>::value, "T must inherit from ARenderPass");
-		// TODO: Add validation, make sure every pass has a unique name
+		for (const auto& [_, pass] : m_passes)
+			OVASSERT(pass.first != p_name, "This pass name is already in use!");
 		T* pass = new T(*this, std::forward<Args>(args)...);
 		m_passes.emplace(p_order, std::make_pair(p_name, std::unique_ptr<ARenderPass>(pass)));
 		return *pass;
