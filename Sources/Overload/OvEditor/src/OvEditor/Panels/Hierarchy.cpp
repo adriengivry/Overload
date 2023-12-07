@@ -185,9 +185,7 @@ OvEditor::Panels::Hierarchy::Hierarchy
 	m_sceneRoot->AddPlugin<OvUI::Plugins::DDTarget<std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*>>>("Actor").DataReceivedEvent += [this](std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*> p_element)
 	{
 		if (p_element.second->HasParent())
-			p_element.second->GetParent()->UnconsiderWidget(*p_element.second);
-
-		m_sceneRoot->ConsiderWidget(*p_element.second);
+			p_element.second->GetParent()->TransferOwnership(*p_element.second, *m_sceneRoot);
 
 		p_element.first->DetachFromParent();
 	};
@@ -243,14 +241,16 @@ void OvEditor::Panels::Hierarchy::AttachActorToParent(OvCore::ECS::Actor & p_act
 	{
 		auto widget = actorWidget->second;
 
-		if (widget->HasParent())
-			widget->GetParent()->UnconsiderWidget(*widget);
-
-		if (p_actor.HasParent())
+		if (widget->HasParent() && p_actor.HasParent())
 		{
-			auto parentWidget = m_widgetActorLink.at(p_actor.GetParent());
+			const auto parentWidget = m_widgetActorLink.at(p_actor.GetParent());
 			parentWidget->leaf = false;
-			parentWidget->ConsiderWidget(*widget);
+
+			widget->GetParent()->TransferOwnership(*widget, *parentWidget);
+		}
+		else
+		{
+			widget->GetParent()->RemoveWidget(*widget);
 		}
 	}
 }
@@ -269,10 +269,8 @@ void OvEditor::Panels::Hierarchy::DetachFromParent(OvCore::ECS::Actor & p_actor)
 
 		auto widget = actorWidget->second;
 
-		if (widget->HasParent())
-			widget->GetParent()->UnconsiderWidget(*widget);
-
-		m_sceneRoot->ConsiderWidget(*widget);
+		if (widget->HasParent() && widget->GetParent() != m_sceneRoot)
+			widget->GetParent()->TransferOwnership(*widget, *m_sceneRoot);
 	}
 }
 

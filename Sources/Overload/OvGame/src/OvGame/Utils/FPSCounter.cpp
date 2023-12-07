@@ -6,13 +6,12 @@
 
 #include "OvGame/Utils/FPSCounter.h"
 
-OvGame::Utils::FPSCounter::FPSCounter(OvWindowing::Window& p_window) : m_window(p_window)
+OvGame::Utils::FPSCounter::FPSCounter(OvWindowing::Window& p_window) : m_text(CreateWidget<OvUI::Widgets::Texts::TextColored>()), m_window(p_window)
 {
 	m_text.color = OvUI::Types::Color::Yellow;
 	m_defaultHorizontalAlignment = OvUI::Settings::EHorizontalAlignment::RIGHT;
 	m_defaultPosition = { static_cast<float>(m_window.GetSize().first) - 10.0f , 10.0f };
 	m_text.content = "999 FPS";
-	ConsiderWidget(m_text, false);
 }
 
 void OvGame::Utils::FPSCounter::Update(float p_deltaTime)

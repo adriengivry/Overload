@@ -143,13 +143,13 @@ void OvCore::ECS::Components::CCamera::OnInspector(OvUI::Internal::WidgetContain
     auto currentProjectionMode = GetProjectionMode();
 
 	OvCore::Helpers::GUIDrawer::DrawScalar<float>(p_root, "Field of view", std::bind(&CCamera::GetFov, this), std::bind(&CCamera::SetFov, this, std::placeholders::_1));
-    auto& fovWidget = *p_root.GetWidgets()[p_root.GetWidgets().size() - 1].first;
-    auto& fovWidgetLabel = *p_root.GetWidgets()[p_root.GetWidgets().size() - 2].first;
+    auto& fovWidget = *p_root.GetWidgets()[p_root.GetWidgets().size() - 1];
+    auto& fovWidgetLabel = *p_root.GetWidgets()[p_root.GetWidgets().size() - 2];
     fovWidget.enabled = fovWidgetLabel.enabled = currentProjectionMode == OvRendering::Settings::EProjectionMode::PERSPECTIVE;
 
 	OvCore::Helpers::GUIDrawer::DrawScalar<float>(p_root, "Size", std::bind(&CCamera::GetSize, this), std::bind(&CCamera::SetSize, this, std::placeholders::_1));
-    auto& sizeWidget = *p_root.GetWidgets()[p_root.GetWidgets().size() - 1].first;
-    auto& sizeWidgetLabel = *p_root.GetWidgets()[p_root.GetWidgets().size() - 2].first;
+    auto& sizeWidget = *p_root.GetWidgets()[p_root.GetWidgets().size() - 1];
+    auto& sizeWidgetLabel = *p_root.GetWidgets()[p_root.GetWidgets().size() - 2];
     sizeWidget.enabled = sizeWidgetLabel.enabled = currentProjectionMode == OvRendering::Settings::EProjectionMode::ORTHOGRAPHIC;
 
 	OvCore::Helpers::GUIDrawer::DrawScalar<float>(p_root, "Near", std::bind(&CCamera::GetNear, this), std::bind(&CCamera::SetNear, this, std::placeholders::_1));

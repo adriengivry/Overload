@@ -24,7 +24,7 @@ namespace OvUI::Widgets::Buttons
 		* @param p_label
 		*/
 		ButtonSmall(const std::string& p_label = "");
-
+		virtual ~ButtonSmall() override = default;
 	protected:
 		void _Draw_Impl() override;
 

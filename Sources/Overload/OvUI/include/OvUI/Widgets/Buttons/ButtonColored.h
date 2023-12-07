@@ -29,7 +29,7 @@ namespace OvUI::Widgets::Buttons
 		* @param p_enableAlpha
 		*/
 		ButtonColored(const std::string& p_label = "", const Types::Color& p_color = {}, const OvMaths::FVector2& p_size =OvMaths::FVector2(0.f, 0.f), bool p_enableAlpha = true);
-
+		virtual ~ButtonColored() override = default;
 	protected:
 		void _Draw_Impl() override;
 

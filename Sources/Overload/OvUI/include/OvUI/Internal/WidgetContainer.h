@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "OvUI/Widgets/AWidget.h"
@@ -40,17 +41,7 @@ namespace OvUI::Internal
 		*/
 		void RemoveAllWidgets();
 
-		/**
-		* Consider a widget
-		* @param p_manageMemory
-		*/
-		void ConsiderWidget(Widgets::AWidget& p_widget, bool p_manageMemory = true);
-
-		/**
-		* Unconsider a widget
-		* @param p_widget
-		*/
-		void UnconsiderWidget(Widgets::AWidget& p_widget);
+		void TransferOwnership(Widgets::AWidget& p_widget, WidgetContainer& p_widgetCoontainer);
 
 		/**
 		* Collect garbages by removing widgets marked as "Destroyed"
@@ -74,8 +65,8 @@ namespace OvUI::Internal
 		template <typename T, typename ... Args>
 		T& CreateWidget(Args&&... p_args)
 		{
-			m_widgets.emplace_back(new T(p_args...), Internal::EMemoryMode::INTERNAL_MANAGMENT);
-			T& instance = *reinterpret_cast<T*>(m_widgets.back().first);
+			m_widgets.emplace_back(std::make_unique<T>(p_args...));
+			T& instance = *static_cast<T*>(m_widgets.back().get());
 			instance.SetParent(this);
 			return instance;
 		}
@@ -83,10 +74,10 @@ namespace OvUI::Internal
 		/**
 		* Returns the widgets and their memory management mode
 		*/
-		std::vector<std::pair<OvUI::Widgets::AWidget*, Internal::EMemoryMode>>& GetWidgets();
+		std::vector<std::unique_ptr<Widgets::AWidget>>& GetWidgets();
 
 	protected:
-		std::vector<std::pair<OvUI::Widgets::AWidget*, Internal::EMemoryMode>> m_widgets;
+		std::vector<std::unique_ptr<Widgets::AWidget>> m_widgets;
         bool m_reversedDrawOrder = false;
 	};
 }

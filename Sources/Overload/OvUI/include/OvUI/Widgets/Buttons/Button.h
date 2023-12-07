@@ -28,7 +28,7 @@ namespace OvUI::Widgets::Buttons
 		* @param p_disabled
 		*/
 		Button(const std::string& p_label = "", const OvMaths::FVector2& p_size = OvMaths::FVector2(0.f, 0.f), bool p_disabled = false);
-
+		virtual ~Button() override = default;
 	protected:
 		void _Draw_Impl() override;
 

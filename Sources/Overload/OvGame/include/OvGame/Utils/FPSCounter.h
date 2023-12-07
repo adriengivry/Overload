@@ -32,7 +32,7 @@ namespace OvGame::Utils
 		void Update(float p_deltaTime);
 
 	private:
-		OvUI::Widgets::Texts::TextColored m_text;
+		OvUI::Widgets::Texts::TextColored& m_text;
 
 		OvWindowing::Window& m_window;
 		float m_elapsed = 0.0f;

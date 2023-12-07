@@ -15,6 +15,10 @@ namespace OvUI::Widgets::Layout
 	*/
 	class NewLine : public AWidget
 	{
+	public:
+		NewLine() = default;
+		virtual ~NewLine() override = default;
+
 	protected:
 		void _Draw_Impl() override;
 	};

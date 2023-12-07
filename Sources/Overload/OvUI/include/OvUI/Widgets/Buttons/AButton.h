@@ -19,6 +19,9 @@ namespace OvUI::Widgets::Buttons
 	*/
 	class AButton : public AWidget
 	{
+	public:
+		AButton() = default;
+		virtual ~AButton() override = default;
 	protected:
 		void _Draw_Impl() override = 0;
 

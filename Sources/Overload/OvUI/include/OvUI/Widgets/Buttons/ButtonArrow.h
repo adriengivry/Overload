@@ -23,7 +23,7 @@ namespace OvUI::Widgets::Buttons
 		* @param p_direction
 		*/
 		ButtonArrow(ImGuiDir p_direction = ImGuiDir_None);
-
+		virtual ~ButtonArrow() override = default;
 	protected:
 		void _Draw_Impl() override;
 
