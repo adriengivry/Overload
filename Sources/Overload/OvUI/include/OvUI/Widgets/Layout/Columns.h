@@ -38,7 +38,7 @@ namespace OvUI::Widgets::Layout
 
 			for (auto it = m_widgets.begin(); it != m_widgets.end();)
 			{
-				it->get()->Draw();
+				it->first->Draw();
 
 				++it;
 
