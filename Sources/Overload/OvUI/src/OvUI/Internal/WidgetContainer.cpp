@@ -70,11 +70,10 @@ void OvUI::Internal::WidgetContainer::DrawWidgets()
 			it->get()->Draw();
 	}
 	else
-	{
+	{ 
 		for (const auto& widget : m_widgets)
 		{
-			if (widget.get() != nullptr)
-				widget->Draw();
+			widget->Draw();
 		}
 	}
 }

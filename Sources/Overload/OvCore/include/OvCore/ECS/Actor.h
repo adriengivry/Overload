@@ -331,7 +331,7 @@ namespace OvCore::ECS
 		static OvTools::Eventing::Event<Actor&>				DestroyedEvent;
 		static OvTools::Eventing::Event<Actor&>				CreatedEvent;
 		static OvTools::Eventing::Event<Actor&, Actor&>		AttachEvent;
-		static OvTools::Eventing::Event<Actor&>				DettachEvent;
+		static OvTools::Eventing::Event<Actor&, Actor*>				DettachEvent;
 
 	private:
 		/* Settings */

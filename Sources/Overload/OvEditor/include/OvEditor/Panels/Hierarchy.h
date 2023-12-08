@@ -65,7 +65,7 @@ namespace OvEditor::Panels
 		* Detach the given actor linked widget from its parent widget
 		* @param p_actor
 		*/
-		void DetachFromParent(OvCore::ECS::Actor& p_actor);
+		void DetachFromParent(OvCore::ECS::Actor& p_actor, OvCore::ECS::Actor* p_parentActor);
 
 		/**
 		* Delete the widget referencing the given actor
