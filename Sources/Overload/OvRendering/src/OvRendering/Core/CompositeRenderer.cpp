@@ -28,7 +28,7 @@ void OvRendering::Core::CompositeRenderer::BeginFrame(const Data::FrameDescripto
 	}
 }
 
-void OvRendering::Core::CompositeRenderer::Draw()
+void OvRendering::Core::CompositeRenderer::DrawFrame()
 {
 	auto pso = CreatePipelineState();
 

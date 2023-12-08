@@ -21,6 +21,7 @@
 #include "OvRendering/Settings/EPixelDataFormat.h"
 #include "OvRendering/Settings/EPixelDataType.h"
 #include "OvRendering/Data/PipelineState.h"
+#include "OvRendering/Resources/IMesh.h"
 
 #include <OvMaths/FVector4.h>
 #include <OvTools/Utils/OptRef.h>
@@ -32,7 +33,7 @@ namespace OvRendering::Context
 	/**
 	* Handles the lifecycle of the underlying graphics context
 	*/
-	class Driver
+	class Driver final
 	{
 	public:
 		/**
@@ -96,36 +97,18 @@ namespace OvRendering::Context
 		) const;
 
 		/**
-		* Issue a draw call command (EBO) using the given primitive mode
+		* Draw a mesh
+		* @param p_pso
+		* @param p_mesh
 		* @param p_primitiveMode
-		* @param p_indexCount
-		*/
-		void DrawElements(Settings::EPrimitiveMode p_primitiveMode, uint32_t p_indexCount) const;
-
-		/**
-		* Issue an instanced draw call (EBO) command using the given primitive mode
-		* @param p_primitiveMode
-		* @param p_indexCount
 		* @param p_instances
 		*/
-		void DrawElementsInstanced(Settings::EPrimitiveMode p_primitiveMode, uint32_t p_indexCount, uint32_t p_instances) const;
-
-		/**
-		* Issue a draw call command (VBO) using the given primitive mode
-		* @param p_primitiveMode
-		* @param p_indexCount
-		* @note Should be avoided, prefer using DrawElements
-		*/
-		void DrawArrays(Settings::EPrimitiveMode p_primitiveMode, uint32_t p_vertexCount) const;
-
-		/**
-		* Issue an instanced draw call (VBO) command using the given primitive mode
-		* @param p_primitiveMode
-		* @param p_vertexCount
-		* @param p_instances
-		* @note Should be avoided, prefer using DrawElements
-		*/
-		void DrawArraysInstanced(Settings::EPrimitiveMode p_primitiveMode, uint32_t p_vertexCount, uint32_t p_instances) const;
+		void Draw(
+			OvRendering::Data::PipelineState p_pso,
+			const Resources::IMesh& p_mesh,
+			Settings::EPrimitiveMode p_primitiveMode = Settings::EPrimitiveMode::TRIANGLES,
+			uint32_t p_instances = 1
+		);
 
 		/**
 		* Set the pipeline state to match the given PSO

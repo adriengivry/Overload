@@ -62,6 +62,7 @@ void main()
 )";
 
 	m_lineShader = OvRendering::Resources::Loaders::ShaderLoader::CreateFromSource(vertexShader, fragmentShader);
+	m_lineMaterial = std::make_unique<OvRendering::Data::Material>(m_lineShader);
 }
 
 OvRendering::Features::DebugShapeRenderFeature::~DebugShapeRenderFeature()
@@ -93,15 +94,20 @@ void OvRendering::Features::DebugShapeRenderFeature::DrawLine(
 	float p_lineWidth
 )
 {
-	m_lineShader->Bind();
-
-	m_lineShader->SetUniformVec3("start", p_start);
-	m_lineShader->SetUniformVec3("end", p_end);
-	m_lineShader->SetUniformVec3("color", p_color);
+	m_lineMaterial->Set("start", p_start);
+	m_lineMaterial->Set("end", p_end);
+	m_lineMaterial->Set("color", p_color);
 
 	p_pso.rasterizationMode = Settings::ERasterizationMode::LINE;
 	p_pso.lineWidthPow2 = Utils::Conversions::FloatToPow2(p_lineWidth);
-	m_renderer.DrawMesh(p_pso, *m_lineMesh, Settings::EPrimitiveMode::LINES);
+
+	OvRendering::Entities::Drawable drawable;
+	drawable.material = *m_lineMaterial;
+	drawable.mesh = m_lineMesh;
+	drawable.stateMask = m_lineMaterial->GenerateStateMask();
+	drawable.primitiveMode = Settings::EPrimitiveMode::LINES;
+
+	m_renderer.DrawEntity(p_pso, drawable);
 
 	m_lineShader->Unbind();
 }

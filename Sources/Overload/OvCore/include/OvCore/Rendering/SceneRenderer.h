@@ -57,6 +57,20 @@ namespace OvCore::Rendering
 		*/
 		virtual void BeginFrame(const OvRendering::Data::FrameDescriptor& p_frameDescriptor) override;
 
+		/**
+		* Draw a model with a single material
+		* @param p_pso
+		* @param p_model
+		* @param p_material
+		* @param p_modelMatrix
+		*/
+		virtual void DrawModelWithSingleMaterial(
+			OvRendering::Data::PipelineState p_pso,
+			OvRendering::Resources::Model& p_model,
+			OvRendering::Data::Material& p_material,
+			const OvMaths::FMatrix4& p_modelMatrix
+		);
+
 	protected:
 		AllDrawables ParseScene();
 	};

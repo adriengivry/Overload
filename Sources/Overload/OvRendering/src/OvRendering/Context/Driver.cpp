@@ -86,24 +86,44 @@ void OvRendering::Context::Driver::ReadPixels(
 	m_driverImpl->ReadPixels(p_x, p_y, p_width, p_height, p_format, p_type, p_data);
 }
 
-void OvRendering::Context::Driver::DrawElements(Settings::EPrimitiveMode p_primitiveMode, uint32_t p_indexCount) const
+void OvRendering::Context::Driver::Draw(
+	Data::PipelineState p_pso,
+	const Resources::IMesh& p_mesh,
+	Settings::EPrimitiveMode p_primitiveMode,
+	uint32_t p_instances
+)
 {
-	m_driverImpl->DrawElements(p_primitiveMode, p_indexCount);
-}
+	if (p_instances > 0)
+	{
+		SetPipelineState(p_pso);
 
-void OvRendering::Context::Driver::DrawElementsInstanced(Settings::EPrimitiveMode p_primitiveMode, uint32_t p_indexCount, uint32_t p_instances) const
-{
-	m_driverImpl->DrawElementsInstanced(p_primitiveMode, p_indexCount, p_instances);
-}
+		p_mesh.Bind();
 
-void OvRendering::Context::Driver::DrawArrays(Settings::EPrimitiveMode p_primitiveMode, uint32_t p_vertexCount) const
-{
-	m_driverImpl->DrawArrays(p_primitiveMode, p_vertexCount);
-}
+		if (p_mesh.GetIndexCount() > 0)
+		{
+			if (p_instances == 1)
+			{
+				m_driverImpl->DrawElements(p_primitiveMode, p_mesh.GetIndexCount());
+			}
+			else
+			{
+				m_driverImpl->DrawElementsInstanced(p_primitiveMode, p_mesh.GetIndexCount(), p_instances);
+			}
+		}
+		else
+		{
+			if (p_instances == 1)
+			{
+				m_driverImpl->DrawArrays(p_primitiveMode, p_mesh.GetVertexCount());
+			}
+			else
+			{
+				m_driverImpl->DrawArraysInstanced(p_primitiveMode, p_mesh.GetVertexCount(), p_instances);
+			}
+		}
 
-void OvRendering::Context::Driver::DrawArraysInstanced(Settings::EPrimitiveMode p_primitiveMode, uint32_t p_vertexCount, uint32_t p_instances) const
-{
-	m_driverImpl->DrawArraysInstanced(p_primitiveMode, p_vertexCount, p_instances);
+		p_mesh.Unbind();
+	}
 }
 
 void OvRendering::Context::Driver::SetPipelineState(OvRendering::Data::PipelineState p_state)

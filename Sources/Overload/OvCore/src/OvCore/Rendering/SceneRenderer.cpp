@@ -11,6 +11,7 @@
 
 #include "OvCore/Rendering/SceneRenderer.h"
 #include "OvCore/Rendering/EngineBufferRenderFeature.h"
+#include "OvCore/Rendering/EngineDrawableDescriptor.h"
 #include "OvCore/ECS/Components/CModelRenderer.h"
 #include "OvCore/ECS/Components/CMaterialRenderer.h"
 
@@ -95,6 +96,28 @@ void OvCore::Rendering::SceneRenderer::BeginFrame(const OvRendering::Data::Frame
 	AddDescriptor<SceneRenderPassDescriptor>({
 		ParseScene()
 	});
+}
+
+void OvCore::Rendering::SceneRenderer::DrawModelWithSingleMaterial(OvRendering::Data::PipelineState p_pso, OvRendering::Resources::Model& p_model, OvRendering::Data::Material& p_material, const OvMaths::FMatrix4& p_modelMatrix)
+{
+	auto stateMask = p_material.GenerateStateMask();
+	auto userMatrix = OvMaths::FMatrix4::Identity;
+
+	auto engineDrawableDescriptor = EngineDrawableDescriptor{
+		p_modelMatrix,
+		userMatrix
+	};
+
+	for (auto mesh : p_model.GetMeshes())
+	{
+		OvRendering::Entities::Drawable element;
+		element.mesh = *mesh;
+		element.material = p_material;
+		element.stateMask = stateMask;
+		element.AddDescriptor(engineDrawableDescriptor);
+
+		DrawEntity(p_pso, element);
+	}
 }
 
 OvCore::Rendering::SceneRenderer::AllDrawables OvCore::Rendering::SceneRenderer::ParseScene()
@@ -188,11 +211,14 @@ OvCore::Rendering::SceneRenderer::AllDrawables OvCore::Rendering::SceneRenderer:
 							if (material && material->IsValid())
 							{
 								OvRendering::Entities::Drawable drawable;
-								drawable.modelMatrix = transform.GetWorldMatrix();
 								drawable.mesh = *mesh;
 								drawable.material = material;
 								drawable.stateMask = material->GenerateStateMask();
-								drawable.userMatrix = materialRenderer->GetUserMatrix();
+
+								drawable.AddDescriptor<EngineDrawableDescriptor>({
+									transform.GetWorldMatrix(),
+									materialRenderer->GetUserMatrix()
+								});
 
 								if (material->IsBlendable())
 								{

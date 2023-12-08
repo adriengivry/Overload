@@ -4,6 +4,7 @@
 * @licence: MIT
 */
 
+#include "OvEditor/Rendering/DebugModelRenderFeature.h"
 #include "OvEditor/Rendering/OutlineRenderFeature.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Settings/EditorSettings.h"
@@ -128,7 +129,8 @@ void OvEditor::Rendering::OutlineRenderFeature::DrawModelToStencil(
 	OvRendering::Resources::Model& p_model
 )
 {
-	m_renderer.DrawModelWithSingleMaterial(p_pso, p_model, m_stencilFillMaterial, p_worldMatrix);
+	m_renderer.GetFeature<DebugModelRenderFeature>()
+		.DrawModelWithSingleMaterial(p_pso, p_model, m_stencilFillMaterial, p_worldMatrix);
 }
 
 void OvEditor::Rendering::OutlineRenderFeature::DrawModelOutline(
@@ -137,5 +139,6 @@ void OvEditor::Rendering::OutlineRenderFeature::DrawModelOutline(
 	OvRendering::Resources::Model& p_model
 )
 {
-	m_renderer.DrawModelWithSingleMaterial(p_pso, p_model, m_outlineMaterial, p_worldMatrix);
+	m_renderer.GetFeature<DebugModelRenderFeature>()
+		.DrawModelWithSingleMaterial(p_pso, p_model, m_outlineMaterial, p_worldMatrix);
 }

@@ -4,12 +4,14 @@
 * @licence: MIT
 */
 
+#include "OvEditor/Rendering/DebugModelRenderFeature.h"
 #include "OvEditor/Rendering/PickingRenderPass.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Settings/EditorSettings.h"
 #include "OvEditor/Rendering/DebugSceneRenderer.h"
 
 #include <OvCore/ECS/Components/CMaterialRenderer.h>
+#include <OvCore/Rendering/EngineDrawableDescriptor.h>
 
 OvEditor::Rendering::PickingRenderPass::PickingRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) :
 	OvRendering::Core::ARenderPass(p_renderer)
@@ -160,10 +162,14 @@ void OvEditor::Rendering::PickingRenderPass::DrawPickableModels(
 						}
 
 						OvRendering::Entities::Drawable drawable;
-						drawable.modelMatrix = modelMatrix;
 						drawable.mesh = *mesh;
 						drawable.material = m_actorPickingMaterial;
 						drawable.stateMask = stateMask;
+
+						drawable.AddDescriptor<OvCore::Rendering::EngineDrawableDescriptor>({
+							modelMatrix
+						});
+
 						m_renderer.DrawEntity(p_pso, drawable);
 					}
 				}
@@ -188,7 +194,9 @@ void OvEditor::Rendering::PickingRenderPass::DrawPickableCameras(
 			auto translation = OvMaths::FMatrix4::Translation(actor.transform.GetWorldPosition());
 			auto rotation = OvMaths::FQuaternion::ToMatrix4(actor.transform.GetWorldRotation());
 			auto modelMatrix = translation * rotation;
-			m_renderer.DrawModelWithSingleMaterial(p_pso, cameraModel, m_actorPickingMaterial, modelMatrix);
+
+			m_renderer.GetFeature<DebugModelRenderFeature>()
+				.DrawModelWithSingleMaterial(p_pso, cameraModel, m_actorPickingMaterial, modelMatrix);
 		}
 	}
 }
@@ -213,7 +221,9 @@ void OvEditor::Rendering::PickingRenderPass::DrawPickableLights(
 				PreparePickingMaterial(actor, m_lightMaterial);
 				auto& lightModel = *EDITOR_CONTEXT(editorResources)->GetModel("Vertical_Plane");
 				auto modelMatrix = OvMaths::FMatrix4::Translation(actor.transform.GetWorldPosition());
-				m_renderer.DrawModelWithSingleMaterial(p_pso, lightModel, m_lightMaterial, modelMatrix);
+
+				m_renderer.GetFeature<DebugModelRenderFeature>()
+					.DrawModelWithSingleMaterial(p_pso, lightModel, m_lightMaterial, modelMatrix);
 			}
 		}
 	}
@@ -231,5 +241,7 @@ void OvEditor::Rendering::PickingRenderPass::DrawPickableGizmo(
 		OvMaths::FQuaternion::ToMatrix4(OvMaths::FQuaternion::Normalize(p_rotation));
 
 	auto arrowModel = EDITOR_CONTEXT(editorResources)->GetModel("Arrow_Picking");
-	m_renderer.DrawModelWithSingleMaterial(p_pso, *arrowModel, m_gizmoPickingMaterial, modelMatrix);
+
+	m_renderer.GetFeature<DebugModelRenderFeature>()
+		.DrawModelWithSingleMaterial(p_pso, *arrowModel, m_gizmoPickingMaterial, modelMatrix);
 }

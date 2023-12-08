@@ -77,7 +77,7 @@ void RenderCurrentScene(
 			frameDescriptor.camera = camera->GetCamera();
 
 			p_renderer.BeginFrame(frameDescriptor);
-			p_renderer.Draw();
+			p_renderer.DrawFrame();
 			p_renderer.EndFrame();
 		}
 	}

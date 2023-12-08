@@ -103,34 +103,6 @@ namespace OvRendering::Core
 			const Entities::Drawable& p_drawable
 		);
 
-		/**
-		* Draw a mesh
-		* @param p_pso
-		* @param p_mesh
-		* @param p_primitiveMode
-		* @param p_instances
-		*/
-		virtual void DrawMesh(
-			OvRendering::Data::PipelineState p_pso,
-			const Resources::IMesh& p_mesh,
-			Settings::EPrimitiveMode p_primitiveMode = Settings::EPrimitiveMode::TRIANGLES,
-			uint32_t p_instances = 1
-		);
-
-		/**
-		* Draw a model with a single material
-		* @param p_pso
-		* @param p_model
-		* @param p_material
-		* @param p_modelMatrix
-		*/
-		virtual void DrawModelWithSingleMaterial(
-			OvRendering::Data::PipelineState p_pso,
-			OvRendering::Resources::Model& p_model,
-			OvRendering::Data::Material& p_material,
-			const OvMaths::FMatrix4& p_modelMatrix
-		);
-
 	protected:
 		Data::FrameDescriptor m_frameDescriptor;
 		Context::Driver& m_driver;

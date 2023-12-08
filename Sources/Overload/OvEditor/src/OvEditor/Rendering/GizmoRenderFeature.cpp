@@ -19,6 +19,7 @@
 
 #include <OvDebug/Assertion.h>
 
+#include "OvEditor/Rendering/DebugModelRenderFeature.h"
 #include "OvEditor/Rendering/DebugSceneRenderer.h"
 #include "OvEditor/Core/EditorResources.h"
 #include "OvEditor/Panels/AView.h"
@@ -78,7 +79,8 @@ void OvEditor::Rendering::GizmoRenderFeature::DrawGizmo(
 	{
 		auto sphereModelMatrix = modelMatrix * OvMaths::FMatrix4::Scaling({ 0.1f, 0.1f, 0.1f });
 
-		m_renderer.DrawModelWithSingleMaterial(
+		m_renderer.GetFeature<DebugModelRenderFeature>()
+		.DrawModelWithSingleMaterial(
 			pso,
 			*sphereModel,
 			m_gizmoBallMaterial,
@@ -93,7 +95,8 @@ void OvEditor::Rendering::GizmoRenderFeature::DrawGizmo(
 		const auto axisIndex = GetAxisIndexFromDirection(p_highlightedDirection);
 		m_gizmoArrowMaterial.Set("u_HighlightedAxis", axisIndex);
 
-		m_renderer.DrawModelWithSingleMaterial(
+		m_renderer.GetFeature<DebugModelRenderFeature>()
+		.DrawModelWithSingleMaterial(
 			pso,
 			*arrowModel,
 			m_gizmoArrowMaterial,

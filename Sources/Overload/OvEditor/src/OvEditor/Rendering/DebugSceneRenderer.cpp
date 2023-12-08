@@ -12,6 +12,7 @@
 #include <OvCore/ECS/Components/CPointLight.h>
 #include <OvCore/ECS/Components/CDirectionalLight.h>
 #include <OvCore/ECS/Components/CSpotLight.h>
+#include <OvCore/Rendering/EngineDrawableDescriptor.h>
 
 #include <OvRendering/Features/DebugShapeRenderFeature.h>
 #include <OvRendering/Features/FrameInfoRenderFeature.h>
@@ -20,6 +21,7 @@
 
 #include <OvDebug/Assertion.h>
 
+#include "OvEditor/Rendering/DebugModelRenderFeature.h"
 #include "OvEditor/Rendering/DebugSceneRenderer.h"
 #include "OvEditor/Rendering/GridRenderPass.h"
 #include "OvEditor/Rendering/OutlineRenderFeature.h"
@@ -93,7 +95,9 @@ protected:
 			{
 				auto& model = *EDITOR_CONTEXT(editorResources)->GetModel("Camera");
 				auto modelMatrix = CalculateCameraModelMatrix(actor);
-				m_renderer.DrawModelWithSingleMaterial(p_pso, model, m_cameraMaterial, modelMatrix);
+
+				m_renderer.GetFeature<OvEditor::Rendering::DebugModelRenderFeature>()
+					.DrawModelWithSingleMaterial(p_pso, model, m_cameraMaterial, modelMatrix);
 			}
 		}
 	}
@@ -140,7 +144,9 @@ protected:
 				const auto& lightColor = light->GetColor();
 				m_lightMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", lightTexture);
 				m_lightMaterial.Set<OvMaths::FVector4>("u_Diffuse", OvMaths::FVector4(lightColor.x, lightColor.y, lightColor.z, 0.75f));
-				m_renderer.DrawModelWithSingleMaterial(p_pso, model, m_lightMaterial, modelMatrix);
+
+				m_renderer.GetFeature<OvEditor::Rendering::DebugModelRenderFeature>()
+					.DrawModelWithSingleMaterial(p_pso, model, m_lightMaterial, modelMatrix);
 			}
 		}
 	}
@@ -539,6 +545,7 @@ OvEditor::Rendering::DebugSceneRenderer::DebugSceneRenderer(OvRendering::Context
 {
 	AddFeature<OvRendering::Features::FrameInfoRenderFeature>();
 	AddFeature<OvRendering::Features::DebugShapeRenderFeature>();
+	AddFeature<OvEditor::Rendering::DebugModelRenderFeature>();
 	AddFeature<OvEditor::Rendering::OutlineRenderFeature>();
 	AddFeature<OvEditor::Rendering::GizmoRenderFeature>();
 

@@ -39,20 +39,20 @@ namespace OvRendering::Data
 	}
 
 	template<typename T>
-	inline T& Describable::GetDescriptor()
+	inline const T& Describable::GetDescriptor() const
 	{
 		auto it = m_descriptors.find(typeid(T));
 		OVASSERT(it != m_descriptors.end(), "Couldn't find a descriptor matching the given type T.");
-		return std::any_cast<T&>(it->second);
+		return std::any_cast<const T&>(it->second);
 	}
 
 	template<typename T>
-	inline bool Describable::TryGetDescriptor(T& p_outDescriptor) const
+	inline bool Describable::TryGetDescriptor(OvTools::Utils::OptRef<const T>& p_outDescriptor) const
 	{
 		auto it = m_descriptors.find(typeid(T));
 		if (it != m_descriptors.end())
 		{
-			p_outDescriptor = std::any_cast<T&>(it->second);
+			p_outDescriptor = std::any_cast<const T&>(it->second);
 			return true;
 		}
 

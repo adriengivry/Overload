@@ -305,7 +305,6 @@ namespace OvRendering::HAL
 			glDebugMessageCallback(GLDebugMessageCallback, nullptr);
 		}
 
-		glEnable(GL_LINE_SMOOTH);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glCullFace(GL_BACK);
 

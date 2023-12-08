@@ -65,7 +65,7 @@ void OvEditor::Panels::AView::Render()
 
 void OvEditor::Panels::AView::DrawFrame()
 {
-	m_renderer->Draw();
+	m_renderer->DrawFrame();
 }
 
 std::pair<uint16_t, uint16_t> OvEditor::Panels::AView::GetSafeSize() const

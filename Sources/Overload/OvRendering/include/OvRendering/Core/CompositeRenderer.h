@@ -43,7 +43,7 @@ namespace OvRendering::Core
 		* Handle the drawing logic of render pass, invoking DrawPass on the renderer and its
 		* associated render features.
 		*/
-		virtual void Draw() final;
+		virtual void DrawFrame() final;
 
 		/**
 		* End Frame

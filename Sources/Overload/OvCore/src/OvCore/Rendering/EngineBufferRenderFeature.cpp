@@ -7,6 +7,7 @@
 #include <OvRendering/Core/CompositeRenderer.h>
 
 #include "OvCore/Rendering/EngineBufferRenderFeature.h"
+#include "OvCore/Rendering/EngineDrawableDescriptor.h"
 
 OvCore::Rendering::EngineBufferRenderFeature::EngineBufferRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer)
 	: ARenderFeature(p_renderer)
@@ -46,16 +47,20 @@ void OvCore::Rendering::EngineBufferRenderFeature::OnEndFrame()
 
 void OvCore::Rendering::EngineBufferRenderFeature::OnBeforeDraw(OvRendering::Data::PipelineState& p_pso, const OvRendering::Entities::Drawable& p_drawable)
 {
-	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(p_drawable.modelMatrix), 0);
-	m_engineBuffer->SetSubData
-	(
-		p_drawable.userMatrix,
+	OvTools::Utils::OptRef<const EngineDrawableDescriptor> descriptor;
+	if (p_drawable.TryGetDescriptor<EngineDrawableDescriptor>(descriptor))
+	{
+		m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(descriptor->modelMatrix), 0);
+		m_engineBuffer->SetSubData
+		(
+			descriptor->userMatrix,
 
-		// UBO layout offset
-		sizeof(OvMaths::FMatrix4) +
-		sizeof(OvMaths::FMatrix4) +
-		sizeof(OvMaths::FMatrix4) +
-		sizeof(OvMaths::FVector3) +
-		sizeof(float)
-	);
+			// UBO layout offset
+			sizeof(OvMaths::FMatrix4) +
+			sizeof(OvMaths::FMatrix4) +
+			sizeof(OvMaths::FMatrix4) +
+			sizeof(OvMaths::FVector3) +
+			sizeof(float)
+		);
+	}
 }

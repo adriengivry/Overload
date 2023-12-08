@@ -134,70 +134,7 @@ void OvRendering::Core::ABaseRenderer::DrawEntity(
 		}
 
 		material->Bind(m_emptyTexture);
-		DrawMesh(p_pso, mesh.value(), Settings::EPrimitiveMode::TRIANGLES, gpuInstances);
+		m_driver.Draw(p_pso, mesh.value(), p_drawable.primitiveMode, gpuInstances);
 		material->UnBind();
-	}
-}
-
-void OvRendering::Core::ABaseRenderer::DrawMesh(
-	OvRendering::Data::PipelineState p_pso,
-	const Resources::IMesh& p_mesh,
-	Settings::EPrimitiveMode p_primitiveMode,
-	uint32_t p_instances
-)
-{
-	if (p_instances > 0)
-	{
-		m_driver.SetPipelineState(p_pso);
-
-		p_mesh.Bind();
-		
-		if (p_mesh.GetIndexCount() > 0)
-		{
-			if (p_instances == 1)
-			{
-				m_driver.DrawElements(p_primitiveMode, p_mesh.GetIndexCount());
-			}
-			else
-			{
-				m_driver.DrawElementsInstanced(p_primitiveMode, p_mesh.GetIndexCount(), p_instances);
-			}
-		}
-		else
-		{
-			if (p_instances == 1)
-			{
-				m_driver.DrawArrays(p_primitiveMode, p_mesh.GetVertexCount());
-			}
-			else
-			{
-				m_driver.DrawArraysInstanced(p_primitiveMode, p_mesh.GetVertexCount(), p_instances);
-			}
-		}
-
-		p_mesh.Unbind();
-	}
-}
-
-void OvRendering::Core::ABaseRenderer::DrawModelWithSingleMaterial(
-	OvRendering::Data::PipelineState p_pso,
-	OvRendering::Resources::Model& p_model,
-	OvRendering::Data::Material& p_material,
-	const OvMaths::FMatrix4& p_modelMatrix
-)
-{
-	auto stateMask = p_material.GenerateStateMask();
-	auto userMatrix = OvMaths::FMatrix4::Identity;
-
-	for (auto mesh : p_model.GetMeshes())
-	{
-		OvRendering::Entities::Drawable element;
-		element.modelMatrix = p_modelMatrix;
-		element.mesh = *mesh;
-		element.material = p_material;
-		element.stateMask = stateMask;
-		element.userMatrix = userMatrix;
-
-		DrawEntity(p_pso, element);
 	}
 }

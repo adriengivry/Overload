@@ -8,8 +8,8 @@
 
 #include <OvDebug/Assertion.h>
 
+#include "OvEditor/Rendering/DebugModelRenderFeature.h"
 #include "OvEditor/Core/EditorResources.h"
-
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Rendering/GridRenderPass.h"
 
@@ -40,7 +40,9 @@ void OvEditor::Rendering::GridRenderPass::Draw(OvRendering::Data::PipelineState 
 		OvMaths::FMatrix4::Scaling({ gridSize * 2.0f, 1.f, gridSize * 2.0f });
 
 	m_gridMaterial.Set("u_Color", gridDescriptor.gridColor);
-	m_renderer.DrawModelWithSingleMaterial(pso, *EDITOR_CONTEXT(editorResources)->GetModel("Plane"), m_gridMaterial, model);
+
+	m_renderer.GetFeature<DebugModelRenderFeature>()
+	.DrawModelWithSingleMaterial(pso, *EDITOR_CONTEXT(editorResources)->GetModel("Plane"), m_gridMaterial, model);
 
 	debugShapeRenderer.DrawLine(pso, OvMaths::FVector3(-gridSize + gridDescriptor.viewPosition.x, 0.0f, 0.0f), OvMaths::FVector3(gridSize + gridDescriptor.viewPosition.x, 0.0f, 0.0f), OvMaths::FVector3(1.0f, 0.0f, 0.0f), 1.0f);
 	debugShapeRenderer.DrawLine(pso, OvMaths::FVector3(0.0f, -gridSize + gridDescriptor.viewPosition.y, 0.0f), OvMaths::FVector3(0.0f, gridSize + gridDescriptor.viewPosition.y, 0.0f), OvMaths::FVector3(0.0f, 1.0f, 0.0f), 1.0f);

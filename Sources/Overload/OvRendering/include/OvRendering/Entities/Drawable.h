@@ -20,10 +20,9 @@ namespace OvRendering::Entities
 	*/
 	struct Drawable : public Data::Describable
 	{
-		OvMaths::FMatrix4 modelMatrix;
 		OvTools::Utils::OptRef<OvRendering::Resources::Mesh> mesh;
 		OvTools::Utils::OptRef<OvRendering::Data::Material> material;
 		OvRendering::Data::StateMask stateMask;
-		OvMaths::FMatrix4 userMatrix; // Can be used to store anything you want :)
+		OvRendering::Settings::EPrimitiveMode primitiveMode = OvRendering::Settings::EPrimitiveMode::TRIANGLES;
 	};
 }

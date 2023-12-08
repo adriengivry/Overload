@@ -49,7 +49,7 @@ namespace OvRendering::Data
 		* @note Fails if the descriptor doesn't exist
 		*/
 		template<typename T>
-		T& GetDescriptor();
+		const T& GetDescriptor() const;
 
 		/**
 		* Try retrieving the descriptor matching the given type
@@ -57,7 +57,7 @@ namespace OvRendering::Data
 		* @return true if the descriptor has been found
 		*/
 		template<typename T>
-		bool TryGetDescriptor(T& p_outDescriptor) const;
+		bool TryGetDescriptor(OvTools::Utils::OptRef<const T>& p_outDescriptor) const;
 
 	private:
 		std::unordered_map<std::type_index, std::any> m_descriptors;
