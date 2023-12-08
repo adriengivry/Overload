@@ -14,8 +14,6 @@
 #include "OvRendering/Resources/Texture.h"
 #include "OvRendering/Entities/Drawable.h"
 
-#include <OvDebug/Assertion.h>
-
 namespace OvRendering::Core
 {
 	/**
@@ -58,6 +56,11 @@ namespace OvRendering::Core
 		* The settings are set with default settings provided by the renderer
 		*/
 		Data::PipelineState CreatePipelineState() const;
+
+		/**
+		* Returns true if the renderer is currently drawing a frame
+		*/
+		bool IsDrawing() const;
 
 		/**
 		 * Read a block of pixels from the frame buffer.

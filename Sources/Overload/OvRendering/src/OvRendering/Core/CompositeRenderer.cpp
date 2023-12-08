@@ -19,12 +19,18 @@ void OvRendering::Core::CompositeRenderer::BeginFrame(const Data::FrameDescripto
 
 	for (const auto& [_, feature] : m_features)
 	{
-		feature->OnBeginFrame(p_frameDescriptor);
+		if (feature->IsEnabled())
+		{
+			feature->OnBeginFrame(p_frameDescriptor);
+		}
 	}
 
 	for (const auto& [_, pass] : m_passes)
 	{
-		pass.second->OnBeginFrame(p_frameDescriptor);
+		if (pass.second->IsEnabled())
+		{
+			pass.second->OnBeginFrame(p_frameDescriptor);
+		}
 	}
 }
 
@@ -34,7 +40,10 @@ void OvRendering::Core::CompositeRenderer::DrawFrame()
 
 	for (const auto& [_, pass] : m_passes)
 	{
-		pass.second->Draw(pso);
+		if (pass.second->IsEnabled())
+		{
+			pass.second->Draw(pso);
+		}
 	}
 }
 
@@ -42,12 +51,18 @@ void OvRendering::Core::CompositeRenderer::EndFrame()
 {
 	for (const auto& [_, pass] : m_passes)
 	{
-		pass.second->OnEndFrame();
+		if (pass.second->IsEnabled())
+		{
+			pass.second->OnEndFrame();
+		}
 	}
 
 	for (const auto& [_, feature] : m_features)
 	{
-		feature->OnEndFrame();
+		if (feature->IsEnabled())
+		{
+			feature->OnEndFrame();
+		}
 	}
 
 	ClearDescriptors();
@@ -61,13 +76,19 @@ void OvRendering::Core::CompositeRenderer::DrawEntity(
 {
 	for (const auto& [_, feature] : m_features)
 	{
-		feature->OnBeforeDraw(p_pso, p_drawable);
+		if (feature->IsEnabled())
+		{
+			feature->OnBeforeDraw(p_pso, p_drawable);
+		}
 	}
 
 	ABaseRenderer::DrawEntity(p_pso, p_drawable);
 	
 	for (const auto& [_, feature] : m_features)
 	{
-		feature->OnAfterDraw(p_drawable);
+		if (feature->IsEnabled())
+		{
+			feature->OnAfterDraw(p_drawable);
+		}
 	}
 }

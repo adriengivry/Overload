@@ -33,6 +33,16 @@ namespace OvRendering::Features
 		*/
 		virtual ~ARenderFeature() = default;
 
+		/**
+		* Enable (or disable) the render pass.
+		*/
+		void SetEnabled(bool p_enabled);
+
+		/**
+		* Returns true if the render pass is enabled
+		*/
+		bool IsEnabled() const;
+
 	protected:
 		/**
 		* Invoked when the BeginFrame is called on the associated base renderer
@@ -57,7 +67,9 @@ namespace OvRendering::Features
 		*/
 		virtual void OnAfterDraw(const Entities::Drawable& p_drawable);
 
+	protected:
 		Core::CompositeRenderer& m_renderer;
+		bool m_enabled = true;
 
 		friend class Core::CompositeRenderer;
 	};

@@ -14,8 +14,6 @@
 #include "OvRendering/Features/ARenderFeature.h"
 #include "OvRendering/Data/Describable.h"
 
-#include <OvDebug/Assertion.h>
-
 namespace OvRendering::Core
 {
 	/**

@@ -17,7 +17,8 @@ namespace OvRendering::Core
 namespace OvRendering::Core
 {
 	/**
-	* Defines a rendering step in the graphics pipeline
+	* Represents a rendering step in the graphics pipeline.
+	* Subclasses of this class define specific rendering passes.
 	*/
 	class ARenderPass
 	{
@@ -33,25 +34,37 @@ namespace OvRendering::Core
 		*/
 		virtual ~ARenderPass() = default;
 
+		/**
+		* Enable (or disable) the render pass.
+		*/
+		void SetEnabled(bool p_enabled);
+
+		/**
+		* Returns true if the render pass is enabled
+		*/
+		bool IsEnabled() const;
+
 	protected:
 		/**
-		* Invoked when the BeginFrame is called on the associated base renderer
+		* Invoked when BeginFrame is called on the associated renderer
 		* @param p_frameDescriptor
 		*/
 		virtual void OnBeginFrame(const Data::FrameDescriptor& p_frameDescriptor);
 
 		/**
-		* Invoked when the EndFrame is called on the associated base renderer
+		* Invoked when EndFrame is called on the associated renderer
 		*/
 		virtual void OnEndFrame();
 
 		/**
-		* Draw for the render pass
+		* Performs the rendering for the pass using the specified PipelineState.
 		* @param p_pso
 		*/
 		virtual void Draw(OvRendering::Data::PipelineState p_pso) = 0;
 
+	protected:
 		Core::CompositeRenderer& m_renderer;
+		bool m_enabled = true;
 
 		friend class Core::CompositeRenderer;
 	};

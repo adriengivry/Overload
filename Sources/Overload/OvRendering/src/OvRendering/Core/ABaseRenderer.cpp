@@ -77,6 +77,11 @@ OvRendering::Data::PipelineState OvRendering::Core::ABaseRenderer::CreatePipelin
 	return m_basePipelineState;
 }
 
+bool OvRendering::Core::ABaseRenderer::IsDrawing() const
+{
+	return m_isDrawing;
+}
+
 void OvRendering::Core::ABaseRenderer::ReadPixels(
 	uint32_t p_x,
 	uint32_t p_y,
