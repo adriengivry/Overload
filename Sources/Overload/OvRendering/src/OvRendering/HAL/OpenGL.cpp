@@ -286,7 +286,7 @@ OvRendering::Data::PipelineState RetrieveOpenGLPipelineState()
 
 namespace OvRendering::HAL
 {
-	std::optional<OvRendering::Data::PipelineState> OpenGL::Init(bool debug)
+	std::optional<Data::PipelineState> OpenGL::Init(bool debug)
 	{
 		const GLenum error = glewInit();
 

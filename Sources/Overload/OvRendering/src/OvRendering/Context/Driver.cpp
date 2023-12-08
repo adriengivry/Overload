@@ -12,7 +12,7 @@
 
 #include "OvRendering/HAL/GraphicsAPI.h"
 
-using SelectedAPI = OvRendering::HAL::None;
+using SelectedAPI = OvRendering::HAL::OpenGL;
 
 std::unique_ptr<SelectedAPI> m_driverImpl;
 
