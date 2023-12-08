@@ -111,23 +111,6 @@ namespace OvRendering::Context
 		);
 
 		/**
-		* Set the pipeline state to match the given PSO
-		* @param p_state
-		*/
-		void SetPipelineState(Data::PipelineState p_state);
-
-		/**
-		* Reset the pipeline state to its default state
-		* @param p_state
-		*/
-		void ResetPipelineState();
-
-		/**
-		* Return the current pipeline state
-		*/
-		const Data::PipelineState& GetPipelineState() const;
-
-		/**
 		* Create a pipeline state from the default state
 		*/
 		Data::PipelineState CreatePipelineState() const;
@@ -151,6 +134,10 @@ namespace OvRendering::Context
 		* Returns the current shading language version
 		*/
 		std::string_view GetShadingLanguageVersion() const;
+
+	private:
+		void SetPipelineState(Data::PipelineState p_state);
+		void ResetPipelineState();
 
 	private:
 		std::string m_vendor;

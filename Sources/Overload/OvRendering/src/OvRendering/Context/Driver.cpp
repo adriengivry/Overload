@@ -176,11 +176,6 @@ void OvRendering::Context::Driver::ResetPipelineState()
 	SetPipelineState(m_defaultPipelineState);
 }
 
-const OvRendering::Data::PipelineState& OvRendering::Context::Driver::GetPipelineState() const
-{
-	return m_pipelineState;
-}
-
 OvRendering::Data::PipelineState OvRendering::Context::Driver::CreatePipelineState() const
 {
 	return m_defaultPipelineState;
