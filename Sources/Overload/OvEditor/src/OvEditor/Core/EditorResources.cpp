@@ -12,7 +12,6 @@
 
 #include "OvEditor/Core/EditorResources.h"
 #include "OvEditor/Resources/RawTextures.h"
-#include "OvEditor/Resources/RawShaders.h"
 
 OvEditor::Core::EditorResources::EditorResources(const std::string& p_editorAssetsPath)
 {
@@ -162,12 +161,9 @@ OvEditor::Core::EditorResources::EditorResources(const std::string& p_editorAsse
 	m_models["Camera"]			= ModelLoader::Create(modelsFolder + "Camera.fbx", modelParserFlags);
 
 	/* Shaders */
-	auto gridSource			= OvEditor::Resources::RawShaders::GetGrid();
-	auto gizmoSource		= OvEditor::Resources::RawShaders::GetGizmo();
-	auto billboardSource	= OvEditor::Resources::RawShaders::GetBillboard();
-	m_shaders["Grid"]		= ShaderLoader::CreateFromSource(gridSource.first, gridSource.second);
-	m_shaders["Gizmo"]		= ShaderLoader::CreateFromSource(gizmoSource.first, gizmoSource.second);
-	m_shaders["Billboard"]	= ShaderLoader::CreateFromSource(billboardSource.first, billboardSource.second);
+	m_shaders["Grid"] = ShaderLoader::Create(shadersFolder + "Grid.glsl");
+	m_shaders["Gizmo"] = ShaderLoader::Create(shadersFolder + "Gizmo.glsl");
+	m_shaders["Billboard"] = ShaderLoader::Create(shadersFolder + "Billboard.glsl");
 
 	/* From memory */
 	{
