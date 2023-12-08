@@ -8,8 +8,6 @@
 
 #include <string>
 
-#include <GLFW/glfw3.h>
-
 #include "OvWindowing/Context/Device.h"
 #include "OvWindowing/Settings/WindowSettings.h"
 #include "OvWindowing/Cursor/ECursorShape.h"

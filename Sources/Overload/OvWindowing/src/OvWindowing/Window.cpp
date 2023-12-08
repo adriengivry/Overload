@@ -4,13 +4,15 @@
 * @licence: MIT
 */
 
-#include <iostream>
-
 #include "OvWindowing/Window.h"
 
 // #define STB_IMAGE_IMPLEMENTATION
 
 #include <stb_image/stb_image.h>
+
+#include <GLFW/glfw3.h>
+
+#include <stdexcept>
 
 std::unordered_map<GLFWwindow*, OvWindowing::Window*> OvWindowing::Window::__WINDOWS_MAP;
 
@@ -321,7 +323,7 @@ void OvWindowing::Window::CreateGlfwWindow(const Settings::WindowSettings& p_win
 
 	if (!m_glfwWindow)
 	{
-		throw std::runtime_error("Failed to create GLFW window");
+		throw std::runtime_error("Failed to create GLFW window"); // TODO: Replace with OvDebug assertion
 	}
 	else
 	{

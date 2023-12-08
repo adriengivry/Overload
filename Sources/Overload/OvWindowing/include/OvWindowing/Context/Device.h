@@ -8,13 +8,14 @@
 
 #include <unordered_map>
 
-#include <GLFW/glfw3.h>
-
 #include <OvTools/Eventing/Event.h>
 
 #include "OvWindowing/Context/EDeviceError.h"
 #include "OvWindowing/Settings/DeviceSettings.h"
 #include "OvWindowing/Cursor/ECursorShape.h"
+
+struct GLFWwindow;
+struct GLFWcursor;
 
 namespace OvWindowing::Context
 {
