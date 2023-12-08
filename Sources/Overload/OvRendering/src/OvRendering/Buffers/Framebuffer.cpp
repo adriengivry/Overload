@@ -26,7 +26,7 @@ OvRendering::Buffers::Framebuffer::Framebuffer(uint16_t p_width, uint16_t p_heig
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_renderTexture, 0);
 	Unbind();
 
-	Resize(p_width, p_height);
+	Resize(p_width, p_height, true);
 }
 
 OvRendering::Buffers::Framebuffer::~Framebuffer()
@@ -47,23 +47,29 @@ void OvRendering::Buffers::Framebuffer::Unbind() const
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void OvRendering::Buffers::Framebuffer::Resize(uint16_t p_width, uint16_t p_height)
+void OvRendering::Buffers::Framebuffer::Resize(uint16_t p_width, uint16_t p_height, bool p_forceUpdate)
 {
-	/* Resize texture */
-	glBindTexture(GL_TEXTURE_2D, m_renderTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, p_width, p_height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	if (p_forceUpdate || p_width != m_width || p_height != m_height)
+	{
+		/* Resize texture */
+		glBindTexture(GL_TEXTURE_2D, m_renderTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, p_width, p_height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 
-	/* Setup depth-stencil buffer (24 + 8 bits) */
-	glBindRenderbuffer(GL_RENDERBUFFER, m_depthStencilBuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_STENCIL, p_width, p_height);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		/* Setup depth-stencil buffer (24 + 8 bits) */
+		glBindRenderbuffer(GL_RENDERBUFFER, m_depthStencilBuffer);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_STENCIL, p_width, p_height);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-	/* Attach depth and stencil buffer to the framebuffer */
-	Bind();
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthStencilBuffer);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_depthStencilBuffer);
-	Unbind();
+		/* Attach depth and stencil buffer to the framebuffer */
+		Bind();
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthStencilBuffer);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_depthStencilBuffer);
+		Unbind();
+
+		m_width = p_width;
+		m_height = p_height;
+	}
 }
 
 uint32_t OvRendering::Buffers::Framebuffer::GetID() const
