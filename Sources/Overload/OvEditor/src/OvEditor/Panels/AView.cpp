@@ -70,8 +70,12 @@ void OvEditor::Panels::AView::DrawFrame()
 
 std::pair<uint16_t, uint16_t> OvEditor::Panels::AView::GetSafeSize() const
 {
-	auto result = GetSize() - OvMaths::FVector2{ 0.f, 25.f }; // 25 == title bar height
-	return { static_cast<uint16_t>(result.x), static_cast<uint16_t>(result.y) };
+	constexpr float kTitleBarHeight = 25.0f; // <--- this takes into account the imgui window title bar
+	const auto& size = GetSize();
+	return {
+		static_cast<uint16_t>(size.x),
+		static_cast<uint16_t>(std::max(0.0f, size.y - kTitleBarHeight)) // <--- clamp to prevent the output size to be negative
+	}; 
 }
 
 const OvCore::Rendering::SceneRenderer& OvEditor::Panels::AView::GetRenderer() const

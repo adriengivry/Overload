@@ -145,7 +145,7 @@ void GLDebugMessageCallback(uint32_t source, uint32_t type, uint32_t id, uint32_
 	case GL_DEBUG_SEVERITY_HIGH:			OVLOG_ERROR(output);	break;
 	case GL_DEBUG_SEVERITY_MEDIUM:			OVLOG_WARNING(output);	break;
 	case GL_DEBUG_SEVERITY_LOW:				OVLOG_INFO(output);		break;
-	case GL_DEBUG_SEVERITY_NOTIFICATION:	OVLOG_INFO(output);			break;
+	case GL_DEBUG_SEVERITY_NOTIFICATION:	OVLOG_INFO(output);		break;
 	}
 }
 
@@ -300,17 +300,12 @@ namespace OvRendering::HAL
 
 		if (debug)
 		{
-			GLint flags;
-			glGetIntegerv(GL_CONTEXT_FLAGS, &flags); //TODO: That doesn't seem right, we should set the integerv not get it?
-			if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
-			{
-				glEnable(GL_DEBUG_OUTPUT);
-				glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-				glDebugMessageCallback(GLDebugMessageCallback, nullptr);
-				glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-			}
+			glEnable(GL_DEBUG_OUTPUT);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+			glDebugMessageCallback(GLDebugMessageCallback, nullptr);
 		}
 
+		glEnable(GL_LINE_SMOOTH);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glCullFace(GL_BACK);
 
