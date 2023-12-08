@@ -12,11 +12,13 @@
 
 #include "OvRendering/HAL/GraphicsAPI.h"
 
-std::unique_ptr<OvRendering::HAL::OpenGL> m_driverImpl;
+using SelectedAPI = OvRendering::HAL::None;
+
+std::unique_ptr<SelectedAPI> m_driverImpl;
 
 OvRendering::Context::Driver::Driver(const OvRendering::Settings::DriverSettings& p_driverSettings)
 {
-	m_driverImpl = std::make_unique<OvRendering::HAL::OpenGL>();
+	m_driverImpl = std::make_unique<SelectedAPI>();
 
 	auto initialPipelineState = m_driverImpl->Init(p_driverSettings.debugMode);
 
