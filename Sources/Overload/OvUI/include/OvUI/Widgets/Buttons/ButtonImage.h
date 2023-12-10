@@ -26,7 +26,7 @@ namespace OvUI::Widgets::Buttons
 		* @param p_size
 		*/
 		ButtonImage(uint32_t p_textureID, const OvMaths::FVector2& p_size);
-
+		virtual ~ButtonImage() override = default;
 	protected:
 		void _Draw_Impl() override;
 

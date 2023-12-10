@@ -185,21 +185,37 @@ OvEditor::Panels::Hierarchy::Hierarchy
 	m_sceneRoot->AddPlugin<OvUI::Plugins::DDTarget<std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*>>>("Actor").DataReceivedEvent += [this](std::pair<OvCore::ECS::Actor*, OvUI::Widgets::Layout::TreeNode*> p_element)
 	{
 		if (p_element.second->HasParent())
-			p_element.second->GetParent()->UnconsiderWidget(*p_element.second);
-
-		m_sceneRoot->ConsiderWidget(*p_element.second);
+			p_element.second->GetParent()->TransferOwnership(*p_element.second, *m_sceneRoot);
 
 		p_element.first->DetachFromParent();
 	};
     m_sceneRoot->AddPlugin<ActorContextualMenu>(nullptr, *m_sceneRoot);
 
-	EDITOR_EVENT(ActorUnselectedEvent) += std::bind(&Hierarchy::UnselectActorsWidgets, this);
-	EDITOR_CONTEXT(sceneManager).SceneUnloadEvent += std::bind(&Hierarchy::Clear, this);
-	OvCore::ECS::Actor::CreatedEvent += std::bind(&Hierarchy::AddActorByInstance, this, std::placeholders::_1);
-	OvCore::ECS::Actor::DestroyedEvent += std::bind(&Hierarchy::DeleteActorByInstance, this, std::placeholders::_1);
 	EDITOR_EVENT(ActorSelectedEvent) += std::bind(&Hierarchy::SelectActorByInstance, this, std::placeholders::_1);
-	OvCore::ECS::Actor::AttachEvent += std::bind(&Hierarchy::AttachActorToParent, this, std::placeholders::_1);
-	OvCore::ECS::Actor::DettachEvent += std::bind(&Hierarchy::DetachFromParent, this, std::placeholders::_1);
+	EDITOR_EVENT(ActorUnselectedEvent) += std::bind(&Hierarchy::UnselectActorsWidgets, this);
+
+	EDITOR_CONTEXT(sceneManager).SceneUnloadEvent += std::bind(&Hierarchy::Clear, this);
+
+	OvCore::ECS::Actor::CreatedEvent += [this](OvCore::ECS::Actor& p_actor)
+		{
+			m_callbackQueue.push([this, &p_actor] { this->AddActorByInstance(p_actor); });
+		};
+
+	OvCore::ECS::Actor::DestroyedEvent += [this](OvCore::ECS::Actor& p_actor)
+		{
+			m_callbackQueue.push([this, &p_actor] { this->DeleteActorByInstance(p_actor); });
+		};
+
+	OvCore::ECS::Actor::AttachEvent += [this](OvCore::ECS::Actor& p_actor, OvCore::ECS::Actor& p_parentActor)
+		{
+			m_callbackQueue.push([this, &p_actor] { this->AttachActorToParent(p_actor); });
+		};
+
+	OvCore::ECS::Actor::DettachEvent += [this](OvCore::ECS::Actor& p_actor, OvCore::ECS::Actor* p_parentActor)
+		{
+			m_callbackQueue.push([this, &p_actor, p_parentActor] { this->DetachFromParent(p_actor, p_parentActor); });
+		};
+
 }
 
 void OvEditor::Panels::Hierarchy::Clear()
@@ -223,7 +239,7 @@ void OvEditor::Panels::Hierarchy::SelectActorByInstance(OvCore::ECS::Actor& p_ac
 			SelectActorByWidget(*result->second);
 }
 
-void OvEditor::Panels::Hierarchy::SelectActorByWidget(OvUI::Widgets::Layout::TreeNode & p_widget)
+void OvEditor::Panels::Hierarchy::SelectActorByWidget(OvUI::Widgets::Layout::TreeNode& p_widget)
 {
 	UnselectActorsWidgets();
 
@@ -235,7 +251,7 @@ void OvEditor::Panels::Hierarchy::SelectActorByWidget(OvUI::Widgets::Layout::Tre
 	}
 }
 
-void OvEditor::Panels::Hierarchy::AttachActorToParent(OvCore::ECS::Actor & p_actor)
+void OvEditor::Panels::Hierarchy::AttachActorToParent(OvCore::ECS::Actor& p_actor)
 {
 	auto actorWidget = m_widgetActorLink.find(&p_actor);
 
@@ -243,25 +259,20 @@ void OvEditor::Panels::Hierarchy::AttachActorToParent(OvCore::ECS::Actor & p_act
 	{
 		auto widget = actorWidget->second;
 
-		if (widget->HasParent())
-			widget->GetParent()->UnconsiderWidget(*widget);
+		const auto parentWidget = m_widgetActorLink.at(p_actor.GetParent());
+		parentWidget->leaf = false;
 
-		if (p_actor.HasParent())
-		{
-			auto parentWidget = m_widgetActorLink.at(p_actor.GetParent());
-			parentWidget->leaf = false;
-			parentWidget->ConsiderWidget(*widget);
-		}
+		widget->GetParent()->TransferOwnership(*widget, *parentWidget);
 	}
 }
 
-void OvEditor::Panels::Hierarchy::DetachFromParent(OvCore::ECS::Actor & p_actor)
+void OvEditor::Panels::Hierarchy::DetachFromParent(OvCore::ECS::Actor & p_actor, OvCore::ECS::Actor* p_parentActor)
 {
 	if (auto actorWidget = m_widgetActorLink.find(&p_actor); actorWidget != m_widgetActorLink.end())
 	{
-		if (p_actor.HasParent() && p_actor.GetParent()->GetChildren().size() == 1)
+		if (p_parentActor && p_parentActor->GetChildren().size() <= 1)
 		{
-			if (auto parentWidget = m_widgetActorLink.find(p_actor.GetParent()); parentWidget != m_widgetActorLink.end())
+			if (const auto parentWidget = m_widgetActorLink.find(p_parentActor); parentWidget != m_widgetActorLink.end())
 			{
 				parentWidget->second->leaf = true;
 			}
@@ -269,10 +280,8 @@ void OvEditor::Panels::Hierarchy::DetachFromParent(OvCore::ECS::Actor & p_actor)
 
 		auto widget = actorWidget->second;
 
-		if (widget->HasParent())
-			widget->GetParent()->UnconsiderWidget(*widget);
-
-		m_sceneRoot->ConsiderWidget(*widget);
+		if(widget->GetParent() != m_sceneRoot)
+			widget->GetParent()->TransferOwnership(*widget, *m_sceneRoot);
 	}
 }
 

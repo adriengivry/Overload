@@ -25,7 +25,7 @@
 OvTools::Eventing::Event<OvCore::ECS::Actor&> OvCore::ECS::Actor::DestroyedEvent;
 OvTools::Eventing::Event<OvCore::ECS::Actor&> OvCore::ECS::Actor::CreatedEvent;
 OvTools::Eventing::Event<OvCore::ECS::Actor&, OvCore::ECS::Actor&> OvCore::ECS::Actor::AttachEvent;
-OvTools::Eventing::Event<OvCore::ECS::Actor&> OvCore::ECS::Actor::DettachEvent;
+OvTools::Eventing::Event<OvCore::ECS::Actor&, OvCore::ECS::Actor*> OvCore::ECS::Actor::DettachEvent;
 
 OvCore::ECS::Actor::Actor(int64_t p_actorID, const std::string & p_name, const std::string & p_tag, bool& p_playing) :
 	m_actorID(p_actorID),
@@ -131,7 +131,7 @@ void OvCore::ECS::Actor::SetParent(Actor& p_parent)
 
 void OvCore::ECS::Actor::DetachFromParent()
 {
-	DettachEvent.Invoke(*this);
+	DettachEvent.Invoke(*this, m_parent);
 
 	/* Remove the actor from the parent children list */
 	if (m_parent)

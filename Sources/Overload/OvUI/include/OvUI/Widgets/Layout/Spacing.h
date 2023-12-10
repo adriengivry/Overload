@@ -21,6 +21,8 @@ namespace OvUI::Widgets::Layout
 		* @param p_spaces
 		*/
 		Spacing(uint16_t p_spaces = 1);
+		virtual ~Spacing() override = default;
+
 
 	protected:
 		void _Draw_Impl() override;

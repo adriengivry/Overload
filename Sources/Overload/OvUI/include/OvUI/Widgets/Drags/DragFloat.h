@@ -34,5 +34,6 @@ namespace OvUI::Widgets::Drags
 			const std::string& p_label = "",
 			const std::string& p_format = "%.3f"
 		);
+		virtual ~DragFloat() override = default;
 	};
 }

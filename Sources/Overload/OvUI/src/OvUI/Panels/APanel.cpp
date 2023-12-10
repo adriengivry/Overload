@@ -18,7 +18,10 @@ OvUI::Panels::APanel::APanel()
 void OvUI::Panels::APanel::Draw()
 {
 	if (enabled)
+	{
+		m_callbackQueue.Process();
 		_Draw_Impl();
+	}
 }
 
 const std::string & OvUI::Panels::APanel::GetPanelID() const

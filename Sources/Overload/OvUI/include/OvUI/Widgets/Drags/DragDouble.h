@@ -34,5 +34,7 @@ namespace OvUI::Widgets::Drags
 			const std::string& p_label = "",
 			const std::string& p_format = "%.6f"
 		);
+
+		virtual ~DragDouble() override = default;
 	};
 }

@@ -27,7 +27,7 @@ namespace OvUI::Widgets::Layout
 		* @param p_arrowClickToOpen
 		*/
 		TreeNode(const std::string& p_name = "", bool p_arrowClickToOpen = false);
-
+		virtual ~TreeNode() override = default;
 		/**
 		* Open the tree node
 		*/

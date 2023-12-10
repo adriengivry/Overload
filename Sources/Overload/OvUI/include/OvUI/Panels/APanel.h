@@ -9,6 +9,7 @@
 #include <vector>
 #include <unordered_map>
 
+#include "../../../../OvTools/CallbackQueue.h"
 #include "OvUI/Internal/WidgetContainer.h"
 
 namespace OvUI::Panels
@@ -42,8 +43,10 @@ namespace OvUI::Panels
 
 	protected:
 		std::string m_panelID;
+		OvTools::Utils::CallbackQueue m_callbackQueue;
 
 	private:
 		static uint64_t __PANEL_ID_INCREMENT;
+		
 	};
 }
