@@ -23,9 +23,9 @@ In short, when you submit code changes, your submissions are understood to be un
 ## Report bugs using Github's issues
 We use GitHub issues to track public bugs. Report a bug by opening a new issue it's that easy!
 
-## Use a Consistent Coding Style
-* Interfaces starts by `I`
-* Abstracts starts by `A`
+## Coding Conventions
+* Interfaces starts with `I`
+* Abstracts starts with `A`
 * Class names: `UpperCamelCase`
 * Public member variables: `lowerCamelCase`
 * Private member variables: `m_lowerCamelCase`
@@ -33,9 +33,16 @@ We use GitHub issues to track public bugs. Report a bug by opening a new issue i
 * Private static variables: `_CAPS_LOCK_WITH_UNDERSCORES`
 * Function/Method arguments: `p_lowerCamelCase`
 * Function/Method names: `UpperCamelCase`
+* Constants: `kUpperCamelCase`
 * Class member variables are located on file bottom
+* Avoid using macros to define constants, prefer using `constexpr` instead.
+* Tabs are preferred over spaces.
+* Always end your files with an empty line.
+* Avoid aligning variable names and values using tabulations.
+* Scope blocks should start on a new line.
 * Comment your functions, enums, classes, methods ([Javadoc style](https://en.wikipedia.org/wiki/Javadoc))
-Some coding convention could have been forget while redacting this document, so always refer to the existing code base!
+
+Some coding conventions may have been overlooked during the writing of this document, so always refer to the existing codebase.
 
 ## Thanks!
 Thanks for being part of the Overload Tech. team!
