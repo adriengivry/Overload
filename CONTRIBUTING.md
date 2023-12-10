@@ -32,7 +32,7 @@ We use GitHub issues to track bugs. Report a bug by opening a new issue, it's th
 * Public member variables: `lowerCamelCase`.
 * Private member variables: `m_lowerCamelCase`.
 * Public static variables: `UpperCamelCase`.
-* Private static variables: `_CAPS_LOCK_WITH_UNDERSCORES`.
+* Private static variables: `s_lowerCamelCase`.
 * Function/Method arguments: `p_lowerCamelCase`.
 * Function/Method names: `UpperCamelCase`.
 * Constants: `kUpperCamelCase`.
