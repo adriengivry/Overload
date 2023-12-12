@@ -60,7 +60,7 @@ namespace OvRendering::Core
 		static_assert(std::is_base_of<ARenderPass, T>::value, "T must inherit from ARenderPass");
 		for (const auto& [_, pass] : m_passes)
 			OVASSERT(pass.first != p_name, "This pass name is already in use!");
-		T* pass = new T(*this, std::forward<Args>(args)...);
+		T* pass = new T(*this, std::forward<Args>(p_args)...);
 		m_passes.emplace(p_order, std::make_pair(p_name, std::unique_ptr<ARenderPass>(pass)));
 		return *pass;
 	}
