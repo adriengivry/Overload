@@ -23,6 +23,8 @@
 
 #include <OvWindowing/Inputs/InputManager.h>
 
+#include <sol/sol.hpp>
+
 void OvCore::Scripting::LuaGlobalsBinder::BindGlobals(sol::state & p_luaState)
 {
 	using namespace OvWindowing;

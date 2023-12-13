@@ -4,10 +4,9 @@
 * @licence: MIT
 */
 
+
 #include "OvCore/Scripting/LuaActorBinder.h"
-
 #include "OvCore/ECS/Actor.h"
-
 #include "OvCore/ECS/Components/CTransform.h"
 #include "OvCore/ECS/Components/CCamera.h"
 #include "OvCore/ECS/Components/CPhysicalBox.h"
@@ -22,6 +21,8 @@
 #include "OvCore/ECS/Components/CMaterialRenderer.h"
 #include "OvCore/ECS/Components/CAudioSource.h"
 #include "OvCore/ECS/Components/CAudioListener.h"
+
+#include <sol/sol.hpp>
 
 void OvCore::Scripting::LuaActorBinder::BindActor(sol::state & p_luaState)
 {

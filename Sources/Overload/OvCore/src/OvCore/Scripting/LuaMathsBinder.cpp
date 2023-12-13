@@ -13,6 +13,8 @@
 #include <OvMaths/FMatrix4.h>
 #include <OvMaths/FQuaternion.h>
 
+#include <sol/sol.hpp>
+
 void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
 {
 	using namespace OvMaths;

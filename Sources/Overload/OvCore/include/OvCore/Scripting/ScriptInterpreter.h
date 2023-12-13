@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include <sol.hpp>
+#include <sol/forward.hpp>
 
 #include "OvCore/ECS/Components/Behaviour.h"
 

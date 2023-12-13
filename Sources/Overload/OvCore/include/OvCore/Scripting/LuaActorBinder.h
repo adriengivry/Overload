@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <sol.hpp>
+#include <sol/forward.hpp>
 
 namespace OvCore::Scripting
 {

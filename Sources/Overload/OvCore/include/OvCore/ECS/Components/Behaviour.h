@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <sol.hpp>
+#include <sol/sol.hpp>
 
 #include "OvCore/ECS/Components/CPhysicalObject.h"
 
