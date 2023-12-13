@@ -1,6 +1,6 @@
 project "OvGame"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	files { "**.h", "**.inl","**.cpp", "**.rc" }
 	includedirs { "include", dependdir .. "glfw/include", dependdir .. "stb_image/include", dependdir .. "lua/include", dependdir .. "bullet3/include", dependdir .. "glew/include", dependdir .. "irrklang/include",
 	"%{wks.location}/OvAnalytics/include", "%{wks.location}/OvAudio/include", "%{wks.location}/OvCore/include",

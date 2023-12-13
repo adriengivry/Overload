@@ -1,7 +1,7 @@
 project "OvAudio"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	files { "**.h", "**.inl", "**.cpp" }
 	includedirs { "include", dependdir .. "irrklang/include", "%{wks.location}/OvDebug/include", "%{wks.location}/OvMaths/include", "%{wks.location}/OvTools/include" }
 	targetdir (outputdir .. "%{cfg.buildcfg}/%{prj.name}")
