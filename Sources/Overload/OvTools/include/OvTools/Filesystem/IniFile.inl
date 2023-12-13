@@ -12,7 +12,7 @@
 
 namespace OvTools::Filesystem
 {
-	template<typename T>
+	template<IniType T>
 	inline T IniFile::Get(const std::string& p_key)
 	{
 		if constexpr (std::is_same<bool, T>::value)
@@ -43,20 +43,15 @@ namespace OvTools::Filesystem
 
 			return static_cast<T>(std::atof(m_data[p_key].c_str()));
 		}
-		else
-		{
-			static_assert(false, "The given type must be : bool, integral, floating point or string");
-			return T();
-		}
 	}
 
-	template<typename T>
+	template<IniType T>
 	inline T IniFile::GetOrDefault(const std::string& p_key, T p_default)
 	{
 		return IsKeyExisting(p_key) ? Get<T>(p_key) : p_default;
 	}
 
-	template<typename T>
+	template<IniType T>
 	inline bool IniFile::Set(const std::string& p_key, const T& p_value)
 	{
 		if (IsKeyExisting(p_key))
@@ -77,18 +72,12 @@ namespace OvTools::Filesystem
 			{
 				m_data[p_key] = std::to_string(p_value);
 			}
-			else
-			{
-				static_assert(false, "The given type must be : bool, integral, floating point or string");
-			}
-
-			return true;
 		}
 
 		return false;
 	}
 
-	template<typename T>
+	template<IniType T>
 	inline bool IniFile::Add(const std::string & p_key, const T & p_value)
 	{
 		if (!IsKeyExisting(p_key))
@@ -108,10 +97,6 @@ namespace OvTools::Filesystem
 			else if constexpr (std::is_floating_point<T>::value)
 			{
 				RegisterPair(p_key, std::to_string(p_value));
-			}
-			else
-			{
-				static_assert(false, "The given type must be : bool, integral, floating point or std::string");
 			}
 
 			return true;
