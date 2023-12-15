@@ -94,10 +94,14 @@ float GetActorFocusDist(OvCore::ECS::Actor& p_actor)
 
 void OvEditor::Core::CameraController::HandleInputs(float p_deltaTime)
 {
-	if (m_view.IsHovered())
+	auto& io = ImGui::GetIO();
+	if (io.WantCaptureMouse)
 	{
 		UpdateMouseState();
+	}
 
+	if (m_view.IsHovered())
+	{
 		//ImGui::GetIO().DisableMouseUpdate = m_rightMousePressed || m_middleMousePressed;
 
 		if (!ImGui::IsAnyItemActive())
