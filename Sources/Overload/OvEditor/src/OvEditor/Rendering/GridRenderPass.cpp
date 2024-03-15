@@ -27,6 +27,7 @@ void OvEditor::Rendering::GridRenderPass::Draw(OvRendering::Data::PipelineState 
 {
 	OVASSERT(m_renderer.HasDescriptor<GridDescriptor>(), "Cannot find GridDescriptor attached to this renderer");
 	OVASSERT(m_renderer.HasFeature<OvRendering::Features::DebugShapeRenderFeature>(), "Cannot find DebugShapeRenderFeature attached to this renderer");
+	OVASSERT(m_renderer.HasFeature<OvEditor::Rendering::DebugModelRenderFeature>(), "Cannot find DebugModelRenderFeature attached to this renderer");
 
 	auto& gridDescriptor = m_renderer.GetDescriptor<GridDescriptor>();
 	auto& debugShapeRenderer = m_renderer.GetFeature<OvRendering::Features::DebugShapeRenderFeature>();
