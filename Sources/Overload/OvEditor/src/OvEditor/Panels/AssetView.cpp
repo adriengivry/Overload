@@ -17,6 +17,7 @@
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Panels/AssetView.h"
 #include "OvEditor/Rendering/GridRenderPass.h"
+#include "OvEditor/Rendering/DebugModelRenderFeature.h"
 
 OvEditor::Panels::AssetView::AssetView
 (
@@ -26,6 +27,7 @@ OvEditor::Panels::AssetView::AssetView
 ) : AViewControllable(p_title, p_opened, p_windowSettings)
 {
 	m_renderer = std::make_unique<OvCore::Rendering::SceneRenderer>(*EDITOR_CONTEXT(driver));
+	m_renderer->AddFeature<OvEditor::Rendering::DebugModelRenderFeature>();
 	m_renderer->AddFeature<OvRendering::Features::DebugShapeRenderFeature>();
 	m_renderer->AddFeature<OvRendering::Features::FrameInfoRenderFeature>();
 
