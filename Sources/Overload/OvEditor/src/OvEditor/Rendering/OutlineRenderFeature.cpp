@@ -96,6 +96,11 @@ void OvEditor::Rendering::OutlineRenderFeature::DrawActorToStencil(OvRendering::
 			auto model = translation * rotation;
 			DrawModelToStencil(p_pso, model, *EDITOR_CONTEXT(editorResources)->GetModel("Camera"));
 		}
+
+		for (auto& child : p_actor.GetChildren())
+		{
+			DrawActorToStencil(p_pso, *child);
+		}
 	}
 }
 
