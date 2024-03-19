@@ -17,7 +17,6 @@
 
 #include <OvUI/Core/UIManager.h>
 
-#include <OvCore/ECS/Renderer.h>
 #include <OvCore/ResourceManagement/ModelManager.h>
 #include <OvCore/ResourceManagement/TextureManager.h>
 #include <OvCore/ResourceManagement/ShaderManager.h>
@@ -54,26 +53,23 @@ namespace OvGame::Core
 		const std::string projectAssetsPath;
 		const std::string projectScriptsPath;
 
-		std::unique_ptr<OvWindowing::Context::Device>				device;
-		std::unique_ptr<OvWindowing::Window>						window;
-		std::unique_ptr<OvWindowing::Inputs::InputManager>			inputManager;
-		std::unique_ptr<OvRendering::Context::Driver>				driver;
-		std::unique_ptr<OvCore::ECS::Renderer>						renderer;
-		std::unique_ptr<OvUI::Core::UIManager>						uiManager;
-		std::unique_ptr<OvPhysics::Core::PhysicsEngine>				physicsEngine;
-		std::unique_ptr<OvAudio::Core::AudioEngine>					audioEngine;
-		std::unique_ptr<OvAudio::Core::AudioPlayer>					audioPlayer;
-		std::unique_ptr<OvCore::Scripting::ScriptInterpreter>		scriptInterpreter;
-		std::unique_ptr<OvRendering::Buffers::UniformBuffer>		engineUBO;
-		std::unique_ptr<OvRendering::Buffers::ShaderStorageBuffer>	lightSSBO;
+		std::unique_ptr<OvWindowing::Context::Device> device;
+		std::unique_ptr<OvWindowing::Window> window;
+		std::unique_ptr<OvWindowing::Inputs::InputManager> inputManager;
+		std::unique_ptr<OvRendering::Context::Driver> driver;
+		std::unique_ptr<OvUI::Core::UIManager> uiManager;
+		std::unique_ptr<OvPhysics::Core::PhysicsEngine> physicsEngine;
+		std::unique_ptr<OvAudio::Core::AudioEngine> audioEngine;
+		std::unique_ptr<OvAudio::Core::AudioPlayer> audioPlayer;
+		std::unique_ptr<OvCore::Scripting::ScriptInterpreter> scriptInterpreter;
 
 		OvCore::SceneSystem::SceneManager sceneManager;
 
-		OvCore::ResourceManagement::ModelManager	modelManager;
-		OvCore::ResourceManagement::TextureManager	textureManager;
-		OvCore::ResourceManagement::ShaderManager	shaderManager;
-		OvCore::ResourceManagement::MaterialManager	materialManager;
-		OvCore::ResourceManagement::SoundManager	soundManager;
+		OvCore::ResourceManagement::ModelManager modelManager;
+		OvCore::ResourceManagement::TextureManager textureManager;
+		OvCore::ResourceManagement::ShaderManager shaderManager;
+		OvCore::ResourceManagement::MaterialManager materialManager;
+		OvCore::ResourceManagement::SoundManager soundManager;
 		
 		OvTools::Filesystem::IniFile projectSettings;
 	};

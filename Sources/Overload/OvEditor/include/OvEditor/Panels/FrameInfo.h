@@ -6,8 +6,16 @@
 
 #pragma once
 
+#include <OvTools/Utils/OptRef.h>
+
 #include <OvUI/Panels/PanelWindow.h>
 #include <OvUI/Widgets/Texts/TextColored.h>
+#include <OvUI/Widgets/Selection/CheckBox.h>
+#include <OvUI/Widgets/Visual/Separator.h>
+
+#include <OvEditor/Panels/AView.h>
+
+#include <OvRendering/Data/FrameInfo.h>
 
 namespace OvEditor::Panels
 {
@@ -20,8 +28,7 @@ namespace OvEditor::Panels
 		* @param p_opened
 		* @param p_windowSettings
 		*/
-		FrameInfo
-		(
+		FrameInfo(
 			const std::string& p_title,
 			bool p_opened,
 			const OvUI::Settings::PanelWindowSettings& p_windowSettings
@@ -29,14 +36,16 @@ namespace OvEditor::Panels
 
 		/**
 		* Update frame info information
-		* @param p_deltaTime
+		* @param p_targetView
 		*/
-		void Update(float p_deltaTime);
+		void Update(OvTools::Utils::OptRef<AView> p_targetView);
 
 	private:
-		OvUI::Widgets::Texts::TextColored* m_batchCountText;
-		OvUI::Widgets::Texts::TextColored* m_instanceCountText;
-		OvUI::Widgets::Texts::TextColored* m_polyCountText;
-		OvUI::Widgets::Texts::TextColored* m_vertexCountText;
+		OvUI::Widgets::Texts::Text& m_viewNameText;
+		OvUI::Widgets::Visual::Separator& m_separator;
+		OvUI::Widgets::Texts::Text& m_batchCountText;
+		OvUI::Widgets::Texts::Text& m_instanceCountText;
+		OvUI::Widgets::Texts::Text& m_polyCountText;
+		OvUI::Widgets::Texts::Text& m_vertexCountText;
 	};
 }

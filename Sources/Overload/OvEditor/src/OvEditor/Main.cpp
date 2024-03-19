@@ -10,8 +10,8 @@
 
 #include <OvRendering/Utils/Defines.h>
 
-#include "OvEditor/Core/ProjectHub.h"
 #include "OvEditor/Core/Application.h"
+#include "OvEditor/Core/ProjectHub.h"
 
 #undef APIENTRY
 #include "Windows.h"

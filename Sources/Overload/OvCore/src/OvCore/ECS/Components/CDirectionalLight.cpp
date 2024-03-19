@@ -15,7 +15,7 @@
 OvCore::ECS::Components::CDirectionalLight::CDirectionalLight(ECS::Actor & p_owner) :
 	CLight(p_owner)
 {
-	m_data.type = static_cast<float>(OvRendering::Entities::Light::Type::DIRECTIONAL);
+	m_data.type = OvRendering::Settings::ELightType::DIRECTIONAL;
 }
 
 std::string OvCore::ECS::Components::CDirectionalLight::GetName()

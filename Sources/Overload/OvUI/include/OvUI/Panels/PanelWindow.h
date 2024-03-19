@@ -27,8 +27,7 @@ namespace OvUI::Panels
 		* @param p_opened
 		* @param p_panelSettings
 		*/
-		PanelWindow
-		(
+		PanelWindow(
 			const std::string& p_name = "",
 			bool p_opened = true,
 			const Settings::PanelWindowSettings& p_panelSettings = Settings::PanelWindowSettings{}
@@ -122,9 +121,9 @@ namespace OvUI::Panels
 		OvTools::Eventing::Event<> CloseEvent;
 
 	private:
-		bool m_opened;
-		bool m_hovered;
-		bool m_focused;
+		bool m_opened = false;
+		bool m_hovered = false;
+		bool m_focused = false;
         bool m_mustScrollToBottom = false;
         bool m_mustScrollToTop = false;
         bool m_scrolledToBottom = false;

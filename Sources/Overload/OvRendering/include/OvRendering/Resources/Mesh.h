@@ -34,22 +34,22 @@ namespace OvRendering::Resources
 		/**
 		* Bind the mesh (Actually bind its VAO)
 		*/
-		virtual void Bind() override;
+		virtual void Bind() const override;
 
 		/**
 		* Unbind the mesh (Actually unbind its VAO)
 		*/
-		virtual void Unbind() override;
+		virtual void Unbind() const override;
 
 		/**
 		* Returns the number of vertices
 		*/
-		virtual uint32_t GetVertexCount() override;
+		virtual uint32_t GetVertexCount() const override;
 
 		/**
 		* Returns the number of indices
 		*/
-		virtual uint32_t GetIndexCount() override;
+		virtual uint32_t GetIndexCount() const override;
 
 		/**
 		* Returns the material index of the mesh

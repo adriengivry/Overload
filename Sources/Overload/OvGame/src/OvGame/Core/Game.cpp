@@ -11,15 +11,19 @@
 
 #include <OvAnalytics/Profiling/ProfilerSpy.h>
 
+#ifdef _DEBUG
+#include <OvRendering/Features/FrameInfoRenderFeature.h>
+#endif
+
 OvGame::Core::Game::Game(Context & p_context) :
 	m_context(p_context),
-	m_gameRenderer(p_context),
+	m_sceneRenderer(*p_context.driver),
 	m_fpsCounter(*p_context.window)
 	#ifdef _DEBUG
 	,
-	m_driverInfo(*m_context.renderer, *m_context.window),
+	m_driverInfo(*m_context.driver, *m_context.window),
 	m_gameProfiler(*p_context.window, 0.25f),
-	m_frameInfo(*m_context.renderer, *m_context.window)
+	m_frameInfo(*m_context.window)
 	#endif
 {
 	m_context.uiManager->SetCanvas(m_canvas);
@@ -28,6 +32,7 @@ OvGame::Core::Game::Game(Context & p_context) :
 	m_canvas.AddPanel(m_driverInfo);
 	m_canvas.AddPanel(m_gameProfiler);
 	m_canvas.AddPanel(m_frameInfo);
+	m_sceneRenderer.AddFeature<OvRendering::Features::FrameInfoRenderFeature>();
 	#endif
 
 	m_context.sceneManager.LoadScene(m_context.projectSettings.Get<std::string>("start_scene"));
@@ -47,14 +52,39 @@ void OvGame::Core::Game::PreUpdate()
 	m_context.device->PollEvents();
 }
 
+void RenderCurrentScene(
+	OvCore::Rendering::SceneRenderer& p_renderer,
+	const OvGame::Core::Context& p_context
+)
+{
+#ifdef _DEBUG
+	PROFILER_SPY("Render Current Scene");
+#endif
+
+	if (auto currentScene = p_context.sceneManager.GetCurrentScene())
+	{
+		if (auto camera = currentScene->FindMainCamera())
+		{
+			auto [windowWidth, windowHeight] = p_context.window->GetSize();
+
+			p_renderer.AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>({
+				*currentScene,
+			});
+
+			OvRendering::Data::FrameDescriptor frameDescriptor;
+			frameDescriptor.renderWidth = windowWidth;
+			frameDescriptor.renderHeight = windowHeight;
+			frameDescriptor.camera = camera->GetCamera();
+
+			p_renderer.BeginFrame(frameDescriptor);
+			p_renderer.DrawFrame();
+			p_renderer.EndFrame();
+		}
+	}
+}
+
 void OvGame::Core::Game::Update(float p_deltaTime)
 {
-	m_elapsed += p_deltaTime;
-
-	m_context.engineUBO->SetSubData(m_elapsed, 3 * sizeof(OvMaths::FMatrix4) + sizeof(OvMaths::FVector3));
-
-	m_context.renderer->ClearFrameInfo();
-
 	if (auto currentScene = m_context.sceneManager.GetCurrentScene())
 	{
 		{
@@ -81,12 +111,7 @@ void OvGame::Core::Game::Update(float p_deltaTime)
 			m_context.audioEngine->Update();
 		}
 
-		{
-			#ifdef _DEBUG
-			PROFILER_SPY("Render Scene");
-			#endif
-			m_gameRenderer.RenderScene();
-		}
+		RenderCurrentScene(m_sceneRenderer, m_context);
 	}
 
 	m_context.sceneManager.Update();
@@ -104,7 +129,9 @@ void OvGame::Core::Game::Update(float p_deltaTime)
 		m_fpsCounter.Update(p_deltaTime);
 		#ifdef _DEBUG
 		m_gameProfiler.Update(p_deltaTime);
-		m_frameInfo.Update(p_deltaTime);
+		auto& frameInfoRenderFeature = m_sceneRenderer.GetFeature<OvRendering::Features::FrameInfoRenderFeature>();
+		auto& frameInfo = frameInfoRenderFeature.GetFrameInfo();
+		m_frameInfo.Update(frameInfo);
 		#endif
 		m_context.uiManager->Render();
 	}

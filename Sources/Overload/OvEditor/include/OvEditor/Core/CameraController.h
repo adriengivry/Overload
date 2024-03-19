@@ -10,7 +10,7 @@
 
 #include <OvWindowing/Inputs/InputManager.h>
 #include <OvWindowing/Window.h>
-#include <OvRendering/LowRenderer/Camera.h>
+#include <OvRendering/Entities/Camera.h>
 
 #include "OvEditor/Panels/Hierarchy.h"
 #include "OvEditor/Panels/AView.h"
@@ -27,17 +27,10 @@ namespace OvEditor::Core
 		* Constructor
 		* @param p_view
 		* @param p_camera
-		* @param p_position
-		* @param p_rotation
-		* @param p_enableFocusInputs
 		*/
-		CameraController
-		(
+		CameraController(
 			OvEditor::Panels::AView& p_view,
-			OvRendering::LowRenderer::Camera& p_camera,
-			OvMaths::FVector3& p_position,
-			OvMaths::FQuaternion& p_rotation,
-			bool p_enableFocusInputs = false
+			OvRendering::Entities::Camera& p_camera
 		);
 
 		/**
@@ -90,9 +83,22 @@ namespace OvEditor::Core
 		*/
 		bool IsRightMousePressed() const;
 
+		/**
+		* Lock the target actor to the given actor.
+		* @note Usefull to force orbital camera or camera focus to target a specific actor
+		* @param p_actor
+		*/
+		void LockTargetActor(OvCore::ECS::Actor& p_actor);
+
+		/**
+		* Removes any locked actor
+		*/
+		void UnlockTargetActor();
+
 	private:
+		std::optional<std::reference_wrapper<OvCore::ECS::Actor>> GetTargetActor() const;
 		void HandleCameraPanning(const OvMaths::FVector2& p_mouseOffset, bool p_firstMouse);
-		void HandleCameraOrbit(const OvMaths::FVector2& p_mouseOffset, bool p_firstMouse);
+		void HandleCameraOrbit(OvCore::ECS::Actor& p_target, const OvMaths::FVector2& p_mouseOffset, bool p_firstMouse);
 		void HandleCameraFPSMouse(const OvMaths::FVector2& p_mouseOffset, bool p_firstMouse);
 
 		void HandleCameraZoom();
@@ -103,13 +109,9 @@ namespace OvEditor::Core
 		OvWindowing::Inputs::InputManager& m_inputManager;
 		OvWindowing::Window& m_window;
 		OvEditor::Panels::AView& m_view;
-		OvRendering::LowRenderer::Camera& m_camera;
-		OvMaths::FVector3& m_cameraPosition;
-		OvMaths::FQuaternion& m_cameraRotation;
+		OvRendering::Entities::Camera& m_camera;
 
 		std::queue<std::tuple<OvMaths::FVector3, OvMaths::FQuaternion>> m_cameraDestinations;
-
-		bool m_enableFocusInputs;
 
 		bool m_leftMousePressed = false;
 		bool m_middleMousePressed = false;
@@ -130,5 +132,7 @@ namespace OvEditor::Core
 		float m_cameraMoveSpeed = 15.0f;
 		float m_focusDistance = 15.0f;
 		float m_focusLerpCoefficient = 8.0f;
+
+		std::optional<std::reference_wrapper<OvCore::ECS::Actor>> m_lockedActor = std::nullopt;
 	};
 }

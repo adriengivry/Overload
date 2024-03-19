@@ -16,7 +16,7 @@
 
 OvCore::ECS::Components::CLight::CLight(ECS::Actor & p_owner) :
 	AComponent(p_owner),
-	m_data(p_owner.transform.GetFTransform(), {})
+	m_data{ p_owner.transform.GetFTransform() }
 {
 }
 

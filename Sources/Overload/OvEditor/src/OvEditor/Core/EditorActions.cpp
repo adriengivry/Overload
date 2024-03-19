@@ -33,9 +33,8 @@
 #include "OvEditor/Panels/ProjectSettings.h"
 #include "OvEditor/Panels/MaterialEditor.h"
 
-OvEditor::Core::EditorActions::EditorActions(Context& p_context, EditorRenderer& p_editorRenderer, PanelsManager& p_panelsManager) :
+OvEditor::Core::EditorActions::EditorActions(Context& p_context, PanelsManager& p_panelsManager) :
 	m_context(p_context), 
-	m_renderer(p_editorRenderer),
 	m_panelsManager(p_panelsManager)
 {
 	OvCore::Global::ServiceLocator::Provide<OvEditor::Core::EditorActions>(*this);
@@ -346,11 +345,6 @@ OvEditor::Core::Context& OvEditor::Core::EditorActions::GetContext()
 	return m_context;
 }
 
-OvEditor::Core::EditorRenderer & OvEditor::Core::EditorActions::GetRenderer()
-{
-	return m_renderer;
-}
-
 OvEditor::Core::PanelsManager& OvEditor::Core::EditorActions::GetPanelsManager()
 {
 	return m_panelsManager;
@@ -396,20 +390,12 @@ int OvEditor::Core::EditorActions::GetAssetViewCameraSpeed()
 
 void OvEditor::Core::EditorActions::ResetSceneViewCameraPosition()
 {
-	EDITOR_PANEL(Panels::SceneView, "Scene View").GetCameraController().SetPosition({ -10.0f, 4.0f, 10.0f });
-	// TODO
-	// EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetPitch(-10.0f);
-	// EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetYaw(-45.0f);
-	// EDITOR_PANEL(Panels::SceneView, "Scene View").GetCamera().SetRoll(0.0f);
+	EDITOR_PANEL(Panels::SceneView, "Scene View").ResetCameraTransform();
 }
 
 void OvEditor::Core::EditorActions::ResetAssetViewCameraPosition()
 {
-	EDITOR_PANEL(Panels::AssetView, "Asset View").GetCameraController().SetPosition({ -10.0f, 4.0f, 10.0f });
-	// TODO
-	// EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetPitch(-10.0f);
-	// EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetYaw(-45.0f);
-	// EDITOR_PANEL(Panels::AssetView, "Asset View").GetCamera().SetRoll(0.0f);
+	EDITOR_PANEL(Panels::AssetView, "Asset View").ResetCameraTransform();
 }
 
 OvEditor::Core::EditorActions::EEditorMode OvEditor::Core::EditorActions::GetCurrentEditorMode() const
@@ -489,7 +475,13 @@ void OvEditor::Core::EditorActions::NextFrame()
 OvMaths::FVector3 OvEditor::Core::EditorActions::CalculateActorSpawnPoint(float p_distanceToCamera)
 {
 	auto& sceneView = m_panelsManager.GetPanelAs<OvEditor::Panels::SceneView>("Scene View");
-	return sceneView.GetCameraPosition() + sceneView.GetCameraRotation() * OvMaths::FVector3::Forward * p_distanceToCamera;
+
+	if (auto camera = sceneView.GetCamera())
+	{
+		return camera->GetPosition() + camera->transform->GetWorldForward() * p_distanceToCamera;
+	}
+
+	return OvMaths::FVector3::Zero;
 }
 
 OvCore::ECS::Actor & OvEditor::Core::EditorActions::CreateEmptyActor(bool p_focusOnCreation, OvCore::ECS::Actor* p_parent, const std::string& p_name)
@@ -847,7 +839,7 @@ void OvEditor::Core::EditorActions::PropagateFileRename(std::string p_previousNa
 			auto& assetView = EDITOR_PANEL(Panels::AssetView, "Asset View");
 			auto assetViewRes = assetView.GetResource();
 			if (auto pval = std::get_if<OvRendering::Resources::Texture*>(&assetViewRes); pval && *pval)
-				assetView.SetResource(static_cast<OvRendering::Resources::Texture*>(nullptr));
+				assetView.ClearResource();
 
 			OvCore::Global::ServiceLocator::Get<OvCore::ResourceManagement::TextureManager>().UnloadResource(p_previousName);
 		}
@@ -868,7 +860,7 @@ void OvEditor::Core::EditorActions::PropagateFileRename(std::string p_previousNa
 			auto& assetView = EDITOR_PANEL(Panels::AssetView, "Asset View");
 			auto assetViewRes = assetView.GetResource();
 			if (auto pval = std::get_if<OvRendering::Resources::Model*>(&assetViewRes); pval && *pval)
-				assetView.SetResource(static_cast<OvRendering::Resources::Model*>(nullptr));
+				assetView.ClearResource();
 
 			if (auto currentScene = m_context.sceneManager.GetCurrentScene())
 				for (auto actor : currentScene->GetActors())
@@ -888,7 +880,7 @@ void OvEditor::Core::EditorActions::PropagateFileRename(std::string p_previousNa
 			auto& assetView = EDITOR_PANEL(Panels::AssetView, "Asset View");
 			auto assetViewRes = assetView.GetResource();
 			if (auto pval = std::get_if<OvCore::Resources::Material*>(&assetViewRes); pval && *pval)
-				assetView.SetResource(static_cast<OvCore::Resources::Material*>(nullptr));
+				assetView.ClearResource();
 
 			if (auto currentScene = m_context.sceneManager.GetCurrentScene())
 				for (auto actor : currentScene->GetActors())

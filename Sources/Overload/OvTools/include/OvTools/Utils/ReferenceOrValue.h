@@ -7,6 +7,10 @@
 #pragma once
 
 #include <variant>
+#include <optional>
+#include <stdexcept>
+
+#include "OvTools/Utils/OptRef.h"
 
 namespace OvTools::Utils
 {
@@ -20,38 +24,20 @@ namespace OvTools::Utils
 	class ReferenceOrValue
 	{
 	public:
-		/**
-		* Construct the ReferenceOrValue instance with a reference
-		* @param p_reference
+		/*
+		* Construct the ReferenceOrValue instance
+		* @param p_instance
 		*/
-		ReferenceOrValue(std::reference_wrapper<T> p_reference) : m_data{ &p_reference.get() }
+		ReferenceOrValue(OptRef<T> p_ref = std::nullopt)
 		{
-		}
-
-		/**
-		* Construct the ReferenceOrValue instance with a value
-		* @param p_value
-		*/
-		ReferenceOrValue(T p_value = T()) : m_data{ p_value }
-		{
-		}
-
-		/**
-		* Make the ReferenceOrValue a reference
-		* @param p_reference
-		*/
-		void MakeReference(T& p_reference)
-		{
-			m_data = &p_reference;
-		}
-
-		/**
-		* Make the ReferenceOrValue a value
-		* @param p_value
-		*/
-		void MakeValue(T p_value = T())
-		{
-			m_data = p_value;
+			if (p_ref)
+			{
+				m_data = &p_ref.value();
+			}
+			else
+			{
+				m_data = T();
+			}
 		}
 
 		/**
@@ -59,23 +45,44 @@ namespace OvTools::Utils
 		*/
 		operator T&()
 		{
-			return Get();
+			return GetRef();
 		}
 
 		/**
 		* Assignment operator thats call the setter of the ReferenceOrValue instance
 		* @param p_value
 		*/
-		ReferenceOrValue<T>& operator=(T p_value)
+		ReferenceOrValue<T>& operator=(const T& p_value)
 		{
 			Set(p_value);
 			return *this;
 		}
 
 		/**
-		* Returns the value (From reference or directly from the value)
+		* Returns the value as a reference (From reference or directly from the value)
 		*/
-		T& Get() const
+		T& GetRef()
+		{
+			if (auto pval = std::get_if<T>(&m_data))
+				return *pval;
+			else
+				return *std::get<T*>(m_data);
+		}
+
+		T const* operator->() const
+		{
+			return &Get();
+		}
+
+		T* operator->()
+		{
+			return &GetRef();
+		}
+
+		/**
+		* Returns the value as a const reference (From reference or directly from the value)
+		*/
+		const T& Get() const
 		{
 			if (auto pval = std::get_if<T>(&m_data))
 				return *pval;
@@ -87,10 +94,10 @@ namespace OvTools::Utils
 		* Sets the value (To the reference or directly to the value)
 		* @param p_value
 		*/
-		void Set(T p_value)
+		void Set(const T& p_value)
 		{
 			if (auto pval = std::get_if<T>(&m_data))
-				* pval = p_value;
+				*pval = p_value;
 			else
 				*std::get<T*>(m_data) = p_value;
 		}

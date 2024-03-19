@@ -264,7 +264,7 @@ namespace OvCore::ECS
 		* Try to get the given component (Returns nullptr on failure)
 		*/
 		template<typename T>
-		T* GetComponent();
+		T* GetComponent() const;
 
 		/**
 		* Returns a reference to the vector of components

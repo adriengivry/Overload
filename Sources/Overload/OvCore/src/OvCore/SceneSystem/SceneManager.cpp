@@ -127,7 +127,7 @@ bool OvCore::SceneSystem::SceneManager::HasCurrentScene() const
 	return m_currentScene;
 }
 
-OvCore::SceneSystem::Scene* OvCore::SceneSystem::SceneManager::GetCurrentScene()
+OvCore::SceneSystem::Scene* OvCore::SceneSystem::SceneManager::GetCurrentScene() const
 {
 	return m_currentScene;
 }

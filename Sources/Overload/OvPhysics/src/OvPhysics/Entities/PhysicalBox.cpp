@@ -30,7 +30,6 @@ OvMaths::FVector3 OvPhysics::Entities::PhysicalBox::GetSize() const
 	return m_size;
 }
 
-
 void OvPhysics::Entities::PhysicalBox::CreateCollisionShape(const OvMaths::FVector3& p_size)
 {
 	m_shape = std::make_unique<btBoxShape>(OvPhysics::Tools::Conversion::ToBtVector3(p_size));

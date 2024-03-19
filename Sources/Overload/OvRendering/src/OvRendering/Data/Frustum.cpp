@@ -266,6 +266,37 @@ bool OvRendering::Data::Frustum::BoundingSphereInFrustum(const OvRendering::Geom
 	return SphereInFrustum(worldCenter.x, worldCenter.y, worldCenter.z, scaledRadius);
 }
 
+bool OvRendering::Data::Frustum::IsMeshInFrustum(const OvRendering::Resources::Mesh& p_mesh, const OvMaths::FTransform& p_transform) const
+{
+	return BoundingSphereInFrustum(p_mesh.GetBoundingSphere(), p_transform);
+}
+
+std::vector<OvRendering::Resources::Mesh*> OvRendering::Data::Frustum::GetMeshesInFrustum(const OvRendering::Resources::Model& p_model, const OvRendering::Geometry::BoundingSphere& p_modelBoundingSphere, const OvMaths::FTransform& p_modelTransform, OvRendering::Settings::ECullingOptions p_cullingOptions) const
+{
+	const bool frustumPerModel = OvRendering::Settings::IsFlagSet(Settings::ECullingOptions::FRUSTUM_PER_MODEL, p_cullingOptions);
+
+	if (!frustumPerModel || BoundingSphereInFrustum(p_modelBoundingSphere, p_modelTransform))
+	{
+		std::vector<OvRendering::Resources::Mesh*> result;
+
+		const bool frustumPerMesh = OvRendering::Settings::IsFlagSet(Settings::ECullingOptions::FRUSTUM_PER_MESH, p_cullingOptions);
+		const auto& meshes = p_model.GetMeshes();
+
+		for (auto mesh : meshes)
+		{
+			// Do not check if the mesh is in frustum if the model has only one mesh, because model and mesh bounding sphere are equals
+			if (meshes.size() == 1 || !frustumPerMesh || IsMeshInFrustum(*mesh, p_modelTransform))
+			{
+				result.push_back(mesh);
+			}
+		}
+
+		return result;
+	}
+
+	return {};
+}
+
 std::array<float, 4> OvRendering::Data::Frustum::GetNearPlane() const
 {
 	return { m_frustum[FRONT][0], m_frustum[FRONT][1], m_frustum[FRONT][2], m_frustum[FRONT][3] };

@@ -6,13 +6,13 @@
 
 #pragma once
 
-
-
 namespace OvRendering::Settings
 {
 	/**
 	* OpenGL texture filtering mode enum wrapper
 	*/
+	// TODO: Dissociate the values from OpenGL values, and convert them in the driver.cpp
+	// Would require the driver.cpp to wrap all GL functions
 	enum class ETextureFilteringMode
 	{
 		NEAREST					= 0x2600,

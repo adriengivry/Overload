@@ -8,6 +8,8 @@
 
 #include <stdexcept>
 
+#include <GLFW/glfw3.h>
+
 OvTools::Eventing::Event<OvWindowing::Context::EDeviceError, std::string> OvWindowing::Context::Device::ErrorEvent;
 
 OvWindowing::Context::Device::Device(const Settings::DeviceSettings& p_deviceSettings)
@@ -18,7 +20,7 @@ OvWindowing::Context::Device::Device(const Settings::DeviceSettings& p_deviceSet
 
 	if (initializationCode == GLFW_FALSE)
 	{
-		throw std::runtime_error("Failed to Init GLFW");
+		throw std::runtime_error("Failed to Init GLFW"); // TODO: Replace with OvDebug assertion
 		glfwTerminate();
 	}
 	else

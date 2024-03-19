@@ -6,7 +6,8 @@
 
 #include <OvUI/Plugins/DDTarget.h>
 
-#include "OvEditor/Core/EditorRenderer.h"
+#include "OvEditor/Rendering/DebugSceneRenderer.h"
+#include "OvEditor/Rendering/PickingRenderPass.h"
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Panels/SceneView.h"
 #include "OvEditor/Panels/GameView.h"
@@ -17,11 +18,16 @@ OvEditor::Panels::SceneView::SceneView
 	const std::string& p_title,
 	bool p_opened,
 	const OvUI::Settings::PanelWindowSettings& p_windowSettings
-) : AViewControllable(p_title, p_opened, p_windowSettings, true),
+) : AViewControllable(p_title, p_opened, p_windowSettings),
 	m_sceneManager(EDITOR_CONTEXT(sceneManager))
 {
-	m_camera.SetClearColor({ 0.098f, 0.098f, 0.098f });
+	m_renderer = std::make_unique<OvEditor::Rendering::DebugSceneRenderer>(*EDITOR_CONTEXT(driver));
+
 	m_camera.SetFar(5000.0f);
+
+	m_fallbackMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
+	m_fallbackMaterial.Set<OvMaths::FVector4>("u_Diffuse", { 1.f, 0.f, 1.f, 1.0f });
+	m_fallbackMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
 
 	m_image->AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, OvUI::Widgets::Layout::Group*>>>("File").DataReceivedEvent += [this](auto p_data)
 	{
@@ -36,9 +42,9 @@ OvEditor::Panels::SceneView::SceneView
 
 	OvCore::ECS::Actor::DestroyedEvent += [this](const OvCore::ECS::Actor& actor)
 	{
-		if (m_highlightedActor.has_value() && m_highlightedActor->get().GetID() == actor.GetID())
+		if (m_highlightedActor.has_value() && m_highlightedActor.value().GetID() == actor.GetID())
 		{
-			m_highlightedActor = std::nullopt;
+			m_highlightedActor.reset();
 		}
 	};
 }
@@ -68,125 +74,53 @@ void OvEditor::Panels::SceneView::Update(float p_deltaTime)
 	}
 }
 
-void OvEditor::Panels::SceneView::_Render_Impl()
+void OvEditor::Panels::SceneView::InitFrame()
 {
-	PrepareCamera();
+	AViewControllable::InitFrame();
 
-	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
+	OvTools::Utils::OptRef<OvCore::ECS::Actor> selectedActor;
 
-	uint8_t glState = baseRenderer.FetchGLState();
-	baseRenderer.ApplyStateMask(glState);
+	if (EDITOR_EXEC(IsAnyActorSelected()))
+	{
+		selectedActor = EDITOR_EXEC(GetSelectedActor());
+	}
+
+	m_renderer->AddDescriptor<Rendering::DebugSceneRenderer::DebugSceneDescriptor>({
+		m_currentOperation,
+		m_highlightedActor,
+		selectedActor,
+		m_highlightedGizmoDirection
+	});
+}
+
+OvCore::SceneSystem::Scene* OvEditor::Panels::SceneView::GetScene()
+{
+	return m_sceneManager.GetCurrentScene();
+}
+
+OvCore::Rendering::SceneRenderer::SceneDescriptor OvEditor::Panels::SceneView::CreateSceneDescriptor()
+{
+	auto descriptor = AViewControllable::CreateSceneDescriptor();
+	descriptor.fallbackMaterial = m_fallbackMaterial;
+	return descriptor;
+}
+
+void OvEditor::Panels::SceneView::DrawFrame()
+{
+	OvEditor::Panels::AViewControllable::DrawFrame();
 	HandleActorPicking();
-	baseRenderer.ApplyStateMask(glState);
-	RenderScene(glState);
-	baseRenderer.ApplyStateMask(glState);
-}
-
-void OvEditor::Panels::SceneView::RenderScene(uint8_t p_defaultRenderState)
-{
-	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
-	auto& currentScene = *m_sceneManager.GetCurrentScene();
-	auto& gameView = EDITOR_PANEL(OvEditor::Panels::GameView, "Game View");
-
-	// If the game is playing, and ShowLightFrustumCullingInSceneView is true, apply the game view frustum culling to the scene view (For debugging purposes)
-	if (auto gameViewFrustum = gameView.GetActiveFrustum(); gameViewFrustum.has_value() && gameView.GetCamera().HasFrustumLightCulling() && Settings::EditorSettings::ShowLightFrustumCullingInSceneView)
-	{
-		m_editorRenderer.UpdateLightsInFrustum(currentScene, gameViewFrustum.value());
-	}
-	else
-	{
-		m_editorRenderer.UpdateLights(currentScene);
-	}
-
-	m_fbo.Bind();
-
-	baseRenderer.SetStencilMask(0xFF);
-	baseRenderer.Clear(m_camera);
-	baseRenderer.SetStencilMask(0x00);
-
-	m_editorRenderer.RenderGrid(m_cameraPosition, m_gridColor);
-	m_editorRenderer.RenderCameras();
-
-	// If the game is playing, and ShowGeometryFrustumCullingInSceneView is true, apply the game view frustum culling to the scene view (For debugging purposes)
-	if (auto gameViewFrustum = gameView.GetActiveFrustum(); gameViewFrustum.has_value() && gameView.GetCamera().HasFrustumGeometryCulling() && Settings::EditorSettings::ShowGeometryFrustumCullingInSceneView)
-	{
-		m_camera.SetFrustumGeometryCulling(gameView.HasCamera() ? gameView.GetCamera().HasFrustumGeometryCulling() : false);
-		m_editorRenderer.RenderScene(m_cameraPosition, m_camera, &gameViewFrustum.value());
-		m_camera.SetFrustumGeometryCulling(false);
-	}
-	else
-	{
-		m_editorRenderer.RenderScene(m_cameraPosition, m_camera);
-	}
-
-	m_editorRenderer.RenderLights();
-
-	if (EDITOR_EXEC(IsAnyActorSelected()))
-	{
-		auto& selectedActor = EDITOR_EXEC(GetSelectedActor());
-
-		if (selectedActor.IsActive())
-		{
-			m_editorRenderer.RenderActorOutlinePass(selectedActor, true, true);
-			baseRenderer.ApplyStateMask(p_defaultRenderState);
-			m_editorRenderer.RenderActorOutlinePass(selectedActor, false, true);
-		}
-
-		baseRenderer.ApplyStateMask(p_defaultRenderState);
-		baseRenderer.Clear(false, true, false);
-
-		int highlightedAxis = -1;
-
-		if (m_highlightedGizmoDirection.has_value())
-		{
-			highlightedAxis = static_cast<int>(m_highlightedGizmoDirection.value());
-		}
-
-		m_editorRenderer.RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation, false, highlightedAxis);
-	}
-
-	if (m_highlightedActor.has_value())
-	{
-		m_editorRenderer.RenderActorOutlinePass(m_highlightedActor.value().get(), true, false);
-		baseRenderer.ApplyStateMask(p_defaultRenderState);
-		m_editorRenderer.RenderActorOutlinePass(m_highlightedActor.value().get(), false, false);
-	}
-
-	m_fbo.Unbind();
-}
-
-void OvEditor::Panels::SceneView::RenderSceneForActorPicking()
-{
-	auto& baseRenderer = *EDITOR_CONTEXT(renderer).get();
-
-	auto [winWidth, winHeight] = GetSafeSize();
-
-	m_actorPickingFramebuffer.Resize(winWidth, winHeight);
-	m_actorPickingFramebuffer.Bind();
-	baseRenderer.SetClearColor(1.0f, 1.0f, 1.0f);
-	baseRenderer.Clear();
-	m_editorRenderer.RenderSceneForActorPicking();
-
-	if (EDITOR_EXEC(IsAnyActorSelected()))
-	{
-		auto& selectedActor = EDITOR_EXEC(GetSelectedActor());
-		baseRenderer.Clear(false, true, false);
-		m_editorRenderer.RenderGizmo(selectedActor.transform.GetWorldPosition(), selectedActor.transform.GetWorldRotation(), m_currentOperation, true);
-	}
-
-	m_actorPickingFramebuffer.Unbind();
 }
 
 bool IsResizing()
 {
 	auto cursor = ImGui::GetMouseCursor();
 
-	return 
+	return
 		cursor == ImGuiMouseCursor_ResizeEW ||
 		cursor == ImGuiMouseCursor_ResizeNS ||
 		cursor == ImGuiMouseCursor_ResizeNWSE ||
 		cursor == ImGuiMouseCursor_ResizeNESW ||
-		cursor == ImGuiMouseCursor_ResizeAll;;
+		cursor == ImGuiMouseCursor_ResizeAll;
 }
 
 void OvEditor::Panels::SceneView::HandleActorPicking()
@@ -202,65 +136,65 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 
 	if (IsHovered() && !IsResizing())
 	{
-		RenderSceneForActorPicking();
-
-		// Look actor under mouse
 		auto [mouseX, mouseY] = inputManager.GetMousePosition();
 		mouseX -= m_position.x;
 		mouseY -= m_position.y;
 		mouseY = GetSafeSize().second - mouseY + 25;
 
-		m_actorPickingFramebuffer.Bind();
-		uint8_t pixel[3];
-		EDITOR_CONTEXT(renderer)->ReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, OvRendering::Settings::EPixelDataFormat::RGB, OvRendering::Settings::EPixelDataType::UNSIGNED_BYTE, pixel);
-		m_actorPickingFramebuffer.Unbind();
+		auto& scene = *GetScene();
+		
+		auto& actorPickingFeature = m_renderer->GetPass<Rendering::PickingRenderPass>("Picking");
 
-		uint32_t actorID = (0 << 24) | (pixel[2] << 16) | (pixel[1] << 8) | (pixel[0] << 0);
-		auto actorUnderMouse = EDITOR_CONTEXT(sceneManager).GetCurrentScene()->FindActorByID(actorID);
-		auto direction = m_gizmoOperations.IsPicking() ? m_gizmoOperations.GetDirection() : EDITOR_EXEC(IsAnyActorSelected()) && pixel[0] == 255 && pixel[1] == 255 && pixel[2] >= 252 && pixel[2] <= 254 ? static_cast<OvEditor::Core::GizmoBehaviour::EDirection>(pixel[2] - 252) : std::optional<Core::GizmoBehaviour::EDirection>{};
+		auto pickingResult = actorPickingFeature.ReadbackPickingResult(
+			scene,
+			static_cast<uint32_t>(mouseX),
+			static_cast<uint32_t>(mouseY)
+		);
 
 		m_highlightedActor = {};
 		m_highlightedGizmoDirection = {};
 
-		if (!m_cameraController.IsRightMousePressed())
+		if (!m_cameraController.IsRightMousePressed() && pickingResult.has_value())
 		{
-			if (direction.has_value())
+			if (const auto pval = std::get_if<OvTools::Utils::OptRef<OvCore::ECS::Actor>>(&pickingResult.value()))
 			{
-				m_highlightedGizmoDirection = direction;
-
+				m_highlightedActor = *pval;
 			}
-			else if (actorUnderMouse != nullptr)
+			else if (const auto pval = std::get_if<OvEditor::Core::GizmoBehaviour::EDirection>(&pickingResult.value()))
 			{
-				m_highlightedActor = std::ref(*actorUnderMouse);
+				m_highlightedGizmoDirection = *pval;
 			}
 		}
+		else
+		{
+			m_highlightedActor = {};
+			m_highlightedGizmoDirection = {};
+		}
 
-		/* Click */
 		if (inputManager.IsMouseButtonPressed(EMouseButton::MOUSE_BUTTON_LEFT) && !m_cameraController.IsRightMousePressed())
 		{
-			/* Gizmo picking */
-			if (direction.has_value())
+			if (m_highlightedGizmoDirection)
 			{
-				m_gizmoOperations.StartPicking(EDITOR_EXEC(GetSelectedActor()), m_cameraPosition, m_currentOperation, direction.value());
+				m_gizmoOperations.StartPicking(
+					EDITOR_EXEC(GetSelectedActor()),
+					m_camera.GetPosition(),
+					m_currentOperation,
+					m_highlightedGizmoDirection.value());
 			}
-			/* Actor picking */
+			else if (m_highlightedActor)
+			{
+				EDITOR_EXEC(SelectActor(m_highlightedActor.value()));
+			}
 			else
 			{
-
-				if (actorUnderMouse)
-				{
-					EDITOR_EXEC(SelectActor(*actorUnderMouse));
-				}
-				else
-				{
-					EDITOR_EXEC(UnselectActor());
-				}
+				EDITOR_EXEC(UnselectActor());
 			}
 		}
 	}
 	else
 	{
 		m_highlightedActor = std::nullopt;
+		m_highlightedGizmoDirection = std::nullopt;
 	}
 
 	if (m_gizmoOperations.IsPicking())

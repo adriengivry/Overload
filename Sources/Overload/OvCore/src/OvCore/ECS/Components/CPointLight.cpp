@@ -17,7 +17,7 @@
 OvCore::ECS::Components::CPointLight::CPointLight(ECS::Actor& p_owner) :
 	CLight(p_owner)
 {
-	m_data.type = static_cast<float>(OvRendering::Entities::Light::Type::POINT);
+	m_data.type = OvRendering::Settings::ELightType::POINT;
 }
 
 std::string OvCore::ECS::Components::CPointLight::GetName()

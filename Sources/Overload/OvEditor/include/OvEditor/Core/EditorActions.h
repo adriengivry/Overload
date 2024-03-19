@@ -11,14 +11,12 @@
 #include <OvTools/Utils/PathParser.h>
 
 #include "OvEditor/Core/Context.h"
-#include "OvEditor/Core/EditorRenderer.h"
 #include "OvEditor/Core/PanelsManager.h"
 
 #define EDITOR_EXEC(action)					OvCore::Global::ServiceLocator::Get<OvEditor::Core::EditorActions>().action
 #define EDITOR_BIND(method, ...)			std::bind(&OvEditor::Core::EditorActions::method, &OvCore::Global::ServiceLocator::Get<OvEditor::Core::EditorActions>(), ##__VA_ARGS__)
 #define EDITOR_EVENT(target)				OvCore::Global::ServiceLocator::Get<OvEditor::Core::EditorActions>().target
 #define EDITOR_CONTEXT(instance)			OvCore::Global::ServiceLocator::Get<OvEditor::Core::EditorActions>().GetContext().instance
-#define EDITOR_RENDERER()					OvCore::Global::ServiceLocator::Get<OvEditor::Core::EditorActions>().GetRenderer()
 #define EDITOR_PANEL(type, id)				OvCore::Global::ServiceLocator::Get<OvEditor::Core::EditorActions>().GetPanelsManager().GetPanelAs<type>(id)
 
 namespace OvEditor::Core
@@ -32,21 +30,15 @@ namespace OvEditor::Core
 		/**
 		* Constructor
 		* @param p_context
-		* @param p_editorRenderer
 		* @param p_panelsManager
 		*/
-		EditorActions(Context& p_context, EditorRenderer& p_editorRenderer, PanelsManager& p_panelsManager);
+		EditorActions(Context& p_context, PanelsManager& p_panelsManager);
 
 		#pragma region TOOLS
 		/**
 		* Returns the context
 		*/
 		Context& GetContext();
-
-		/**
-		* Returns the renderer
-		*/
-		EditorRenderer& GetRenderer();
 
 		/**
 		* Returns the panels manager
@@ -390,7 +382,6 @@ namespace OvEditor::Core
 	private:
 		Context& m_context;
 		PanelsManager& m_panelsManager;
-		EditorRenderer& m_renderer;
 
 		EActorSpawnMode m_actorSpawnMode = EActorSpawnMode::ORIGIN;
 		EEditorMode m_editorMode = EEditorMode::EDIT;

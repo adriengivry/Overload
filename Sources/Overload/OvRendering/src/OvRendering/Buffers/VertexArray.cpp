@@ -17,17 +17,17 @@ OvRendering::Buffers::VertexArray::~VertexArray()
 	glDeleteVertexArrays(1, &m_bufferID);
 }
 
-void OvRendering::Buffers::VertexArray::Bind()
+void OvRendering::Buffers::VertexArray::Bind() const
 {
 	glBindVertexArray(m_bufferID);
 }
 
-void OvRendering::Buffers::VertexArray::Unbind()
+void OvRendering::Buffers::VertexArray::Unbind() const
 {
 	glBindVertexArray(0);
 }
 
-GLint OvRendering::Buffers::VertexArray::GetID()
+GLint OvRendering::Buffers::VertexArray::GetID() const
 {
 	return m_bufferID;
 }

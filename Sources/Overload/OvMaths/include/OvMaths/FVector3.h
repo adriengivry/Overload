@@ -80,6 +80,12 @@ namespace OvMaths
 		FVector3& operator-=(const FVector3& p_other);
 
 		/**
+		* Multiple two vector together component-wise
+		* @param p_other
+		*/
+		FVector3 operator*(const OvMaths::FVector3& p_other) const;
+
+		/**
 		* Calcualte the multiplication of a vector with a scalar
 		* @param p_scalar
 		*/
@@ -90,6 +96,12 @@ namespace OvMaths
 		* @param p_scalar
 		*/
 		FVector3& operator*=(float p_scalar);
+
+		/**
+		* Multiple two vector together component-wise
+		* @param p_other
+		*/
+		FVector3& operator*=(const OvMaths::FVector3& p_other);
 
 		/**
 		* Return the division of scalar and actual vector
@@ -135,6 +147,13 @@ namespace OvMaths
 		* @param p_scalar
 		*/
 		static FVector3 Multiply(const FVector3& p_target, float p_scalar);
+
+		/**
+		* Multiple two vectors component-wise
+		* @param p_left
+		* @param p_right
+		*/
+		static FVector3 Multiply(const FVector3& p_left, const FVector3& p_right);
 
 		/**
 		* Divide scalar to vector left

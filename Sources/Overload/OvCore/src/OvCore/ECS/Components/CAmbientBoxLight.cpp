@@ -16,7 +16,7 @@
 OvCore::ECS::Components::CAmbientBoxLight::CAmbientBoxLight(ECS::Actor & p_owner) :
 	CLight(p_owner)
 {
-	m_data.type = static_cast<float>(OvRendering::Entities::Light::Type::AMBIENT_BOX);
+	m_data.type = OvRendering::Settings::ELightType::AMBIENT_BOX;
 
 	m_data.intensity = 0.1f;
 	m_data.constant = 1.0f;

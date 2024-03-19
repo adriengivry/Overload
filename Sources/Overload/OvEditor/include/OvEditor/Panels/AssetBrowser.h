@@ -31,8 +31,7 @@ namespace OvEditor::Panels
 		* @param p_projectAssetFolder
 		* @param p_projectScriptFolder
 		*/
-		AssetBrowser
-		(
+		AssetBrowser(
 			const std::string& p_title,
 			bool p_opened,
 			const OvUI::Settings::PanelWindowSettings& p_windowSettings,

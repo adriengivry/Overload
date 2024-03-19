@@ -8,7 +8,7 @@
 
 #ifdef _DEBUG
 
-#include <OvRendering/Core/Renderer.h>
+#include <OvRendering/Context/Driver.h>
 #include <OvWindowing/Window.h>
 
 #include <OvUI/Panels/PanelUndecorated.h>
@@ -24,10 +24,10 @@ namespace OvGame::Debug
 	public:
 		/**
 		* Constructor
-		* @param p_renderer
+		* @param p_driver
 		* @param p_window
 		*/
-		DriverInfo(OvRendering::Core::Renderer& p_renderer, OvWindowing::Window& p_window);
+		DriverInfo(OvRendering::Context::Driver& p_rdriver, OvWindowing::Window& p_window);
 	};
 }
 

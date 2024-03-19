@@ -57,7 +57,7 @@ namespace OvCore::ECS
 	}
 
 	template<typename T>
-	inline T* Actor::GetComponent()
+	inline T* Actor::GetComponent() const
 	{
 		static_assert(std::is_base_of<Components::AComponent, T>::value, "T should derive from AComponent");
 

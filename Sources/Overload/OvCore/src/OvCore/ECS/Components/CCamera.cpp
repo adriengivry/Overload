@@ -11,7 +11,8 @@
 #include "OvCore/ECS/Components/CCamera.h"
 #include "OvCore/ECS/Actor.h"
 
-OvCore::ECS::Components::CCamera::CCamera(ECS::Actor& p_owner) : AComponent(p_owner)
+OvCore::ECS::Components::CCamera::CCamera(ECS::Actor& p_owner)
+	: AComponent(p_owner), m_camera{ p_owner.transform.GetFTransform() }
 {
 	/* Default clear color for the CCamera (Different from Camera default clear color) */
 	SetClearColor({ 0.1921569f, 0.3019608f, 0.4745098f });
@@ -102,7 +103,7 @@ OvRendering::Settings::EProjectionMode OvCore::ECS::Components::CCamera::GetProj
     return m_camera.GetProjectionMode();
 }
 
-OvRendering::LowRenderer::Camera & OvCore::ECS::Components::CCamera::GetCamera()
+OvRendering::Entities::Camera & OvCore::ECS::Components::CCamera::GetCamera()
 {
 	return m_camera;
 }

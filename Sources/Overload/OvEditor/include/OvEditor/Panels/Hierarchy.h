@@ -7,7 +7,7 @@
 #pragma once
 
 #include <OvRendering/Resources/Loaders/TextureLoader.h>
-#include <OvRendering/LowRenderer/Camera.h>
+#include <OvRendering/Entities/Camera.h>
 
 #include <OvCore/SceneSystem/SceneManager.h>
 

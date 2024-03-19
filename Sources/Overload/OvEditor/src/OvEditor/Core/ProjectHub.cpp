@@ -258,11 +258,8 @@ OvEditor::Core::ProjectHub::ProjectHub()
 
 std::tuple<bool, std::string, std::string> OvEditor::Core::ProjectHub::Run()
 {
-	m_renderer->SetClearColor(0.f, 0.f, 0.f, 1.f);
-
 	while (!m_window->ShouldClose())
 	{
-		m_renderer->Clear();
 		m_device->PollEvents();
 		m_uiManager->Render();
 		m_window->SwapBuffers();
@@ -297,8 +294,6 @@ void OvEditor::Core::ProjectHub::SetupContext()
 
 	/* Graphics context creation */
 	m_driver = std::make_unique<OvRendering::Context::Driver>(OvRendering::Settings::DriverSettings{ false });
-	m_renderer = std::make_unique<OvRendering::Core::Renderer>(*m_driver);
-	m_renderer->SetCapability(OvRendering::Settings::ERenderingCapability::MULTISAMPLE, true);
 
 	m_uiManager = std::make_unique<OvUI::Core::UIManager>(m_window->GetGlfwWindow(), OvUI::Styling::EStyle::ALTERNATIVE_DARK);
 	m_uiManager->LoadFont("Ruda_Big", "Data\\Editor\\Fonts\\Ruda-Bold.ttf", 18);

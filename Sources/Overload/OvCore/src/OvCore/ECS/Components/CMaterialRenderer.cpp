@@ -23,7 +23,7 @@ OvCore::ECS::Components::CMaterialRenderer::CMaterialRenderer(ECS::Actor & p_own
 {
 	m_materials.fill(nullptr);
 
-	for (uint8_t i = 0; i < MAX_MATERIAL_COUNT; ++i)
+	for (uint8_t i = 0; i < kMaxMaterialCount; ++i)
 		m_materialFields[i].fill(nullptr);
 
 	UpdateMaterialList();
@@ -87,7 +87,7 @@ void OvCore::ECS::Components::CMaterialRenderer::OnSerialize(tinyxml2::XMLDocume
 	p_node->InsertEndChild(materialsNode);
 
 	auto modelRenderer = owner.GetComponent<CModelRenderer>();
-	uint8_t elementsToSerialize = modelRenderer->GetModel() ? (uint8_t)std::min(modelRenderer->GetModel()->GetMaterialNames().size(), (size_t)MAX_MATERIAL_COUNT) : 0;
+	uint8_t elementsToSerialize = modelRenderer->GetModel() ? (uint8_t)std::min(modelRenderer->GetModel()->GetMaterialNames().size(), (size_t)kMaxMaterialCount) : 0;
 
 	for (uint8_t i = 0; i < elementsToSerialize; ++i)
 	{
@@ -180,7 +180,7 @@ void OvCore::ECS::Components::CMaterialRenderer::UpdateMaterialList()
 			m_materialNames[materialIndex++] = materialName;
 		}
 
-		for (uint8_t i = materialIndex; i < MAX_MATERIAL_COUNT; ++i)
+		for (uint8_t i = materialIndex; i < kMaxMaterialCount; ++i)
 			m_materialNames[i] = "";
 	}
 

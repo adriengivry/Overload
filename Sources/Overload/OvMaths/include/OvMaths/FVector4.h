@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <OvMaths/FVector3.h>
 
 namespace OvMaths
 {
@@ -30,6 +31,13 @@ namespace OvMaths
 		* @param p_w
 		*/
 		FVector4(float p_x = 0.0f, float p_y = 0.0f, float p_z = 0.0f, float p_w = 0.0f);
+
+		/**
+		* Default constructor
+		* @param p_vector
+		* @param p_w
+		*/
+		FVector4(const OvMaths::FVector3& p_vector, float p_w = 0.0f);
 
 		/**
 		* Copy constructor

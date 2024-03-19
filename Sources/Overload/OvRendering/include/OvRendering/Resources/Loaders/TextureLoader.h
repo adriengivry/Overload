@@ -36,12 +36,12 @@ namespace OvRendering::Resources::Loaders
 
 		/**
 		* Create a texture from a single pixel color
-		* @param p_data
-		* @param p_firstFilder
-		* @param p_secondFilter
-		* @param p_generateMipmap
+		* @param p_r
+		* @param p_g
+		* @param p_b
+		* @param p_a
 		*/
-		static Texture* CreateColor(uint32_t p_data, OvRendering::Settings::ETextureFilteringMode p_firstFilter, OvRendering::Settings::ETextureFilteringMode p_secondFilter, bool p_generateMipmap);
+		static Texture* CreatePixel(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
 		/**
 		* Create a texture from memory

@@ -19,7 +19,7 @@ OvCore::ECS::Components::CAmbientSphereLight::CAmbientSphereLight(ECS::Actor & p
     m_data.intensity = 0.1f;
 	m_data.constant = 1.0f;
 
-	m_data.type = static_cast<float>(OvRendering::Entities::Light::Type::AMBIENT_SPHERE);
+	m_data.type = OvRendering::Settings::ELightType::AMBIENT_SPHERE;
 }
 
 std::string OvCore::ECS::Components::CAmbientSphereLight::GetName()

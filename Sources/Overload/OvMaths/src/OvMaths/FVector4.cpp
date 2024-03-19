@@ -16,6 +16,10 @@ OvMaths::FVector4::FVector4(float p_x, float p_y, float p_z, float p_w) : x(p_x)
 {
 }
 
+OvMaths::FVector4::FVector4(const OvMaths::FVector3& p_vector, float p_w) : x(p_vector.x), y(p_vector.y), z(p_vector.z), w(p_w)
+{
+}
+
 OvMaths::FVector4::FVector4(const FVector4& p_toCopy) : x(p_toCopy.x), y(p_toCopy.y), z(p_toCopy.z), w(p_toCopy.w)
 {
 }
