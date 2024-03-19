@@ -1,4 +1,4 @@
-// dear imgui, v1.90 WIP
+// dear imgui, v1.90.5 WIP
 // (tables and columns code)
 
 /*
@@ -48,7 +48,8 @@ Index of this file:
 // - TableUpdateLayout() [Internal]             followup to BeginTable(): setup everything: widths, columns positions, clipping rectangles. Automatically called by the FIRST call to TableNextRow() or TableHeadersRow().
 //    | TableSetupDrawChannels()                - setup ImDrawList channels
 //    | TableUpdateBorders()                    - detect hovering columns for resize, ahead of contents submission
-//    | TableDrawContextMenu()                  - draw right-click context menu
+//    | TableBeginContextMenuPopup()
+//    | - TableDrawDefaultContextMenu()         - draw right-click context menu contents
 //-----------------------------------------------------------------------------
 // - TableHeadersRow() or TableHeader()         user submit a headers row (optional)
 //    | TableSortSpecsClickColumn()             - when left-clicked: alter sort order and sort direction
@@ -321,12 +322,16 @@ bool    ImGui::BeginTableEx(const char* name, ImGuiID id, int columns_count, ImG
     const ImVec2 avail_size = GetContentRegionAvail();
     const ImVec2 actual_outer_size = CalcItemSize(outer_size, ImMax(avail_size.x, 1.0f), use_child_window ? ImMax(avail_size.y, 1.0f) : 0.0f);
     const ImRect outer_rect(outer_window->DC.CursorPos, outer_window->DC.CursorPos + actual_outer_size);
-    const bool outer_window_is_measuring_size = (outer_window->AutoFitFramesX > 0) || (outer_window->AutoFitFramesY > 0); // Doesn't apply to auto-fitting windows!
+    const bool outer_window_is_measuring_size = (outer_window->AutoFitFramesX > 0) || (outer_window->AutoFitFramesY > 0); // Doesn't apply to AlwaysAutoResize windows!
     if (use_child_window && IsClippedEx(outer_rect, 0) && !outer_window_is_measuring_size)
     {
         ItemSize(outer_rect);
         return false;
     }
+
+    // [DEBUG] Debug break requested by user
+    if (g.DebugBreakInTable == id)
+        IM_DEBUG_BREAK();
 
     // Acquire storage for the table
     ImGuiTable* table = g.Tables.GetOrAddByKey(id);
@@ -493,7 +498,7 @@ bool    ImGui::BeginTableEx(const char* name, ImGuiID id, int columns_count, ImG
     table->DeclColumnsCount = table->AngledHeadersCount = 0;
     if (previous_frame_active + 1 < g.FrameCount)
         table->IsActiveIdInTable = false;
-    temp_data->AngledheadersExtraWidth = 0.0f;
+    temp_data->AngledHeadersExtraWidth = 0.0f;
 
     // Using opaque colors facilitate overlapping lines of the grid, otherwise we'd need to improve TableDrawBorders()
     table->BorderColorStrong = GetColorU32(ImGuiCol_TableBorderStrong);
@@ -1190,10 +1195,14 @@ void ImGui::TableUpdateLayout(ImGuiTable* table)
         if (g.ActiveId == 0 || (table->IsActiveIdInTable || g.DragDropActive))
             table->HighlightColumnHeader = table->HoveredColumnBody;
 
-    // [Part 11] Context menu
-    if (TableBeginContextMenuPopup(table))
+    // [Part 11] Default context menu
+    // - To append to this menu: you can call TableBeginContextMenuPopup()/.../EndPopup().
+    // - To modify or replace this: set table->IsContextPopupNoDefaultContents = true, then call TableBeginContextMenuPopup()/.../EndPopup().
+    // - You may call TableDrawDefaultContextMenu() with selected flags to display specific sections of the default menu,
+    //   e.g. TableDrawDefaultContextMenu(table, table->Flags & ~ImGuiTableFlags_Hideable) will display everything EXCEPT columns visibility options.
+    if (table->DisableDefaultContextMenu == false && TableBeginContextMenuPopup(table))
     {
-        TableDrawContextMenu(table);
+        TableDrawDefaultContextMenu(table, table->Flags);
         EndPopup();
     }
 
@@ -1335,7 +1344,7 @@ void    ImGui::EndTable()
             max_pos_x = ImMax(max_pos_x, table->Columns[table->RightMostEnabledColumn].WorkMaxX + table->CellPaddingX + table->OuterPaddingX - outer_padding_for_border);
         if (table->ResizedColumn != -1)
             max_pos_x = ImMax(max_pos_x, table->ResizeLockMinContentsX2);
-        table->InnerWindow->DC.CursorMaxPos.x = max_pos_x + table->TempData->AngledheadersExtraWidth;
+        table->InnerWindow->DC.CursorMaxPos.x = max_pos_x + table->TempData->AngledHeadersExtraWidth;
     }
 
     // Pop clipping rect
@@ -1453,7 +1462,7 @@ void    ImGui::EndTable()
     }
     else if (temp_data->UserOuterSize.x <= 0.0f)
     {
-        const float decoration_size = table->TempData->AngledheadersExtraWidth + ((table->Flags & ImGuiTableFlags_ScrollX) ? inner_window->ScrollbarSizes.x : 0.0f);
+        const float decoration_size = table->TempData->AngledHeadersExtraWidth + ((table->Flags & ImGuiTableFlags_ScrollX) ? inner_window->ScrollbarSizes.x : 0.0f);
         outer_window->DC.IdealMaxPos.x = ImMax(outer_window->DC.IdealMaxPos.x, table->OuterRect.Min.x + table->ColumnsAutoFitWidth + decoration_size - temp_data->UserOuterSize.x);
         outer_window->DC.CursorMaxPos.x = ImMax(backup_outer_max_pos.x, ImMin(table->OuterRect.Max.x, table->OuterRect.Min.x + table->ColumnsAutoFitWidth));
     }
@@ -1558,6 +1567,7 @@ void ImGui::TableSetupColumn(const char* label, ImGuiTableColumnFlags flags, flo
     }
 
     // Store name (append with zero-terminator in contiguous buffer)
+    // FIXME: If we recorded the number of \n in names we could compute header row height
     column->NameOffset = -1;
     if (label != NULL && label[0] != 0)
     {
@@ -1880,7 +1890,7 @@ void ImGui::TableEndRow(ImGuiTable* table)
     if (is_visible)
     {
         // Update data for TableGetHoveredRow()
-        if (table->HoveredColumnBody != -1 && g.IO.MousePos.y >= bg_y1 && g.IO.MousePos.y < bg_y2)
+        if (table->HoveredColumnBody != -1 && g.IO.MousePos.y >= bg_y1 && g.IO.MousePos.y < bg_y2 && table_instance->HoveredRowNext < 0)
             table_instance->HoveredRowNext = table->CurrentRow;
 
         // Decide of background color for the row
@@ -2144,6 +2154,8 @@ void ImGui::TableEndCell(ImGuiTable* table)
 // - TableSetColumnWidthAutoSingle() [Internal]
 // - TableSetColumnWidthAutoAll() [Internal]
 // - TableUpdateColumnsWeightFromWidth() [Internal]
+//-------------------------------------------------------------------------
+// Note that actual columns widths are computed in TableUpdateLayout().
 //-------------------------------------------------------------------------
 
 // Maximum column content width given current layout. Use column->MinX so this value on a per-column basis.
@@ -2918,6 +2930,7 @@ void ImGui::TableSortSpecsBuild(ImGuiTable* table)
 // [SECTION] Tables: Headers
 //-------------------------------------------------------------------------
 // - TableGetHeaderRowHeight() [Internal]
+// - TableGetHeaderAngledMaxLabelWidth() [Internal]
 // - TableHeadersRow()
 // - TableHeader()
 // - TableAngledHeadersRow()
@@ -2949,7 +2962,7 @@ float ImGui::TableGetHeaderAngledMaxLabelWidth()
         if (IM_BITARRAY_TESTBIT(table->EnabledMaskByIndex, column_n))
             if (table->Columns[column_n].Flags & ImGuiTableColumnFlags_AngledHeader)
                 width = ImMax(width, CalcTextSize(TableGetColumnName(table, column_n), NULL, true).x);
-    return width + g.Style.CellPadding.x * 2.0f;
+    return width + g.Style.CellPadding.y * 2.0f; // Swap padding
 }
 
 // [Public] This is a helper to output TableHeader() calls based on the column names declared in TableSetupColumn().
@@ -3073,7 +3086,7 @@ void ImGui::TableHeader(const char* label)
         if ((table->RowFlags & ImGuiTableRowFlags_Headers) == 0)
             TableSetBgColor(ImGuiTableBgTarget_CellBg, GetColorU32(ImGuiCol_TableHeaderBg), table->CurrentColumn);
     }
-    RenderNavHighlight(bb, id, ImGuiNavHighlightFlags_TypeThin | ImGuiNavHighlightFlags_NoRounding);
+    RenderNavHighlight(bb, id, ImGuiNavHighlightFlags_Compact | ImGuiNavHighlightFlags_NoRounding);
     if (held)
         table->HeldHeaderColumn = (ImGuiTableColumnIdx)column_n;
     window->DC.CursorPos.y -= g.Style.ItemSpacing.y * 0.5f;
@@ -3171,25 +3184,25 @@ void ImGui::TableAngledHeadersRowEx(float angle, float max_label_width)
 
     // Calculate our base metrics and set angled headers data _before_ the first call to TableNextRow()
     // FIXME-STYLE: Would it be better for user to submit 'max_label_width' or 'row_height' ? One can be derived from the other.
-    const float header_height = table->RowCellPaddingY * 2.0f + g.FontSize;
+    const float header_height = g.FontSize + g.Style.CellPadding.x * 2.0f;
     const float row_height = ImFabs(ImRotate(ImVec2(max_label_width, flip_label ? +header_height : -header_height), cos_a, sin_a).y);
-    const ImVec2 header_angled_vector = unit_right * (row_height / -sin_a);
     table->AngledHeadersHeight = row_height;
     table->AngledHeadersSlope = (sin_a != 0.0f) ? (cos_a / sin_a) : 0.0f;
+    const ImVec2 header_angled_vector = unit_right * (row_height / -sin_a); // vector from bottom-left to top-left, and from bottom-right to top-right
 
     // Declare row, override and draw our own background
     TableNextRow(ImGuiTableRowFlags_Headers, row_height);
     TableNextColumn();
+    const ImRect row_r(table->WorkRect.Min.x, table->BgClipRect.Min.y, table->WorkRect.Max.x, table->RowPosY2);
     table->DrawSplitter->SetCurrentChannel(draw_list, TABLE_DRAW_CHANNEL_BG0);
     float clip_rect_min_x = table->BgClipRect.Min.x;
     if (table->FreezeColumnsCount > 0)
         clip_rect_min_x = ImMax(clip_rect_min_x, table->Columns[table->FreezeColumnsCount - 1].MaxX);
     TableSetBgColor(ImGuiTableBgTarget_RowBg0, 0); // Cancel
     PushClipRect(table->BgClipRect.Min, table->BgClipRect.Max, false); // Span all columns
-    draw_list->AddRectFilled(table->BgClipRect.Min, table->BgClipRect.Max, GetColorU32(ImGuiCol_TableHeaderBg, 0.25f)); // FIXME-STYLE: Change row background with an arbitrary color.
+    draw_list->AddRectFilled(ImVec2(table->BgClipRect.Min.x, row_r.Min.y), ImVec2(table->BgClipRect.Max.x, row_r.Max.y), GetColorU32(ImGuiCol_TableHeaderBg, 0.25f)); // FIXME-STYLE: Change row background with an arbitrary color.
     PushClipRect(ImVec2(clip_rect_min_x, table->BgClipRect.Min.y), table->BgClipRect.Max, true); // Span all columns
 
-    const ImRect row_r(table->WorkRect.Min.x, table->BgClipRect.Min.y, table->WorkRect.Max.x, window->DC.CursorPos.y + row_height);
     const ImGuiID row_id = GetID("##AngledHeaders");
     ButtonBehavior(row_r, row_id, NULL, NULL);
     KeepAliveID(row_id);
@@ -3200,7 +3213,9 @@ void ImGui::TableAngledHeadersRowEx(float angle, float max_label_width)
         if (table_instance->HoveredRowLast == 0 && table->HoveredColumnBorder == -1 && (g.ActiveId == 0 || g.ActiveId == row_id || (table->IsActiveIdInTable || g.DragDropActive)))
             highlight_column_n = table->HoveredColumnBody;
 
+    // Draw background and labels in first pass, then all borders.
     float max_x = 0.0f;
+    ImVec2 padding = g.Style.CellPadding; // We will always use swapped component
     for (int pass = 0; pass < 2; pass++)
         for (int order_n = 0; order_n < table->ColumnsCount; order_n++)
         {
@@ -3222,25 +3237,45 @@ void ImGui::TableAngledHeadersRowEx(float angle, float max_label_width)
                 draw_list->AddQuadFilled(bg_shape[0], bg_shape[1], bg_shape[2], bg_shape[3], GetColorU32(ImGuiCol_TableHeaderBg));
                 if (column_n == highlight_column_n)
                     draw_list->AddQuadFilled(bg_shape[0], bg_shape[1], bg_shape[2], bg_shape[3], GetColorU32(ImGuiCol_Header)); // Highlight on hover
-                //draw_list->AddQuad(bg_shape[0], bg_shape[1], bg_shape[2], bg_shape[3], GetColorU32(ImGuiCol_TableBorderLight), 1.0f);
                 max_x = ImMax(max_x, bg_shape[3].x);
 
-                // Draw label (first draw at an offset where RenderTextXXX() function won't meddle with applying current ClipRect, then transform to final offset)
-                // FIXME: May be worth tidying up all those operations to make them easier to understand.
+                // Draw label
+                // - First draw at an offset where RenderTextXXX() function won't meddle with applying current ClipRect, then transform to final offset.
+                // - Handle multiple lines manually, as we want each lines to follow on the horizontal border, rather than see a whole block rotated.
                 const char* label_name = TableGetColumnName(table, column_n);
-                const float clip_width = max_label_width - (sin_a * table->RowCellPaddingY);
-                ImRect label_r(window->ClipRect.Min, window->ClipRect.Min + ImVec2(clip_width + (flip_label ? 0.0f : table->CellPaddingX), header_height + table->RowCellPaddingY));
-                ImVec2 label_size = CalcTextSize(label_name, NULL, true);
-                ImVec2 label_off = ImVec2(flip_label ? ImMax(0.0f, max_label_width - label_size.x - table->CellPaddingX) : table->CellPaddingX, table->RowCellPaddingY);
-                int vtx_idx_begin = draw_list->_VtxCurrentIdx;
-                RenderTextEllipsis(draw_list, label_r.Min + label_off, label_r.Max, label_r.Max.x, label_r.Max.x, label_name, NULL, &label_size);
-                //if (g.IO.KeyShift) { draw_list->AddRect(label_r.Min, label_r.Max, IM_COL32(0, 255, 0, 255), 0.0f, 0, 2.0f); }
-                int vtx_idx_end = draw_list->_VtxCurrentIdx;
+                const char* label_name_end = FindRenderedTextEnd(label_name);
+                const float line_off_step_x = g.FontSize / -sin_a;
+                float line_off_curr_x = 0.0f;
+                while (label_name < label_name_end)
+                {
+                    const char* label_name_eol = strchr(label_name, '\n');
+                    if (label_name_eol == NULL)
+                        label_name_eol = label_name_end;
 
-                // Rotate and offset label
-                ImVec2 pivot_in = label_r.GetBL();
-                ImVec2 pivot_out = ImVec2(column->WorkMinX, row_r.Max.y) + (flip_label ? (unit_right * clip_width) : ImVec2(header_height, 0.0f));
-                ShadeVertsTransformPos(draw_list, vtx_idx_begin, vtx_idx_end, pivot_in, label_cos_a, label_sin_a, pivot_out); // Rotate and offset
+                    // FIXME: Individual line clipping for right-most column is broken for negative angles.
+                    ImVec2 label_size = CalcTextSize(label_name, label_name_eol);
+                    float clip_width = max_label_width - padding.y; // Using padding.y*2.0f would be symetrical but hide more text.
+                    float clip_height = ImMin(label_size.y, column->ClipRect.Max.x - column->WorkMinX - line_off_curr_x);
+                    ImRect clip_r(window->ClipRect.Min, window->ClipRect.Min + ImVec2(clip_width, clip_height));
+                    int vtx_idx_begin = draw_list->_VtxCurrentIdx;
+                    RenderTextEllipsis(draw_list, clip_r.Min, clip_r.Max, clip_r.Max.x, clip_r.Max.x, label_name, label_name_eol, &label_size);
+                    int vtx_idx_end = draw_list->_VtxCurrentIdx;
+
+                    // Rotate and offset label
+                    ImVec2 pivot_in = ImVec2(window->ClipRect.Min.x, window->ClipRect.Min.y + label_size.y);
+                    ImVec2 pivot_out = ImVec2(column->WorkMinX, row_r.Max.y);
+                    line_off_curr_x += line_off_step_x;
+                    pivot_out += unit_right * padding.y;
+                    if (flip_label)
+                        pivot_out += unit_right * (clip_width - ImMax(0.0f, clip_width - label_size.x));
+                    pivot_out.x += flip_label ? line_off_curr_x - line_off_step_x : line_off_curr_x;
+                    ShadeVertsTransformPos(draw_list, vtx_idx_begin, vtx_idx_end, pivot_in, label_cos_a, label_sin_a, pivot_out); // Rotate and offset
+                    //if (g.IO.KeyShift) { ImDrawList* fg_dl = GetForegroundDrawList(); vtx_idx_begin = fg_dl->_VtxCurrentIdx; fg_dl->AddRect(clip_r.Min, clip_r.Max, IM_COL32(0, 255, 0, 255), 0.0f, 0, 2.0f); ShadeVertsTransformPos(fg_dl, vtx_idx_begin, fg_dl->_VtxCurrentIdx, pivot_in, label_cos_a, label_sin_a, pivot_out); }
+
+                    // Register header width
+                    column->ContentMaxXHeadersUsed = column->ContentMaxXHeadersIdeal = column->WorkMinX + ImCeil(line_off_curr_x);
+                    label_name = label_name_eol + 1;
+                }
             }
             if (pass == 1)
             {
@@ -3250,14 +3285,15 @@ void ImGui::TableAngledHeadersRowEx(float angle, float max_label_width)
         }
     PopClipRect();
     PopClipRect();
-    table->TempData->AngledheadersExtraWidth = ImMax(0.0f, max_x - table->Columns[table->RightMostEnabledColumn].MaxX);
+    table->TempData->AngledHeadersExtraWidth = ImMax(0.0f, max_x - table->Columns[table->RightMostEnabledColumn].MaxX);
 }
 
 //-------------------------------------------------------------------------
 // [SECTION] Tables: Context Menu
 //-------------------------------------------------------------------------
 // - TableOpenContextMenu() [Internal]
-// - TableDrawContextMenu() [Internal]
+// - TableBeginContextMenuPopup() [Internal]
+// - TableDrawDefaultContextMenu() [Internal]
 //-------------------------------------------------------------------------
 
 // Use -1 to open menu not specific to a given column.
@@ -3293,7 +3329,13 @@ bool ImGui::TableBeginContextMenuPopup(ImGuiTable* table)
 
 // Output context menu into current window (generally a popup)
 // FIXME-TABLE: Ideally this should be writable by the user. Full programmatic access to that data?
-void ImGui::TableDrawContextMenu(ImGuiTable* table)
+// Sections to display are pulled from 'flags_for_section_to_display', which is typically == table->Flags.
+// - ImGuiTableFlags_Resizable   -> display Sizing menu items
+// - ImGuiTableFlags_Reorderable -> display "Reset Order"
+////- ImGuiTableFlags_Sortable   -> display sorting options (disabled)
+// - ImGuiTableFlags_Hideable    -> display columns visibility menu items
+// It means if you have a custom context menus you can call this section and omit some sections, and add your own.
+void ImGui::TableDrawDefaultContextMenu(ImGuiTable* table, ImGuiTableFlags flags_for_section_to_display)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
@@ -3305,7 +3347,7 @@ void ImGui::TableDrawContextMenu(ImGuiTable* table)
     ImGuiTableColumn* column = (column_n != -1) ? &table->Columns[column_n] : NULL;
 
     // Sizing
-    if (table->Flags & ImGuiTableFlags_Resizable)
+    if (flags_for_section_to_display & ImGuiTableFlags_Resizable)
     {
         if (column != NULL)
         {
@@ -3325,7 +3367,7 @@ void ImGui::TableDrawContextMenu(ImGuiTable* table)
     }
 
     // Ordering
-    if (table->Flags & ImGuiTableFlags_Reorderable)
+    if (flags_for_section_to_display & ImGuiTableFlags_Reorderable)
     {
         if (MenuItem(LocalizeGetMsg(ImGuiLocKey_TableResetOrder), NULL, false, !table->IsDefaultDisplayOrder))
             table->IsResetDisplayOrderRequest = true;
@@ -3339,7 +3381,7 @@ void ImGui::TableDrawContextMenu(ImGuiTable* table)
     // Sorting
     // (modify TableOpenContextMenu() to add _Sortable flag if enabling this)
 #if 0
-    if ((table->Flags & ImGuiTableFlags_Sortable) && column != NULL && (column->Flags & ImGuiTableColumnFlags_NoSort) == 0)
+    if ((flags_for_section_to_display & ImGuiTableFlags_Sortable) && column != NULL && (column->Flags & ImGuiTableColumnFlags_NoSort) == 0)
     {
         if (want_separator)
             Separator();
@@ -3354,7 +3396,7 @@ void ImGui::TableDrawContextMenu(ImGuiTable* table)
 #endif
 
     // Hiding / Visibility
-    if (table->Flags & ImGuiTableFlags_Hideable)
+    if (flags_for_section_to_display & ImGuiTableFlags_Hideable)
     {
         if (want_separator)
             Separator();
@@ -3790,7 +3832,8 @@ static const char* DebugNodeTableGetSizingPolicyDesc(ImGuiTableFlags sizing_poli
 
 void ImGui::DebugNodeTable(ImGuiTable* table)
 {
-    const bool is_active = (table->LastFrameActive >= GetFrameCount() - 2); // Note that fully clipped early out scrolling tables will appear as inactive here.
+    ImGuiContext& g = *GImGui;
+    const bool is_active = (table->LastFrameActive >= g.FrameCount - 2); // Note that fully clipped early out scrolling tables will appear as inactive here.
     if (!is_active) { PushStyleColor(ImGuiCol_Text, GetStyleColorVec4(ImGuiCol_TextDisabled)); }
     bool open = TreeNode(table, "Table 0x%08X (%d columns, in '%s')%s", table->ID, table->ColumnsCount, table->OuterWindow->Name, is_active ? "" : " *Inactive*");
     if (!is_active) { PopStyleColor(); }
@@ -3802,6 +3845,13 @@ void ImGui::DebugNodeTable(ImGuiTable* table)
         return;
     if (table->InstanceCurrent > 0)
         Text("** %d instances of same table! Some data below will refer to last instance.", table->InstanceCurrent + 1);
+    if (g.IO.ConfigDebugIsDebuggerPresent)
+    {
+        if (DebugBreakButton("**DebugBreak**", "in BeginTable()"))
+            g.DebugBreakInTable = table->ID;
+        SameLine();
+    }
+
     bool clear_settings = SmallButton("Clear settings");
     BulletText("OuterRect: Pos: (%.1f,%.1f) Size: (%.1f,%.1f) Sizing: '%s'", table->OuterRect.Min.x, table->OuterRect.Min.y, table->OuterRect.GetWidth(), table->OuterRect.GetHeight(), DebugNodeTableGetSizingPolicyDesc(table->Flags));
     BulletText("ColumnsGivenWidth: %.1f, ColumnsAutoFitWidth: %.1f, InnerWidth: %.1f%s", table->ColumnsGivenWidth, table->ColumnsAutoFitWidth, table->InnerWidth, table->InnerWidth == 0.0f ? " (auto)" : "");
