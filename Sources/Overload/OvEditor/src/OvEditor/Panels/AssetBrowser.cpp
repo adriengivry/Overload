@@ -287,12 +287,12 @@ public:
 
 				do
 				{
-					finalPath = filePath + '\\' + (!fails ? newShaderName : newShaderName + " (" + std::to_string(fails) + ')') + ".glsl";
+					finalPath = filePath + '\\' + (!fails ? newShaderName : newShaderName + " (" + std::to_string(fails) + ')') + ".ovfx";
 
 					++fails;
 				} while (std::filesystem::exists(finalPath));
 
-				std::filesystem::copy_file(EDITOR_CONTEXT(engineAssetsPath) + "Shaders\\Standard.glsl", finalPath);
+				std::filesystem::copy_file(EDITOR_CONTEXT(engineAssetsPath) + "Shaders\\Standard.ovfx", finalPath);
 				ItemAddedEvent.Invoke(finalPath);
 				Close();
 			};
@@ -304,12 +304,12 @@ public:
 
 				do
 				{
-					finalPath = filePath + '\\' + (!fails ? newShaderName : newShaderName + " (" + std::to_string(fails) + ')') + ".glsl";
+					finalPath = filePath + '\\' + (!fails ? newShaderName : newShaderName + " (" + std::to_string(fails) + ')') + ".ovfx";
 
 					++fails;
 				} while (std::filesystem::exists(finalPath));
 
-				std::filesystem::copy_file(EDITOR_CONTEXT(engineAssetsPath) + "Shaders\\StandardPBR.glsl", finalPath);
+				std::filesystem::copy_file(EDITOR_CONTEXT(engineAssetsPath) + "Shaders\\StandardPBR.ovfx", finalPath);
 				ItemAddedEvent.Invoke(finalPath);
 				Close();
 			};
@@ -321,12 +321,12 @@ public:
 
 				do
 				{
-					finalPath = filePath + '\\' + (!fails ? newShaderName : newShaderName + " (" + std::to_string(fails) + ')') + ".glsl";
+					finalPath = filePath + '\\' + (!fails ? newShaderName : newShaderName + " (" + std::to_string(fails) + ')') + ".ovfx";
 
 					++fails;
 				} while (std::filesystem::exists(finalPath));
 
-				std::filesystem::copy_file(EDITOR_CONTEXT(engineAssetsPath) + "Shaders\\Unlit.glsl", finalPath);
+				std::filesystem::copy_file(EDITOR_CONTEXT(engineAssetsPath) + "Shaders\\Unlit.ovfx", finalPath);
 				ItemAddedEvent.Invoke(finalPath);
 				Close();
 			};
@@ -338,12 +338,12 @@ public:
 
 				do
 				{
-					finalPath = filePath + '\\' + (!fails ? newShaderName : newShaderName + " (" + std::to_string(fails) + ')') + ".glsl";
+					finalPath = filePath + '\\' + (!fails ? newShaderName : newShaderName + " (" + std::to_string(fails) + ')') + ".ovfx";
 
 					++fails;
 				} while (std::filesystem::exists(finalPath));
 
-				std::filesystem::copy_file(EDITOR_CONTEXT(engineAssetsPath) + "Shaders\\Lambert.glsl", finalPath);
+				std::filesystem::copy_file(EDITOR_CONTEXT(engineAssetsPath) + "Shaders\\Lambert.ovfx", finalPath);
 				ItemAddedEvent.Invoke(finalPath);
 				Close();
 			};
@@ -392,7 +392,7 @@ public:
 
 				{
 					std::ofstream outfile(finalPath);
-					outfile << "<root><shader>:Shaders\\Standard.glsl</shader></root>" << std::endl; // Empty standard material content
+					outfile << "<root><shader>:Shaders\\Standard.ovfx</shader></root>" << std::endl; // Empty standard material content
 				}
 
 				ItemAddedEvent.Invoke(finalPath);
@@ -422,7 +422,7 @@ public:
 
 				{
 					std::ofstream outfile(finalPath);
-					outfile << "<root><shader>:Shaders\\StandardPBR.glsl</shader></root>" << std::endl; // Empty standard material content
+					outfile << "<root><shader>:Shaders\\StandardPBR.ovfx</shader></root>" << std::endl; // Empty standard material content
 				}
 
 				ItemAddedEvent.Invoke(finalPath);
@@ -453,7 +453,7 @@ public:
 
 				{
 					std::ofstream outfile(finalPath);
-					outfile << "<root><shader>:Shaders\\Unlit.glsl</shader></root>" << std::endl; // Empty unlit material content
+					outfile << "<root><shader>:Shaders\\Unlit.ovfx</shader></root>" << std::endl; // Empty unlit material content
 				}
 
 				ItemAddedEvent.Invoke(finalPath);
@@ -483,7 +483,7 @@ public:
 
 				{
 					std::ofstream outfile(finalPath);
-					outfile << "<root><shader>:Shaders\\Lambert.glsl</shader></root>" << std::endl; // Empty unlit material content
+					outfile << "<root><shader>:Shaders\\Lambert.ovfx</shader></root>" << std::endl; // Empty unlit material content
 				}
 
 				ItemAddedEvent.Invoke(finalPath);
@@ -697,6 +697,17 @@ public:
 	}
 };
 
+class ShaderPartContextualMenu : public FileContextualMenu
+{
+public:
+	ShaderPartContextualMenu(const std::string& p_filePath, bool p_protected = false) : FileContextualMenu(p_filePath, p_protected) {}
+
+	virtual void CreateList() override
+	{
+		FileContextualMenu::CreateList();
+	}
+};
+
 class ModelContextualMenu : public PreviewableContextualMenu<OvRendering::Resources::Model, OvCore::ResourceManagement::ModelManager>
 {
 public:
@@ -740,7 +751,7 @@ public:
 
 						{
 							std::ofstream outfile(finalPath);
-							outfile << "<root><shader>:Shaders\\Standard.glsl</shader></root>" << std::endl; // Empty standard material content
+							outfile << "<root><shader>:Shaders\\Standard.ovfx</shader></root>" << std::endl; // Empty standard material content
 						}
 
 						DuplicateEvent.Invoke(finalPath);
@@ -768,7 +779,7 @@ public:
 
 						{
 							std::ofstream outfile(finalPath);
-							outfile << "<root><shader>:Shaders\\StandardPBR.glsl</shader></root>" << std::endl; // Empty standard material content
+							outfile << "<root><shader>:Shaders\\StandardPBR.ovfx</shader></root>" << std::endl; // Empty standard material content
 						}
 
 						DuplicateEvent.Invoke(finalPath);
@@ -796,7 +807,7 @@ public:
 
 						{
 							std::ofstream outfile(finalPath);
-							outfile << "<root><shader>:Shaders\\Unlit.glsl</shader></root>" << std::endl; // Empty standard material content
+							outfile << "<root><shader>:Shaders\\Unlit.ovfx</shader></root>" << std::endl; // Empty standard material content
 						}
 
 						DuplicateEvent.Invoke(finalPath);
@@ -824,7 +835,7 @@ public:
 
 						{
 							std::ofstream outfile(finalPath);
-							outfile << "<root><shader>:Shaders\\Lambert.glsl</shader></root>" << std::endl; // Empty standard material content
+							outfile << "<root><shader>:Shaders\\Lambert.ovfx</shader></root>" << std::endl; // Empty standard material content
 						}
 
 						DuplicateEvent.Invoke(finalPath);
@@ -1222,6 +1233,7 @@ void OvEditor::Panels::AssetBrowser::ConsiderItem(OvUI::Widgets::Layout::TreeNod
 		case OvTools::Utils::PathParser::EFileType::MODEL:		contextMenu = &clickableText.AddPlugin<ModelContextualMenu>(path, protectedItem);		break;
 		case OvTools::Utils::PathParser::EFileType::TEXTURE:	contextMenu = &clickableText.AddPlugin<TextureContextualMenu>(path, protectedItem); 	break;
 		case OvTools::Utils::PathParser::EFileType::SHADER:		contextMenu = &clickableText.AddPlugin<ShaderContextualMenu>(path, protectedItem);		break;
+		case OvTools::Utils::PathParser::EFileType::SHADER_PART:contextMenu = &clickableText.AddPlugin<ShaderPartContextualMenu>(path, protectedItem);	break;
 		case OvTools::Utils::PathParser::EFileType::MATERIAL:	contextMenu = &clickableText.AddPlugin<MaterialContextualMenu>(path, protectedItem);	break;
 		case OvTools::Utils::PathParser::EFileType::SCENE:		contextMenu = &clickableText.AddPlugin<SceneContextualMenu>(path, protectedItem);		break;
 		default: contextMenu = &clickableText.AddPlugin<FileContextualMenu>(path, protectedItem); break;

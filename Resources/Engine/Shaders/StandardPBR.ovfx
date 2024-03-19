@@ -1,0 +1,4 @@
+#shader vertex
+#include ":Shaders/Vertex/Basic.ovfxh"
+#shader fragment
+#include ":Shaders/Fragment/PBR.ovfxh"

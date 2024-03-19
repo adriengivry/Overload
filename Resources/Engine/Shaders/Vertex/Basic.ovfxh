@@ -1,13 +1,8 @@
 #version 430 core
 
-layout (location = 0) in vec3 geo_Pos;
-layout (location = 1) in vec2 geo_TexCoords;
-layout (location = 2) in vec3 geo_Normal;
-layout (location = 3) in vec3 geo_Tangent;
-layout (location = 4) in vec3 geo_Bitangent;
-
-#include ":Shaders/Common/Buffers/EngineUBO.part.glsl"
-#include ":Shaders/Common/IO/VertexOutput.part.glsl"
+#include ":Shaders/Common/IO/VertexInput.ovfxh"
+#include ":Shaders/Common/Buffers/EngineUBO.ovfxh"
+#include ":Shaders/Common/IO/VertexOutput.ovfxh"
 
 void main()
 {

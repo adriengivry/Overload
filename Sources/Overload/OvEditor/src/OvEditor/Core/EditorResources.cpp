@@ -17,8 +17,7 @@ OvEditor::Core::EditorResources::EditorResources(const std::string& p_editorAsse
 {
 	using namespace OvRendering::Resources::Loaders;
 
-	std::string buttonsFolder	= p_editorAssetsPath + "Textures\\Buttons\\";
-	std::string iconsFolder		= p_editorAssetsPath + "Textures\\Icons\\";
+	std::string iconsFolder		= p_editorAssetsPath + "Icons\\";
 	std::string modelsFolder	= p_editorAssetsPath + "Models\\";
 	std::string shadersFolder	= p_editorAssetsPath + "Shaders\\";
 
@@ -147,6 +146,8 @@ OvEditor::Core::EditorResources::EditorResources(const std::string& p_editorAsse
 		m_textures["Bill_Ambient_Sphere_Light"] = TextureLoader::CreateFromMemory(reinterpret_cast<uint8_t*>(raw.data()), 128, 128, firstFilterBillboard, secondFilterBillboard, false);
 	}
 
+	m_textures["Icon_Shader_Part"] = TextureLoader::Create(iconsFolder + "puzzle.png", firstFilterEditor, secondFilterEditor, false);
+
 	/* Models */
 	m_models["Cube"]			= ModelLoader::Create(modelsFolder + "Cube.fbx", modelParserFlags);
 	m_models["Cylinder"]		= ModelLoader::Create(modelsFolder + "Cylinder.fbx", modelParserFlags);
@@ -161,9 +162,9 @@ OvEditor::Core::EditorResources::EditorResources(const std::string& p_editorAsse
 	m_models["Camera"]			= ModelLoader::Create(modelsFolder + "Camera.fbx", modelParserFlags);
 
 	/* Shaders */
-	m_shaders["Grid"] = ShaderLoader::Create(shadersFolder + "Grid.glsl");
-	m_shaders["Gizmo"] = ShaderLoader::Create(shadersFolder + "Gizmo.glsl");
-	m_shaders["Billboard"] = ShaderLoader::Create(shadersFolder + "Billboard.glsl");
+	m_shaders["Grid"] = ShaderLoader::Create(shadersFolder + "Grid.ovfx");
+	m_shaders["Gizmo"] = ShaderLoader::Create(shadersFolder + "Gizmo.ovfx");
+	m_shaders["Billboard"] = ShaderLoader::Create(shadersFolder + "Billboard.ovfx");
 
 	/* From memory */
 	{
