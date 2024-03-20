@@ -43,10 +43,10 @@ const OvMaths::FVector3 kLightVolumeColor		= { 1.0f, 1.0f, 0.0f };
 const OvMaths::FVector3 kColliderColor			= { 0.0f, 1.0f, 0.0f };
 const OvMaths::FVector3 kFrustumColor			= { 1.0f, 1.0f, 1.0f };
 
-const OvMaths::FVector4 kDefaultOutlineColor{ 1.0f, 0.7f, 0.0f, 1.0f };
-const OvMaths::FVector4 kSelectedOutlineColor{ 1.0f, 1.0f, 0.0f, 1.0f };
+const OvMaths::FVector4 kHoveredOutlineColor{ 1.0f, 1.0f, 0.0f, 1.0f };
+const OvMaths::FVector4 kSelectedOutlineColor{ 1.0f, 0.7f, 0.0f, 1.0f };
 
-constexpr float kDefaultOutlineWidth = 2.5f;
+constexpr float kHoveredOutlineWidth = 2.5f;
 constexpr float kSelectedOutlineWidth = 5.0f;
 
 OvMaths::FMatrix4 CalculateCameraModelMatrix(OvCore::ECS::Actor& p_actor)
@@ -174,8 +174,16 @@ protected:
 		if (debugSceneDescriptor.selectedActor)
 		{
 			auto& selectedActor = debugSceneDescriptor.selectedActor.value();
+			const bool isActorHovered = debugSceneDescriptor.highlightedActor && debugSceneDescriptor.highlightedActor->GetID() == selectedActor.GetID();
+
 			DrawActorDebugElements(selectedActor);
-			m_renderer.GetFeature<OvEditor::Rendering::OutlineRenderFeature>().DrawOutline(selectedActor, kSelectedOutlineColor, kSelectedOutlineWidth);
+			m_renderer.GetFeature<OvEditor::Rendering::OutlineRenderFeature>().DrawOutline(
+				selectedActor,
+				isActorHovered ?
+				kHoveredOutlineColor :
+				kSelectedOutlineColor,
+				kSelectedOutlineWidth
+			);
 			m_renderer.Clear(false, true, false, OvMaths::FVector3::Zero);
 			m_renderer.GetFeature<OvEditor::Rendering::GizmoRenderFeature>().DrawGizmo(
 				selectedActor.transform.GetWorldPosition(),
@@ -184,6 +192,17 @@ protected:
 				false,
 				debugSceneDescriptor.highlightedGizmoDirection
 			);
+		}
+		
+		if (debugSceneDescriptor.highlightedActor)
+		{
+			auto& highlightedActor = debugSceneDescriptor.highlightedActor.value();
+
+			// Render the outline only if the actor is not already selected (as its outline render should have been handled already).
+			if (!debugSceneDescriptor.selectedActor || highlightedActor.GetID() != debugSceneDescriptor.selectedActor->GetID())
+			{
+				m_renderer.GetFeature<OvEditor::Rendering::OutlineRenderFeature>().DrawOutline(highlightedActor, kHoveredOutlineColor, kHoveredOutlineWidth);
+			}
 		}
 	}
 
