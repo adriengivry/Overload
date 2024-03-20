@@ -47,12 +47,12 @@ out vec4 FRAGMENT_COLOR;
 
 void main()
 {
-    vec2 texCoords = TRANSFORM_TEX_COORDS(fs_in.TexCoords, u_TextureTiling, u_TextureOffset);
+    vec2 texCoords = TileAndOffsetTexCoords(fs_in.TexCoords, u_TextureTiling, u_TextureOffset);
     
     const vec3 kLightPosition = vec3(-9000.0, 10000.0, 11000.0);
     const vec3 kLightDiffuse = vec3(1.0);
     const vec3 kLightAmbient = vec3(0.3);
-    const vec3 lambert = Lambert(fs_in.FragPos, fs_in.Normal, kLightPosition, kLightDiffuse, kLightAmbient);
+    const vec3 lambert = ComputeLambertLighting(fs_in.FragPos, fs_in.Normal, kLightPosition, kLightDiffuse, kLightAmbient);
 
     FRAGMENT_COLOR = texture(u_DiffuseMap, texCoords) * u_Diffuse * vec4(lambert, 1.0);
 }

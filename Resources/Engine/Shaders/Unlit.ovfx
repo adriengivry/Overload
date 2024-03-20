@@ -42,6 +42,6 @@ out vec4 FRAGMENT_COLOR;
 
 void main()
 {
-    vec2 texCoords = TRANSFORM_TEX_COORDS(fs_in.TexCoords, u_TextureTiling, u_TextureOffset);
+    vec2 texCoords = TileAndOffsetTexCoords(fs_in.TexCoords, u_TextureTiling, u_TextureOffset);
     FRAGMENT_COLOR = texture(u_DiffuseMap, texCoords) * u_Diffuse;
 }
