@@ -1,4 +1,47 @@
 #shader vertex
-#include ":Shaders/Vertex/Basic.ovfxh"
+#version 430 core
+
+#include ":Shaders/Common/Buffers/EngineUBO.ovfxh"
+#include ":Shaders/Common/Utils.ovfxh"
+
+layout (location = 0) in vec3 geo_Pos;
+layout (location = 1) in vec2 geo_TexCoords;
+
+out VS_OUT
+{
+    vec3 FragPos;
+    vec2 TexCoords;
+} vs_out;
+
+void main()
+{
+    vs_out.FragPos = vec3(ubo_Model * vec4(geo_Pos, 1.0));
+    vs_out.TexCoords = geo_TexCoords;
+
+    gl_Position = ubo_Projection * ubo_View * vec4(vs_out.FragPos, 1.0);
+}
+
 #shader fragment
-#include ":Shaders/Fragment/Unlit.ovfxh"
+#version 430 core
+
+#include ":Shaders/Common/Buffers/EngineUBO.ovfxh"
+#include ":Shaders/Common/Utils.ovfxh"
+
+in VS_OUT
+{
+    vec3 FragPos;
+    vec2 TexCoords;
+} fs_in;
+
+uniform vec4 u_Diffuse = vec4(1.0);
+uniform sampler2D u_DiffuseMap;
+uniform vec2 u_TextureTiling = vec2(1.0);
+uniform vec2 u_TextureOffset = vec2(0.0);
+
+out vec4 FRAGMENT_COLOR;
+
+void main()
+{
+    vec2 texCoords = TRANSFORM_TEX_COORDS(fs_in.TexCoords, u_TextureTiling, u_TextureOffset);
+    FRAGMENT_COLOR = texture(u_DiffuseMap, texCoords) * u_Diffuse;
+}

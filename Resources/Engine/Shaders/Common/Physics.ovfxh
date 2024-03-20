@@ -1,0 +1,14 @@
+bool PointInAABB(vec3 p_Point, vec3 p_AabbCenter, vec3 p_AabbHalfSize)
+{
+    return
+    (
+        p_Point.x > p_AabbCenter.x - p_AabbHalfSize.x && p_Point.x < p_AabbCenter.x + p_AabbHalfSize.x &&
+        p_Point.y > p_AabbCenter.y - p_AabbHalfSize.y && p_Point.y < p_AabbCenter.y + p_AabbHalfSize.y &&
+        p_Point.z > p_AabbCenter.z - p_AabbHalfSize.z && p_Point.z < p_AabbCenter.z + p_AabbHalfSize.z
+    );
+}
+
+bool PointInSphere(vec3 p_Point, vec3 p_SphereCenter, float p_SphereRadius)
+{
+    return distance(p_Point, p_SphereCenter) <= p_SphereRadius;
+}

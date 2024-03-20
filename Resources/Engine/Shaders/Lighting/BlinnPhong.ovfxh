@@ -1,0 +1,106 @@
+#include ":Shaders/Common/Physics.ovfxh"
+#include ":Shaders/Common/Utils.ovfxh"
+#include ":Shaders/Common/Buffers/LightsSSBO.ovfxh"
+
+vec3 BlinnPhong(vec3 p_LightDir, vec3 p_LightColor, float p_Luminosity, vec4 diffuseTexel, vec4 specularTexel, vec3 normal, vec3 viewDir, float shininess)
+{
+    const vec3  halfwayDir          = normalize(p_LightDir + viewDir);
+    const float diffuseCoefficient  = max(dot(normal, p_LightDir), 0.0);
+    const float specularCoefficient = pow(max(dot(normal, halfwayDir), 0.0), shininess * 2.0);
+
+    return p_LightColor * diffuseTexel.rgb * diffuseCoefficient * p_Luminosity + ((p_Luminosity > 0.0) ? (p_LightColor * specularTexel.rgb * specularCoefficient * p_Luminosity) : vec3(0.0));
+}
+
+float LuminosityFromAttenuation(mat4 p_Light, vec3 fragPos)
+{
+    const vec3  lightPosition   = p_Light[0].rgb;
+    const float constant        = p_Light[0][3];
+    const float linear          = p_Light[1][3];
+    const float quadratic       = p_Light[2][3];
+
+    const float distanceToLight = length(lightPosition - fragPos);
+    const float attenuation     = (constant + linear * distanceToLight + quadratic * (distanceToLight * distanceToLight));
+    return 1.0 / attenuation;
+}
+
+vec3 CalcPointLight(mat4 p_Light, vec3 fragPos, vec4 diffuseTexel, vec4 specularTexel, vec3 normal, vec3 viewDir, float shininess)
+{
+    /* Extract light information from light mat4 */
+    const vec3 lightPosition  = p_Light[0].rgb;
+    const vec3 lightColor     = UnPack(p_Light[2][0]);
+    const float intensity     = p_Light[3][3];
+
+    const vec3  lightDirection  = normalize(lightPosition - fragPos);
+    const float luminosity      = LuminosityFromAttenuation(p_Light, fragPos);
+
+    return BlinnPhong(lightDirection, lightColor, intensity * luminosity, diffuseTexel, specularTexel, normal, viewDir, shininess);
+}
+
+vec3 CalcDirectionalLight(mat4 light, vec4 diffuseTexel, vec4 specularTexel, vec3 normal, vec3 viewDir, float shininess)
+{
+    return BlinnPhong(-light[1].rgb, UnPack(light[2][0]), light[3][3], diffuseTexel, specularTexel, normal, viewDir, shininess);
+}
+
+vec3 CalcSpotLight(mat4 p_Light, vec3 fragPos, vec4 diffuseTexel, vec4 specularTexel, vec3 normal, vec3 viewDir, float shininess)
+{
+    /* Extract light information from light mat4 */
+    const vec3  lightPosition   = p_Light[0].rgb;
+    const vec3  lightForward    = p_Light[1].rgb;
+    const vec3  lightColor      = UnPack(p_Light[2][0]);
+    const float intensity       = p_Light[3][3];
+    const float cutOff          = cos(radians(p_Light[3][1]));
+    const float outerCutOff     = cos(radians(p_Light[3][1] + p_Light[3][2]));
+
+    const vec3  lightDirection  = normalize(lightPosition - fragPos);
+    const float luminosity      = LuminosityFromAttenuation(p_Light, fragPos);
+
+    /* Calculate the spot intensity */
+    const float theta           = dot(lightDirection, normalize(-lightForward)); 
+    const float epsilon         = cutOff - outerCutOff;
+    const float spotIntensity   = clamp((theta - outerCutOff) / epsilon, 0.0, 1.0);
+    
+    return BlinnPhong(lightDirection, lightColor, intensity * spotIntensity * luminosity, diffuseTexel, specularTexel, normal, viewDir, shininess);
+}
+
+vec3 CalcAmbientBoxLight(mat4 p_Light, vec3 fragPos, vec4 diffuseTexel)
+{
+    const vec3  lightPosition   = p_Light[0].rgb;
+    const vec3  lightColor      = UnPack(p_Light[2][0]);
+    const float intensity       = p_Light[3][3];
+    const vec3  size            = vec3(p_Light[0][3], p_Light[1][3], p_Light[2][3]);
+
+    return PointInAABB(fragPos, lightPosition, size) ? diffuseTexel.rgb * lightColor * intensity : vec3(0.0);
+}
+
+vec3 CalcAmbientSphereLight(mat4 p_Light, vec3 fragPos, vec4 diffuseTexel)
+{
+    const vec3  lightPosition   = p_Light[0].rgb;
+    const vec3  lightColor      = UnPack(p_Light[2][0]);
+    const float intensity       = p_Light[3][3];
+    const float radius          = p_Light[0][3];
+
+    return PointInSphere(fragPos, lightPosition, radius) ? diffuseTexel.rgb * lightColor * intensity : vec3(0.0);
+}
+
+vec4 BLINN_PHONG(vec2 texCoords, vec3 normal, vec3 viewPos, vec3 fragPos, vec4 diffuse, vec3 specular, sampler2D diffuseMap, sampler2D specularMap, float shininess)
+{
+    vec3 viewDir = normalize(viewPos - fragPos);
+    vec4 diffuseTexel = texture(diffuseMap,  texCoords) * diffuse;
+    vec4 specularTexel = texture(specularMap, texCoords) * vec4(specular, 1.0);
+
+    vec3 lightSum = vec3(0.0);
+
+    for (int i = 0; i < ssbo_Lights.length(); ++i)
+    {
+        switch(int(ssbo_Lights[i][3][0]))
+        {
+            case 0: lightSum += CalcPointLight(ssbo_Lights[i], fragPos, diffuseTexel, specularTexel, normal, viewDir, shininess); break;
+            case 1: lightSum += CalcDirectionalLight(ssbo_Lights[i], diffuseTexel, specularTexel, normal, viewDir, shininess); break;
+            case 2: lightSum += CalcSpotLight(ssbo_Lights[i], fragPos, diffuseTexel, specularTexel, normal, viewDir, shininess); break;
+            case 3: lightSum += CalcAmbientBoxLight(ssbo_Lights[i], fragPos, diffuseTexel); break;
+            case 4: lightSum += CalcAmbientSphereLight(ssbo_Lights[i], fragPos, diffuseTexel); break;
+        }
+    }
+
+    return vec4(lightSum, diffuseTexel.a);
+}
