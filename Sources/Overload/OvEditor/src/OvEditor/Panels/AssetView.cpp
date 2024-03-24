@@ -50,13 +50,13 @@ OvEditor::Panels::AssetView::AssetView
 	m_cameraController.LockTargetActor(*m_assetActor);
 	
 	/* Default Material */
-	m_defaultMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Standard.glsl"]);
+	m_defaultMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Standard.ovfx"]);
 	m_defaultMaterial.Set("u_Diffuse", OvMaths::FVector4(1.f, 1.f, 1.f, 1.f));
 	m_defaultMaterial.Set("u_Shininess", 100.0f);
 	m_defaultMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
 
 	/* Texture Material */
-	m_textureMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
+	m_textureMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.ovfx"]);
 	m_textureMaterial.Set("u_Diffuse", OvMaths::FVector4(1.f, 1.f, 1.f, 1.f));
 	m_textureMaterial.SetBackfaceCulling(false);
 	m_textureMaterial.SetBlendable(true);

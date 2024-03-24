@@ -88,6 +88,7 @@ std::string OvTools::Utils::PathParser::FileTypeToString(EFileType p_fileType)
 	case OvTools::Utils::PathParser::EFileType::MODEL:		return "Model";
 	case OvTools::Utils::PathParser::EFileType::TEXTURE:	return "Texture";
 	case OvTools::Utils::PathParser::EFileType::SHADER:		return "Shader";
+	case OvTools::Utils::PathParser::EFileType::SHADER_PART:return "Shader_Part";
 	case OvTools::Utils::PathParser::EFileType::MATERIAL:	return "Material";
 	case OvTools::Utils::PathParser::EFileType::SOUND:		return "Sound";
 	case OvTools::Utils::PathParser::EFileType::SCENE:		return "Scene";
@@ -105,7 +106,8 @@ OvTools::Utils::PathParser::EFileType OvTools::Utils::PathParser::GetFileType(co
 
 	if (ext == "fbx" || ext == "obj")											return EFileType::MODEL;
 	else if (ext == "png" || ext == "jpeg" || ext == "jpg" || ext == "tga")		return EFileType::TEXTURE;
-	else if (ext == "glsl")														return EFileType::SHADER;
+	else if (ext == "ovfx")														return EFileType::SHADER;
+	else if (ext == "ovfxh")													return EFileType::SHADER_PART;
 	else if (ext == "ovmat")													return EFileType::MATERIAL;
 	else if (ext == "wav" || ext == "mp3" || ext == "ogg")						return EFileType::SOUND;
 	else if (ext == "ovscene")													return EFileType::SCENE;

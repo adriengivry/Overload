@@ -15,11 +15,11 @@
 
 std::string OvRendering::Resources::Loaders::ShaderLoader::__FILE_TRACE;
 
-OvRendering::Resources::Shader* OvRendering::Resources::Loaders::ShaderLoader::Create(const std::string& p_filePath)
+OvRendering::Resources::Shader* OvRendering::Resources::Loaders::ShaderLoader::Create(const std::string& p_filePath, FilePathParserCallback p_pathParser)
 {
 	__FILE_TRACE = p_filePath;
 
-	std::pair<std::string, std::string> source = ParseShader(p_filePath);
+	std::pair<std::string, std::string> source = ParseShader(p_filePath, p_pathParser);
 
 	uint32_t programID = CreateProgram(source.first, source.second);
 
@@ -39,11 +39,11 @@ OvRendering::Resources::Shader* OvRendering::Resources::Loaders::ShaderLoader::C
 	return nullptr;
 }
 
-void OvRendering::Resources::Loaders::ShaderLoader::Recompile(Shader& p_shader, const std::string& p_filePath)
+void OvRendering::Resources::Loaders::ShaderLoader::Recompile(Shader& p_shader, const std::string& p_filePath, FilePathParserCallback p_pathParser)
 {
 	__FILE_TRACE = p_filePath;
 
-	std::pair<std::string, std::string> source = ParseShader(p_filePath);
+	std::pair<std::string, std::string> source = ParseShader(p_filePath, p_pathParser);
 
 	/* Create the new program */
 	uint32_t newProgram = CreateProgram(source.first, source.second);
@@ -82,15 +82,74 @@ bool OvRendering::Resources::Loaders::ShaderLoader::Destroy(Shader*& p_shader)
 	return false;
 }
 
-std::pair<std::string, std::string> OvRendering::Resources::Loaders::ShaderLoader::ParseShader(const std::string& p_filePath)
+bool OvRendering::Resources::Loaders::ShaderLoader::ParseIncludeDirective(const std::string& line, std::string& includeFilePath)
 {
-	std::ifstream stream(p_filePath);
+	// Find the position of the opening and closing quotes
+	size_t start = line.find("\"");
+	size_t end = line.find("\"", start + 1);
 
-	enum class ShaderType { NONE = -1, VERTEX = 0, FRAGMENT = 1 };
+	// Check if both quotes are found
+	if (start != std::string::npos && end != std::string::npos && end > start)
+	{
+		// Extract the included file path
+		includeFilePath = line.substr(start + 1, end - start - 1);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
+std::string OvRendering::Resources::Loaders::ShaderLoader::LoadShader(const std::string& p_filePath, FilePathParserCallback p_pathParser)
+{
+	std::ifstream file(p_filePath);
+
+	if (!file.is_open())
+	{
+		OVLOG_ERROR("Error: Could not open shader file - " + p_filePath);
+		return "";
+	}
+
+	std::stringstream buffer;
 	std::string line;
 
+	while (std::getline(file, line))
+	{
+		if (line.find("#include") != std::string::npos)
+		{
+			// If the line contains #include, process the included file
+			std::string includeFilePath;
+			if (ParseIncludeDirective(line, includeFilePath))
+			{
+				// Recursively load the included file
+				const std::string realIncludeFilePath = p_pathParser ? p_pathParser(includeFilePath) : includeFilePath;
+				std::string includedShader = LoadShader(realIncludeFilePath, p_pathParser);
+				buffer << includedShader << std::endl;
+			}
+			else
+			{
+				OVLOG_ERROR("Error: Invalid #include directive in file - " + p_filePath);
+			}
+		}
+		else {
+			// If the line does not contain #include, just append it to the buffer
+			buffer << line << std::endl;
+		}
+	}
+
+	return buffer.str();
+}
+
+std::pair<std::string, std::string> OvRendering::Resources::Loaders::ShaderLoader::ParseShader(const std::string& p_filePath, FilePathParserCallback p_pathParser)
+{
+	const std::string shaderCode = LoadShader(p_filePath, p_pathParser);
+
+	std::istringstream stream(shaderCode);  // Add this line to create a stringstream from shaderCode
+	std::string line;
 	std::stringstream ss[2];
+
+	enum class ShaderType { NONE = -1, VERTEX = 0, FRAGMENT = 1 };
 
 	ShaderType type = ShaderType::NONE;
 
@@ -98,8 +157,10 @@ std::pair<std::string, std::string> OvRendering::Resources::Loaders::ShaderLoade
 	{
 		if (line.find("#shader") != std::string::npos)
 		{
-			if (line.find("vertex") != std::string::npos)			type = ShaderType::VERTEX;
-			else if (line.find("fragment") != std::string::npos)	type = ShaderType::FRAGMENT;
+			if (line.find("vertex") != std::string::npos)
+				type = ShaderType::VERTEX;
+			else if (line.find("fragment") != std::string::npos)
+				type = ShaderType::FRAGMENT;
 		}
 		else if (type != ShaderType::NONE)
 		{
@@ -107,8 +168,8 @@ std::pair<std::string, std::string> OvRendering::Resources::Loaders::ShaderLoade
 		}
 	}
 
-	return 
-	{ 
+	return
+	{
 		ss[static_cast<int>(ShaderType::VERTEX)].str(),
 		ss[static_cast<int>(ShaderType::FRAGMENT)].str()
 	};

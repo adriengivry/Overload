@@ -1,0 +1,160 @@
+#include ":Shaders/Common/Physics.ovfxh"
+#include ":Shaders/Common/Utils.ovfxh"
+#include ":Shaders/Common/Constants.ovfxh"
+#include ":Shaders/Common/Buffers/LightsSSBO.ovfxh"
+#include ":Shaders/Lighting/Shared.ovfxh"
+
+float DistributionGGX(vec3 N, vec3 H, float roughness)
+{
+    float a = roughness * roughness;
+    float a2 = a * a;
+    float NdotH  = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH * NdotH;
+	
+    float num = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
+	
+    return num / denom;
+}
+
+float GeometrySchlickGGX(float NdotV, float roughness)
+{
+    float r = (roughness + 1.0);
+    float k = (r * r) / 8.0;
+
+    float num = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
+	
+    return num / denom;
+}
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+{
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+	
+    return ggx1 * ggx2;
+}
+
+vec3 FresnelSchlick(float cosTheta, vec3 F0)
+{
+    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+}  
+
+vec3 ComputeAmbientBoxLight(mat4 light, vec3 fragPos)
+{
+    const vec3 lightPosition = light[0].rgb;
+    const vec3 lightColor = UnPack(light[2][0]);
+    const float intensity = light[3][3];
+    const vec3 size = vec3(light[0][3], light[1][3], light[2][3]);
+
+    return IsPointInAABB(fragPos, lightPosition, size) ? lightColor * intensity : vec3(0.0);
+}
+
+vec3 ComputeAmbientSphereLight(mat4 light, vec3 fragPos)
+{
+    const vec3 lightPosition = light[0].rgb;
+    const vec3 lightColor = UnPack(light[2][0]);
+    const float intensity = light[3][3];
+    const float radius = light[0][3];
+
+    return IsPointInSphere(fragPos, lightPosition, radius) ? lightColor * intensity : vec3(0.0);
+}
+
+vec4 ComputePBRLighting(vec2 texCoords, vec3 normal, vec3 viewPos, vec3 fragPos, vec4 inAlbedo, float inMetallic, float inRoughness, sampler2D albedoMap, sampler2D metallicMap, sampler2D roughnessMap, sampler2D aoMap)
+{
+    vec4 albedoRGBA = texture(albedoMap, texCoords) * inAlbedo;
+    vec3 albedo = pow(albedoRGBA.rgb, vec3(2.2));
+    float metallic = texture(metallicMap, texCoords).r * inMetallic;
+    float roughness = texture(roughnessMap, texCoords).r * inRoughness;
+    float ao = texture(aoMap, texCoords).r;
+    
+    vec3 N = normalize(normal);
+    vec3 V = normalize(viewPos - fragPos);
+
+    vec3 F0 = vec3(0.04); 
+    F0 = mix(F0, albedo, metallic);
+	           
+    // reflectance equation
+    vec3 Lo = vec3(0.0);
+    vec3 ambientSum = vec3(0.0);
+
+    for (int i = 0; i < ssbo_Lights.length(); ++i) 
+    {
+        const mat4 light = ssbo_Lights[i];
+        const int lightType = int(light[3][0]);
+
+        if (lightType == 3)
+        {
+            ambientSum += ComputeAmbientBoxLight(light, fragPos);
+        }
+        else if (lightType == 4)
+        {
+            ambientSum += ComputeAmbientSphereLight(light, fragPos);
+        }
+        else
+        {
+            // calculate per-light radiance
+            vec3 L = lightType == 1 ? -light[1].rgb : normalize(light[0].rgb - fragPos);
+            vec3 H = normalize(V + L);
+            float distance = length(light[0].rgb - fragPos);
+            float lightCoeff = 0.0;
+
+            switch(int(light[3][0]))
+            {
+                case 0:
+                    lightCoeff = LuminosityFromAttenuation(light, fragPos) * light[3][3];
+                    break;
+
+                case 1:
+                    lightCoeff = light[3][3];
+                    break;
+
+                case 2:
+                    const vec3 lightForward = light[1].rgb;
+                    const float cutOff = cos(radians(light[3][1]));
+                    const float outerCutOff = cos(radians(light[3][1] + light[3][2]));
+
+                    const vec3 lightDirection = normalize(light[0].rgb - fragPos);
+                    const float luminosity = LuminosityFromAttenuation(light, fragPos);
+
+                    /* Calculate the spot intensity */
+                    const float theta = dot(lightDirection, normalize(-lightForward)); 
+                    const float epsilon = cutOff - outerCutOff;
+                    const float spotIntensity = clamp((theta - outerCutOff) / epsilon, 0.0, 1.0);
+
+                    lightCoeff = luminosity * spotIntensity * light[3][3];
+                    break;
+            }
+
+            vec3 radiance = UnPack(light[2][0]) * lightCoeff;        
+            
+            // cook-torrance brdf
+            float NDF = DistributionGGX(N, H, roughness);        
+            float G = GeometrySmith(N, V, L, roughness);      
+            vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);       
+            
+            vec3 kS = F;
+            vec3 kD = vec3(1.0) - kS;
+            kD *= 1.0 - metallic;	  
+            
+            vec3 numerator = NDF * G * F;
+            float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+            vec3 specular = numerator / max(denominator, 0.001);  
+                
+            // add to outgoing radiance Lo
+            float NdotL = max(dot(N, L), 0.0);                
+            Lo += (kD * albedo / PI + specular) * radiance * NdotL; 
+        }
+    }
+
+    vec3 ambient = ambientSum * albedo * ao;
+    vec3 color = ambient + Lo;
+	
+    color = color / (color + vec3(1.0));
+    color = pow(color, vec3(1.0/2.2));  
+   
+    return vec4(color, albedoRGBA.a);
+}

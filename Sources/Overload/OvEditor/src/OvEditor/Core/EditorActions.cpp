@@ -625,14 +625,16 @@ bool OvEditor::Core::EditorActions::ImportAsset(const std::string& p_initialDest
 
 	std::string modelFormats = "*.fbx;*.obj;";
 	std::string textureFormats = "*.png;*.jpeg;*.jpg;*.tga";
-	std::string shaderFormats = "*.glsl;";
+	std::string shaderFormats = "*.ovfx";
+	std::string shaderPartFormats = "*.ovfxh";
 	std::string soundFormats = "*.mp3;*.ogg;*.wav;";
 
 	OpenFileDialog selectAssetDialog("Select an asset to import");
 	selectAssetDialog.AddFileType("Any supported format", modelFormats + textureFormats + shaderFormats + soundFormats);
 	selectAssetDialog.AddFileType("Model (.fbx, .obj)", modelFormats);
 	selectAssetDialog.AddFileType("Texture (.png, .jpeg, .jpg, .tga)", textureFormats);
-	selectAssetDialog.AddFileType("Shader (.glsl)", shaderFormats);
+	selectAssetDialog.AddFileType("Shader (.ovfx)", shaderFormats);
+	selectAssetDialog.AddFileType("Shader Parts (.ovfxh)", shaderPartFormats);
 	selectAssetDialog.AddFileType("Sound (.mp3, .ogg, .wav)", soundFormats);
 	selectAssetDialog.Show();
 
@@ -669,14 +671,16 @@ bool OvEditor::Core::EditorActions::ImportAssetAtLocation(const std::string& p_d
 
 	std::string modelFormats = "*.fbx;*.obj;";
 	std::string textureFormats = "*.png;*.jpeg;*.jpg;*.tga;";
-	std::string shaderFormats = "*.glsl;";
+	std::string shaderFormats = "*.ovfx";
+	std::string shaderPartFormats = "*.ovfxh";
 	std::string soundFormats = "*.mp3;*.ogg;*.wav;";
 
 	OpenFileDialog selectAssetDialog("Select an asset to import");
 	selectAssetDialog.AddFileType("Any supported format", modelFormats + textureFormats + shaderFormats + soundFormats);
 	selectAssetDialog.AddFileType("Model (.fbx, .obj)", modelFormats);
 	selectAssetDialog.AddFileType("Texture (.png, .jpeg, .jpg, .tga)", textureFormats);
-	selectAssetDialog.AddFileType("Shader (.glsl)", shaderFormats);
+	selectAssetDialog.AddFileType("Shader (.ovfx)", shaderFormats);
+	selectAssetDialog.AddFileType("Shader Parts (.ovfxh)", shaderPartFormats);
 	selectAssetDialog.AddFileType("Sound (.mp3, .ogg, .wav)", soundFormats);
 	selectAssetDialog.Show();
 

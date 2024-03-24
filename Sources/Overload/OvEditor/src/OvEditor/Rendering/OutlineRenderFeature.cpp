@@ -20,14 +20,14 @@ OvEditor::Rendering::OutlineRenderFeature::OutlineRenderFeature(OvRendering::Cor
 	OvRendering::Features::ARenderFeature(p_renderer)
 {
 	/* Stencil Fill Material */
-	m_stencilFillMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
+	m_stencilFillMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.ovfx"]);
 	m_stencilFillMaterial.SetBackfaceCulling(true);
 	m_stencilFillMaterial.SetDepthTest(false);
 	m_stencilFillMaterial.SetColorWriting(false);
 	m_stencilFillMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
 
 	/* Outline Material */
-	m_outlineMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
+	m_outlineMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.ovfx"]);
 	m_outlineMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
 	m_outlineMaterial.SetDepthTest(false);
 }

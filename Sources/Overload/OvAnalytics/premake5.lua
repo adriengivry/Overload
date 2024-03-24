@@ -2,7 +2,7 @@ project "OvAnalytics"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
-	files { "**.h", "**.inl", "**.cpp" }
+	files { "**.h", "**.inl", "**.cpp", "**.lua" }
 	includedirs { "include" }
 	targetdir (outputdir .. "%{cfg.buildcfg}/%{prj.name}")
 	objdir (objoutdir .. "%{cfg.buildcfg}/%{prj.name}")

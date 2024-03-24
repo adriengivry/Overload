@@ -27,7 +27,7 @@ OvEditor::Rendering::PickingRenderPass::PickingRenderPass(OvRendering::Core::Com
 	m_gizmoPickingMaterial.Set("u_IsPickable", true);
 
 	/* Picking Material */
-	m_actorPickingMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.glsl"]);
+	m_actorPickingMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Unlit.ovfx"]);
 	m_actorPickingMaterial.Set("u_Diffuse", OvMaths::FVector4(1.f, 1.f, 1.f, 1.0f));
 	m_actorPickingMaterial.Set<OvRendering::Resources::Texture*>("u_DiffuseMap", nullptr);
 	m_actorPickingMaterial.SetFrontfaceCulling(false);

@@ -1,0 +1,9 @@
+layout (std140) uniform EngineUBO
+{
+    mat4    ubo_Model;
+    mat4    ubo_View;
+    mat4    ubo_Projection;
+    vec3    ubo_ViewPos;
+    float   ubo_Time;
+    mat4    ubo_UserMatrix;
+};
