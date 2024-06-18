@@ -203,7 +203,10 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 
 		auto [winWidth, winHeight] = GetSafeSize();
 
-		m_gizmoOperations.SetCurrentMouse({ static_cast<float>(mousePosition.first), static_cast<float>(mousePosition.second) });
+		ImVec2 globalMousePos = ImGui::GetMousePos();
+		ImVec2 relativeMousePos = ImVec2(globalMousePos.x - m_position.x, globalMousePos.y - m_position.y);
+
+		m_gizmoOperations.SetCurrentMouse({ (relativeMousePos.x), (relativeMousePos.y) });
 		m_gizmoOperations.ApplyOperation(m_camera.GetViewMatrix(), m_camera.GetProjectionMatrix(), { static_cast<float>(winWidth), static_cast<float>(winHeight) });
 	}
 }

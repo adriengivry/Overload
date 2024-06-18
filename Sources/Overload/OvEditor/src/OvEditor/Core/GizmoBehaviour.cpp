@@ -108,22 +108,67 @@ OvMaths::FVector2 OvEditor::Core::GizmoBehaviour::GetScreenDirection(const OvMat
 	return OvMaths::FVector2::Normalize(result);
 }
 
-void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
+void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize)
 {
-	auto unitsPerPixel = 0.001f * m_distanceToActor;
 	auto originPosition = m_originalTransform.GetWorldPosition();
+	auto realDirection = GetRealDirection(true);
 
-	auto screenDirection = GetScreenDirection(p_viewMatrix, p_projectionMatrix, p_viewSize);
+	OvMaths::FVector3 initialWorldPosition = RaycastToAxis(p_viewMatrix, p_projectionMatrix, p_viewSize, realDirection, m_originMouse);
+	OvMaths::FVector3 newWorldPosition     = RaycastToAxis(p_viewMatrix, p_projectionMatrix, p_viewSize, realDirection, m_currentMouse);
 
-	auto totalDisplacement = m_currentMouse - m_originMouse;
-	auto translationCoefficient = OvMaths::FVector2::Dot(totalDisplacement, screenDirection) * unitsPerPixel;
+	OvMaths::FVector3 displacement = newWorldPosition - initialWorldPosition;
+
+	float translationCoefficient = OvMaths::FVector3::Dot(displacement, realDirection);
 
 	if (IsSnappedBehaviourEnabled())
 	{
 		translationCoefficient = SnapValue(translationCoefficient, OvEditor::Settings::EditorSettings::TranslationSnapUnit);
 	}
 
-	m_target->transform.SetWorldPosition(originPosition + GetRealDirection(true) * translationCoefficient);
+	m_target->transform.SetWorldPosition(originPosition + realDirection * translationCoefficient);
+}
+
+OvMaths::FVector3 OvEditor::Core::GizmoBehaviour::RaycastToAxis(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize, const OvMaths::FVector3& p_axisDirection, const OvMaths::FVector2& p_mousePosition) const
+{
+	OvMaths::FVector2 ndcMouse;
+	ndcMouse.x = (p_mousePosition.x / p_viewSize.x) * 2.0f - 1.0f;
+	ndcMouse.y = 1.0f - (p_mousePosition.y / p_viewSize.y) * 2.0f;
+
+	OvMaths::FVector4 rayStartNDC(ndcMouse.x, ndcMouse.y, 0.0f, 1.0f);
+	OvMaths::FVector4 rayEndNDC(ndcMouse.x, ndcMouse.y, 1.0f, 1.0f);
+
+	OvMaths::FMatrix4 invProjection = OvMaths::FMatrix4::Inverse(p_projectionMatrix);
+	OvMaths::FMatrix4 invView       = OvMaths::FMatrix4::Inverse(p_viewMatrix);
+
+	OvMaths::FVector4 rayStartWorld = invView * invProjection * rayStartNDC;
+	OvMaths::FVector4 rayEndWorld   = invView * invProjection * rayEndNDC;
+
+	rayStartWorld /= rayStartWorld.w;
+	rayEndWorld   /= rayEndWorld.w;
+
+	OvMaths::FVector3 rayOrigin(rayStartWorld.x, rayStartWorld.y, rayStartWorld.z);
+	OvMaths::FVector3 rayEnd = OvMaths::FVector3(rayEndWorld.x, rayEndWorld.y, rayEndWorld.z) - rayOrigin;
+
+	OvMaths::FVector3 diff = rayOrigin - m_originalTransform.GetWorldPosition();
+	OvMaths::FVector3 crossRayEnd = OvMaths::FVector3::Cross(rayEnd, p_axisDirection);
+	OvMaths::FVector3 crossDiff = OvMaths::FVector3::Cross(diff, p_axisDirection);
+	
+	float t = OvMaths::FVector3::Length(crossDiff) / OvMaths::FVector3::Length(crossRayEnd);
+
+	return rayEnd * t;
+}
+
+OvMaths::FVector3 OvEditor::Core::GizmoBehaviour::IntersectRayWithAxis(const OvMaths::FVector3& rayOrigin,
+	const OvMaths::FVector3& rayDirection, const OvMaths::FVector3& axisOrigin,
+	const OvMaths::FVector3& axisDirection) const
+{
+	OvMaths::FVector3 diff = rayOrigin - axisOrigin;
+	OvMaths::FVector3 crossRD = OvMaths::FVector3::Cross(rayDirection, axisDirection);
+	OvMaths::FVector3 crossDiffD = OvMaths::FVector3::Cross(diff, axisDirection);
+
+	float t = OvMaths::FVector3::Length(crossDiffD) / OvMaths::FVector3::Length(crossRD);
+	
+	return rayDirection * t;
 }
 
 void OvEditor::Core::GizmoBehaviour::ApplyRotation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
@@ -195,6 +240,7 @@ void OvEditor::Core::GizmoBehaviour::SetCurrentMouse(const OvMaths::FVector2& p_
 	{
 		m_currentMouse = m_originMouse = p_mousePosition;
 		m_firstMouse = false;
+		
 	}
 	else
 	{

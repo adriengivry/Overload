@@ -94,13 +94,17 @@ namespace OvEditor::Core
 		*/
 		OvMaths::FVector2 GetScreenDirection(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const;
 
+		OvMaths::FVector3 IntersectRayWithAxis(const OvMaths::FVector3& rayOrigin, const OvMaths::FVector3& rayDirection, const OvMaths::FVector3& axisOrigin, const OvMaths::FVector3& axisDirection) const;
+		OvMaths::FVector3 RaycastToAxis(const OvMaths::FMatrix4& viewMatrix,
+			const OvMaths::FMatrix4& projectionMatrix, const OvMaths::FVector2& viewSize,
+			const OvMaths::FVector3& axisDirection, const OvMaths::FVector2& mousePosition) const;
 		/**
 		* Handle the translation behaviour
 		* @param p_viewMatrix
 		* @param p_projectionMatrix
 		* @param p_viewSize
 		*/
-		void ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const;
+		void ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize);
 
 		/**
 		* Handle the rotation behaviour
