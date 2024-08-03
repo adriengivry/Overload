@@ -148,14 +148,14 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 		m_firstPick = false;
 	}
 
-	auto test = point - planePoint + m_initialOffset;
+	auto translationVector = point - planePoint + m_initialOffset;
 
 	if (IsSnappedBehaviourEnabled())
 	{
-		test = SnapValue(test, OvEditor::Settings::EditorSettings::TranslationSnapUnit);
+		translationVector = SnapValue(translationVector, OvEditor::Settings::EditorSettings::TranslationSnapUnit);
 	}
 
-	OvMaths::FVector3 projectedPoint = planePoint + direction * OvMaths::FVector3::Dot(test, direction);
+	OvMaths::FVector3 projectedPoint = planePoint + direction * OvMaths::FVector3::Dot(translationVector, direction);
 
 	m_target->transform.SetWorldPosition(projectedPoint);
 }
