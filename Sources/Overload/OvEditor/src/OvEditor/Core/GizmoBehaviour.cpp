@@ -114,19 +114,19 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 {
 	auto ray = GetMouseRay(m_currentMouse, p_viewMatrix, p_projectionMatrix, p_viewSize);
 
-	const OvMaths::FVector3 plane_tangent = OvMaths::FVector3::Cross(GetRealDirection(true), m_target->transform.GetWorldPosition() - m_cameraPosition);
-	const OvMaths::FVector3 plane_normal = OvMaths::FVector3::Cross(GetRealDirection(true), plane_tangent);
+	const OvMaths::FVector3 planeTangent = OvMaths::FVector3::Cross(GetRealDirection(true), m_target->transform.GetWorldPosition() - m_cameraPosition);
+	const OvMaths::FVector3 planeNormal = OvMaths::FVector3::Cross(GetRealDirection(true), planeTangent);
 
 	OvMaths::FVector3 direction = GetRealDirection(true);
 
-	const OvMaths::FVector3 plane_point = m_originalTransform.GetWorldPosition();
+	const OvMaths::FVector3 planePoint = m_originalTransform.GetWorldPosition();
 
-	const float denom = OvMaths::FVector3::Dot(ray.second, plane_normal);
+	const float denom = OvMaths::FVector3::Dot(ray.second, planeNormal);
 
 	if (std::abs(denom) == 0)
 		return;
 
-	const float t = OvMaths::FVector3::Dot(plane_point - ray.first, plane_normal) / denom;
+	const float t = OvMaths::FVector3::Dot(planePoint - ray.first, planeNormal) / denom;
 
 	if (t < 0)
 		return;
@@ -139,9 +139,9 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 		m_firstPick = false;
 	}
 
-	OvMaths::FVector3 projected_point = plane_point + direction * OvMaths::FVector3::Dot(point - plane_point + m_initialOffset, direction);
+	OvMaths::FVector3 projectedPoint = planePoint + direction * OvMaths::FVector3::Dot(point - planePoint + m_initialOffset, direction);
 
-	m_target->transform.SetWorldPosition(projected_point);
+	m_target->transform.SetWorldPosition(projectedPoint);
 }
 
 void OvEditor::Core::GizmoBehaviour::ApplyRotation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
@@ -230,25 +230,23 @@ OvEditor::Core::GizmoBehaviour::EDirection OvEditor::Core::GizmoBehaviour::GetDi
 	return m_direction;
 }
 
-std::pair<OvMaths::FVector3, OvMaths::FVector3> OvEditor::Core::GizmoBehaviour::GetMouseRay(
-	const OvMaths::FVector2& mousePos, const OvMaths::FMatrix4& viewMatrix, const OvMaths::FMatrix4& projectionMatrix,
-	const OvMaths::FVector2& viewSize)
+std::pair<OvMaths::FVector3, OvMaths::FVector3> OvEditor::Core::GizmoBehaviour::GetMouseRay(const OvMaths::FVector2& p_mousePos, const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize)
 {
 	OvMaths::FVector4 rayStartNDC(
-		(mousePos.x / viewSize.x - 0.5f) * 2.0f,
-		(mousePos.y / viewSize.y - 0.5f) * -2.0f,
+		(p_mousePos.x / p_viewSize.x - 0.5f) * 2.0f,
+		(p_mousePos.y / p_viewSize.y - 0.5f) * -2.0f,
 		-1.0,
 		1.0f
 	);
 	OvMaths::FVector4 rayEndNDC(
-		(mousePos.x / viewSize.x - 0.5f) * 2.0f,
-		(mousePos.y / viewSize.y - 0.5f) * -2.0f,
+		(p_mousePos.x / p_viewSize.x - 0.5f) * 2.0f,
+		(p_mousePos.y / p_viewSize.y - 0.5f) * -2.0f,
 		0.0,
 		1.0f
 	);
 
-	OvMaths::FMatrix4 inverseProj = OvMaths::FMatrix4::Inverse(projectionMatrix);
-	OvMaths::FMatrix4 inverseView = OvMaths::FMatrix4::Inverse(viewMatrix);
+	OvMaths::FMatrix4 inverseProj = OvMaths::FMatrix4::Inverse(p_projectionMatrix);
+	OvMaths::FMatrix4 inverseView = OvMaths::FMatrix4::Inverse(p_viewMatrix);
 
 	OvMaths::FVector4 rayStartWorld = inverseView * inverseProj * rayStartNDC;
 	rayStartWorld /= rayStartWorld.w;

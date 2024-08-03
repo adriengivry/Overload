@@ -77,7 +77,7 @@ namespace OvEditor::Core
 		/**
 		* Returns the mouse origine and direction in World Space
 		*/
-		std::pair<OvMaths::FVector3, OvMaths::FVector3> GetMouseRay(const OvMaths::FVector2& mousePos, const OvMaths::FMatrix4& viewMatrix, const OvMaths::FMatrix4& projectionMatrix, const OvMaths::FVector2& viewSize);
+		std::pair<OvMaths::FVector3, OvMaths::FVector3> GetMouseRay(const OvMaths::FVector2& p_mousePos, const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize);
 
 	private:
 		/**
