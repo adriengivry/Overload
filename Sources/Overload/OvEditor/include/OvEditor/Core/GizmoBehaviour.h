@@ -74,6 +74,11 @@ namespace OvEditor::Core
 		*/
 		EDirection GetDirection() const;
 
+		/**
+		* Returns the mouse origine and direction in World Space
+		*/
+		std::pair<OvMaths::FVector3, OvMaths::FVector3> GetMouseRay(const OvMaths::FVector2& mousePos, const OvMaths::FMatrix4& viewMatrix, const OvMaths::FMatrix4& projectionMatrix, const OvMaths::FVector2& viewSize);
+
 	private:
 		/**
 		* Returns the global direction matching with the current m_direction
@@ -124,11 +129,14 @@ namespace OvEditor::Core
 
 	private:
 		bool m_firstMouse = true;
+		bool m_firstPick = true;
 		float m_distanceToActor = 0.0f;
 		OvCore::ECS::Actor* m_target = nullptr;
 		EGizmoOperation m_currentOperation;
 		EDirection m_direction;
 		OvMaths::FTransform m_originalTransform;
+		OvMaths::FVector3 m_cameraPosition;
+		OvMaths::FVector3 m_initialOffset;
 		OvMaths::FVector2 m_originMouse;
 		OvMaths::FVector2 m_currentMouse;
 		OvMaths::FVector2 m_screenDirection;

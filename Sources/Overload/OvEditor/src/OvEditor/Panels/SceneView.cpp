@@ -199,8 +199,6 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 
 	if (m_gizmoOperations.IsPicking())
 	{
-		auto mousePosition = EDITOR_CONTEXT(inputManager)->GetMousePosition();
-
 		auto [winWidth, winHeight] = GetSafeSize();
 
 		ImVec2 globalMousePos = ImGui::GetMousePos();
