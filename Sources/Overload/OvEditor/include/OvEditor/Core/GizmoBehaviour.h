@@ -75,7 +75,7 @@ namespace OvEditor::Core
 		EDirection GetDirection() const;
 
 		/**
-		* Returns the mouse origine and direction in World Space
+		* Returns the mouse origin and direction in World Space
 		*/
 		std::pair<OvMaths::FVector3, OvMaths::FVector3> GetMouseRay(const OvMaths::FVector2& p_mousePos, const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize);
 

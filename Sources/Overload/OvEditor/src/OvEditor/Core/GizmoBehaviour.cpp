@@ -13,6 +13,15 @@ float SnapValue(float p_value, float p_step)
 	return p_value - std::fmod(p_value, p_step);
 }
 
+OvMaths::FVector3 SnapValue(OvMaths::FVector3 p_value, float p_step)
+{
+	OvMaths::FVector3 result;
+	result.x = floor(p_value.x / p_step) * p_step;
+	result.y = floor(p_value.y / p_step) * p_step;
+	result.z = floor(p_value.z / p_step) * p_step;
+	return result;
+}
+
 bool OvEditor::Core::GizmoBehaviour::IsSnappedBehaviourEnabled() const
 {
 	using namespace OvWindowing::Inputs;
@@ -119,16 +128,16 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 
 	OvMaths::FVector3 direction = GetRealDirection(true);
 
-	const OvMaths::FVector3 planePoint = m_originalTransform.GetWorldPosition();
+	OvMaths::FVector3 planePoint = m_originalTransform.GetWorldPosition();
 
 	const float denom = OvMaths::FVector3::Dot(ray.second, planeNormal);
 
-	if (std::abs(denom) == 0)
+	if (std::abs(denom) <= 0.001f)
 		return;
 
 	const float t = OvMaths::FVector3::Dot(planePoint - ray.first, planeNormal) / denom;
 
-	if (t < 0)
+	if (t <= 0.001f)
 		return;
 
 	OvMaths::FVector3 point = ray.first + ray.second * t;
@@ -139,7 +148,14 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 		m_firstPick = false;
 	}
 
-	OvMaths::FVector3 projectedPoint = planePoint + direction * OvMaths::FVector3::Dot(point - planePoint + m_initialOffset, direction);
+	auto test = point - planePoint + m_initialOffset;
+
+	if (IsSnappedBehaviourEnabled())
+	{
+		test = SnapValue(test, OvEditor::Settings::EditorSettings::TranslationSnapUnit);
+	}
+
+	OvMaths::FVector3 projectedPoint = planePoint + direction * OvMaths::FVector3::Dot(test, direction);
 
 	m_target->transform.SetWorldPosition(projectedPoint);
 }
