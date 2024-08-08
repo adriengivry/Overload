@@ -39,7 +39,6 @@ void OvEditor::Core::GizmoBehaviour::StartPicking(OvCore::ECS::Actor& p_target, 
 	m_distanceToActor = OvMaths::FVector3::Distance(p_cameraPosition, m_target->transform.GetWorldPosition());
 	m_currentOperation = p_operation;
 	m_direction = p_direction;
-	m_cameraPosition = p_cameraPosition;
 }
 
 void OvEditor::Core::GizmoBehaviour::StopPicking()
@@ -119,11 +118,11 @@ OvMaths::FVector2 OvEditor::Core::GizmoBehaviour::GetScreenDirection(const OvMat
 	return OvMaths::FVector2::Normalize(result);
 }
 
-void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize)
+void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector3& p_cameraPosition, const OvMaths::FVector2& p_viewSize)
 {
 	auto ray = GetMouseRay(m_currentMouse, p_viewMatrix, p_projectionMatrix, p_viewSize);
 
-	const OvMaths::FVector3 planeTangent = OvMaths::FVector3::Cross(GetRealDirection(true), m_target->transform.GetWorldPosition() - m_cameraPosition);
+	const OvMaths::FVector3 planeTangent = OvMaths::FVector3::Cross(GetRealDirection(true), m_target->transform.GetWorldPosition() - p_cameraPosition);
 	const OvMaths::FVector3 planeNormal = OvMaths::FVector3::Cross(GetRealDirection(true), planeTangent);
 
 	OvMaths::FVector3 direction = GetRealDirection(true);
@@ -205,12 +204,12 @@ void OvEditor::Core::GizmoBehaviour::ApplyScale(const OvMaths::FMatrix4& p_viewM
 	m_target->transform.SetWorldScale(newScale);
 }
 
-void OvEditor::Core::GizmoBehaviour::ApplyOperation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize)
+void OvEditor::Core::GizmoBehaviour::ApplyOperation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector3& p_cameraPosition, const OvMaths::FVector2& p_viewSize)
 {
 	switch (m_currentOperation)
 	{
 	case EGizmoOperation::TRANSLATE:
-		ApplyTranslation(p_viewMatrix, p_projectionMatrix, p_viewSize);
+		ApplyTranslation(p_viewMatrix, p_projectionMatrix, p_cameraPosition, p_viewSize);
 		break;
 
 	case EGizmoOperation::ROTATE:

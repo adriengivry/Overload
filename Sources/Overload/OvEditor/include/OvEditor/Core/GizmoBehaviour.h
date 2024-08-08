@@ -54,9 +54,10 @@ namespace OvEditor::Core
 		* Handle the current behaviour
 		* @param p_viewMatrix
 		* @param p_projectionMatrix
+		* @param p_cameraPosition
 		* @param p_viewSize
 		*/
-		void ApplyOperation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize);
+		void ApplyOperation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector3& p_cameraPosition, const OvMaths::FVector2& p_viewSize);
 
 		/**
 		* Set the given mouse position as the current mouse position and update the previous mouse position
@@ -107,9 +108,10 @@ namespace OvEditor::Core
 		* Handle the translation behaviour
 		* @param p_viewMatrix
 		* @param p_projectionMatrix
+		* @param p_cameraPosition
 		* @param p_viewSize
 		*/
-		void ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize);
+		void ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector3& p_cameraPosition, const OvMaths::FVector2& p_viewSize);
 
 		/**
 		* Handle the rotation behaviour
@@ -135,7 +137,6 @@ namespace OvEditor::Core
 		EGizmoOperation m_currentOperation;
 		EDirection m_direction;
 		OvMaths::FTransform m_originalTransform;
-		OvMaths::FVector3 m_cameraPosition;
 		OvMaths::FVector3 m_initialOffset;
 		OvMaths::FVector2 m_originMouse;
 		OvMaths::FVector2 m_currentMouse;
