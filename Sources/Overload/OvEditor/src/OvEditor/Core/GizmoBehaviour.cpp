@@ -120,7 +120,7 @@ OvMaths::FVector2 OvEditor::Core::GizmoBehaviour::GetScreenDirection(const OvMat
 
 void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector3& p_cameraPosition, const OvMaths::FVector2& p_viewSize)
 {
-	auto ray = GetMouseRay(m_currentMouse, p_viewMatrix, p_projectionMatrix, p_viewSize);
+	auto ray = GetMouseRay(m_currentMouse, p_viewMatrix, p_projectionMatrix, p_cameraPosition, p_viewSize);
 
 	const OvMaths::FVector3 planeTangent = OvMaths::FVector3::Cross(GetRealDirection(true), m_target->transform.GetWorldPosition() - p_cameraPosition);
 	const OvMaths::FVector3 planeNormal = OvMaths::FVector3::Cross(GetRealDirection(true), planeTangent);
@@ -245,31 +245,20 @@ OvEditor::Core::GizmoBehaviour::EDirection OvEditor::Core::GizmoBehaviour::GetDi
 	return m_direction;
 }
 
-std::pair<OvMaths::FVector3, OvMaths::FVector3> OvEditor::Core::GizmoBehaviour::GetMouseRay(const OvMaths::FVector2& p_mousePos, const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize)
+std::pair<OvMaths::FVector3, OvMaths::FVector3> OvEditor::Core::GizmoBehaviour::GetMouseRay(const OvMaths::FVector2& p_mousePos, const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector3& p_cameraPosition, const OvMaths::FVector2& p_viewSize)
 {
-	OvMaths::FVector4 rayStartNDC(
-		(p_mousePos.x / p_viewSize.x - 0.5f) * 2.0f,
-		(p_mousePos.y / p_viewSize.y - 0.5f) * -2.0f,
-		-1.0,
-		1.0f
-	);
-	OvMaths::FVector4 rayEndNDC(
-		(p_mousePos.x / p_viewSize.x - 0.5f) * 2.0f,
-		(p_mousePos.y / p_viewSize.y - 0.5f) * -2.0f,
-		0.0,
-		1.0f
-	);
+	float x = 2.0f * (p_mousePos.x / p_viewSize.x) - 1.0f;
+	float y = 1.0f - 2.0f * (p_mousePos.y / p_viewSize.y);
 
-	OvMaths::FMatrix4 inverseProj = OvMaths::FMatrix4::Inverse(p_projectionMatrix);
+	OvMaths::FMatrix4 inverseProjection = OvMaths::FMatrix4::Inverse(p_projectionMatrix);
 	OvMaths::FMatrix4 inverseView = OvMaths::FMatrix4::Inverse(p_viewMatrix);
 
-	OvMaths::FVector4 rayStartWorld = inverseView * inverseProj * rayStartNDC;
-	rayStartWorld /= rayStartWorld.w;
-	OvMaths::FVector4 rayEndWorld = inverseView * inverseProj * rayEndNDC;
-	rayEndWorld /= rayEndWorld.w;
+	auto test = inverseView * inverseProjection;
 
-	OvMaths::FVector3 rayDirWorld(OvMaths::FVector3(rayEndWorld.x, rayEndWorld.y, rayEndWorld.z) - OvMaths::FVector3(rayStartWorld.x, rayStartWorld.y, rayStartWorld.z));
-	rayDirWorld = OvMaths::FVector3::Normalize(rayDirWorld);
+	OvMaths::FVector4 nearestPoint  = test * OvMaths::FVector4(x, y, -1.0f, 1.0f);
+	OvMaths::FVector4 farthestPoint = test * OvMaths::FVector4(x, y, 1.0f, 1.0f);
 
-	return std::make_pair(OvMaths::FVector3(rayStartWorld.x, rayStartWorld.y, rayStartWorld.z), rayDirWorld);
+	OvMaths::FVector3 direction = OvMaths::FVector3(farthestPoint.x, farthestPoint.y, farthestPoint.z) * nearestPoint.w - OvMaths::FVector3(nearestPoint.x, nearestPoint.y, nearestPoint.z) * farthestPoint.w;
+
+	return { p_cameraPosition, direction };
 }
