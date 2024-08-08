@@ -16,9 +16,9 @@ float SnapValue(float p_value, float p_step)
 OvMaths::FVector3 SnapValue(OvMaths::FVector3 p_value, float p_step)
 {
 	OvMaths::FVector3 result;
-	result.x = floor(p_value.x / p_step) * p_step;
-	result.y = floor(p_value.y / p_step) * p_step;
-	result.z = floor(p_value.z / p_step) * p_step;
+	result.x = std::round(p_value.x / p_step) * p_step;
+	result.y = std::round(p_value.y / p_step) * p_step;
+	result.z = std::round(p_value.z / p_step) * p_step;
 	return result;
 }
 
