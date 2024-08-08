@@ -120,7 +120,7 @@ OvMaths::FVector2 OvEditor::Core::GizmoBehaviour::GetScreenDirection(const OvMat
 
 void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector3& p_cameraPosition, const OvMaths::FVector2& p_viewSize)
 {
-	auto ray = GetMouseRay(m_currentMouse, p_viewMatrix, p_projectionMatrix, p_cameraPosition, p_viewSize);
+	auto ray = GetMouseRay(m_currentMouse, p_viewMatrix, p_projectionMatrix, p_viewSize);
 
 	const OvMaths::FVector3 planeTangent = OvMaths::FVector3::Cross(GetRealDirection(true), m_target->transform.GetWorldPosition() - p_cameraPosition);
 	const OvMaths::FVector3 planeNormal = OvMaths::FVector3::Cross(GetRealDirection(true), planeTangent);
@@ -129,17 +129,17 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 
 	OvMaths::FVector3 planePoint = m_originalTransform.GetWorldPosition();
 
-	const float denom = OvMaths::FVector3::Dot(ray.second, planeNormal);
+	const float denom = OvMaths::FVector3::Dot(ray, planeNormal);
 
 	if (std::abs(denom) <= 0.001f)
 		return;
 
-	const float t = OvMaths::FVector3::Dot(planePoint - ray.first, planeNormal) / denom;
+	const float t = OvMaths::FVector3::Dot(planePoint - p_cameraPosition, planeNormal) / denom;
 
 	if (t <= 0.001f)
 		return;
 
-	OvMaths::FVector3 point = ray.first + ray.second * t;
+	OvMaths::FVector3 point = p_cameraPosition + ray * t;
 
 	if (m_firstPick)
 	{
@@ -245,7 +245,7 @@ OvEditor::Core::GizmoBehaviour::EDirection OvEditor::Core::GizmoBehaviour::GetDi
 	return m_direction;
 }
 
-std::pair<OvMaths::FVector3, OvMaths::FVector3> OvEditor::Core::GizmoBehaviour::GetMouseRay(const OvMaths::FVector2& p_mousePos, const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector3& p_cameraPosition, const OvMaths::FVector2& p_viewSize)
+OvMaths::FVector3 OvEditor::Core::GizmoBehaviour::GetMouseRay(const OvMaths::FVector2& p_mousePos, const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize)
 {
 	float x = 2.0f * (p_mousePos.x / p_viewSize.x) - 1.0f;
 	float y = 1.0f - 2.0f * (p_mousePos.y / p_viewSize.y);
@@ -258,7 +258,5 @@ std::pair<OvMaths::FVector3, OvMaths::FVector3> OvEditor::Core::GizmoBehaviour::
 	OvMaths::FVector4 nearestPoint  = inverseViewProjection * OvMaths::FVector4(x, y, -1.0f, 1.0f);
 	OvMaths::FVector4 farthestPoint = inverseViewProjection * OvMaths::FVector4(x, y, 1.0f, 1.0f);
 
-	OvMaths::FVector3 direction = OvMaths::FVector3(farthestPoint.x, farthestPoint.y, farthestPoint.z) * nearestPoint.w - OvMaths::FVector3(nearestPoint.x, nearestPoint.y, nearestPoint.z) * farthestPoint.w;
-
-	return { p_cameraPosition, direction };
+	return OvMaths::FVector3(farthestPoint.x, farthestPoint.y, farthestPoint.z) * nearestPoint.w - OvMaths::FVector3(nearestPoint.x, nearestPoint.y, nearestPoint.z) * farthestPoint.w; ;
 }
