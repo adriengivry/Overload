@@ -250,13 +250,13 @@ std::pair<OvMaths::FVector3, OvMaths::FVector3> OvEditor::Core::GizmoBehaviour::
 	float x = 2.0f * (p_mousePos.x / p_viewSize.x) - 1.0f;
 	float y = 1.0f - 2.0f * (p_mousePos.y / p_viewSize.y);
 
-	OvMaths::FMatrix4 inverseProjection = OvMaths::FMatrix4::Inverse(p_projectionMatrix);
 	OvMaths::FMatrix4 inverseView = OvMaths::FMatrix4::Inverse(p_viewMatrix);
+	OvMaths::FMatrix4 inverseProjection = OvMaths::FMatrix4::Inverse(p_projectionMatrix);
 
-	auto test = inverseView * inverseProjection;
+	OvMaths::FMatrix4 inverseViewProjection = inverseView * inverseProjection;
 
-	OvMaths::FVector4 nearestPoint  = test * OvMaths::FVector4(x, y, -1.0f, 1.0f);
-	OvMaths::FVector4 farthestPoint = test * OvMaths::FVector4(x, y, 1.0f, 1.0f);
+	OvMaths::FVector4 nearestPoint  = inverseViewProjection * OvMaths::FVector4(x, y, -1.0f, 1.0f);
+	OvMaths::FVector4 farthestPoint = inverseViewProjection * OvMaths::FVector4(x, y, 1.0f, 1.0f);
 
 	OvMaths::FVector3 direction = OvMaths::FVector3(farthestPoint.x, farthestPoint.y, farthestPoint.z) * nearestPoint.w - OvMaths::FVector3(nearestPoint.x, nearestPoint.y, nearestPoint.z) * farthestPoint.w;
 
