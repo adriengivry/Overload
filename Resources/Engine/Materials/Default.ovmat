@@ -1,5 +1,5 @@
 <root>
-    <shader>:Shaders\Standard.glsl</shader>
+    <shader>:Shaders\Standard.ovfx</shader>
     <settings>
         <blendable>false</blendable>
         <backface_culling>true</backface_culling>

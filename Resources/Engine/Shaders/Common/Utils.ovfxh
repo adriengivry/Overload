@@ -1,0 +1,54 @@
+vec3 UnPack(float target)
+{
+    return vec3 (
+        float((uint(target) >> 24) & 0xff) * 0.003921568627451,
+        float((uint(target) >> 16) & 0xff) * 0.003921568627451,
+        float((uint(target) >> 8) & 0xff) * 0.003921568627451
+    );
+}
+
+vec2 TileAndOffsetTexCoords(vec2 texCoords, vec2 tiling, vec2 offset)
+{
+    return vec2(mod(texCoords.x * tiling.x, 1), mod(texCoords.y * tiling.y, 1)) + offset;
+}
+
+vec2 ApplyParallaxMapping(vec2 texCoords, sampler2D heightMap, vec3 tangentViewPos, vec3 tangentFragPos, float heightScale)
+{
+    if (heightScale > 0)
+    {
+        const vec3 viewDir = normalize(tangentViewPos - tangentFragPos);
+        const vec2 parallax = viewDir.xy * heightScale * texture(heightMap, texCoords).r;
+        return texCoords - vec2(parallax.x, 1.0 - parallax.y);
+    }
+
+    return texCoords;
+}
+
+bool IsMasked(sampler2D maskMap, vec2 texCoords)
+{
+    return texture(maskMap, texCoords).r == 0.0;
+}
+
+mat3 ConstructTBN(mat4 model, vec3 normal, vec3 tangent, vec3 bitangent)
+{
+   return mat3(
+        normalize(vec3(model * vec4(tangent,   0.0))),
+        normalize(vec3(model * vec4(bitangent, 0.0))),
+        normalize(vec3(model * vec4(normal,    0.0)))
+    );
+}
+
+vec3 ComputeNormal(bool enableNormalMapping, vec2 texCoords, vec3 normal, sampler2D normalMap, mat3 TBN)
+{
+    if (enableNormalMapping)
+    {
+        normal = texture(normalMap, texCoords).rgb;
+        normal = normalize(normal * 2.0 - 1.0);   
+        normal = normalize(TBN * normal);
+        return normal;
+    }
+    else
+    {
+        return normalize(normal);
+    }
+}

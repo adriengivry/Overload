@@ -119,11 +119,6 @@ void OvGame::Core::Game::Update(float p_deltaTime)
 	if  (m_context.inputManager->IsKeyPressed(OvWindowing::Inputs::EKey::KEY_F12))
 		m_showDebugInformation = !m_showDebugInformation;
 
-	#ifdef _DEBUG
-	if (m_context.inputManager->IsKeyPressed(OvWindowing::Inputs::EKey::KEY_R))
-		OvRendering::Resources::Loaders::ShaderLoader::Recompile(*m_context.shaderManager[":Shaders\\Standard.glsl"], "Data\\Engine\\Shaders\\Standard.glsl");
-	#endif
-
 	if (m_showDebugInformation)
 	{
 		m_fpsCounter.Update(p_deltaTime);
