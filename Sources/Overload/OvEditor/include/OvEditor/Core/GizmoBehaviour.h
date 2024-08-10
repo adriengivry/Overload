@@ -54,9 +54,10 @@ namespace OvEditor::Core
 		* Handle the current behaviour
 		* @param p_viewMatrix
 		* @param p_projectionMatrix
+		* @param p_cameraPosition
 		* @param p_viewSize
 		*/
-		void ApplyOperation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize);
+		void ApplyOperation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector3& p_cameraPosition, const OvMaths::FVector2& p_viewSize);
 
 		/**
 		* Set the given mouse position as the current mouse position and update the previous mouse position
@@ -73,6 +74,15 @@ namespace OvEditor::Core
 		* Returns the current operation direction
 		*/
 		EDirection GetDirection() const;
+
+		/**
+		* Returns the mouse origin and direction in World Space
+                * @param p_mousePos
+		* @param p_viewMatrix
+		* @param p_projectionMatrix
+		* @param p_viewSize
+		*/
+		OvMaths::FVector3 GetMouseRay(const OvMaths::FVector2& p_mousePos, const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize);
 
 	private:
 		/**
@@ -94,13 +104,18 @@ namespace OvEditor::Core
 		*/
 		OvMaths::FVector2 GetScreenDirection(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const;
 
+		OvMaths::FVector3 IntersectRayWithAxis(const OvMaths::FVector3& rayOrigin, const OvMaths::FVector3& rayDirection, const OvMaths::FVector3& axisOrigin, const OvMaths::FVector3& axisDirection) const;
+		OvMaths::FVector3 RaycastToAxis(const OvMaths::FMatrix4& viewMatrix,
+			const OvMaths::FMatrix4& projectionMatrix, const OvMaths::FVector2& viewSize,
+			const OvMaths::FVector3& axisDirection, const OvMaths::FVector2& mousePosition) const;
 		/**
 		* Handle the translation behaviour
 		* @param p_viewMatrix
 		* @param p_projectionMatrix
+		* @param p_cameraPosition
 		* @param p_viewSize
 		*/
-		void ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const;
+		void ApplyTranslation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector3& p_cameraPosition, const OvMaths::FVector2& p_viewSize);
 
 		/**
 		* Handle the rotation behaviour
@@ -120,11 +135,13 @@ namespace OvEditor::Core
 
 	private:
 		bool m_firstMouse = true;
+		bool m_firstPick = true;
 		float m_distanceToActor = 0.0f;
 		OvCore::ECS::Actor* m_target = nullptr;
 		EGizmoOperation m_currentOperation;
 		EDirection m_direction;
 		OvMaths::FTransform m_originalTransform;
+		OvMaths::FVector3 m_initialOffset;
 		OvMaths::FVector2 m_originMouse;
 		OvMaths::FVector2 m_currentMouse;
 		OvMaths::FVector2 m_screenDirection;

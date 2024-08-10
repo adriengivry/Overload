@@ -199,11 +199,11 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 
 	if (m_gizmoOperations.IsPicking())
 	{
-		auto mousePosition = EDITOR_CONTEXT(inputManager)->GetMousePosition();
-
 		auto [winWidth, winHeight] = GetSafeSize();
 
-		m_gizmoOperations.SetCurrentMouse({ static_cast<float>(mousePosition.first), static_cast<float>(mousePosition.second) });
-		m_gizmoOperations.ApplyOperation(m_camera.GetViewMatrix(), m_camera.GetProjectionMatrix(), { static_cast<float>(winWidth), static_cast<float>(winHeight) });
+		auto mousePosition = EDITOR_CONTEXT(inputManager)->GetMousePosition();
+
+		m_gizmoOperations.SetCurrentMouse({ static_cast<float>(mousePosition.first - m_position.x), static_cast<float>(mousePosition.second - m_position.y) });
+		m_gizmoOperations.ApplyOperation(m_camera.GetViewMatrix(), m_camera.GetProjectionMatrix(), m_camera.GetPosition(), { static_cast<float>(winWidth), static_cast<float>(winHeight) });
 	}
 }
