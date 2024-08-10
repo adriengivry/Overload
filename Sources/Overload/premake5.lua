@@ -6,6 +6,8 @@ workspace "Overload"
 outputdir = "%{wks.location}/../../Bin/"
 objoutdir = "%{wks.location}/../../Bin-Int/"
 dependdir = "%{wks.location}/../../Dependencies/"
+builddir = "%{wks.location}/../../Build/"
+resdir = "%{wks.location}/../../Resources/"
 
 include "OvAnalytics"
 include "OvAudio"
@@ -20,3 +22,5 @@ include "OvWindowing"
 
 include "OvEditor"
 include "OvGame"
+
+include "../../Resources"

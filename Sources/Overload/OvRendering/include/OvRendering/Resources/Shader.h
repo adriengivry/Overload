@@ -15,8 +15,6 @@
 
 #include "OvRendering/Resources/UniformInfo.h"
 
-
-
 namespace OvRendering::Resources
 {
 	namespace Loaders { class ShaderLoader; }

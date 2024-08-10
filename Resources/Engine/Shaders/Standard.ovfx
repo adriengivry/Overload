@@ -1,0 +1,80 @@
+#shader vertex
+#version 430 core
+
+#include ":Shaders/Common/Buffers/EngineUBO.ovfxh"
+#include ":Shaders/Common/Utils.ovfxh"
+
+layout (location = 0) in vec3 geo_Pos;
+layout (location = 1) in vec2 geo_TexCoords;
+layout (location = 2) in vec3 geo_Normal;
+layout (location = 3) in vec3 geo_Tangent;
+layout (location = 4) in vec3 geo_Bitangent;
+
+out VS_OUT
+{
+    vec3 FragPos;
+    vec2 TexCoords;
+    vec3 Normal;
+    mat3 TBN;
+    flat vec3 TangentViewPos;
+    vec3 TangentFragPos;
+} vs_out;
+
+void main()
+{
+    vs_out.FragPos = vec3(ubo_Model * vec4(geo_Pos, 1.0));
+    vs_out.TexCoords = geo_TexCoords;
+    vs_out.Normal = normalize(mat3(transpose(inverse(ubo_Model))) * geo_Normal);
+    vs_out.TBN = ConstructTBN(ubo_Model, geo_Normal, geo_Tangent, geo_Bitangent);
+    vs_out.TangentViewPos = transpose(vs_out.TBN) * ubo_ViewPos;
+    vs_out.TangentFragPos = transpose(vs_out.TBN) * vs_out.FragPos;
+
+    gl_Position = ubo_Projection * ubo_View * vec4(vs_out.FragPos, 1.0);
+}
+
+#shader fragment
+#version 430 core
+
+#include ":Shaders/Common/Buffers/EngineUBO.ovfxh"
+#include ":Shaders/Lighting/BlinnPhong.ovfxh"
+
+in VS_OUT
+{
+    vec3 FragPos;
+    vec2 TexCoords;
+    vec3 Normal;
+    mat3 TBN;
+    flat vec3 TangentViewPos;
+    vec3 TangentFragPos;
+} fs_in;
+
+uniform vec2 u_TextureTiling = vec2(1.0, 1.0);
+uniform vec2 u_TextureOffset = vec2(0.0, 0.0);
+uniform vec4 u_Diffuse = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec3 u_Specular = vec3(1.0, 1.0, 1.0);
+uniform float u_Shininess = 100.0;
+uniform float u_HeightScale = 0.0;
+uniform bool u_EnableNormalMapping = false;
+uniform sampler2D u_DiffuseMap;
+uniform sampler2D u_SpecularMap;
+uniform sampler2D u_NormalMap;
+uniform sampler2D u_HeightMap;
+uniform sampler2D u_MaskMap;
+
+out vec4 FRAGMENT_COLOR;
+
+void main()
+{
+    vec2 texCoords = TileAndOffsetTexCoords(fs_in.TexCoords, u_TextureTiling, u_TextureOffset);
+    texCoords = ApplyParallaxMapping(texCoords, u_HeightMap, fs_in.TangentViewPos, fs_in.TangentFragPos, u_HeightScale);
+
+    if (!IsMasked(u_MaskMap, texCoords))
+    {
+        vec3 normal = ComputeNormal(u_EnableNormalMapping, texCoords, fs_in.Normal, u_NormalMap, fs_in.TBN);
+        FRAGMENT_COLOR = ComputeBlinnPhongLighting(texCoords, normal, ubo_ViewPos, fs_in.FragPos, u_Diffuse, u_Specular, u_DiffuseMap, u_SpecularMap, u_Shininess);
+    }
+    else
+    {
+        FRAGMENT_COLOR = vec4(0.0);
+    }
+}

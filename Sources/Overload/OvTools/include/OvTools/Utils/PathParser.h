@@ -23,6 +23,7 @@ namespace OvTools::Utils
 			MODEL,
 			TEXTURE,
 			SHADER,
+			SHADER_PART,
 			MATERIAL,
 			SOUND,
 			SCENE,
