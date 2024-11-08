@@ -140,7 +140,7 @@ namespace OvEditor::Core
 		OvCore::ECS::Actor* m_target = nullptr;
 		EGizmoOperation m_currentOperation;
 		EDirection m_direction;
-		OvMaths::FTransform m_originalTransform;
+		OvMaths::FTransform* m_originalTransform;
 		OvMaths::FVector3 m_initialOffset;
 		OvMaths::FVector2 m_originMouse;
 		OvMaths::FVector2 m_currentMouse;

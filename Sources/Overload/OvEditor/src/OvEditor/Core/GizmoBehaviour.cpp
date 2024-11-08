@@ -35,7 +35,7 @@ void OvEditor::Core::GizmoBehaviour::StartPicking(OvCore::ECS::Actor& p_target, 
 	m_target = &p_target;
 	m_firstMouse = true;
 	m_firstPick = true;
-	m_originalTransform = p_target.transform.GetFTransform();
+	m_originalTransform = &p_target.transform.GetFTransform();
 	m_distanceToActor = OvMaths::FVector3::Distance(p_cameraPosition, m_target->transform.GetWorldPosition());
 	m_currentOperation = p_operation;
 	m_direction = p_direction;
@@ -73,13 +73,13 @@ OvMaths::FVector3 OvEditor::Core::GizmoBehaviour::GetRealDirection(bool p_relati
 	switch (m_direction)
 	{
 	case OvEditor::Core::GizmoBehaviour::EDirection::X:
-		result = p_relative ? m_originalTransform.GetWorldRight() : m_originalTransform.GetLocalRight();
+		result = p_relative ? m_originalTransform->GetWorldRight() : m_originalTransform->GetLocalRight();
 		break;
 	case OvEditor::Core::GizmoBehaviour::EDirection::Y:
-		result = p_relative ? m_originalTransform.GetWorldUp() : m_originalTransform.GetLocalUp();
+		result = p_relative ? m_originalTransform->GetWorldUp() : m_originalTransform->GetLocalUp();
 		break;
 	case OvEditor::Core::GizmoBehaviour::EDirection::Z:
-		result = p_relative ? m_originalTransform.GetWorldForward() : m_originalTransform.GetLocalForward();
+		result = p_relative ? m_originalTransform->GetWorldForward() : m_originalTransform->GetLocalForward();
 		break;
 	}
 
@@ -88,8 +88,8 @@ OvMaths::FVector3 OvEditor::Core::GizmoBehaviour::GetRealDirection(bool p_relati
 
 OvMaths::FVector2 OvEditor::Core::GizmoBehaviour::GetScreenDirection(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
 {
-	auto start = m_originalTransform.GetWorldPosition();
-	auto end = m_originalTransform.GetWorldPosition() + GetRealDirection(true) * 0.01f;
+	auto start = m_originalTransform->GetWorldPosition();
+	auto end = m_originalTransform->GetWorldPosition() + GetRealDirection(true) * 0.01f;
 
 	auto start2D = OvMaths::FVector2();
 	{
@@ -127,7 +127,7 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 
 	OvMaths::FVector3 direction = GetRealDirection(true);
 
-	OvMaths::FVector3 planePoint = m_originalTransform.GetWorldPosition();
+	OvMaths::FVector3 planePoint = m_originalTransform->GetWorldPosition();
 
 	const float denom = OvMaths::FVector3::Dot(ray, planeNormal);
 
@@ -143,7 +143,7 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 
 	if (m_firstPick)
 	{
-		m_initialOffset = m_originalTransform.GetWorldPosition() - point;
+		m_initialOffset = m_originalTransform->GetWorldPosition() - point;
 		m_firstPick = false;
 	}
 
@@ -162,7 +162,7 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 void OvEditor::Core::GizmoBehaviour::ApplyRotation(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
 {
 	auto unitsPerPixel = 0.2f;
-	auto originRotation = m_originalTransform.GetWorldRotation();
+	auto originRotation = m_originalTransform->GetWorldRotation();
 
 	auto screenDirection = GetScreenDirection(p_viewMatrix, p_projectionMatrix, p_viewSize);
 	screenDirection = OvMaths::FVector2(-screenDirection.y, screenDirection.x);
@@ -182,7 +182,7 @@ void OvEditor::Core::GizmoBehaviour::ApplyRotation(const OvMaths::FMatrix4& p_vi
 void OvEditor::Core::GizmoBehaviour::ApplyScale(const OvMaths::FMatrix4& p_viewMatrix, const OvMaths::FMatrix4& p_projectionMatrix, const OvMaths::FVector2& p_viewSize) const
 {
 	auto unitsPerPixel = 0.01f;
-	auto originScale = m_originalTransform.GetWorldScale();
+	auto originScale = m_originalTransform->GetWorldScale();
 
 	auto screenDirection = GetScreenDirection(p_viewMatrix, p_projectionMatrix, p_viewSize);
 
