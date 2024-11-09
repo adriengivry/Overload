@@ -34,6 +34,19 @@ namespace OvMaths
 		~FTransform();
 
 		/**
+		* Copy constructor
+		* Will make sure that the parent pointer isn't copied and that the world position, rotation and scale are preserved
+		* even after removing the link to the parent
+		*/
+		FTransform(const FTransform& p_other);
+
+		/**
+		* Assignment operator overload, to make sure that the parent pointer isn't modified and that the world position,
+		* rotation and scale are properly set to reflect the other transform.
+		*/
+		FTransform& operator=(const FTransform& p_other);
+
+		/**
 		* Simple callback that will treat parent notifications
 		* @param p_notification
 		*/
