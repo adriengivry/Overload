@@ -18,6 +18,22 @@ OvMaths::FTransform::~FTransform()
 	Notifier.NotifyChildren(Internal::TransformNotifier::ENotification::TRANSFORM_DESTROYED);
 }
 
+OvMaths::FTransform::FTransform(const FTransform& p_other) :
+	FTransform(p_other.m_worldPosition, p_other.m_worldRotation, p_other.m_worldScale)
+{
+}
+
+OvMaths::FTransform& OvMaths::FTransform::operator=(const FTransform& p_other)
+{
+	GenerateMatricesWorld(
+		p_other.m_worldPosition,
+		p_other.m_worldRotation,
+		p_other.m_worldScale
+	);
+
+	return *this;
+}
+
 void OvMaths::FTransform::NotificationHandler(Internal::TransformNotifier::ENotification p_notification)
 {
 	switch (p_notification)
