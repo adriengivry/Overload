@@ -21,6 +21,10 @@ namespace OvRendering::Data
 			{
 				m_uniformsData[p_key] = std::any(p_value);
 			}
+			else
+			{
+				OVLOG_WARNING("Material Set failed: Uniform \"" + p_key + "\" not found");
+			}
 		}
 		else
 		{

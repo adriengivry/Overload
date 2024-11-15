@@ -27,6 +27,17 @@ namespace OvCore::Rendering
 		*/
 		EngineBufferRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer);
 
+		/**
+		* Temporarily overrides the camera with the given one
+		* @param p_camera
+		*/
+		void ApplyOverrideCamera(OvRendering::Entities::Camera& p_camera);
+
+		/**
+		* Revert the camera override
+		*/
+		void RevertOverrideCamera();
+
 	protected:
 		virtual void OnBeginFrame(const OvRendering::Data::FrameDescriptor& p_frameDescriptor) override;
 		virtual void OnEndFrame() override;
@@ -35,5 +46,6 @@ namespace OvCore::Rendering
 	protected:
 		std::chrono::high_resolution_clock::time_point m_startTime;
 		std::unique_ptr<OvRendering::Buffers::UniformBuffer> m_engineBuffer;
+		OvRendering::Data::FrameDescriptor m_cachedFrameDescriptor;
 	};
 }

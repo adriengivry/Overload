@@ -65,9 +65,16 @@ void OvRendering::Data::Material::Bind(OvRendering::Resources::Texture* p_emptyT
 				case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC2:	if (value.type() == typeid(FVector2))	m_shader->SetUniformVec2(name, std::any_cast<FVector2>(value));		break;
 				case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC3:	if (value.type() == typeid(FVector3))	m_shader->SetUniformVec3(name, std::any_cast<FVector3>(value));		break;
 				case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC4:	if (value.type() == typeid(FVector4))	m_shader->SetUniformVec4(name, std::any_cast<FVector4>(value));		break;
+				case OvRendering::Resources::UniformType::UNIFORM_FLOAT_MAT4:	if (value.type() == typeid(FMatrix4))	m_shader->SetUniformMat4(name, std::any_cast<FMatrix4>(value));		break;
 				case OvRendering::Resources::UniformType::UNIFORM_SAMPLER_2D:
 				{
-					if (value.type() == typeid(Texture*))
+					if (value.type() == typeid(TextureHandle))
+					{
+						auto tex = std::any_cast<TextureHandle>(value);
+						tex.Bind(textureSlot);
+						m_shader->SetUniformInt(uniformData->name, textureSlot++);
+					}
+					else if (value.type() == typeid(Texture*))
 					{
 						if (auto tex = std::any_cast<Texture*>(value); tex)
 						{

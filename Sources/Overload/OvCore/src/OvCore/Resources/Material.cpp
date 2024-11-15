@@ -145,6 +145,10 @@ void OvCore::Resources::Material::OnDeserialize(tinyxml2::XMLDocument & p_doc, t
 							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeVec4(p_doc, uniform, "value");
 							break;
 
+						case OvRendering::Resources::UniformType::UNIFORM_FLOAT_MAT4:
+							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeMat4(p_doc, uniform, "value");
+							break;
+
 						case OvRendering::Resources::UniformType::UNIFORM_SAMPLER_2D:
 							m_uniformsData[uniformInfo->name] = OvCore::Helpers::Serializer::DeserializeTexture(p_doc, uniform, "value");
 							break;

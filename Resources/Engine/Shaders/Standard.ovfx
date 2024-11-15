@@ -13,6 +13,7 @@ layout (location = 4) in vec3 geo_Bitangent;
 out VS_OUT
 {
     vec3 FragPos;
+    vec4 FragPosLightSpace;
     vec2 TexCoords;
     vec3 Normal;
     mat3 TBN;
@@ -20,9 +21,12 @@ out VS_OUT
     vec3 TangentFragPos;
 } vs_out;
 
+uniform mat4 u_LightSpaceMatrix;
+
 void main()
 {
     vs_out.FragPos = vec3(ubo_Model * vec4(geo_Pos, 1.0));
+    vs_out.FragPosLightSpace = u_LightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
     vs_out.TexCoords = geo_TexCoords;
     vs_out.Normal = normalize(mat3(transpose(inverse(ubo_Model))) * geo_Normal);
     vs_out.TBN = ConstructTBN(ubo_Model, geo_Normal, geo_Tangent, geo_Bitangent);
@@ -41,6 +45,7 @@ void main()
 in VS_OUT
 {
     vec3 FragPos;
+    vec4 FragPosLightSpace;
     vec2 TexCoords;
     vec3 Normal;
     mat3 TBN;
@@ -61,17 +66,54 @@ uniform sampler2D u_NormalMap;
 uniform sampler2D u_HeightMap;
 uniform sampler2D u_MaskMap;
 
+uniform sampler2D u_ShadowMap;
+
 out vec4 FRAGMENT_COLOR;
+
+float ShadowCalculation(vec4 fragPosLightSpace)
+{
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w; // Perspective divide
+    projCoords = projCoords * 0.5 + 0.5; // Transform to [0, 1] range
+
+    // Early exit: If fragment is outside light's view
+    if (projCoords.z > 1.0) {
+        return 0.0;
+    }
+
+    const float bias = 0.001; // Base bias
+    float shadow = 0.0;
+    float currentDepth = projCoords.z;
+    vec2 texelSize = 1.0 / textureSize(u_ShadowMap, 0);
+
+    // Enhanced PCF
+    for (int x = -1; x <= 1; ++x)
+    {
+        for (int y = -1; y <= 1; ++y)
+        {
+            vec2 offset = vec2(x, y) * texelSize;
+            float pcfDepth = texture(u_ShadowMap, projCoords.xy + offset).r;
+
+            // Calculate shadow with bias
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+
+    shadow /= 9.0; // Normalize PCF
+
+    return shadow;
+}
 
 void main()
 {
     vec2 texCoords = TileAndOffsetTexCoords(fs_in.TexCoords, u_TextureTiling, u_TextureOffset);
     texCoords = ApplyParallaxMapping(texCoords, u_HeightMap, fs_in.TangentViewPos, fs_in.TangentFragPos, u_HeightScale);
 
+
     if (!IsMasked(u_MaskMap, texCoords))
     {
         vec3 normal = ComputeNormal(u_EnableNormalMapping, texCoords, fs_in.Normal, u_NormalMap, fs_in.TBN);
-        FRAGMENT_COLOR = ComputeBlinnPhongLighting(texCoords, normal, ubo_ViewPos, fs_in.FragPos, u_Diffuse, u_Specular, u_DiffuseMap, u_SpecularMap, u_Shininess);
+        float shadow = ShadowCalculation(fs_in.FragPosLightSpace);
+        FRAGMENT_COLOR = (1.0 - shadow) * ComputeBlinnPhongLighting(texCoords, normal, ubo_ViewPos, fs_in.FragPos, u_Diffuse, u_Specular, u_DiffuseMap, u_SpecularMap, u_Shininess);
     }
     else
     {
