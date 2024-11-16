@@ -47,7 +47,6 @@ void OvEditor::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineStat
 	auto& scene = sceneDescriptor.scene;
 
 	EDITOR_CONTEXT(driver)->SetViewport(0, 0, kShadowMapSize, kShadowMapSize);
-	m_shadowFramebuffer.Resize(kShadowMapSize, kShadowMapSize);
 
 	m_shadowFramebuffer.Bind();
 
@@ -55,19 +54,23 @@ void OvEditor::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineStat
 
 	m_renderer.Clear(true, true, true);
 
-	std::optional<OvRendering::Entities::Light> directionalLight;
-	for (auto& light : lightingDescriptor.lights)
+	for (auto light : lightingDescriptor.lights)
 	{
 		if (light.get().type == OvRendering::Settings::ELightType::DIRECTIONAL)
 		{
-			directionalLight = light;
+			const auto& lightEntity = light.get();
+			const float near_plane = 1.0f;
+			const float far_plane = 7.5f;
+			OvRendering::Entities::Camera lightCamera;
+			lightCamera.SetPosition(lightEntity.transform.Get().GetWorldPosition());
+			lightCamera.SetRotation(lightEntity.transform.Get().GetWorldRotation());
+			lightCamera.CacheMatrices(kShadowMapSize, kShadowMapSize);
+			const auto lightSpaceMatrix = lightCamera.GetProjectionMatrix() * lightCamera.GetViewMatrix();
+
+			m_opaqueMaterial.Set("u_LightSpaceMatrix", lightSpaceMatrix);
+			DrawOpaques(pso, scene);
 			break;
 		}
-	}
-
-	if (directionalLight)
-	{
-		DrawOpaques(pso, scene);
 	}
 
 	m_shadowFramebuffer.Unbind();
@@ -102,21 +105,12 @@ void OvEditor::Rendering::ShadowRenderPass::DrawOpaques(
 					{
 						auto stateMask = m_opaqueMaterial.GenerateStateMask();
 
+						// TODO: Don't override the state
 						// Override the state mask to use the material state mask (if this one is valid)
 						if (auto material = materials.at(mesh->GetMaterialIndex()); material && material->IsValid())
 						{
 							stateMask = material->GenerateStateMask();
 						}
-
-						const float near_plane = 1.0f, far_plane = 7.5f;
-						OvRendering::Entities::Camera lightCamera;
-						const auto pos = OvMaths::FVector3{ 1.0f, 10.0f, 1.0f };
-						lightCamera.SetPosition(pos);
-						lightCamera.SetRotation(OvMaths::FQuaternion::LookAt(OvMaths::FVector3::Zero - pos, OvMaths::FVector3::Up));
-						lightCamera.CacheMatrices(kShadowMapSize, kShadowMapSize);
-						const auto lightSpaceMatrix = lightCamera.GetProjectionMatrix() * lightCamera.GetViewMatrix();
-
-						m_opaqueMaterial.Set("u_LightSpaceMatrix", lightSpaceMatrix);
 
 						OvRendering::Entities::Drawable drawable;
 						drawable.mesh = *mesh;

@@ -23,7 +23,7 @@ namespace OvRendering::Data
 			}
 			else
 			{
-				OVLOG_WARNING("Material Set failed: Uniform \"" + p_key + "\" not found");
+				// OVLOG_WARNING("Material Set failed: Uniform \"" + p_key + "\" not found");
 			}
 		}
 		else
