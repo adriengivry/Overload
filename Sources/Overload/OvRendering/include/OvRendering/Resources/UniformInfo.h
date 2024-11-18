@@ -7,7 +7,7 @@
 #pragma once
 
 #include <string>
-#include <any>
+#include <variant>
 
 #include "OvRendering/Resources/UniformType.h"
 
@@ -18,9 +18,10 @@ namespace OvRendering::Resources
 	*/
 	struct UniformInfo
 	{
-		UniformType		type;
-		std::string		name;
-		uint32_t		location;
-		std::any		defaultValue;
+		UniformType type;
+		std::string name;
+		uint32_t location;
+		UniformVariant defaultValue;
 	};
+
 }

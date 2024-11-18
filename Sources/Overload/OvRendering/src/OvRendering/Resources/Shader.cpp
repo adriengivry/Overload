@@ -11,6 +11,8 @@
 #include "OvRendering/Resources/Texture.h"
 #include "OvRendering/Resources/Shader.h"
 
+#include <optional>
+
 OvRendering::Resources::Shader::Shader(const std::string p_path, uint32_t p_id) : path(p_path), id(p_id)
 {
 	QueryUniforms();
@@ -139,18 +141,18 @@ void OvRendering::Resources::Shader::QueryUniforms()
 
 		if (!IsEngineUBOMember(name))
 		{
-			std::any defaultValue;
+			std::optional<UniformVariant> defaultValue;
 
 			switch (static_cast<UniformType>(type))
 			{
-			case OvRendering::Resources::UniformType::UNIFORM_BOOL:			defaultValue = std::make_any<bool>(GetUniformInt(name));					break;
-			case OvRendering::Resources::UniformType::UNIFORM_INT:			defaultValue = std::make_any<int>(GetUniformInt(name));						break;
-			case OvRendering::Resources::UniformType::UNIFORM_FLOAT:		defaultValue = std::make_any<float>(GetUniformFloat(name));					break;
-			case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC2:	defaultValue = std::make_any<OvMaths::FVector2>(GetUniformVec2(name));		break;
-			case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC3:	defaultValue = std::make_any<OvMaths::FVector3>(GetUniformVec3(name));		break;
-			case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC4:	defaultValue = std::make_any<OvMaths::FVector4>(GetUniformVec4(name));		break;
-			case OvRendering::Resources::UniformType::UNIFORM_FLOAT_MAT4:	defaultValue = std::make_any<OvMaths::FMatrix4>(GetUniformMat4(name));		break;
-			case OvRendering::Resources::UniformType::UNIFORM_SAMPLER_2D:	defaultValue = std::make_any<OvRendering::Resources::Texture*>(nullptr);	break;
+			case OvRendering::Resources::UniformType::UNIFORM_BOOL: defaultValue = GetUniformInt(name); break;
+			case OvRendering::Resources::UniformType::UNIFORM_INT: defaultValue = GetUniformInt(name); break;
+			case OvRendering::Resources::UniformType::UNIFORM_FLOAT: defaultValue = GetUniformFloat(name); break;
+			case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC2: defaultValue = GetUniformVec2(name); break;
+			case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC3: defaultValue = GetUniformVec3(name); break;
+			case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC4: defaultValue = GetUniformVec4(name); break;
+			case OvRendering::Resources::UniformType::UNIFORM_FLOAT_MAT4: defaultValue = GetUniformMat4(name); break;
+			case OvRendering::Resources::UniformType::UNIFORM_SAMPLER_2D: defaultValue = static_cast<Texture*>(nullptr); break;
 			}
 
 			if (defaultValue.has_value())
@@ -160,7 +162,7 @@ void OvRendering::Resources::Shader::QueryUniforms()
 					static_cast<UniformType>(type),
 					name,
 					GetUniformLocation(nameData.data()),
-					defaultValue
+					defaultValue.value()
 				});
 			}
 		}

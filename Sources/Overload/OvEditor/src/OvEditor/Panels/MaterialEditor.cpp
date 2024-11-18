@@ -310,7 +310,7 @@ void OvEditor::Panels::MaterialEditor::GenerateShaderSettingsContent()
 
 	m_shaderSettingsColumns->RemoveAllWidgets(); // Ensure that the m_shaderSettingsColumns is empty
 
-	std::multimap<int, std::pair<std::string, std::any*>> sortedUniformsData;
+	std::multimap<int, std::pair<std::string, OvRendering::Resources::UniformVariant*>> sortedUniformsData;
 
 	for (auto&[name, value] : m_target->GetUniformsData())
 	{
@@ -331,25 +331,25 @@ void OvEditor::Panels::MaterialEditor::GenerateShaderSettingsContent()
 			case UniformType::UNIFORM_BOOL:			orderID = 6; break;
 			}
 
-			sortedUniformsData.emplace(orderID, std::pair<std::string, std::any*>{ name, & value });
+			sortedUniformsData.emplace(orderID, std::pair<std::string, OvRendering::Resources::UniformVariant*>{ name, & value });
 		}
 	}
 
-	for (auto& [order, info] : sortedUniformsData)
+	for (auto& [order, entry] : sortedUniformsData)
 	{
-		auto uniformData = m_target->GetShader()->GetUniformInfo(info.first);
+		auto uniformData = m_target->GetShader()->GetUniformInfo(entry.first);
 		
 		if (uniformData)
 		{
 			switch (uniformData->type)
 			{
-			case UniformType::UNIFORM_BOOL:			GUIDrawer::DrawBoolean(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<bool&>(*info.second));																	break;
-			case UniformType::UNIFORM_INT:			GUIDrawer::DrawScalar<int>(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<int&>(*info.second));																break;
-			case UniformType::UNIFORM_FLOAT:		GUIDrawer::DrawScalar<float>(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<float&>(*info.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);		break;
-			case UniformType::UNIFORM_FLOAT_VEC2:	GUIDrawer::DrawVec2(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<OvMaths::FVector2&>(*info.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);	break;
-			case UniformType::UNIFORM_FLOAT_VEC3:	DrawHybridVec3(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<OvMaths::FVector3&>(*info.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);			break;
-			case UniformType::UNIFORM_FLOAT_VEC4:	DrawHybridVec4(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<OvMaths::FVector4&>(*info.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);			break;
-			case UniformType::UNIFORM_SAMPLER_2D:	GUIDrawer::DrawTexture(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<Texture * &>(*info.second));																break;
+			case UniformType::UNIFORM_BOOL:			GUIDrawer::DrawBoolean(*m_shaderSettingsColumns, UniformFormat(entry.first), reinterpret_cast<bool&>(*entry.second));																	break;
+			case UniformType::UNIFORM_INT:			GUIDrawer::DrawScalar<int>(*m_shaderSettingsColumns, UniformFormat(entry.first), reinterpret_cast<int&>(*entry.second));																break;
+			case UniformType::UNIFORM_FLOAT:		GUIDrawer::DrawScalar<float>(*m_shaderSettingsColumns, UniformFormat(entry.first), reinterpret_cast<float&>(*entry.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);		break;
+			case UniformType::UNIFORM_FLOAT_VEC2:	GUIDrawer::DrawVec2(*m_shaderSettingsColumns, UniformFormat(entry.first), reinterpret_cast<OvMaths::FVector2&>(*entry.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);	break;
+			case UniformType::UNIFORM_FLOAT_VEC3:	DrawHybridVec3(*m_shaderSettingsColumns, UniformFormat(entry.first), reinterpret_cast<OvMaths::FVector3&>(*entry.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);			break;
+			case UniformType::UNIFORM_FLOAT_VEC4:	DrawHybridVec4(*m_shaderSettingsColumns, UniformFormat(entry.first), reinterpret_cast<OvMaths::FVector4&>(*entry.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);			break;
+			case UniformType::UNIFORM_SAMPLER_2D:	GUIDrawer::DrawTexture(*m_shaderSettingsColumns, UniformFormat(entry.first), reinterpret_cast<Texture * &>(*entry.second));																break;
 			}
 		}
 	}

@@ -55,13 +55,13 @@ namespace OvRendering::Data
 		* @param p_key
 		* @param p_value
 		*/
-		template<typename T> void Set(const std::string p_key, const T& p_value);
+		void Set(const std::string p_key, const Resources::UniformVariant& p_value);
 
 		/**
 		* Set a shader uniform value
 		* @param p_key
 		*/
-		template<typename T> const T& Get(const std::string p_key) const;
+		const Resources::UniformVariant& Get(const std::string p_key) const;
 
 		/**
 		* Returns the attached shader
@@ -185,11 +185,11 @@ namespace OvRendering::Data
 		/**
 		* Returns the uniforms data of the material
 		*/
-		std::map<std::string, std::any>& GetUniformsData();
+		std::map<std::string, Resources::UniformVariant>& GetUniformsData();
 
 	protected:
 		OvRendering::Resources::Shader* m_shader = nullptr;
-		std::map<std::string, std::any> m_uniformsData;
+		std::map<std::string, Resources::UniformVariant> m_uniformsData;
 
 		bool m_blendable = false;
 		bool m_backfaceCulling = true;

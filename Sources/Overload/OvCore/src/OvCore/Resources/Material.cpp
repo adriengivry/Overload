@@ -40,36 +40,43 @@ void OvCore::Resources::Material::OnSerialize(tinyxml2::XMLDocument & p_doc, tin
 
 		Serializer::SerializeString(p_doc, uniform, "name", uniformName);
 
-		if (uniformInfo && uniformValue.has_value())
+		if (uniformInfo)
 		{
 			switch (uniformInfo->type)
 			{
 			case UniformType::UNIFORM_BOOL:
-				if (uniformValue.type() == typeid(bool)) Serializer::SerializeInt(p_doc, uniform, "value", std::any_cast<bool>(uniformValue));
+				if (auto val = std::get_if<bool>(&uniformValue))
+					Serializer::SerializeInt(p_doc, uniform, "value", *val);
 				break;
 
 			case UniformType::UNIFORM_INT:
-				if (uniformValue.type() == typeid(int)) Serializer::SerializeInt(p_doc, uniform, "value", std::any_cast<int>(uniformValue));
+				if (auto val = std::get_if<int>(&uniformValue))
+					Serializer::SerializeInt(p_doc, uniform, "value", *val);
 				break;
 
 			case UniformType::UNIFORM_FLOAT:
-				if (uniformValue.type() == typeid(float)) Serializer::SerializeFloat(p_doc, uniform, "value", std::any_cast<float>(uniformValue));
+				if (auto val = std::get_if<float>(&uniformValue))
+					Serializer::SerializeFloat(p_doc, uniform, "value", *val);
 				break;
 
 			case UniformType::UNIFORM_FLOAT_VEC2:
-				if (uniformValue.type() == typeid(FVector2)) Serializer::SerializeVec2(p_doc, uniform, "value", std::any_cast<FVector2>(uniformValue));
+				if (auto val = std::get_if<FVector2>(&uniformValue))
+					Serializer::SerializeVec2(p_doc, uniform, "value", *val);
 				break;
 
 			case UniformType::UNIFORM_FLOAT_VEC3:
-				if (uniformValue.type() == typeid(FVector3)) Serializer::SerializeVec3(p_doc, uniform, "value", std::any_cast<FVector3>(uniformValue));
+				if (auto val = std::get_if<FVector3>(&uniformValue))
+					Serializer::SerializeVec3(p_doc, uniform, "value", *val);
 				break;
 
 			case UniformType::UNIFORM_FLOAT_VEC4:
-				if (uniformValue.type() == typeid(FVector4)) Serializer::SerializeVec4(p_doc, uniform, "value", std::any_cast<FVector4>(uniformValue));
+				if (auto val = std::get_if<FVector4>(&uniformValue))
+					Serializer::SerializeVec4(p_doc, uniform, "value", *val);
 				break;
 
 			case UniformType::UNIFORM_SAMPLER_2D:
-				if (uniformValue.type() == typeid(Texture*)) Serializer::SerializeTexture(p_doc, uniform, "value", std::any_cast<Texture*>(uniformValue));
+				if (auto texPtr = std::get_if<Texture*>(&uniformValue); texPtr && *texPtr)
+					Serializer::SerializeTexture(p_doc, uniform, "value", *texPtr);
 				break;
 			}
 		}

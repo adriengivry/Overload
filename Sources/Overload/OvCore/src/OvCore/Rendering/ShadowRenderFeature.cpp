@@ -36,7 +36,7 @@ void OvCore::Rendering::ShadowRenderFeature::OnBeforeDraw(OvRendering::Data::Pip
 
 			if (light.type == OvRendering::Settings::ELightType::DIRECTIONAL)
 			{
-				material.Set("u_ShadowMap", light.GetShadowBuffer().GetTexture());
+				material.Set("u_ShadowMap", &light.GetShadowBuffer().GetTexture());
 				material.Set("u_LightSpaceMatrix", light.GetLightSpaceMatrix());
 			}
 		}

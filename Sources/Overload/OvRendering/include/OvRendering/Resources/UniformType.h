@@ -6,7 +6,10 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
+
+#include <OvTools/Utils/OptRef.h>
+#include <OvRendering/Resources/Texture.h>
 
 namespace OvRendering::Resources
 {
@@ -26,4 +29,16 @@ namespace OvRendering::Resources
 		UNIFORM_SAMPLER_2D		= 0x8B5E,
 		UNIFORM_SAMPLER_CUBE	= 0x8B60
 	};
+
+	using UniformVariant = std::variant<
+		bool,
+		int,
+		float,
+		OvMaths::FVector2,
+		OvMaths::FVector3,
+		OvMaths::FVector4,
+		OvMaths::FMatrix4,
+		TextureHandle*,
+		Texture*
+	>;
 }

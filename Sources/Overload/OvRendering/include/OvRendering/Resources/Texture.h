@@ -15,9 +15,16 @@ namespace OvRendering::Resources
 {
 	namespace Loaders { class TextureLoader; }
 
+	/**
+	* Holds a reference to a texture ID
+	*/
 	class TextureHandle
 	{
 	public:
+		/**
+		* Create a texture handle wrapping the given texture ID
+		* @param p_id
+		*/
 		TextureHandle(const uint32_t p_id) : id(p_id) {}
 
 		/**
@@ -36,7 +43,7 @@ namespace OvRendering::Resources
 	};
 
 	/**
-	* OpenGL texture wrapper
+	* OpenGL texture wrapper, including extra data such as path
 	*/
 	class Texture : public TextureHandle
 	{
