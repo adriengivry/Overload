@@ -23,6 +23,8 @@ void OvCore::Resources::Material::OnSerialize(tinyxml2::XMLDocument & p_doc, tin
 	Serializer::SerializeBoolean(p_doc, settingsNode, "depth_test", m_depthTest);
 	Serializer::SerializeBoolean(p_doc, settingsNode, "depth_writing", m_depthWriting);
 	Serializer::SerializeBoolean(p_doc, settingsNode, "color_writing", m_colorWriting);
+	Serializer::SerializeBoolean(p_doc, settingsNode, "cast_shadows", m_castShadows);
+	Serializer::SerializeBoolean(p_doc, settingsNode, "receive_shadows", m_receiveShadows);
 	Serializer::SerializeInt(p_doc, settingsNode, "gpu_instances", m_gpuInstances);
 
 	// Create "Uniforms" (Every uniform will be attached to "Uniforms")
@@ -88,6 +90,8 @@ void OvCore::Resources::Material::OnDeserialize(tinyxml2::XMLDocument & p_doc, t
 		Serializer::DeserializeBoolean(p_doc, settingsNode, "depth_test", m_depthTest);
 		Serializer::DeserializeBoolean(p_doc, settingsNode, "depth_writing", m_depthWriting);
 		Serializer::DeserializeBoolean(p_doc, settingsNode, "color_writing", m_colorWriting);
+		Serializer::DeserializeBoolean(p_doc, settingsNode, "cast_shadows", m_castShadows);
+		Serializer::DeserializeBoolean(p_doc, settingsNode, "receive_shadows", m_receiveShadows);
 		Serializer::DeserializeInt(p_doc, settingsNode, "gpu_instances", m_gpuInstances);
 	}
 

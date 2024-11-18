@@ -147,6 +147,16 @@ void OvRendering::Data::Material::SetColorWriting(bool p_colorWriting)
 	m_colorWriting = p_colorWriting;
 }
 
+void OvRendering::Data::Material::SetCastShadows(bool p_castShadows)
+{
+	m_castShadows = p_castShadows;
+}
+
+void OvRendering::Data::Material::SetReceiveShadows(bool p_receiveShadows)
+{
+	m_receiveShadows = p_receiveShadows;
+}
+
 void OvRendering::Data::Material::SetGPUInstances(int p_instances)
 {
 	m_gpuInstances = p_instances;
@@ -180,6 +190,16 @@ bool OvRendering::Data::Material::HasDepthWriting() const
 bool OvRendering::Data::Material::HasColorWriting() const
 {
 	return m_colorWriting;
+}
+
+bool OvRendering::Data::Material::IsShadowCaster() const
+{
+	return m_castShadows;
+}
+
+bool OvRendering::Data::Material::IsShadowReceiver() const
+{
+	return m_receiveShadows;
 }
 
 int OvRendering::Data::Material::GetGPUInstances() const

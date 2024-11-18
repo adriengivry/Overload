@@ -12,6 +12,8 @@
 
 #include "OvRendering/Entities/Entity.h"
 #include "OvRendering/Settings/ELightType.h"
+#include "OvRendering/Resources/Texture.h"
+#include "OvRendering/Buffers/Framebuffer.h"
 
 namespace OvRendering::Entities
 {
@@ -28,6 +30,22 @@ namespace OvRendering::Entities
 		float cutoff = 12.f;
 		float outerCutoff = 15.f;
 		Settings::ELightType type = Settings::ELightType::POINT;
+		// TODO: Add bool to toggle shadow feature
+
+		/**
+		* Update the content of the shadow cache
+		*/
+		void UpdateShadowData(uint16_t p_shadowMapResolution);
+
+		/**
+		* Returns the light space matrix
+		*/
+		const OvMaths::FMatrix4& GetLightSpaceMatrix() const;
+
+		/**
+		* Returns the framebuffer used to render the shadow map
+		*/
+		const OvRendering::Buffers::Framebuffer& GetShadowBuffer() const;
 
 		/**
 		* Generate the light matrix, ready to send to the GPU
@@ -38,5 +56,8 @@ namespace OvRendering::Entities
 		* Calculate the light effect range from the quadratic falloff equation
 		*/
 		float GetEffectRange() const;
+
+		OvMaths::FMatrix4 lightSpaceMatrix;
+		std::unique_ptr<OvRendering::Buffers::Framebuffer> shadowBuffer;
 	};
 }

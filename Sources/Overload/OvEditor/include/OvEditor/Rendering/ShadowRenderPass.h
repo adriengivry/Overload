@@ -34,17 +34,11 @@ namespace OvEditor::Rendering
 		*/
 		ShadowRenderPass(OvRendering::Core::CompositeRenderer& p_renderer);
 
-		/**
-		* Get the depth map
-		*/
-		OvRendering::Resources::TextureHandle GetDepthMap();
-
 	private:
 		virtual void Draw(OvRendering::Data::PipelineState p_pso) override;
 		void DrawOpaques(OvRendering::Data::PipelineState p_pso, OvCore::SceneSystem::Scene& p_scene);
 
 	private:
-		OvRendering::Buffers::Framebuffer m_shadowFramebuffer;
 		OvCore::Resources::Material m_opaqueMaterial;
 	};
 }

@@ -29,7 +29,7 @@ namespace OvCore::ECS::Components
 		/**
 		* Returns light data
 		*/
-		const OvRendering::Entities::Light& GetData() const;
+		OvRendering::Entities::Light& GetData();
 
 		/**
 		* Returns light color

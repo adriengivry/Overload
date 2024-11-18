@@ -115,6 +115,18 @@ namespace OvRendering::Data
 		void SetColorWriting(bool p_colorWriting);
 
 		/**
+		* Sets the shadow casting state of the material
+		* @param p_castShadows
+		*/
+		void SetCastShadows(bool p_castShadows);
+
+		/**
+		* Sets the shadow receiving state of the material
+		* @param p_receiveShadows
+		*/
+		void SetReceiveShadows(bool p_receiveShadows);
+
+		/**
 		* Defines the number of instances
 		* @param p_instances
 		*/
@@ -151,6 +163,16 @@ namespace OvRendering::Data
 		bool HasColorWriting() const;
 
 		/**
+		* Returns true if the material is set to cast shadows
+		*/
+		bool IsShadowCaster() const;
+
+		/**
+		* Returns true if the material is set to receive shadows
+		*/
+		bool IsShadowReceiver() const;
+
+		/**
 		* Returns the number of instances
 		*/
 		int GetGPUInstances() const;
@@ -175,6 +197,9 @@ namespace OvRendering::Data
 		bool m_depthTest = true;
 		bool m_depthWriting = true;
 		bool m_colorWriting = true;
+		bool m_castShadows = false;
+		bool m_receiveShadows = false;
+
 		int m_gpuInstances = 1;
 	};
 }

@@ -18,17 +18,11 @@
 constexpr uint16_t kShadowMapSize = 4096;
 
 OvEditor::Rendering::ShadowRenderPass::ShadowRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) :
-	OvRendering::Core::ARenderPass(p_renderer),
-	m_shadowFramebuffer(kShadowMapSize, kShadowMapSize, true)
+	OvRendering::Core::ARenderPass(p_renderer)
 {
 	m_opaqueMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Shadow.ovfx"]);
 	m_opaqueMaterial.SetFrontfaceCulling(true);
 	m_opaqueMaterial.SetBackfaceCulling(false);
-}
-
-OvRendering::Resources::TextureHandle OvEditor::Rendering::ShadowRenderPass::GetDepthMap()
-{
-	return m_shadowFramebuffer.GetTexture();
 }
 
 void OvEditor::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineState p_pso)
@@ -48,32 +42,24 @@ void OvEditor::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineStat
 
 	EDITOR_CONTEXT(driver)->SetViewport(0, 0, kShadowMapSize, kShadowMapSize);
 
-	m_shadowFramebuffer.Bind();
-
 	auto pso = m_renderer.CreatePipelineState();
 
-	m_renderer.Clear(true, true, true);
-
-	for (auto light : lightingDescriptor.lights)
+	for (auto lightReference : lightingDescriptor.lights)
 	{
-		if (light.get().type == OvRendering::Settings::ELightType::DIRECTIONAL)
-		{
-			const auto& lightEntity = light.get();
-			const float near_plane = 1.0f;
-			const float far_plane = 7.5f;
-			OvRendering::Entities::Camera lightCamera;
-			lightCamera.SetPosition(lightEntity.transform.Get().GetWorldPosition());
-			lightCamera.SetRotation(lightEntity.transform.Get().GetWorldRotation());
-			lightCamera.CacheMatrices(kShadowMapSize, kShadowMapSize);
-			const auto lightSpaceMatrix = lightCamera.GetProjectionMatrix() * lightCamera.GetViewMatrix();
+		auto& light = lightReference.get();
 
+		if (light.type == OvRendering::Settings::ELightType::DIRECTIONAL)
+		{
+			light.UpdateShadowData(kShadowMapSize);
+			const auto& lightSpaceMatrix = light.GetLightSpaceMatrix();
+			const auto& shadowBuffer = light.GetShadowBuffer();
 			m_opaqueMaterial.Set("u_LightSpaceMatrix", lightSpaceMatrix);
+			shadowBuffer.Bind();
+			m_renderer.Clear(true, true, true);
 			DrawOpaques(pso, scene);
-			break;
+			shadowBuffer.Unbind();
 		}
 	}
-
-	m_shadowFramebuffer.Unbind();
 
 	if (auto output = frameDescriptor.outputBuffer)
 	{
@@ -107,21 +93,21 @@ void OvEditor::Rendering::ShadowRenderPass::DrawOpaques(
 
 						// TODO: Don't override the state
 						// Override the state mask to use the material state mask (if this one is valid)
-						if (auto material = materials.at(mesh->GetMaterialIndex()); material && material->IsValid())
+						if (auto material = materials.at(mesh->GetMaterialIndex()); material && material->IsValid() && material->IsShadowCaster())
 						{
 							stateMask = material->GenerateStateMask();
+							OvRendering::Entities::Drawable drawable;
+							drawable.mesh = *mesh;
+							drawable.material = m_opaqueMaterial;
+							drawable.stateMask = stateMask;
+
+							drawable.AddDescriptor<OvCore::Rendering::EngineDrawableDescriptor>({
+								modelMatrix
+							});
+
+							m_renderer.DrawEntity(p_pso, drawable);
 						}
 
-						OvRendering::Entities::Drawable drawable;
-						drawable.mesh = *mesh;
-						drawable.material = m_opaqueMaterial;
-						drawable.stateMask = stateMask;
-
-						drawable.AddDescriptor<OvCore::Rendering::EngineDrawableDescriptor>({
-							modelMatrix
-						});
-
-						m_renderer.DrawEntity(p_pso, drawable);
 					}
 				}
 			}

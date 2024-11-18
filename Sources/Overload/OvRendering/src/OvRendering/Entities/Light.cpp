@@ -4,7 +4,9 @@
 * @licence: MIT
 */
 
-#include "OvRendering/Entities/Light.h"
+#include <OvRendering/Entities/Light.h>
+#include <OvRendering/Entities/Camera.h>
+#include <OvDebug/Assertion.h>
 
 uint32_t Pack(uint8_t c0, uint8_t c1, uint8_t c2, uint8_t c3)
 {
@@ -14,6 +16,45 @@ uint32_t Pack(uint8_t c0, uint8_t c1, uint8_t c2, uint8_t c3)
 uint32_t Pack(const OvMaths::FVector3& p_toPack)
 {
 	return Pack(static_cast<uint8_t>(p_toPack.x * 255.f), static_cast<uint8_t>(p_toPack.y * 255.f), static_cast<uint8_t>(p_toPack.z * 255.f), 0);
+}
+
+void OvRendering::Entities::Light::UpdateShadowData(uint16_t p_shadowMapResolution)
+{
+	if (type == OvRendering::Settings::ELightType::DIRECTIONAL)
+	{
+		if (!shadowBuffer)
+		{
+			shadowBuffer = std::make_unique<OvRendering::Buffers::Framebuffer>(p_shadowMapResolution, p_shadowMapResolution, true);
+		}
+		else
+		{
+			shadowBuffer->Resize(p_shadowMapResolution, p_shadowMapResolution);
+		}
+
+		OvRendering::Entities::Camera lightCamera;
+		// TODO: Potentally expose the camera size, near, and far, in the light settings
+		lightCamera.SetSize(10.0f);
+		lightCamera.SetProjectionMode(OvRendering::Settings::EProjectionMode::ORTHOGRAPHIC);
+		lightCamera.SetPosition(transform.Get().GetWorldPosition());
+		lightCamera.SetRotation(transform.Get().GetWorldRotation());
+		lightCamera.CacheMatrices(p_shadowMapResolution, p_shadowMapResolution);
+		lightSpaceMatrix = lightCamera.GetProjectionMatrix() * lightCamera.GetViewMatrix();
+	}
+	else
+	{
+		shadowBuffer.reset();
+	}
+}
+
+const OvMaths::FMatrix4& OvRendering::Entities::Light::GetLightSpaceMatrix() const
+{
+	return lightSpaceMatrix;
+}
+
+const OvRendering::Buffers::Framebuffer& OvRendering::Entities::Light::GetShadowBuffer() const
+{
+	OVASSERT(shadowBuffer != nullptr, "Cannot retrieve the shadow map because this light has no framebuffer!");
+	return *shadowBuffer;
 }
 
 OvMaths::FMatrix4 OvRendering::Entities::Light::GenerateMatrix() const
