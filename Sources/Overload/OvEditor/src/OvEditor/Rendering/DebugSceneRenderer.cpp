@@ -27,8 +27,6 @@
 #include "OvEditor/Rendering/OutlineRenderFeature.h"
 #include "OvEditor/Rendering/GizmoRenderFeature.h"
 #include "OvEditor/Rendering/PickingRenderPass.h"
-#include "OvEditor/Rendering/ShadowRenderPass.h"
-#include "OvEditor/Rendering/ShadowRenderFeature.h"
 #include "OvEditor/Core/EditorResources.h"
 #include "OvEditor/Panels/AView.h"
 #include "OvEditor/Panels/GameView.h"
@@ -569,9 +567,7 @@ OvEditor::Rendering::DebugSceneRenderer::DebugSceneRenderer(OvRendering::Context
 	AddFeature<OvEditor::Rendering::DebugModelRenderFeature>();
 	AddFeature<OvEditor::Rendering::OutlineRenderFeature>();
 	AddFeature<OvEditor::Rendering::GizmoRenderFeature>();
-	AddFeature<OvEditor::Rendering::ShadowRenderFeature>();
 
-	AddPass<ShadowRenderPass>("Shadows", OvRendering::Settings::ERenderPassOrder::Opaque - 2);
 	AddPass<GridRenderPass>("Grid", OvRendering::Settings::ERenderPassOrder::Opaque - 1);
 	AddPass<DebugCamerasRenderPass>("Debug Cameras", OvRendering::Settings::ERenderPassOrder::Transparent + 1);
 	AddPass<DebugLightsRenderPass>("Debug Lights", OvRendering::Settings::ERenderPassOrder::Transparent + 2);

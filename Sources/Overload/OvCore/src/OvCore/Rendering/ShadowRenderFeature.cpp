@@ -4,26 +4,21 @@
 * @licence: MIT
 */
 
-#include "OvEditor/Rendering/DebugModelRenderFeature.h"
-#include "OvEditor/Rendering/ShadowRenderFeature.h"
-#include "OvEditor/Rendering/ShadowRenderPass.h"
-#include "OvEditor/Core/EditorActions.h"
-#include "OvEditor/Settings/EditorSettings.h"
-#include "OvEditor/Rendering/DebugSceneRenderer.h"
-
 #include <OvCore/ECS/Components/CMaterialRenderer.h>
 #include <OvCore/Rendering/EngineDrawableDescriptor.h>
 #include <OvCore/Rendering/EngineBufferRenderFeature.h>
+#include <OvCore/Rendering/ShadowRenderFeature.h>
+#include <OvCore/Rendering/ShadowRenderPass.h>
 #include <OvRendering/Features/LightingRenderFeature.h>
 
 constexpr uint16_t kShadowMapSize = 1024;
 
-OvEditor::Rendering::ShadowRenderFeature::ShadowRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer) :
+OvCore::Rendering::ShadowRenderFeature::ShadowRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer) :
 	ARenderFeature(p_renderer)
 {
 }
 
-void OvEditor::Rendering::ShadowRenderFeature::OnBeforeDraw(OvRendering::Data::PipelineState& p_pso, const OvRendering::Entities::Drawable& p_drawable)
+void OvCore::Rendering::ShadowRenderFeature::OnBeforeDraw(OvRendering::Data::PipelineState& p_pso, const OvRendering::Entities::Drawable& p_drawable)
 {
 	auto& material = p_drawable.material.value();
 
@@ -48,7 +43,7 @@ void OvEditor::Rendering::ShadowRenderFeature::OnBeforeDraw(OvRendering::Data::P
 	}
 }
 
-void OvEditor::Rendering::ShadowRenderFeature::OnAfterDraw(OvRendering::Data::PipelineState& p_pso, const OvRendering::Entities::Drawable& p_drawable)
+void OvCore::Rendering::ShadowRenderFeature::OnAfterDraw(OvRendering::Data::PipelineState& p_pso, const OvRendering::Entities::Drawable& p_drawable)
 {
 
 }

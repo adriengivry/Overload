@@ -4,28 +4,29 @@
 * @licence: MIT
 */
 
-#include "OvEditor/Rendering/DebugModelRenderFeature.h"
-#include "OvEditor/Rendering/ShadowRenderPass.h"
-#include "OvEditor/Core/EditorActions.h"
-#include "OvEditor/Settings/EditorSettings.h"
-#include "OvEditor/Rendering/DebugSceneRenderer.h"
+#include "OvCore/Rendering/ShadowRenderPass.h"
 
 #include <OvCore/ECS/Components/CMaterialRenderer.h>
 #include <OvCore/Rendering/EngineDrawableDescriptor.h>
 #include <OvCore/Rendering/EngineBufferRenderFeature.h>
 #include <OvRendering/Features/LightingRenderFeature.h>
+#include <OvCore/ResourceManagement/ShaderManager.h>
+#include <OvCore/Global/ServiceLocator.h>
 
 constexpr uint16_t kShadowMapSize = 4096;
 
-OvEditor::Rendering::ShadowRenderPass::ShadowRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) :
+OvCore::Rendering::ShadowRenderPass::ShadowRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) :
 	OvRendering::Core::ARenderPass(p_renderer)
 {
-	m_opaqueMaterial.SetShader(EDITOR_CONTEXT(shaderManager)[":Shaders\\Shadow.ovfx"]);
+	const auto shadowShader = OVSERVICE(OvCore::ResourceManagement::ShaderManager).GetResource(":Shaders\\Shadow.ovfx");
+	OVASSERT(shadowShader, "Cannot find the shadow shader");
+
+	m_opaqueMaterial.SetShader(shadowShader);
 	m_opaqueMaterial.SetFrontfaceCulling(true);
 	m_opaqueMaterial.SetBackfaceCulling(false);
 }
 
-void OvEditor::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineState p_pso)
+void OvCore::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineState p_pso)
 {
 	using namespace OvCore::Rendering;
 
@@ -40,7 +41,7 @@ void OvEditor::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineStat
 	auto& frameDescriptor = m_renderer.GetFrameDescriptor();
 	auto& scene = sceneDescriptor.scene;
 
-	EDITOR_CONTEXT(driver)->SetViewport(0, 0, kShadowMapSize, kShadowMapSize);
+	m_renderer.SetViewport(0, 0, kShadowMapSize, kShadowMapSize);
 
 	auto pso = m_renderer.CreatePipelineState();
 
@@ -66,10 +67,10 @@ void OvEditor::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineStat
 		output.value().Bind();
 	}
 
-	EDITOR_CONTEXT(driver)->SetViewport(0, 0, frameDescriptor.renderWidth, frameDescriptor.renderHeight);
+	m_renderer.SetViewport(0, 0, frameDescriptor.renderWidth, frameDescriptor.renderHeight);
 }
 
-void OvEditor::Rendering::ShadowRenderPass::DrawOpaques(
+void OvCore::Rendering::ShadowRenderPass::DrawOpaques(
 	OvRendering::Data::PipelineState p_pso,
 	OvCore::SceneSystem::Scene& p_scene
 )

@@ -17,28 +17,22 @@
 #include <OvCore/ECS/Components/CAmbientSphereLight.h>
 #include <OvCore/Rendering/SceneRenderer.h>
 
-#include "OvEditor/Core/Context.h"
-#include "OvEditor/Core/GizmoBehaviour.h"
-
-namespace OvEditor::Rendering
+namespace OvCore::Rendering
 {
 	/**
 	* Draw the scene for actor picking
 	*/
-	class ShadowRenderPass : public OvRendering::Core::ARenderPass
+	class ShadowRenderFeature : public OvRendering::Features::ARenderFeature
 	{
 	public:
 		/**
 		* Constructor
 		* @param p_renderer
 		*/
-		ShadowRenderPass(OvRendering::Core::CompositeRenderer& p_renderer);
+		ShadowRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer);
 
-	private:
-		virtual void Draw(OvRendering::Data::PipelineState p_pso) override;
-		void DrawOpaques(OvRendering::Data::PipelineState p_pso, OvCore::SceneSystem::Scene& p_scene);
-
-	private:
-		OvCore::Resources::Material m_opaqueMaterial;
+	protected:
+		virtual void OnBeforeDraw(OvRendering::Data::PipelineState& p_pso, const OvRendering::Entities::Drawable& p_drawable);
+		virtual void OnAfterDraw(OvRendering::Data::PipelineState& p_pso, const OvRendering::Entities::Drawable& p_drawable);
 	};
 }

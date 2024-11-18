@@ -83,6 +83,15 @@ namespace OvRendering::Core
 		) const;
 
 		/**
+		* Set the viewport
+		* @param p_x
+		* @param p_y
+		* @param p_width
+		* @param p_height
+		*/
+		void SetViewport(uint32_t p_x, uint32_t p_y, uint32_t p_width, uint32_t p_height);
+
+		/**
 		* Clear the screen
 		* @param p_colorBuffer
 		* @param p_depthBuffer

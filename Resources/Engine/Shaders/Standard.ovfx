@@ -113,7 +113,7 @@ void main()
     {
         vec3 normal = ComputeNormal(u_EnableNormalMapping, texCoords, fs_in.Normal, u_NormalMap, fs_in.TBN);
         float shadow = ShadowCalculation(fs_in.FragPosLightSpace);
-        FRAGMENT_COLOR = (1.0 - shadow) * ComputeBlinnPhongLighting(texCoords, normal, ubo_ViewPos, fs_in.FragPos, u_Diffuse, u_Specular, u_DiffuseMap, u_SpecularMap, u_Shininess);
+        FRAGMENT_COLOR = ComputeBlinnPhongLighting(texCoords, normal, ubo_ViewPos, fs_in.FragPos, u_Diffuse, u_Specular, u_DiffuseMap, u_SpecularMap, u_Shininess, shadow);
     }
     else
     {
