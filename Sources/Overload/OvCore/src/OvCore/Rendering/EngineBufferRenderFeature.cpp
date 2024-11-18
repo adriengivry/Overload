@@ -27,22 +27,6 @@ OvCore::Rendering::EngineBufferRenderFeature::EngineBufferRenderFeature(OvRender
 	m_startTime = std::chrono::high_resolution_clock::now();
 }
 
-void OvCore::Rendering::EngineBufferRenderFeature::ApplyOverrideCamera(OvRendering::Entities::Camera& p_camera)
-{
-	size_t offset = sizeof(OvMaths::FMatrix4);
-	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(p_camera.GetViewMatrix()), std::ref(offset));
-	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(p_camera.GetProjectionMatrix()), std::ref(offset));
-	m_engineBuffer->SetSubData(p_camera.GetPosition(), std::ref(offset));
-}
-
-void OvCore::Rendering::EngineBufferRenderFeature::RevertOverrideCamera()
-{
-	size_t offset = sizeof(OvMaths::FMatrix4);
-	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(m_cachedFrameDescriptor.camera->GetViewMatrix()), std::ref(offset));
-	m_engineBuffer->SetSubData(OvMaths::FMatrix4::Transpose(m_cachedFrameDescriptor.camera->GetProjectionMatrix()), std::ref(offset));
-	m_engineBuffer->SetSubData(m_cachedFrameDescriptor.camera->GetPosition(), std::ref(offset));
-}
-
 void OvCore::Rendering::EngineBufferRenderFeature::OnBeginFrame(const OvRendering::Data::FrameDescriptor& p_frameDescriptor)
 {
 	m_cachedFrameDescriptor = p_frameDescriptor;
