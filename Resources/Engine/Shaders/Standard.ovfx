@@ -70,50 +70,15 @@ uniform sampler2D u_ShadowMap;
 
 out vec4 FRAGMENT_COLOR;
 
-float ShadowCalculation(vec4 fragPosLightSpace)
-{
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
-
-    if (projCoords.z > 1.0 || projCoords.z < 0.0) return 0.0;
-
-    float closestDepth = texture(u_ShadowMap, projCoords.xy).r;
-    float currentDepth = projCoords.z;
-    float bias = 0.003; // TODO: Update the bias to depend on the light direction
-
-    float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(u_ShadowMap, 0);
-    const int range = 1;
-    const int steps = range * 2 + 1;
-    const int samples = steps * steps;
-
-    for (int x = -range; x <= range; ++x)
-    {
-        for (int y = -range; y <= range; ++y)
-        {
-            float pcfDepth = texture(u_ShadowMap, projCoords.xy + (vec2(x - 0.5, y - 0.5) * texelSize)).r;
-            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
-        }
-    }
-    shadow /= samples;
-
-    vec3 center = vec3(0.5, 0.5, 0.5);
-    float distanceToCenter = distance(projCoords.xyz, center);
-    float falloff = (1.0 - pow(distanceToCenter * 2.0, 2.0));
-
-    return clamp(shadow * falloff, 0.0, 1.0);
-}
-
 void main()
 {
     vec2 texCoords = TileAndOffsetTexCoords(fs_in.TexCoords, u_TextureTiling, u_TextureOffset);
     texCoords = ApplyParallaxMapping(texCoords, u_HeightMap, fs_in.TangentViewPos, fs_in.TangentFragPos, u_HeightScale);
 
-
     if (!IsMasked(u_MaskMap, texCoords))
     {
         vec3 normal = ComputeNormal(u_EnableNormalMapping, texCoords, fs_in.Normal, u_NormalMap, fs_in.TBN);
-        float shadow = ShadowCalculation(fs_in.FragPosLightSpace);
+        float shadow = CalculateShadow(fs_in.FragPosLightSpace, u_ShadowMap);
         FRAGMENT_COLOR = ComputeBlinnPhongLighting(texCoords, normal, ubo_ViewPos, fs_in.FragPos, u_Diffuse, u_Specular, u_DiffuseMap, u_SpecularMap, u_Shininess, shadow);
     }
     else

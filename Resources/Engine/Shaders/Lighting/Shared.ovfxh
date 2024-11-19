@@ -10,3 +10,34 @@ float LuminosityFromAttenuation(mat4 light, vec3 fragPos)
     
     return 1.0 / attenuation;
 }
+
+float CalculateShadow(vec4 fragPosLightSpace, sampler2D shadowMap)
+{
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+
+    if (projCoords.z > 1.0 || projCoords.z < 0.0) return 0.0;
+
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+    float bias = 0.003; // TODO: Update the bias to depend on the light direction
+
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    const int range = 2;
+    const int steps = range * 2 + 1;
+    const int samples = steps * steps;
+
+    for (int x = -range; x <= range; ++x)
+    {
+        for (int y = -range; y <= range; ++y)
+        {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+
+    shadow /= samples;
+
+    return shadow;
+}
