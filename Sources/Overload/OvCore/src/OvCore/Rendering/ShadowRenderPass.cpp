@@ -51,7 +51,7 @@ void OvCore::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineState 
 
 		if (light.type == OvRendering::Settings::ELightType::DIRECTIONAL)
 		{
-			light.UpdateShadowData(kShadowMapSize);
+			light.UpdateShadowData(kShadowMapSize, frameDescriptor.camera.value());
 			const auto& lightSpaceMatrix = light.GetLightSpaceMatrix();
 			const auto& shadowBuffer = light.GetShadowBuffer();
 			m_opaqueMaterial.Set("u_LightSpaceMatrix", lightSpaceMatrix);

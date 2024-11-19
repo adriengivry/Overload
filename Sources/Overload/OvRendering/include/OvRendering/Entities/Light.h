@@ -14,6 +14,7 @@
 #include "OvRendering/Settings/ELightType.h"
 #include "OvRendering/Resources/Texture.h"
 #include "OvRendering/Buffers/Framebuffer.h"
+#include <OvRendering/Entities/Camera.h>
 
 namespace OvRendering::Entities
 {
@@ -34,8 +35,10 @@ namespace OvRendering::Entities
 
 		/**
 		* Update the content of the shadow cache
+		* @param p_shadowMapResolution
+		* @param p_camera
 		*/
-		void UpdateShadowData(uint16_t p_shadowMapResolution);
+		void UpdateShadowData(uint16_t p_shadowMapResolution, const OvRendering::Entities::Camera& p_camera);
 
 		/**
 		* Returns the light space matrix

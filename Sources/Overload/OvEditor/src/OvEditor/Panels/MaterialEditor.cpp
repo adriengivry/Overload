@@ -357,7 +357,7 @@ void OvEditor::Panels::MaterialEditor::GenerateShaderSettingsContent()
 						auto texture = std::any_cast<Texture*>(*info.second);
 						GUIDrawer::DrawTexture(*m_shaderSettingsColumns, formattedType, texture);
 					}
-					catch (const std::bad_any_cast& e)
+					catch (const std::bad_any_cast&)
 					{
 						// If the cast failed, it means that the uniform is not a texture (It's a texture handle)
 					}
