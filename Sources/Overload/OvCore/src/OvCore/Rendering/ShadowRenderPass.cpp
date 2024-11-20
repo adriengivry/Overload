@@ -22,7 +22,7 @@ OvCore::Rendering::ShadowRenderPass::ShadowRenderPass(OvRendering::Core::Composi
 	OVASSERT(shadowShader, "Cannot find the shadow shader");
 
 	m_opaqueMaterial.SetShader(shadowShader);
-	m_opaqueMaterial.SetFrontfaceCulling(true);
+	m_opaqueMaterial.SetFrontfaceCulling(false);
 	m_opaqueMaterial.SetBackfaceCulling(false);
 }
 
@@ -96,7 +96,6 @@ void OvCore::Rendering::ShadowRenderPass::DrawOpaques(
 						// Override the state mask to use the material state mask (if this one is valid)
 						if (auto material = materials.at(mesh->GetMaterialIndex()); material && material->IsValid() && material->IsShadowCaster())
 						{
-							stateMask = material->GenerateStateMask();
 							OvRendering::Entities::Drawable drawable;
 							drawable.mesh = *mesh;
 							drawable.material = m_opaqueMaterial;

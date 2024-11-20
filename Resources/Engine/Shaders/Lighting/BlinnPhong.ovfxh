@@ -27,9 +27,10 @@ vec3 ComputePointLight(mat4 light, vec3 fragPos, vec4 diffuseTexel, vec4 specula
 
 vec3 ComputeDirectionalLight(mat4 light, vec3 fragPos, vec4 diffuseTexel, vec4 specularTexel, vec3 normal, vec3 viewDir, float shininess, sampler2D shadowMap, mat4 lightSpaceMatrix)
 {
-    vec3 blinnPhong = BlinnPhong(-light[1].rgb, UnPack(light[2][0]), light[3][3], diffuseTexel, specularTexel, normal, viewDir, shininess);
+    vec3 lightDir = -light[1].rgb;
+    vec3 blinnPhong = BlinnPhong(lightDir, UnPack(light[2][0]), light[3][3], diffuseTexel, specularTexel, normal, viewDir, shininess);
     vec4 fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
-    float shadow = CalculateShadow(fragPosLightSpace, shadowMap);
+    float shadow = CalculateShadow(fragPosLightSpace, shadowMap, normal, lightDir);
     return (1.0 - shadow) * blinnPhong;
 }
 

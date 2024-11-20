@@ -11,33 +11,57 @@ float LuminosityFromAttenuation(mat4 light, vec3 fragPos)
     return 1.0 / attenuation;
 }
 
-float CalculateShadow(vec4 fragPosLightSpace, sampler2D shadowMap)
+float SampleShadow(sampler2D shadowMap, vec3 projCoords, float bias)
 {
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
+    float depth = texture(shadowMap, projCoords.xy).r;
+    return 1.0 - step(projCoords.z - bias, depth);
+}
 
-    if (projCoords.z > 1.0 || projCoords.z < 0.0) return 0.0;
+// Distance fade for shadows to appear smoothly
+float CalculateShadowFalloff(vec3 projCoords, float intensity) {
+    const float dist = (0.5 - clamp(distance(projCoords, vec3(0.5)), 0.0, 0.5)) * 2.0;
+    return 1.0 - pow(1.0 - dist, intensity);
+}
 
-    float closestDepth = texture(shadowMap, projCoords.xy).r;
-    float currentDepth = projCoords.z;
-    float bias = 0.003; // TODO: Update the bias to depend on the light direction
+// PCF (Percentage-Closer Filtering) shadows => AKA Soft Shadows
+float CalculateSoftShadow(sampler2D shadowMap, vec3 projCoords, float bias)
+{
+    const vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
+    const int range = 1;
+    const float invSamples = 1.0 / pow((range * 2 + 1), 2);
 
     float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-    const int range = 2;
-    const int steps = range * 2 + 1;
-    const int samples = steps * steps;
 
     for (int x = -range; x <= range; ++x)
     {
         for (int y = -range; y <= range; ++y)
         {
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+            const vec2 offset = vec2(x, y) * texelSize;
+            const vec3 offsettedProjCoords = vec3(projCoords.xy + offset, projCoords.z);
+            shadow += SampleShadow(shadowMap, offsettedProjCoords, bias);
         }
     }
 
-    shadow /= samples;
+    return shadow * invSamples;
+}
+
+// Default shadow calculation
+float CalculateHardShadow(sampler2D shadowMap, vec3 projCoords, float bias)
+{
+    return SampleShadow(shadowMap, projCoords, bias);
+}
+
+float CalculateShadow(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 normal, vec3 lightDir)
+{
+    const vec3 projCoords = (fragPosLightSpace.xyz / fragPosLightSpace.w) * 0.5 + 0.5;
+
+    if (projCoords.z > 1.0) return 0.0;
+
+    float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.001);
+
+    float shadow = CalculateSoftShadow(shadowMap, projCoords, bias);
+    
+    shadow *= CalculateShadowFalloff(projCoords, 8);
 
     return shadow;
 }

@@ -35,3 +35,7 @@ project "OvGame"
 		defines { "NDEBUG" }
 		optimize "On"
 		kind "WindowedApp"
+
+	filter { "system:windows" }
+		-- forces post-build commands to trigger even if nothing changed
+		fastuptodate "Off"
