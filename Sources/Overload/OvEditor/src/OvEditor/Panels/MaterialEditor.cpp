@@ -318,7 +318,7 @@ void OvEditor::Panels::MaterialEditor::GenerateShaderSettingsContent()
 
 		auto uniformData = m_target->GetShader()->GetUniformInfo(name);
 
-		if (uniformData)
+		if (uniformData && name.length() > 0 && name[0] != '_') // Uniforms starting with '_' are internal (private), so not exposed
 		{
 			switch (uniformData->type)
 			{
