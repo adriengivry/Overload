@@ -13,6 +13,9 @@
 
 constexpr uint16_t kShadowMapSize = 1024;
 
+// Limited to one shadow map at the moment. Support for material uniform arrays is needed
+constexpr uint8_t kMaxShadowMaps = 1;
+
 OvCore::Rendering::ShadowRenderFeature::ShadowRenderFeature(OvRendering::Core::CompositeRenderer& p_renderer) :
 	ARenderFeature(p_renderer)
 {
@@ -30,14 +33,17 @@ void OvCore::Rendering::ShadowRenderFeature::OnBeforeDraw(OvRendering::Data::Pip
 
 		auto& lightDescriptor = m_renderer.GetDescriptor<OvRendering::Features::LightingRenderFeature::LightingDescriptor>();
 
+		uint8_t lightIndex = 0;
+
 		for (auto lightReference : lightDescriptor.lights)
 		{
 			const auto& light = lightReference.get();
 
-			if (light.type == OvRendering::Settings::ELightType::DIRECTIONAL)
+			if (light.type == OvRendering::Settings::ELightType::DIRECTIONAL && lightIndex < kMaxShadowMaps)
 			{
-				material.Set("u_ShadowMap", light.GetShadowBuffer().GetTexture());
-				material.Set("u_LightSpaceMatrix", light.GetLightSpaceMatrix());
+				material.Set("_ShadowMap", light.GetShadowBuffer().GetTexture());
+				material.Set("_LightSpaceMatrix", light.GetLightSpaceMatrix());
+				++lightIndex;
 			}
 		}
 	}

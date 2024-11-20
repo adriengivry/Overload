@@ -13,7 +13,6 @@ layout (location = 4) in vec3 geo_Bitangent;
 out VS_OUT
 {
     vec3 FragPos;
-    vec4 FragPosLightSpace;
     vec2 TexCoords;
     vec3 Normal;
     mat3 TBN;
@@ -21,12 +20,9 @@ out VS_OUT
     vec3 TangentFragPos;
 } vs_out;
 
-uniform mat4 u_LightSpaceMatrix;
-
 void main()
 {
     vs_out.FragPos = vec3(ubo_Model * vec4(geo_Pos, 1.0));
-    vs_out.FragPosLightSpace = u_LightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
     vs_out.TexCoords = geo_TexCoords;
     vs_out.Normal = normalize(mat3(transpose(inverse(ubo_Model))) * geo_Normal);
     vs_out.TBN = ConstructTBN(ubo_Model, geo_Normal, geo_Tangent, geo_Bitangent);
@@ -45,7 +41,6 @@ void main()
 in VS_OUT
 {
     vec3 FragPos;
-    vec4 FragPosLightSpace;
     vec2 TexCoords;
     vec3 Normal;
     mat3 TBN;
@@ -66,7 +61,8 @@ uniform sampler2D u_NormalMap;
 uniform sampler2D u_HeightMap;
 uniform sampler2D u_MaskMap;
 
-uniform sampler2D u_ShadowMap;
+uniform sampler2D _ShadowMap;
+uniform mat4 _LightSpaceMatrix;
 
 out vec4 FRAGMENT_COLOR;
 
@@ -78,8 +74,19 @@ void main()
     if (!IsMasked(u_MaskMap, texCoords))
     {
         vec3 normal = ComputeNormal(u_EnableNormalMapping, texCoords, fs_in.Normal, u_NormalMap, fs_in.TBN);
-        float shadow = CalculateShadow(fs_in.FragPosLightSpace, u_ShadowMap);
-        FRAGMENT_COLOR = ComputeBlinnPhongLighting(texCoords, normal, ubo_ViewPos, fs_in.FragPos, u_Diffuse, u_Specular, u_DiffuseMap, u_SpecularMap, u_Shininess, shadow);
+        FRAGMENT_COLOR = ComputeBlinnPhongLighting(
+            texCoords,
+            normal,
+            ubo_ViewPos,
+            fs_in.FragPos,
+            u_Diffuse,
+            u_Specular,
+            u_DiffuseMap,
+            u_SpecularMap,
+            u_Shininess,
+            _ShadowMap,
+            _LightSpaceMatrix
+        );
     }
     else
     {

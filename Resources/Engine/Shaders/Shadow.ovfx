@@ -5,12 +5,12 @@
 
 layout (location = 0) in vec3 geo_Pos;
 
-uniform mat4 u_LightSpaceMatrix;
+uniform mat4 _LightSpaceMatrix;
 
 void main()
 {
     vec4 fragPos = ubo_Model * vec4(geo_Pos, 1.0);
-    gl_Position = u_LightSpaceMatrix * fragPos;
+    gl_Position = _LightSpaceMatrix * fragPos;
 }
 
 #shader fragment

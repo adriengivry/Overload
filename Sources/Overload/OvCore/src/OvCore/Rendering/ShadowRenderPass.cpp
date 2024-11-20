@@ -54,7 +54,7 @@ void OvCore::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineState 
 			light.UpdateShadowData(kShadowMapSize, frameDescriptor.camera.value());
 			const auto& lightSpaceMatrix = light.GetLightSpaceMatrix();
 			const auto& shadowBuffer = light.GetShadowBuffer();
-			m_opaqueMaterial.Set("u_LightSpaceMatrix", lightSpaceMatrix);
+			m_opaqueMaterial.Set("_LightSpaceMatrix", lightSpaceMatrix);
 			shadowBuffer.Bind();
 			m_renderer.Clear(true, true, true);
 			DrawOpaques(pso, scene);
