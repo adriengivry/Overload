@@ -22,9 +22,9 @@ OvCore::Rendering::ShadowRenderPass::ShadowRenderPass(OvRendering::Core::Composi
 	const auto shadowShader = OVSERVICE(OvCore::ResourceManagement::ShaderManager).GetResource(":Shaders\\Shadow.ovfx");
 	OVASSERT(shadowShader, "Cannot find the shadow shader");
 
-	m_opaqueMaterial.SetShader(shadowShader);
-	m_opaqueMaterial.SetFrontfaceCulling(false);
-	m_opaqueMaterial.SetBackfaceCulling(false);
+	m_shadowMaterial.SetShader(shadowShader);
+	m_shadowMaterial.SetFrontfaceCulling(false);
+	m_shadowMaterial.SetBackfaceCulling(false);
 }
 
 void OvCore::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineState p_pso)
@@ -61,7 +61,7 @@ void OvCore::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineState 
 					light.UpdateShadowData(kShadowMapSize, frameDescriptor.camera.value());
 					const auto& lightSpaceMatrix = light.GetLightSpaceMatrix();
 					const auto& shadowBuffer = light.GetShadowBuffer();
-					m_opaqueMaterial.Set("_LightSpaceMatrix", lightSpaceMatrix);
+					m_shadowMaterial.Set("_LightSpaceMatrix", lightSpaceMatrix);
 					shadowBuffer.Bind();
 					m_renderer.Clear(true, true, true);
 					DrawOpaques(pso, scene);
@@ -103,20 +103,14 @@ void OvCore::Rendering::ShadowRenderPass::DrawOpaques(
 
 					for (auto mesh : model->GetMeshes())
 					{
-						auto stateMask = m_opaqueMaterial.GenerateStateMask();
-
-						// TODO: Don't override the state
-						// Override the state mask to use the material state mask (if this one is valid)
 						if (auto material = materials.at(mesh->GetMaterialIndex()); material && material->IsValid() && material->IsShadowCaster())
 						{
 							OvRendering::Entities::Drawable drawable;
 							drawable.mesh = *mesh;
-							drawable.material = m_opaqueMaterial;
-							drawable.stateMask = stateMask;
+							drawable.material = m_shadowMaterial;
+							drawable.stateMask = m_shadowMaterial.GenerateStateMask();
 
-							drawable.AddDescriptor<OvCore::Rendering::EngineDrawableDescriptor>({
-								modelMatrix
-							});
+							drawable.material.value().Set("_ModelMatrix", modelMatrix);
 
 							m_renderer.DrawEntity(p_pso, drawable);
 						}

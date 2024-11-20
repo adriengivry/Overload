@@ -36,6 +36,6 @@ namespace OvCore::Rendering
 		void DrawOpaques(OvRendering::Data::PipelineState p_pso, OvCore::SceneSystem::Scene& p_scene);
 
 	private:
-		OvCore::Resources::Material m_opaqueMaterial;
+		OvCore::Resources::Material m_shadowMaterial;
 	};
 }
