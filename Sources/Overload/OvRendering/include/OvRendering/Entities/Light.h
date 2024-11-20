@@ -31,7 +31,7 @@ namespace OvRendering::Entities
 		float cutoff = 12.f;
 		float outerCutoff = 15.f;
 		Settings::ELightType type = Settings::ELightType::POINT;
-		// TODO: Add bool to toggle shadow feature
+		bool castShadows = false;
 
 		/**
 		* Update the content of the shadow cache

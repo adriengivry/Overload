@@ -14,6 +14,7 @@
 #include <OvCore/Global/ServiceLocator.h>
 
 constexpr uint16_t kShadowMapSize = 4096;
+constexpr uint8_t kMaxShadowMaps = 1;
 
 OvCore::Rendering::ShadowRenderPass::ShadowRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) :
 	OvRendering::Core::ARenderPass(p_renderer)
@@ -45,20 +46,32 @@ void OvCore::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineState 
 
 	auto pso = m_renderer.CreatePipelineState();
 
+	uint8_t lightIndex = 0;
+
 	for (auto lightReference : lightingDescriptor.lights)
 	{
 		auto& light = lightReference.get();
 
-		if (light.type == OvRendering::Settings::ELightType::DIRECTIONAL)
+		if (light.castShadows)
 		{
-			light.UpdateShadowData(kShadowMapSize, frameDescriptor.camera.value());
-			const auto& lightSpaceMatrix = light.GetLightSpaceMatrix();
-			const auto& shadowBuffer = light.GetShadowBuffer();
-			m_opaqueMaterial.Set("_LightSpaceMatrix", lightSpaceMatrix);
-			shadowBuffer.Bind();
-			m_renderer.Clear(true, true, true);
-			DrawOpaques(pso, scene);
-			shadowBuffer.Unbind();
+			if (lightIndex < kMaxShadowMaps)
+			{
+				if (light.type == OvRendering::Settings::ELightType::DIRECTIONAL)
+				{
+					light.UpdateShadowData(kShadowMapSize, frameDescriptor.camera.value());
+					const auto& lightSpaceMatrix = light.GetLightSpaceMatrix();
+					const auto& shadowBuffer = light.GetShadowBuffer();
+					m_opaqueMaterial.Set("_LightSpaceMatrix", lightSpaceMatrix);
+					shadowBuffer.Bind();
+					m_renderer.Clear(true, true, true);
+					DrawOpaques(pso, scene);
+					shadowBuffer.Unbind();
+				}
+				else
+				{
+					// Other light types not supported!
+				}
+			}
 		}
 	}
 

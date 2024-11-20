@@ -63,7 +63,7 @@ vec3 ComputeAmbientSphereLight(mat4 light, vec3 fragPos)
     return IsPointInSphere(fragPos, lightPosition, radius) ? lightColor * intensity : vec3(0.0);
 }
 
-vec4 ComputePBRLighting(vec2 texCoords, vec3 normal, vec3 viewPos, vec3 fragPos, vec4 inAlbedo, float inMetallic, float inRoughness, sampler2D albedoMap, sampler2D metallicMap, sampler2D roughnessMap, sampler2D aoMap)
+vec4 ComputePBRLighting(vec2 texCoords, vec3 normal, vec3 viewPos, vec3 fragPos, vec4 inAlbedo, float inMetallic, float inRoughness, sampler2D albedoMap, sampler2D metallicMap, sampler2D roughnessMap, sampler2D aoMap, sampler2D shadowMap, mat4 lightSpaceMatrix)
 {
     vec4 albedoRGBA = texture(albedoMap, texCoords) * inAlbedo;
     vec3 albedo = pow(albedoRGBA.rgb, vec3(2.2));
@@ -110,6 +110,15 @@ vec4 ComputePBRLighting(vec2 texCoords, vec3 normal, vec3 viewPos, vec3 fragPos,
 
                 case 1:
                     lightCoeff = light[3][3];
+
+                    if (light[2][1] > 0.0f)
+                    {
+                        const vec3 lightDir = light[1].rgb; // TODO: Check if this is correct
+                        vec4 fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
+                        float shadow = CalculateShadow(fragPosLightSpace, shadowMap, normal, lightDir);
+                        lightCoeff *= 1.0 - shadow;
+                    }
+                    
                     break;
 
                 case 2:

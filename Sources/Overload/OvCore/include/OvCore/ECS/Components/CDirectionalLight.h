@@ -30,6 +30,17 @@ namespace OvCore::ECS::Components
 		std::string GetName() override;
 
 		/**
+		* Set if the light should cast shadows
+		* @param p_enabled
+		*/
+		void SetCastShadows(bool p_enabled);
+
+		/**
+		* Returns true if the light should cast shadows
+		*/
+		bool GetCastShadows() const;
+
+		/**
 		* Serialize the component
 		* @param p_doc
 		* @param p_node

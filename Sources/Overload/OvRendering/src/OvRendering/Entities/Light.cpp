@@ -82,6 +82,7 @@ OvMaths::FMatrix4 OvRendering::Entities::Light::GenerateMatrix() const
 
 	result.data[3] = constant;
 	result.data[7] = linear;
+	result.data[9] = castShadows ? 1.0f : 0.0f;
 	result.data[11] = quadratic;
 	result.data[15] = intensity;
 
