@@ -312,7 +312,7 @@ void OvEditor::Panels::MaterialEditor::GenerateShaderSettingsContent()
 
 	std::multimap<int, std::pair<std::string, std::any*>> sortedUniformsData;
 
-	for (auto&[name, value] : m_target->GetUniformsData())
+	for (auto&[name, value] : m_target->GetProperties())
 	{
 		int orderID = 0;
 
@@ -331,7 +331,7 @@ void OvEditor::Panels::MaterialEditor::GenerateShaderSettingsContent()
 			case UniformType::UNIFORM_BOOL:			orderID = 6; break;
 			}
 
-			sortedUniformsData.emplace(orderID, std::pair<std::string, std::any*>{ name, & value });
+			sortedUniformsData.emplace(orderID, std::pair<std::string, std::any*>{ name, & value.value });
 		}
 	}
 

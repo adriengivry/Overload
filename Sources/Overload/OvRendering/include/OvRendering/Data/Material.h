@@ -17,11 +17,30 @@
 namespace OvRendering::Data
 {
 	/**
+	* Represents a material property to be used as a shader uniform
+	*/
+	struct MaterialProperty
+	{
+		std::any value;
+		bool singleUse;
+
+		// Conversion constructor to initialize directly from std::any
+		MaterialProperty& operator=(const std::any& p_value)
+		{
+			value = p_value;
+			singleUse = false; // Reset singleUse to default when assigning new value
+			return *this;
+		}
+	};
+
+	/**
 	* A material is a combination of a shader and some settings (Material settings and shader settings)
 	*/
 	class Material
 	{
 	public:
+		using PropertyMap = std::map<std::string, MaterialProperty>;
+
 		/**
 		* Creates a material
 		* @param p_shader
@@ -43,7 +62,7 @@ namespace OvRendering::Data
 		* Bind the material and send its uniform data to the GPU
 		* @param p_emptyTexture (The texture to use if a texture uniform is null)
 		*/
-		void Bind(OvRendering::Resources::Texture* p_emptyTexture = nullptr) const;
+		void Bind(OvRendering::Resources::Texture* p_emptyTexture = nullptr);
 
 		/**
 		* Unbind the material
@@ -54,8 +73,9 @@ namespace OvRendering::Data
 		* Set a shader uniform value
 		* @param p_key
 		* @param p_value
+		* @param p_singleUse (automatically consume the value after the first use)
 		*/
-		template<typename T> void Set(const std::string p_key, const T& p_value);
+		template<typename T> void Set(const std::string p_key, const T& p_value, bool p_singleUse = false);
 
 		/**
 		* Set a shader uniform value
@@ -185,11 +205,11 @@ namespace OvRendering::Data
 		/**
 		* Returns the uniforms data of the material
 		*/
-		std::map<std::string, std::any>& GetUniformsData();
+		PropertyMap& GetProperties();
 
 	protected:
 		OvRendering::Resources::Shader* m_shader = nullptr;
-		std::map<std::string, std::any> m_uniformsData;
+		PropertyMap m_properties;
 
 		bool m_blendable = false;
 		bool m_backfaceCulling = true;

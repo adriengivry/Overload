@@ -28,19 +28,19 @@ void OvRendering::Data::Material::SetShader(OvRendering::Resources::Shader* p_sh
 	}
 	else
 	{
-		m_uniformsData.clear();
+		m_properties.clear();
 	}
 }
 
 void OvRendering::Data::Material::FillUniform()
 {
-	m_uniformsData.clear();
+	m_properties.clear();
 
 	for (const OvRendering::Resources::UniformInfo& element : m_shader->uniforms)
-		m_uniformsData.emplace(element.name, element.defaultValue);
+		m_properties.emplace(element.name, MaterialProperty{ element.defaultValue, false });
 }
 
-void OvRendering::Data::Material::Bind(OvRendering::Resources::Texture* p_emptyTexture) const
+void OvRendering::Data::Material::Bind(OvRendering::Resources::Texture* p_emptyTexture)
 {
 	if (HasShader())
 	{
@@ -51,9 +51,11 @@ void OvRendering::Data::Material::Bind(OvRendering::Resources::Texture* p_emptyT
 
 		int textureSlot = 0;
 
-		for (auto& [name, value] : m_uniformsData)
+		for (auto& [name, prop] : m_properties)
 		{
-			auto uniformData = m_shader->GetUniformInfo(name);
+			auto& value = prop.value;
+
+			const auto uniformData = m_shader->GetUniformInfo(name);
 
 			if (uniformData)
 			{
@@ -88,6 +90,11 @@ void OvRendering::Data::Material::Bind(OvRendering::Resources::Texture* p_emptyT
 						}
 					}
 				}
+				}
+
+				if (prop.singleUse)
+				{
+					value = uniformData->defaultValue;
 				}
 			}
 		}
@@ -219,7 +226,7 @@ const OvRendering::Data::StateMask OvRendering::Data::Material::GenerateStateMas
 	return stateMask;
 }
 
-std::map<std::string, std::any>& OvRendering::Data::Material::GetUniformsData()
+OvRendering::Data::Material::PropertyMap& OvRendering::Data::Material::GetProperties()
 {
-	return m_uniformsData;
+	return m_properties;
 }
