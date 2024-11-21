@@ -92,9 +92,7 @@ Here is a non-exhaustive list of Overload main features:
 
 ## 3.2. To implement
 Again, a non-exhaustive list of Overload in-coming features:
-- Shadow mapping
 - Custom post-processing
-- Renderer Hardware Interface (Multiple graphics backend support)
 - More input device support (Gamepad)
 - Prefab system
 - Skeletal animation
