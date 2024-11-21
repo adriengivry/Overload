@@ -32,6 +32,7 @@ namespace OvRendering::Entities
 		float outerCutoff = 15.f;
 		Settings::ELightType type = Settings::ELightType::POINT;
 		bool castShadows = false;
+		float shadowAreaSize = 50.0f;
 
 		/**
 		* Update the content of the shadow cache

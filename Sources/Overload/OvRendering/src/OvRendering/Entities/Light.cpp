@@ -30,15 +30,12 @@ void OvRendering::Entities::Light::UpdateShadowData(uint16_t p_shadowMapResoluti
 			shadowBuffer->Resize(p_shadowMapResolution, p_shadowMapResolution);
 		}
 
-		// TODO: Consider exposing the light area size
-		constexpr float kLightAreaSize = 50.0f;
-
 		OvRendering::Entities::Camera lightCamera;
 		lightCamera.SetNear(0.1f);
-		lightCamera.SetFar(kLightAreaSize * 2.0f); // x2 because the light will be positioned on the top plane of the effect area (above the camera)
-		lightCamera.SetSize(kLightAreaSize);
+		lightCamera.SetFar(shadowAreaSize * 2.0f); // x2 because the light will be positioned on the top plane of the effect area (above the camera)
+		lightCamera.SetSize(shadowAreaSize);
 		lightCamera.SetProjectionMode(OvRendering::Settings::EProjectionMode::ORTHOGRAPHIC);
-		lightCamera.SetPosition(p_camera.transform->GetWorldPosition() + OvMaths::FVector3::Up * kLightAreaSize); // offsets the camera position be positioned on the top plane of the effect area
+		lightCamera.SetPosition(p_camera.transform->GetWorldPosition() + OvMaths::FVector3::Up * shadowAreaSize); // offsets the camera position be positioned on the top plane of the effect area
 		lightCamera.SetRotation(transform->GetWorldRotation()); // keep the forward from the directional light
 		lightCamera.CacheMatrices(p_shadowMapResolution, p_shadowMapResolution);
 		lightSpaceMatrix = lightCamera.GetProjectionMatrix() * lightCamera.GetViewMatrix();

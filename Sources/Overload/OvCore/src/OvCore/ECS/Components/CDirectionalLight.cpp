@@ -37,21 +37,19 @@ void OvCore::ECS::Components::CDirectionalLight::OnSerialize(tinyxml2::XMLDocume
 {
 	CLight::OnSerialize(p_doc, p_node);
 	OvCore::Helpers::Serializer::SerializeBoolean(p_doc, p_node, "cast_shadows", m_data.castShadows);
+	OvCore::Helpers::Serializer::SerializeFloat(p_doc, p_node, "shadow_area_size", m_data.shadowAreaSize);
 }
 
 void OvCore::ECS::Components::CDirectionalLight::OnDeserialize(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node)
 {
 	CLight::OnDeserialize(p_doc, p_node);
 	m_data.castShadows = OvCore::Helpers::Serializer::DeserializeBoolean(p_doc, p_node, "cast_shadows");
+	m_data.shadowAreaSize = OvCore::Helpers::Serializer::DeserializeFloat(p_doc, p_node, "shadow_area_size");
 }
 
 void OvCore::ECS::Components::CDirectionalLight::OnInspector(OvUI::Internal::WidgetContainer& p_root)
 {
 	CLight::OnInspector(p_root);
-	OvCore::Helpers::GUIDrawer::DrawBoolean(
-		p_root,
-		"Cast Shadows",
-		[this]() { return m_data.castShadows; },
-		[this](auto enabled) { m_data.castShadows = enabled; }
-	);
+	OvCore::Helpers::GUIDrawer::DrawBoolean(p_root, "Cast Shadows", m_data.castShadows);
+	OvCore::Helpers::GUIDrawer::DrawScalar(p_root, "Shadow Area Size", m_data.shadowAreaSize);
 }
