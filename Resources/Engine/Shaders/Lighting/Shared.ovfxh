@@ -19,6 +19,7 @@ float SampleShadow(sampler2D shadowMap, vec3 projCoords, float bias)
 
 // Distance fade for shadows to appear smoothly
 float CalculateShadowFalloff(vec3 projCoords, float intensity) {
+    projCoords.z = clamp(projCoords.z, 0.5, 1.0); // Prevents falloff when the light source is close to a shadow caster
     const float dist = (0.5 - clamp(distance(projCoords, vec3(0.5)), 0.0, 0.5)) * 2.0;
     return 1.0 - pow(1.0 - dist, intensity);
 }
