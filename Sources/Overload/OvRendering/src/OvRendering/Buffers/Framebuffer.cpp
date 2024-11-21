@@ -64,8 +64,6 @@ OvRendering::Buffers::Framebuffer::Framebuffer(uint16_t p_width, uint16_t p_heig
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	}
 
-	// OVASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
-
 	Unbind();
 }
 
