@@ -14,15 +14,11 @@ project "OvGame"
 	targetdir (outputdir .. "%{cfg.buildcfg}/%{prj.name}")
 	objdir (objoutdir .. "%{cfg.buildcfg}/%{prj.name}")
 	characterset ("MBCS")
+    debugdir (outputdir .. "%{cfg.buildcfg}/%{prj.name}")
 
 	postbuildcommands {
-		"for /f \"delims=|\" %%i in ('dir /B /S \"%{dependdir}\\*.dll\"') do xcopy /Q /Y \"%%i\" \"%{builddir}%{cfg.buildcfg}\\%{prj.name}\"",
-		
-		"xcopy /Y /I /Q /D \"%{outputdir}Debug\\%{prj.name}\\*.exe\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Development\"",
-		"xcopy /Y /I /Q /D \"%{outputdir}Debug\\%{prj.name}\\*.dll\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Development\"",
-		"xcopy /Y /I /Q /D \"%{outputdir}Release\\%{prj.name}\\*.exe\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Shipping\"",
-		"xcopy /Y /I /Q /D \"%{outputdir}Release\\%{prj.name}\\*.dll\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Shipping\"",
-
+		"for /f \"delims=|\" %%i in ('dir /B /S \"%{dependdir}\\*.dll\"') do xcopy /Q /Y \"%%i\" \"%{outputdir}%{cfg.buildcfg}\\%{prj.name}\"",
+        "xcopy \"%{resdir}Engine\\*\" \"%{outputdir}%{cfg.buildcfg}\\%{prj.name}\\Data\\Engine\" /y /i /r /e /q",
 		"EXIT /B 0"
 	}
 
