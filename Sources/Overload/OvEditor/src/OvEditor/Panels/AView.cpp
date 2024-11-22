@@ -39,9 +39,6 @@ void OvEditor::Panels::AView::InitFrame()
 {
 	auto camera = GetCamera();
 
-	camera->SetFrustumGeometryCulling(Settings::EditorSettings::EditorFrustumGeometryCulling);
-	camera->SetFrustumLightCulling(Settings::EditorSettings::EditorFrustumLightCulling);
-
 	m_renderer->AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>(
 		CreateSceneDescriptor()
 	);
