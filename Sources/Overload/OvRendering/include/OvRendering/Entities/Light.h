@@ -35,13 +35,14 @@ namespace OvRendering::Entities
 		bool castShadows = false;
 		float shadowAreaSize = 50.0f;
 		bool shadowFollowCamera = true;
+		int16_t shadowMapResolution = 4096;
 
 		/**
 		* Update the content of the shadow cache
 		* @param p_shadowMapResolution
 		* @param p_camera
 		*/
-		void UpdateShadowData(uint16_t p_shadowMapResolution, const OvRendering::Entities::Camera& p_camera);
+		void UpdateShadowData(const OvRendering::Entities::Camera& p_camera);
 
 		/**
 		* Returns the light space matrix

@@ -13,7 +13,6 @@
 #include <OvCore/ResourceManagement/ShaderManager.h>
 #include <OvCore/Global/ServiceLocator.h>
 
-constexpr uint16_t kShadowMapSize = 4096;
 constexpr uint8_t kMaxShadowMaps = 1;
 
 OvCore::Rendering::ShadowRenderPass::ShadowRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) :
@@ -42,8 +41,6 @@ void OvCore::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineState 
 	auto& frameDescriptor = m_renderer.GetFrameDescriptor();
 	auto& scene = sceneDescriptor.scene;
 
-	m_renderer.SetViewport(0, 0, kShadowMapSize, kShadowMapSize);
-
 	auto pso = m_renderer.CreatePipelineState();
 
 	uint8_t lightIndex = 0;
@@ -58,11 +55,12 @@ void OvCore::Rendering::ShadowRenderPass::Draw(OvRendering::Data::PipelineState 
 			{
 				if (light.type == OvRendering::Settings::ELightType::DIRECTIONAL)
 				{
-					light.UpdateShadowData(kShadowMapSize, frameDescriptor.camera.value());
+					light.UpdateShadowData(frameDescriptor.camera.value());
 					const auto& lightSpaceMatrix = light.GetLightSpaceMatrix();
 					const auto& shadowBuffer = light.GetShadowBuffer();
 					m_shadowMaterial.Set("_LightSpaceMatrix", lightSpaceMatrix);
 					shadowBuffer.Bind();
+					m_renderer.SetViewport(0, 0, light.shadowMapResolution, light.shadowMapResolution);
 					m_renderer.Clear(true, true, true);
 					DrawOpaques(pso, scene);
 					shadowBuffer.Unbind();

@@ -17,17 +17,17 @@ uint32_t Pack(const OvMaths::FVector3& p_toPack)
 	return Pack(static_cast<uint8_t>(p_toPack.x * 255.f), static_cast<uint8_t>(p_toPack.y * 255.f), static_cast<uint8_t>(p_toPack.z * 255.f), 0);
 }
 
-void OvRendering::Entities::Light::UpdateShadowData(uint16_t p_shadowMapResolution, const OvRendering::Entities::Camera& p_camera)
+void OvRendering::Entities::Light::UpdateShadowData(const OvRendering::Entities::Camera& p_camera)
 {
 	if (type == OvRendering::Settings::ELightType::DIRECTIONAL)
 	{
 		if (!shadowBuffer)
 		{
-			shadowBuffer = std::make_unique<OvRendering::Buffers::Framebuffer>(p_shadowMapResolution, p_shadowMapResolution, true);
+			shadowBuffer = std::make_unique<OvRendering::Buffers::Framebuffer>(shadowMapResolution, shadowMapResolution, true);
 		}
 		else
 		{
-			shadowBuffer->Resize(p_shadowMapResolution, p_shadowMapResolution);
+			shadowBuffer->Resize(shadowMapResolution, shadowMapResolution);
 		}
 
 		const auto lightPosition =
@@ -42,7 +42,7 @@ void OvRendering::Entities::Light::UpdateShadowData(uint16_t p_shadowMapResoluti
 		lightCamera.SetProjectionMode(OvRendering::Settings::EProjectionMode::ORTHOGRAPHIC);
 		lightCamera.SetPosition(lightPosition);
 		lightCamera.SetRotation(transform->GetWorldRotation()); // keep the forward from the directional light
-		lightCamera.CacheMatrices(p_shadowMapResolution, p_shadowMapResolution);
+		lightCamera.CacheMatrices(shadowMapResolution, shadowMapResolution);
 		lightSpaceMatrix = lightCamera.GetProjectionMatrix() * lightCamera.GetViewMatrix();
 	}
 	else

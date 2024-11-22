@@ -7,6 +7,7 @@
 #include <OvUI/Widgets/Texts/Text.h>
 #include <OvUI/Widgets/Drags/DragFloat.h>
 #include <OvUI/Widgets/Selection/ColorEdit.h>
+#include <OvUI/Widgets/Selection/ComboBox.h>
 
 #include "OvCore/ECS/Actor.h"
 
@@ -39,6 +40,7 @@ void OvCore::ECS::Components::CDirectionalLight::OnSerialize(tinyxml2::XMLDocume
 	OvCore::Helpers::Serializer::SerializeBoolean(p_doc, p_node, "cast_shadows", m_data.castShadows);
 	OvCore::Helpers::Serializer::SerializeFloat(p_doc, p_node, "shadow_area_size", m_data.shadowAreaSize);
 	OvCore::Helpers::Serializer::SerializeBoolean(p_doc, p_node, "shadow_follow_camera", m_data.shadowFollowCamera);
+	OvCore::Helpers::Serializer::SerializeInt(p_doc, p_node, "shadow_map_resolution", m_data.shadowMapResolution);
 }
 
 void OvCore::ECS::Components::CDirectionalLight::OnDeserialize(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node)
@@ -47,6 +49,7 @@ void OvCore::ECS::Components::CDirectionalLight::OnDeserialize(tinyxml2::XMLDocu
 	m_data.castShadows = OvCore::Helpers::Serializer::DeserializeBoolean(p_doc, p_node, "cast_shadows");
 	m_data.shadowAreaSize = OvCore::Helpers::Serializer::DeserializeFloat(p_doc, p_node, "shadow_area_size");
 	m_data.shadowFollowCamera = OvCore::Helpers::Serializer::DeserializeBoolean(p_doc, p_node, "shadow_follow_camera");
+	m_data.shadowMapResolution = OvCore::Helpers::Serializer::DeserializeInt(p_doc, p_node, "shadow_map_resolution");
 }
 
 void OvCore::ECS::Components::CDirectionalLight::OnInspector(OvUI::Internal::WidgetContainer& p_root)
@@ -55,4 +58,17 @@ void OvCore::ECS::Components::CDirectionalLight::OnInspector(OvUI::Internal::Wid
 	OvCore::Helpers::GUIDrawer::DrawBoolean(p_root, "Cast Shadows", m_data.castShadows);
 	OvCore::Helpers::GUIDrawer::DrawScalar(p_root, "Shadow Area Size", m_data.shadowAreaSize);
 	OvCore::Helpers::GUIDrawer::DrawBoolean(p_root, "Shadow Follow Camera", m_data.shadowFollowCamera);
+	
+	Helpers::GUIDrawer::CreateTitle(p_root, "Shadow Map Resolution");
+
+	auto& shadowMapResolution = p_root.CreateWidget<OvUI::Widgets::Selection::ComboBox>(m_data.shadowMapResolution);
+	shadowMapResolution.choices.emplace(512, "512");
+	shadowMapResolution.choices.emplace(1024, "1024");
+	shadowMapResolution.choices.emplace(2048, "2048");
+	shadowMapResolution.choices.emplace(4096, "4096");
+	shadowMapResolution.choices.emplace(8192, "8192");
+	shadowMapResolution.choices.emplace(16384, "16384 (Experimental)");
+	auto& shadowMapResolutionDispatcher = shadowMapResolution.AddPlugin<OvUI::Plugins::DataDispatcher<int>>();
+	shadowMapResolutionDispatcher.RegisterGatherer([this]() { return m_data.shadowMapResolution; });
+	shadowMapResolutionDispatcher.RegisterProvider([this](int p_choice) { m_data.shadowMapResolution = p_choice; });
 }
