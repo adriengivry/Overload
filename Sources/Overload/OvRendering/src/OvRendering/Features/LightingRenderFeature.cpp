@@ -34,7 +34,9 @@ void OvRendering::Features::LightingRenderFeature::OnBeginFrame(const Data::Fram
 	auto& frameDescriptor = m_renderer.GetFrameDescriptor();
 
 	std::vector<OvMaths::FMatrix4> lightMatrices;
-	auto frustum = frameDescriptor.camera->GetLightFrustum();
+	auto frustum = lightDescriptor.frustumOverride ?
+		lightDescriptor.frustumOverride :
+		frameDescriptor.camera->GetLightFrustum();
 
 	for (auto light : lightDescriptor.lights)
 	{

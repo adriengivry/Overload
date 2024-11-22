@@ -40,7 +40,7 @@ namespace OvCore::Rendering
 		struct SceneDescriptor
 		{
 			OvCore::SceneSystem::Scene& scene;
-			std::optional<OvRendering::Data::Frustum> frustumOverride;
+			OvTools::Utils::OptRef<const OvRendering::Data::Frustum> frustumOverride;
 			OvTools::Utils::OptRef<OvRendering::Data::Material> overrideMaterial;
 			OvTools::Utils::OptRef<OvRendering::Data::Material> fallbackMaterial;
 		};
