@@ -35,7 +35,7 @@ namespace OvRendering::Entities
 		bool castShadows = false;
 		float shadowAreaSize = 50.0f;
 		bool shadowFollowCamera = true;
-		int16_t shadowMapResolution = 4096;
+		int16_t shadowMapResolution = 8192;
 
 		/**
 		* Update the content of the shadow cache
