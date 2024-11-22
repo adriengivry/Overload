@@ -8,6 +8,7 @@
 
 #include "OvEditor/Panels/AView.h"
 #include "OvEditor/Core/EditorActions.h"
+#include "OvEditor/Settings/EditorSettings.h"
 
 OvEditor::Panels::AView::AView
 (
@@ -36,6 +37,11 @@ void OvEditor::Panels::AView::_Draw_Impl()
 
 void OvEditor::Panels::AView::InitFrame()
 {
+	auto camera = GetCamera();
+
+	camera->SetFrustumGeometryCulling(Settings::EditorSettings::EditorFrustumGeometryCulling);
+	camera->SetFrustumLightCulling(Settings::EditorSettings::EditorFrustumLightCulling);
+
 	m_renderer->AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>(
 		CreateSceneDescriptor()
 	);
