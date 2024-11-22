@@ -110,6 +110,28 @@ void OvRendering::Core::ABaseRenderer::Clear(
 	m_driver.Clear(p_colorBuffer, p_depthBuffer, p_stencilBuffer, p_color);
 }
 
+void OvRendering::Core::ABaseRenderer::Blit(
+	OvRendering::Data::PipelineState p_pso,
+	OvRendering::Buffers::Framebuffer& p_src,
+	OvRendering::Buffers::Framebuffer& p_dst,
+	OvRendering::Resources::IMesh& p_quadMesh,
+	OvRendering::Data::Material& p_material
+)
+{
+	p_dst.Resize(p_src.GetWidth(), p_src.GetHeight());
+
+	OvRendering::Entities::Drawable blit;
+	blit.mesh = p_quadMesh;
+	blit.material = p_material;
+	blit.stateMask = p_material.GenerateStateMask();
+
+	p_dst.Bind();
+	SetViewport(0, 0, p_dst.GetWidth(), p_dst.GetHeight());
+	Clear(true, false, false);
+	DrawEntity(p_pso, blit);
+	p_dst.Unbind();
+}
+
 void OvRendering::Core::ABaseRenderer::DrawEntity(
 	OvRendering::Data::PipelineState p_pso,
 	const Entities::Drawable& p_drawable

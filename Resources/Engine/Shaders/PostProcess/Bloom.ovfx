@@ -1,0 +1,28 @@
+#shader vertex
+#version 430 core
+
+layout(location = 0) in vec2 inPos;
+layout(location = 1) in vec2 inUV;
+
+out vec2 fragUV;
+
+void main() {
+    fragUV = inUV;
+    gl_Position = vec4(inPos, 0.0, 1.0);
+}
+
+#shader fragment
+#version 430 core
+
+in vec2 fragUV;
+out vec4 fragColor; // Output color
+
+uniform sampler2D _InputTexture;  // Original scene texture
+uniform sampler2D _BloomTexture; // Blurred bloom texture
+uniform float _BloomIntensity;   // Strength of bloom effect
+
+void main() {
+    vec3 sceneColor = texture(_InputTexture, fragUV).rgb;
+    vec3 bloomColor = texture(_BloomTexture, fragUV).rgb;
+    fragColor = vec4(sceneColor + _BloomIntensity * bloomColor, 1.0);
+}

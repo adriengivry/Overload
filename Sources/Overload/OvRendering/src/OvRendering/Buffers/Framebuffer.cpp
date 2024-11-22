@@ -132,3 +132,13 @@ uint32_t OvRendering::Buffers::Framebuffer::GetRenderBufferID() const
 {
 	return m_depthStencilBuffer;
 }
+
+uint16_t OvRendering::Buffers::Framebuffer::GetWidth() const
+{
+	return m_width;
+}
+
+uint16_t OvRendering::Buffers::Framebuffer::GetHeight() const
+{
+	return m_height;
+}

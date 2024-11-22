@@ -8,6 +8,7 @@
 
 #include <OvRendering/Data/Frustum.h>
 #include <OvRendering/Features/LightingRenderFeature.h>
+#include <OvRendering/Resources/Loaders/ShaderLoader.h>
 
 #include "OvCore/Rendering/SceneRenderer.h"
 #include "OvCore/Rendering/EngineBufferRenderFeature.h"
@@ -16,6 +17,7 @@
 #include "OvCore/Rendering/ShadowRenderPass.h"
 #include "OvCore/ECS/Components/CModelRenderer.h"
 #include "OvCore/ECS/Components/CMaterialRenderer.h"
+#include "OvCore/Global/ServiceLocator.h"
 
 struct SceneRenderPassDescriptor
 {
@@ -56,6 +58,158 @@ protected:
 	}
 };
 
+class PostProcessRenderPass : public OvRendering::Core::ARenderPass
+{
+public:
+	struct BloomSettings
+	{
+		float threshold = 0.6f;
+		float radius = 3.0f;
+		int kernelSize = 5;
+		float intensity = 2.0f;
+	};
+
+	void SetupPostProcessMaterial(OvRendering::Data::Material& material)
+	{
+		material.SetDepthTest(false);
+		material.SetDepthWriting(false);
+	}
+
+	PostProcessRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) :
+		OvRendering::Core::ARenderPass(p_renderer)
+	{
+		m_unitQuad = CreateUnitQuad();
+
+		m_blitShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\Blit.ovfx");
+		m_fxaaShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\PostProcess\\FXAA.ovfx");
+		m_brightnessShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\PostProcess\\Brightness.ovfx");
+		m_blurShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\PostProcess\\Blur.ovfx");
+		m_bloomShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\PostProcess\\Bloom.ovfx");
+
+		m_blitMaterial.SetShader(m_blitShader);
+		m_fxaaMaterial.SetShader(m_fxaaShader);
+		m_brightnessMaterial.SetShader(m_brightnessShader);
+		m_blurMaterial.SetShader(m_blurShader);
+		m_bloomMaterial.SetShader(m_bloomShader);
+
+		SetupPostProcessMaterial(m_blitMaterial);
+		SetupPostProcessMaterial(m_fxaaMaterial);
+		SetupPostProcessMaterial(m_brightnessMaterial);
+		SetupPostProcessMaterial(m_blurMaterial);
+		SetupPostProcessMaterial(m_bloomMaterial);
+	}
+
+	~PostProcessRenderPass()
+	{
+		OvRendering::Resources::Loaders::ShaderLoader::Destroy(m_blitShader);
+	}
+
+protected:
+	virtual std::unique_ptr<OvRendering::Resources::Mesh> CreateUnitQuad() const
+	{
+		const std::vector<OvRendering::Geometry::Vertex> vertices = {
+			{ {-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f} }, // Bottom-left
+			{ { 1.0f, -1.0f, 0.0f}, {1.0f, 0.0f} }, // Bottom-right
+			{ { 1.0f,  1.0f, 0.0f}, {1.0f, 1.0f} }, // Top-right
+			{ {-1.0f,  1.0f, 0.0f}, {0.0f, 1.0f} }  // Top-left
+		};
+
+		const std::vector<uint32_t> indices = {
+			0, 1, 2, // First triangle
+			0, 2, 3  // Second triangle
+		};
+
+		return std::make_unique<OvRendering::Resources::Mesh>(vertices, indices, 0);
+	}
+
+	virtual void Draw(OvRendering::Data::PipelineState p_pso) override
+	{
+		auto& framebuffer = m_renderer.GetFrameDescriptor().outputBuffer.value();
+
+		BloomSettings bloomSettings;
+		bloomSettings.threshold = 0.75f;
+		bloomSettings.radius = 8.0f;
+		bloomSettings.kernelSize = 5;
+		bloomSettings.intensity = 1.25f;
+
+		Bloom(p_pso, framebuffer, m_tempBuffer, bloomSettings);
+		FXAA(p_pso, m_tempBuffer, framebuffer);
+	}
+
+	void Blit(OvRendering::Data::PipelineState p_pso, OvRendering::Buffers::Framebuffer& p_src, OvRendering::Buffers::Framebuffer& p_dst, OvRendering::Data::Material& p_material)
+	{
+		m_renderer.Blit(p_pso, p_src, p_dst, *m_unitQuad, p_material);
+	}
+
+	void Blit(OvRendering::Data::PipelineState p_pso, OvRendering::Buffers::Framebuffer& p_src, OvRendering::Buffers::Framebuffer& p_dst)
+	{
+		m_blitMaterial.Set("_InputTexture", p_src.GetTexture(), true);
+		Blit(p_pso, p_src, p_dst, m_blitMaterial);
+	}
+
+	void FXAA(OvRendering::Data::PipelineState p_pso, OvRendering::Buffers::Framebuffer& src, OvRendering::Buffers::Framebuffer& dst)
+	{
+		m_fxaaMaterial.Set("_InputTexture", src.GetTexture(), true);
+		Blit(p_pso, src, dst, m_fxaaMaterial);
+	}
+
+	void Bloom(
+		OvRendering::Data::PipelineState p_pso,
+		OvRendering::Buffers::Framebuffer& src,
+		OvRendering::Buffers::Framebuffer& dst,
+		const BloomSettings& settings
+	)
+	{
+		// Step 1: Extract bright spots from the source
+		m_bloomPingPong[1].Resize(src.GetWidth(), src.GetHeight());
+
+		m_brightnessMaterial.Set("_InputTexture", src.GetTexture(), true);
+		m_brightnessMaterial.Set("_Threshold", settings.threshold, true);
+
+		Blit(p_pso, src, m_bloomPingPong[0], m_brightnessMaterial);
+
+		// Step 2: Apply gaussian blur on bright spots (horizontal and vertical)
+		bool horizontal = true;
+
+		for (int i = 0; i < 10; ++i) { // Perform 10 blur passes (alternating)
+			auto& currentSrc = horizontal ? m_bloomPingPong[0] : m_bloomPingPong[1];
+			auto& currentDst = horizontal ? m_bloomPingPong[1] : m_bloomPingPong[0];
+
+			m_blurMaterial.Set("_InputTexture", currentSrc.GetTexture(), true);
+			m_blurMaterial.Set("_Horizontal", horizontal ? true : false, true);
+			m_blurMaterial.Set("_BlurSize", settings.radius, true);
+			m_blurMaterial.Set("_KernelSize", settings.kernelSize, true);
+
+			Blit(p_pso, currentSrc, currentDst, m_blurMaterial);
+
+			horizontal = !horizontal;
+		}
+
+		// Step 3: Combine bloom with original framebuffer
+		m_bloomMaterial.Set("_InputTexture", src.GetTexture(), true);				 // Original scene
+		m_bloomMaterial.Set("_BloomTexture", m_bloomPingPong[0].GetTexture(), true); // Bloom texture
+		m_bloomMaterial.Set("_BloomIntensity", settings.intensity, true);							 // Intensity
+
+		Blit(p_pso, m_bloomPingPong[0], dst, m_bloomMaterial);
+	}
+
+private:
+	std::unique_ptr<OvRendering::Resources::Mesh> m_unitQuad;
+
+	OvRendering::Buffers::Framebuffer m_tempBuffer;
+	std::array<OvRendering::Buffers::Framebuffer, 2> m_bloomPingPong;
+	OvRendering::Resources::Shader* m_blitShader;
+	OvRendering::Resources::Shader* m_fxaaShader;
+	OvRendering::Resources::Shader* m_brightnessShader;
+	OvRendering::Resources::Shader* m_blurShader;
+	OvRendering::Resources::Shader* m_bloomShader;
+	OvRendering::Data::Material m_blitMaterial;
+	OvRendering::Data::Material m_fxaaMaterial;
+	OvRendering::Data::Material m_brightnessMaterial;
+	OvRendering::Data::Material m_blurMaterial;
+	OvRendering::Data::Material m_bloomMaterial;
+};
+
 OvCore::Rendering::SceneRenderer::SceneRenderer(OvRendering::Context::Driver& p_driver)
 	: OvRendering::Core::CompositeRenderer(p_driver)
 {
@@ -66,6 +220,7 @@ OvCore::Rendering::SceneRenderer::SceneRenderer(OvRendering::Context::Driver& p_
 	AddPass<ShadowRenderPass>("Shadows", OvRendering::Settings::ERenderPassOrder::Shadows);
 	AddPass<OpaqueRenderPass>("Opaques", OvRendering::Settings::ERenderPassOrder::Opaque);
 	AddPass<TransparentRenderPass>("Transparents", OvRendering::Settings::ERenderPassOrder::Transparent);
+	AddPass<PostProcessRenderPass>("Post-Process", OvRendering::Settings::ERenderPassOrder::PostProcessing);
 }
 
 OvRendering::Features::LightingRenderFeature::LightSet FindActiveLights(const OvCore::SceneSystem::Scene& p_scene)

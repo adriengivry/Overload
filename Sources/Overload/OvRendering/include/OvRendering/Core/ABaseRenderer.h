@@ -106,6 +106,22 @@ namespace OvRendering::Core
 		);
 
 		/**
+		* Draw a fullscreen quad with the given material
+		* @param p_pso
+		* @param p_src
+		* @param p_dst
+		* @param p_quadMesh
+		* @param p_material
+		*/
+		virtual void Blit(
+			OvRendering::Data::PipelineState p_pso,
+			OvRendering::Buffers::Framebuffer& p_src,
+			OvRendering::Buffers::Framebuffer& p_dst,
+			OvRendering::Resources::IMesh& p_quadMesh,
+			OvRendering::Data::Material& p_material
+		);
+
+		/**
 		* Draw a drawable entity
 		* @param p_pso
 		* @param p_drawable

@@ -70,6 +70,16 @@ namespace OvRendering::Buffers
 		*/
 		uint32_t GetRenderBufferID() const;
 
+		/**
+		* Returns the width of the framebuffer
+		*/
+		uint16_t GetWidth() const;
+
+		/**
+		* Returns the width of the framebuffer
+		*/
+		uint16_t GetHeight() const;
+
 	private:
 		uint16_t m_width = 0;
 		uint16_t m_height = 0;
