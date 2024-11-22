@@ -73,6 +73,16 @@ namespace OvEditor::Settings
 		*/
 		EditorSettings() = delete;
 
+		/**
+		* Save the settings
+		*/
+		static void Save();
+
+		/**
+		* Load the settings
+		*/
+		static void Load();
+
 		inline static Property<bool> ShowGeometryBounds = { false };
 		inline static Property<bool> ShowLightBounds = { false };
 		inline static Property<bool> EditorFrustumGeometryCulling = { true };

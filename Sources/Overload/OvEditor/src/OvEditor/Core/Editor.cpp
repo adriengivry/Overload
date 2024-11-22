@@ -23,6 +23,7 @@
 #include "OvEditor/Panels/MaterialEditor.h"
 #include "OvEditor/Panels/ProjectSettings.h"
 #include "OvEditor/Panels/AssetProperties.h"
+#include "OvEditor/Settings/EditorSettings.h"
 
 using namespace OvCore::ResourceManagement;
 using namespace OvEditor::Panels;
@@ -34,6 +35,7 @@ OvEditor::Core::Editor::Editor(Context& p_context) :
 	m_panelsManager(m_canvas),
 	m_editorActions(m_context, m_panelsManager)
 {
+	Settings::EditorSettings::Load();
 	SetupUI();
 
 	m_context.sceneManager.LoadEmptyLightedScene();
@@ -41,6 +43,7 @@ OvEditor::Core::Editor::Editor(Context& p_context) :
 
 OvEditor::Core::Editor::~Editor()
 {
+	Settings::EditorSettings::Save();
 	m_context.sceneManager.UnloadCurrentScene();
 }
 
