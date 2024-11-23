@@ -18,6 +18,7 @@
 #include "OvCore/ECS/Components/CModelRenderer.h"
 #include "OvCore/ECS/Components/CMaterialRenderer.h"
 #include "OvCore/Global/ServiceLocator.h"
+#include "OvCore/ResourceManagement/ShaderManager.h"
 
 struct SceneRenderPassDescriptor
 {
@@ -85,19 +86,14 @@ public:
 	{
 		m_unitQuad = CreateUnitQuad();
 
-		m_blitShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\Blit.ovfx");
-		m_fxaaShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\PostProcess\\FXAA.ovfx");
-		m_brightnessShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\PostProcess\\Brightness.ovfx");
-		m_blurShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\PostProcess\\Blur.ovfx");
-		m_bloomShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\PostProcess\\Bloom.ovfx");
-		m_tonemappingShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\PostProcess\\Tonemapping.ovfx");
+		auto& shaderManager = OVSERVICE(OvCore::ResourceManagement::ShaderManager);
 
-		m_blitMaterial.SetShader(m_blitShader);
-		m_fxaaMaterial.SetShader(m_fxaaShader);
-		m_brightnessMaterial.SetShader(m_brightnessShader);
-		m_blurMaterial.SetShader(m_blurShader);
-		m_bloomMaterial.SetShader(m_bloomShader);
-		m_tonemappingMaterial.SetShader(m_tonemappingShader);
+		m_blitMaterial.SetShader(shaderManager[":Shaders\\Blit.ovfx"]);
+		m_fxaaMaterial.SetShader(shaderManager[":Shaders\\PostProcess\\FXAA.ovfx"]);
+		m_brightnessMaterial.SetShader(shaderManager[":Shaders\\PostProcess\\Brightness.ovfx"]);
+		m_blurMaterial.SetShader(shaderManager[":Shaders\\PostProcess\\Blur.ovfx"]);
+		m_bloomMaterial.SetShader(shaderManager[":Shaders\\PostProcess\\Bloom.ovfx"]);
+		m_tonemappingMaterial.SetShader(shaderManager[":Shaders\\PostProcess\\Tonemapping.ovfx"]);
 
 		SetupPostProcessMaterial(m_blitMaterial);
 		SetupPostProcessMaterial(m_fxaaMaterial);
@@ -105,11 +101,6 @@ public:
 		SetupPostProcessMaterial(m_blurMaterial);
 		SetupPostProcessMaterial(m_bloomMaterial);
 		SetupPostProcessMaterial(m_tonemappingMaterial);
-	}
-
-	~PostProcessRenderPass()
-	{
-		OvRendering::Resources::Loaders::ShaderLoader::Destroy(m_blitShader);
 	}
 
 protected:
@@ -222,12 +213,6 @@ private:
 
 	std::array<OvRendering::Buffers::Framebuffer, 2> m_tempBuffers;
 	std::array<OvRendering::Buffers::Framebuffer, 2> m_bloomPingPong;
-	OvRendering::Resources::Shader* m_blitShader;
-	OvRendering::Resources::Shader* m_fxaaShader;
-	OvRendering::Resources::Shader* m_brightnessShader;
-	OvRendering::Resources::Shader* m_blurShader;
-	OvRendering::Resources::Shader* m_bloomShader;
-	OvRendering::Resources::Shader* m_tonemappingShader;
 	OvRendering::Data::Material m_blitMaterial;
 	OvRendering::Data::Material m_fxaaMaterial;
 	OvRendering::Data::Material m_brightnessMaterial;
