@@ -69,6 +69,11 @@ public:
 		float intensity = 2.0f;
 	};
 
+	struct TonemappingSettings
+	{
+		float exposure = 1.0f;
+	};
+
 	void SetupPostProcessMaterial(OvRendering::Data::Material& material)
 	{
 		material.SetDepthTest(false);
@@ -85,18 +90,21 @@ public:
 		m_brightnessShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\PostProcess\\Brightness.ovfx");
 		m_blurShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\PostProcess\\Blur.ovfx");
 		m_bloomShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\PostProcess\\Bloom.ovfx");
+		m_tonemappingShader = OvRendering::Resources::Loaders::ShaderLoader::Create("Data\\Engine\\Shaders\\PostProcess\\Tonemapping.ovfx");
 
 		m_blitMaterial.SetShader(m_blitShader);
 		m_fxaaMaterial.SetShader(m_fxaaShader);
 		m_brightnessMaterial.SetShader(m_brightnessShader);
 		m_blurMaterial.SetShader(m_blurShader);
 		m_bloomMaterial.SetShader(m_bloomShader);
+		m_tonemappingMaterial.SetShader(m_tonemappingShader);
 
 		SetupPostProcessMaterial(m_blitMaterial);
 		SetupPostProcessMaterial(m_fxaaMaterial);
 		SetupPostProcessMaterial(m_brightnessMaterial);
 		SetupPostProcessMaterial(m_blurMaterial);
 		SetupPostProcessMaterial(m_bloomMaterial);
+		SetupPostProcessMaterial(m_tonemappingMaterial);
 	}
 
 	~PostProcessRenderPass()
@@ -127,13 +135,17 @@ protected:
 		auto& framebuffer = m_renderer.GetFrameDescriptor().outputBuffer.value();
 
 		BloomSettings bloomSettings;
-		bloomSettings.threshold = 0.75f;
-		bloomSettings.radius = 8.0f;
-		bloomSettings.kernelSize = 5;
-		bloomSettings.intensity = 1.25f;
+		bloomSettings.threshold = 0.98f;
+		bloomSettings.radius = 2.0f;
+		bloomSettings.kernelSize = 4;
+		bloomSettings.intensity = 1.0f;
 
-		Bloom(p_pso, framebuffer, m_tempBuffer, bloomSettings);
-		FXAA(p_pso, m_tempBuffer, framebuffer);
+		TonemappingSettings tonemappingSettings;
+		tonemappingSettings.exposure = 1.3f;
+
+		Bloom(p_pso, framebuffer, m_tempBuffers[0], bloomSettings);
+		Tonemapping(p_pso, m_tempBuffers[0], m_tempBuffers[1], tonemappingSettings);
+		FXAA(p_pso, m_tempBuffers[1], framebuffer);
 	}
 
 	void Blit(OvRendering::Data::PipelineState p_pso, OvRendering::Buffers::Framebuffer& p_src, OvRendering::Buffers::Framebuffer& p_dst, OvRendering::Data::Material& p_material)
@@ -151,6 +163,18 @@ protected:
 	{
 		m_fxaaMaterial.Set("_InputTexture", src.GetTexture(), true);
 		Blit(p_pso, src, dst, m_fxaaMaterial);
+	}
+
+	void Tonemapping(
+		OvRendering::Data::PipelineState p_pso,
+		OvRendering::Buffers::Framebuffer& src,
+		OvRendering::Buffers::Framebuffer& dst,
+		const TonemappingSettings& settings
+	)
+	{
+		m_tonemappingMaterial.Set("_InputTexture", src.GetTexture(), true);
+		m_tonemappingMaterial.Set("_Exposure", settings.exposure, true);
+		Blit(p_pso, src, dst, m_tonemappingMaterial);
 	}
 
 	void Bloom(
@@ -196,18 +220,20 @@ protected:
 private:
 	std::unique_ptr<OvRendering::Resources::Mesh> m_unitQuad;
 
-	OvRendering::Buffers::Framebuffer m_tempBuffer;
+	std::array<OvRendering::Buffers::Framebuffer, 2> m_tempBuffers;
 	std::array<OvRendering::Buffers::Framebuffer, 2> m_bloomPingPong;
 	OvRendering::Resources::Shader* m_blitShader;
 	OvRendering::Resources::Shader* m_fxaaShader;
 	OvRendering::Resources::Shader* m_brightnessShader;
 	OvRendering::Resources::Shader* m_blurShader;
 	OvRendering::Resources::Shader* m_bloomShader;
+	OvRendering::Resources::Shader* m_tonemappingShader;
 	OvRendering::Data::Material m_blitMaterial;
 	OvRendering::Data::Material m_fxaaMaterial;
 	OvRendering::Data::Material m_brightnessMaterial;
 	OvRendering::Data::Material m_blurMaterial;
 	OvRendering::Data::Material m_bloomMaterial;
+	OvRendering::Data::Material m_tonemappingMaterial;
 };
 
 OvCore::Rendering::SceneRenderer::SceneRenderer(OvRendering::Context::Driver& p_driver)

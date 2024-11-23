@@ -1,0 +1,97 @@
+#shader vertex
+#version 430 core
+
+layout(location = 0) in vec2 inPos;
+layout(location = 1) in vec2 inUV;
+
+out vec2 fragUV;
+
+void main() {
+    fragUV = inUV;
+    gl_Position = vec4(inPos, 0.0, 1.0);
+}
+
+#shader fragment
+#version 430 core
+
+in vec2 fragUV;
+out vec4 fragColor;
+
+uniform sampler2D _InputTexture;
+uniform float _Exposure;
+
+vec3 neutral(vec3 color) {
+  const float startCompression = 0.8 - 0.04;
+  const float desaturation = 0.15;
+
+  float x = min(color.r, min(color.g, color.b));
+  float offset = x < 0.08 ? x - 6.25 * x * x : 0.04;
+  color -= offset;
+
+  float peak = max(color.r, max(color.g, color.b));
+  if (peak < startCompression) return color;
+
+  const float d = 1.0 - startCompression;
+  float newPeak = 1.0 - d * d / (peak + d - startCompression);
+  color *= newPeak / peak;
+
+  float g = 1.0 - 1.0 / (desaturation * (peak - newPeak) + 1.0);
+  return mix(color, vec3(newPeak), g);
+}
+
+float luminance(vec3 v)
+{
+    return dot(v, vec3(0.2126, 0.7152, 0.0722));
+}
+
+vec3 reinhard_jodie(vec3 v)
+{
+    float l = luminance(v);
+    vec3 tv = v / (1.0f + v);
+    return mix(v / (1.0f + l), tv, tv);
+}
+
+vec3 uncharted2_tonemap_partial(vec3 x)
+{
+    float A = 0.15f;
+    float B = 0.50f;
+    float C = 0.10f;
+    float D = 0.20f;
+    float E = 0.02f;
+    float F = 0.30f;
+    return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F))-E/F;
+}
+
+vec3 uncharted2_filmic(vec3 v)
+{
+    float exposure_bias = 2.0f;
+    vec3 curr = uncharted2_tonemap_partial(v * exposure_bias);
+
+    vec3 W = vec3(11.2f);
+    vec3 white_scale = vec3(1.0f) / uncharted2_tonemap_partial(W);
+    return curr * white_scale;
+}
+
+vec3 unreal(vec3 x) {
+  return x / (x + 0.155) * 1.019;
+}
+
+float unreal(float x) {
+  return x / (x + 0.155) * 1.019;
+}
+
+void main()
+{
+    const float gamma = 2.2;
+
+    vec3 hdrColor = texture(_InputTexture, fragUV).rgb;
+    
+    // Apply tonemapping only to the RGB channels
+    vec3 mapped = neutral(hdrColor * _Exposure);
+
+    // Apply gamma correction
+    // mapped = pow(mapped, vec3(1.0 / gamma));
+
+    // Output the final color, keeping the original alpha
+    fragColor = vec4(mapped, 1);
+}
