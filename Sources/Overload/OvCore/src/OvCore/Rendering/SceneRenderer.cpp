@@ -63,7 +63,7 @@ class PostProcessRenderPass : public OvRendering::Core::ARenderPass
 public:
 	struct BloomSettings
 	{
-		float threshold = 0.6f;
+		float threshold = 0.8f;
 		float radius = 3.0f;
 		int kernelSize = 5;
 		float intensity = 2.0f;
@@ -135,10 +135,10 @@ protected:
 		auto& framebuffer = m_renderer.GetFrameDescriptor().outputBuffer.value();
 
 		BloomSettings bloomSettings;
-		bloomSettings.threshold = 0.98f;
-		bloomSettings.radius = 2.0f;
-		bloomSettings.kernelSize = 4;
-		bloomSettings.intensity = 1.0f;
+		bloomSettings.threshold = 0.75f;
+		bloomSettings.radius = 10.0f;
+		bloomSettings.kernelSize = 5;
+		bloomSettings.intensity = 0.4f;
 
 		TonemappingSettings tonemappingSettings;
 		tonemappingSettings.exposure = 1.3f;

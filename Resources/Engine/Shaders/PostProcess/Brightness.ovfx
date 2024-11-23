@@ -20,12 +20,14 @@ out vec4 fragColor; // Output color
 uniform sampler2D _InputTexture; // Input scene texture
 uniform float _Threshold;        // Brightness threshold
 
+float luminance(vec3 color)
+{
+    return dot(color, vec3(0.2126, 0.7152, 0.0722));
+}
+
 void main() {
     vec3 color = texture(_InputTexture, fragUV).rgb;
-    float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722)); // Luminance calculation
-    if (brightness > _Threshold) {
-        fragColor = vec4(color, 1.0);
-    } else {
-        fragColor = vec4(0.0);
-    }
+    float brightness = luminance(color);
+    brightness = max(0.0, brightness - _Threshold);
+    fragColor = vec4(color * sign(brightness), 1.0);
 }

@@ -20,7 +20,7 @@ OvEditor::Rendering::GridRenderPass::GridRenderPass(OvRendering::Core::Composite
 	m_gridMaterial.SetShader(EDITOR_CONTEXT(editorResources)->GetShader("Grid"));
 	m_gridMaterial.SetBlendable(true);
 	m_gridMaterial.SetBackfaceCulling(false);
-	m_gridMaterial.SetDepthTest(false);
+	m_gridMaterial.SetDepthWriting(false);
 }
 
 void OvEditor::Rendering::GridRenderPass::Draw(OvRendering::Data::PipelineState p_pso)

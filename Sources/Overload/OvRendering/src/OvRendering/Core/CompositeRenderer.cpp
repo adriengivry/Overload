@@ -40,6 +40,9 @@ void OvRendering::Core::CompositeRenderer::DrawFrame()
 
 	for (const auto& [_, pass] : m_passes)
 	{
+		m_frameDescriptor.outputBuffer.value().Bind();
+		SetViewport(0, 0, m_frameDescriptor.renderWidth, m_frameDescriptor.renderHeight);
+
 		if (pass.second->IsEnabled())
 		{
 			pass.second->Draw(pso);
