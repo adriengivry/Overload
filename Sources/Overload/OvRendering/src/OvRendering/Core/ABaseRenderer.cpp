@@ -13,10 +13,28 @@ std::atomic_bool OvRendering::Core::ABaseRenderer::s_isDrawing{ false };
 
 const OvRendering::Entities::Camera kDefaultCamera;
 
+std::unique_ptr<OvRendering::Resources::Mesh> CreateUnitQuad()
+{
+	const std::vector<OvRendering::Geometry::Vertex> vertices = {
+		{ {-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f} }, // Bottom-left
+		{ { 1.0f, -1.0f, 0.0f}, {1.0f, 0.0f} }, // Bottom-right
+		{ { 1.0f,  1.0f, 0.0f}, {1.0f, 1.0f} }, // Top-right
+		{ {-1.0f,  1.0f, 0.0f}, {0.0f, 1.0f} }  // Top-left
+	};
+
+	const std::vector<uint32_t> indices = {
+		0, 1, 2, // First triangle
+		0, 2, 3  // Second triangle
+	};
+
+	return std::make_unique<OvRendering::Resources::Mesh>(vertices, indices, 0);
+}
+
 OvRendering::Core::ABaseRenderer::ABaseRenderer(Context::Driver& p_driver) : 
 	m_driver(p_driver),
 	m_isDrawing(false),
-	m_emptyTexture(OvRendering::Resources::Loaders::TextureLoader::CreatePixel(255, 255, 255, 255))
+	m_emptyTexture(OvRendering::Resources::Loaders::TextureLoader::CreatePixel(255, 255, 255, 255)),
+	m_unitQuad(CreateUnitQuad())
 {
 }
 
@@ -114,14 +132,15 @@ void OvRendering::Core::ABaseRenderer::Blit(
 	OvRendering::Data::PipelineState p_pso,
 	OvRendering::Buffers::Framebuffer& p_src,
 	OvRendering::Buffers::Framebuffer& p_dst,
-	OvRendering::Resources::IMesh& p_quadMesh,
 	OvRendering::Data::Material& p_material
 )
 {
+	OVASSERT(m_unitQuad != nullptr, "Invalid unit quad mesh, cannot blit!");
+
 	p_dst.Resize(p_src.GetWidth(), p_src.GetHeight());
 
 	OvRendering::Entities::Drawable blit;
-	blit.mesh = p_quadMesh;
+	blit.mesh = *m_unitQuad;
 	blit.material = p_material;
 	blit.stateMask = p_material.GenerateStateMask();
 

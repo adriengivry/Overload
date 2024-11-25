@@ -18,6 +18,7 @@
 #include <OvCore/ECS/Components/CAudioSource.h>
 #include <OvCore/ECS/Components/CAudioListener.h>
 #include <OvCore/ECS/Components/CCamera.h>
+#include <OvCore/ECS/Components/CPostProcessStack.h>
 
 #include "OvEditor/Core/EditorActions.h"
 #include "OvEditor/Utils/ActorCreationMenu.h"
@@ -80,5 +81,6 @@ void OvEditor::Utils::ActorCreationMenu::GenerateActorCreationMenu(OvUI::Widgets
     lights.CreateWidget<MenuItem>("Ambient Sphere").ClickedEvent        += ActorWithComponentCreationHandler<CAmbientSphereLight>(p_parent, p_onItemClicked);
     audio.CreateWidget<MenuItem>("Audio Source").ClickedEvent           += ActorWithComponentCreationHandler<CAudioSource>(p_parent, p_onItemClicked);
     audio.CreateWidget<MenuItem>("Audio Listener").ClickedEvent         += ActorWithComponentCreationHandler<CAudioListener>(p_parent, p_onItemClicked);
-    others.CreateWidget<MenuItem>("Camera").ClickedEvent                += ActorWithComponentCreationHandler<CCamera>(p_parent, p_onItemClicked);
+	others.CreateWidget<MenuItem>("Camera").ClickedEvent += ActorWithComponentCreationHandler<CCamera>(p_parent, p_onItemClicked);
+	others.CreateWidget<MenuItem>("Post Process Stack").ClickedEvent += ActorWithComponentCreationHandler<CPostProcessStack>(p_parent, p_onItemClicked);
 }

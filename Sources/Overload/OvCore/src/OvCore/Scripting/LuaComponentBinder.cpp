@@ -22,6 +22,7 @@
 #include "OvCore/ECS/Components/CMaterialRenderer.h"
 #include "OvCore/ECS/Components/CAudioSource.h"
 #include "OvCore/ECS/Components/CAudioListener.h"
+#include "OvCore/ECS/Components/CPostProcessStack.h"
 
 void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaState)
 {
@@ -248,4 +249,35 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 	p_luaState.new_usertype<CAudioListener>("AudioListener",
 		sol::base_classes, sol::bases<AComponent>()
 		);
+
+	p_luaState.new_usertype<OvCore::Rendering::PostProcess::EffectSettings>("PostProcessSettings",
+		"enabled", &OvCore::Rendering::PostProcess::EffectSettings::enabled
+	);
+
+	p_luaState.new_usertype<OvCore::Rendering::PostProcess::BloomSettings>("BloomSettings",
+		sol::base_classes, sol::bases<OvCore::Rendering::PostProcess::EffectSettings>(),
+		"Threshold", &OvCore::Rendering::PostProcess::BloomSettings::threshold,
+		"KernelSize", &OvCore::Rendering::PostProcess::BloomSettings::kernelSize,
+		"Radius", &OvCore::Rendering::PostProcess::BloomSettings::radius,
+		"Intensity", &OvCore::Rendering::PostProcess::BloomSettings::intensity
+	);
+
+	p_luaState.new_usertype<OvCore::Rendering::PostProcess::TonemappingSettings>("TonemappingSettings",
+		sol::base_classes, sol::bases<OvCore::Rendering::PostProcess::EffectSettings>(),
+		"Exposure", &OvCore::Rendering::PostProcess::TonemappingSettings::exposure
+	);
+
+	p_luaState.new_usertype<OvCore::Rendering::PostProcess::FXAASettings>("FXAASettings",
+		sol::base_classes, sol::bases<OvCore::Rendering::PostProcess::EffectSettings>()
+	);
+
+	p_luaState.new_usertype<CPostProcessStack>("PostProcessStack",
+		sol::base_classes, sol::bases<AComponent>(),
+		"GetTonemappingSettings", &CPostProcessStack::GetTonemappingSettings,
+		"GetBloomSettings", &CPostProcessStack::GetBloomSettings,
+		"GetFXAASettings", &CPostProcessStack::GetFXAASettings,
+		"SetTonemappingSettings", &CPostProcessStack::SetTonemappingSettings,
+		"SetBloomSettings", &CPostProcessStack::SetBloomSettings,
+		"SetFXAASettings", &CPostProcessStack::SetFXAASettings
+	);
 }

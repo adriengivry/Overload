@@ -110,14 +110,12 @@ namespace OvRendering::Core
 		* @param p_pso
 		* @param p_src
 		* @param p_dst
-		* @param p_quadMesh
 		* @param p_material
 		*/
 		virtual void Blit(
 			OvRendering::Data::PipelineState p_pso,
 			OvRendering::Buffers::Framebuffer& p_src,
 			OvRendering::Buffers::Framebuffer& p_dst,
-			OvRendering::Resources::IMesh& p_quadMesh,
 			OvRendering::Data::Material& p_material
 		);
 
@@ -135,6 +133,7 @@ namespace OvRendering::Core
 		Data::FrameDescriptor m_frameDescriptor;
 		Context::Driver& m_driver;
 		OvRendering::Resources::Texture* m_emptyTexture;
+		std::unique_ptr<OvRendering::Resources::IMesh> m_unitQuad;
 		OvRendering::Data::PipelineState m_basePipelineState;
 		bool m_isDrawing;
 
