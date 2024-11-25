@@ -259,12 +259,24 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"Threshold", &OvCore::Rendering::PostProcess::BloomSettings::threshold,
 		"KernelSize", &OvCore::Rendering::PostProcess::BloomSettings::kernelSize,
 		"Radius", &OvCore::Rendering::PostProcess::BloomSettings::radius,
-		"Intensity", &OvCore::Rendering::PostProcess::BloomSettings::intensity
+		"Intensity", &OvCore::Rendering::PostProcess::BloomSettings::intensity,
+		"Passes", &OvCore::Rendering::PostProcess::BloomSettings::passes
 	);
+
+	p_luaState.new_enum<OvCore::Rendering::PostProcess::ETonemappingMode>("TonemappingMode",
+	{
+		{"NEUTRAL", OvCore::Rendering::PostProcess::ETonemappingMode::NEUTRAL},
+		{"REINHARD", OvCore::Rendering::PostProcess::ETonemappingMode::REINHARD},
+		{"REINHARD_JODIE", OvCore::Rendering::PostProcess::ETonemappingMode::REINHARD_JODIE},
+		{"UNCHARTED2", OvCore::Rendering::PostProcess::ETonemappingMode::UNCHARTED2},
+		{"UNCHARTED2_FILMIC", OvCore::Rendering::PostProcess::ETonemappingMode::UNCHARTED2_FILMIC},
+		{"ACES", OvCore::Rendering::PostProcess::ETonemappingMode::ACES}
+	});
 
 	p_luaState.new_usertype<OvCore::Rendering::PostProcess::TonemappingSettings>("TonemappingSettings",
 		sol::base_classes, sol::bases<OvCore::Rendering::PostProcess::EffectSettings>(),
-		"Exposure", &OvCore::Rendering::PostProcess::TonemappingSettings::exposure
+		"Exposure", &OvCore::Rendering::PostProcess::TonemappingSettings::exposure,
+		"Mode", &OvCore::Rendering::PostProcess::TonemappingSettings::mode
 	);
 
 	p_luaState.new_usertype<OvCore::Rendering::PostProcess::FXAASettings>("FXAASettings",

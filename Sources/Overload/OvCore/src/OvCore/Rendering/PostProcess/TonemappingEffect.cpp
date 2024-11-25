@@ -26,5 +26,7 @@ void OvCore::Rendering::PostProcess::TonemappingEffect::Draw(
 
 	m_material.Set("_InputTexture", p_src.GetTexture(), true);
 	m_material.Set("_Exposure", tonemappingSettings.exposure, true);
+	m_material.Set("_Mode", static_cast<int>(tonemappingSettings.mode), true);
+	m_material.Set("_GammaCorrection", static_cast<int>(tonemappingSettings.gammaCorrection), true);
 	m_renderer.Blit(p_pso, p_src, p_dst, m_material);
 }

@@ -55,7 +55,8 @@ void OvCore::Rendering::PostProcess::BloomEffect::Draw(
 	// Step 2: Apply gaussian blur on bright spots (horizontal and vertical)
 	bool horizontal = true;
 
-	for (int i = 0; i < 10; ++i) { // Perform 10 blur passes (alternating)
+	for (int i = 0; i < bloomSettings.passes; ++i)
+	{
 		auto& currentSrc = horizontal ? m_bloomPingPong[0] : m_bloomPingPong[1];
 		auto& currentDst = horizontal ? m_bloomPingPong[1] : m_bloomPingPong[0];
 

@@ -11,9 +11,21 @@
 
 namespace OvCore::Rendering::PostProcess
 {
+	enum class ETonemappingMode
+	{
+		NEUTRAL = 0,
+		REINHARD = 1,
+		REINHARD_JODIE = 2,
+		UNCHARTED2 = 3,
+		UNCHARTED2_FILMIC = 4,
+		ACES = 5
+	};
+
 	struct TonemappingSettings : public EffectSettings
 	{
-		float exposure = 1.4f;
+		float exposure = 1.0f;
+		ETonemappingMode mode = ETonemappingMode::NEUTRAL;
+		bool gammaCorrection = true;
 	};
 
 	/**

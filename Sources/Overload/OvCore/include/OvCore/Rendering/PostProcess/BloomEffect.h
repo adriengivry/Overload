@@ -20,6 +20,7 @@ namespace OvCore::Rendering::PostProcess
 		float radius = 5.0f;
 		int kernelSize = 6;
 		float intensity = 0.6f;
+		int passes = 10;
 	};
 
 	/**
