@@ -1,21 +1,21 @@
 #shader vertex
 #version 430 core
 
-layout(location = 0) in vec2 inPos;
-layout(location = 1) in vec2 inUV;
+layout(location = 0) in vec2 geo_Pos;
+layout(location = 1) in vec2 geo_TexCoords;
 
-out vec2 fragUV;
+out vec2 TexCoords;
 
 void main() {
-    fragUV = inUV;
-    gl_Position = vec4(inPos, 0.0, 1.0);
+    TexCoords = geo_TexCoords;
+    gl_Position = vec4(geo_Pos, 0.0, 1.0);
 }
 
 #shader fragment
 #version 430 core
 
-in vec2 fragUV;
-out vec4 fragColor;
+in vec2 TexCoords;
+out vec4 FRAGMENT_COLOR;
 
 uniform sampler2D _InputTexture;
 uniform float _Exposure;
@@ -67,12 +67,12 @@ vec3 reinhard_jodie(vec3 v)
 
 vec3 uncharted2_tonemap_partial(vec3 x)
 {
-    float A = 0.15f;
-    float B = 0.50f;
-    float C = 0.10f;
-    float D = 0.20f;
-    float E = 0.02f;
-    float F = 0.30f;
+    const float A = 0.15f;
+    const float B = 0.50f;
+    const float C = 0.10f;
+    const float D = 0.20f;
+    const float E = 0.02f;
+    const float F = 0.30f;
     return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F))-E/F;
 }
 
@@ -98,7 +98,7 @@ vec3 ACESFilm(vec3 x)
 
 void main()
 {
-    vec3 color = texture(_InputTexture, fragUV).rgb * _Exposure;
+    vec3 color = texture(_InputTexture, TexCoords).rgb * _Exposure;
 
     switch(_Mode)
     {
@@ -115,5 +115,5 @@ void main()
         color = applyGammaCorrection(color);
     }
 
-    fragColor = vec4(color, 1.0);
+    FRAGMENT_COLOR = vec4(color, 1.0);
 }

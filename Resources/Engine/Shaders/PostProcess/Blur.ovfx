@@ -1,44 +1,43 @@
 #shader vertex
 #version 430 core
 
-layout(location = 0) in vec2 inPos;
-layout(location = 1) in vec2 inUV;
+layout(location = 0) in vec2 geo_Pos;
+layout(location = 1) in vec2 geo_TexCoords;
 
-out vec2 fragUV;
+out vec2 TexCoords;
 
-void main() {
-    fragUV = inUV;
-    gl_Position = vec4(inPos, 0.0, 1.0);
+void main()
+{
+    TexCoords = geo_TexCoords;
+    gl_Position = vec4(geo_Pos, 0.0, 1.0);
 }
 
 #shader fragment
 #version 430 core
 
-in vec2 fragUV;
-out vec4 fragColor; // Output color
+in vec2 TexCoords;
+out vec4 FRAGMENT_COLOR;
 
-uniform sampler2D _InputTexture; // Input texture
-uniform bool _Horizontal;        // Blur direction: horizontal or vertical
+uniform sampler2D _InputTexture;
+uniform bool _Horizontal;
+uniform float _BlurSize;
+uniform int _KernelSize;
 
-uniform float _BlurSize;         // Controls the spread of the blur
-uniform int _KernelSize;         // Number of samples in the blur kernel
-
-void main() {
-    vec2 texelSize = 1.0 / textureSize(_InputTexture, 0); // Size of one texel in UV coordinates
-    vec2 direction = _Horizontal ? vec2(texelSize.x, 0.0) : vec2(0.0, texelSize.y);
+void main()
+{
+    const vec2 texelSize = 1.0 / textureSize(_InputTexture, 0);
+    const vec2 direction = _Horizontal ? vec2(texelSize.x, 0.0) : vec2(0.0, texelSize.y);
 
     vec4 color = vec4(0.0);
     float totalWeight = 0.0;
 
-    // Loop through the kernel
-    for (int i = -_KernelSize; i <= _KernelSize; i++) {
+    for (int i = -_KernelSize; i <= _KernelSize; i++)
+    {
         float weight = exp(-0.5 * (i * i) / (_BlurSize * _BlurSize));
         vec2 offset = float(i) * direction;
-        color += texture(_InputTexture, fragUV + offset) * weight;
+        color += texture(_InputTexture, TexCoords + offset) * weight;
         totalWeight += weight;
     }
 
-    // Normalize the result
-    fragColor = color / totalWeight;
+    FRAGMENT_COLOR = color / totalWeight;
 }
-

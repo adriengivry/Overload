@@ -1,26 +1,27 @@
 #shader vertex
 #version 430 core
 
-layout(location = 0) in vec2 inPos;
-layout(location = 1) in vec2 inUV;
+layout(location = 0) in vec2 geo_Pos;
+layout(location = 1) in vec2 geo_TexCoords;
 
-out vec2 fragUV;
+out vec2 TexCoords;
 
-void main() {
-    fragUV = inUV;
-    gl_Position = vec4(inPos, 0.0, 1.0);
+void main()
+{
+    TexCoords = geo_TexCoords;
+    gl_Position = vec4(geo_Pos, 0.0, 1.0);
 }
 
 #shader fragment
 #version 430 core
 
-in vec2 fragUV;
-out vec4 fragColor;
+in vec2 TexCoords;
+out vec4 FRAGMENT_COLOR;
 
 uniform sampler2D _InputTexture;
 
-// FXAA function
-vec3 applyFXAA(sampler2D tex, vec2 uv) {
+vec3 applyFXAA(sampler2D tex, vec2 uv)
+{
     vec2 resolution = vec2(textureSize(tex, 0));
     vec2 pixelSize = 1.0 / resolution;
 
@@ -43,7 +44,9 @@ vec3 applyFXAA(sampler2D tex, vec2 uv) {
     float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));
     float lumaRange = lumaMax - lumaMin;
 
-    if (lumaRange < 0.1) { // Threshold for edge detection
+    // Threshold for edge detection
+    if (lumaRange < 0.1)
+    { 
         return rgbM; // No significant edge, return original
     }
 
@@ -62,6 +65,7 @@ vec3 applyFXAA(sampler2D tex, vec2 uv) {
         texture(tex, uv + dir * (1.0 / 3.0 - 0.5)).rgb +
         texture(tex, uv + dir * (2.0 / 3.0 - 0.5)).rgb
     );
+
     vec3 rgbB = rgbA * 0.5 + 0.25 * (
         texture(tex, uv + dir * -0.5).rgb +
         texture(tex, uv + dir *  0.5).rgb
@@ -72,6 +76,7 @@ vec3 applyFXAA(sampler2D tex, vec2 uv) {
     return (lumaB < lumaMin || lumaB > lumaMax) ? rgbA : rgbB;
 }
 
-void main() {
-    fragColor = vec4(applyFXAA(_InputTexture, fragUV), 1.0);
+void main()
+{
+    FRAGMENT_COLOR = vec4(applyFXAA(_InputTexture, TexCoords), 1.0);
 }

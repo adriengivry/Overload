@@ -1,33 +1,35 @@
 #shader vertex
 #version 430 core
 
-layout(location = 0) in vec2 inPos;
-layout(location = 1) in vec2 inUV;
+layout(location = 0) in vec2 geo_Pos;
+layout(location = 1) in vec2 geo_TexCoords;
 
-out vec2 fragUV;
+out vec2 TexCoords;
 
-void main() {
-    fragUV = inUV;
-    gl_Position = vec4(inPos, 0.0, 1.0);
+void main()
+{
+    TexCoords = geo_TexCoords;
+    gl_Position = vec4(geo_Pos, 0.0, 1.0);
 }
 
 #shader fragment
 #version 430 core
 
-in vec2 fragUV;
-out vec4 fragColor; // Output color
+in vec2 TexCoords;
+out vec4 FRAGMENT_COLOR;
 
-uniform sampler2D _InputTexture; // Input scene texture
-uniform float _Threshold;        // Brightness threshold
+uniform sampler2D _InputTexture;
+uniform float _Threshold;
 
 float luminance(vec3 color)
 {
     return dot(color, vec3(0.2126, 0.7152, 0.0722));
 }
 
-void main() {
-    vec3 color = texture(_InputTexture, fragUV).rgb;
+void main()
+{
+    const vec3 color = texture(_InputTexture, TexCoords).rgb;
     float brightness = luminance(color);
     brightness = max(0.0, brightness - _Threshold);
-    fragColor = vec4(color * sign(brightness), 1.0);
+    FRAGMENT_COLOR = vec4(color * sign(brightness), 1.0);
 }
