@@ -223,19 +223,19 @@ void OvEditor::Core::Editor::RenderViews(float p_deltaTime)
 		sceneView.Update(p_deltaTime);
 	}
 
-	if (assetView.IsOpened())
+	if (assetView.IsOpened() && assetView.IsVisible())
 	{
 		PROFILER_SPY("Asset View Rendering");
 		assetView.Render();
 	}
 
-	if (gameView.IsOpened())
+	if (gameView.IsOpened() && gameView.IsVisible())
 	{
 		PROFILER_SPY("Game View Rendering");
 		gameView.Render();
 	}
 
-	if (sceneView.IsOpened())
+	if (sceneView.IsOpened() && sceneView.IsVisible())
 	{
 		PROFILER_SPY("Scene View Rendering");
 		sceneView.Render();

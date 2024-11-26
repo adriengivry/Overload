@@ -87,6 +87,14 @@ bool OvUI::Panels::PanelWindow::IsAppearing() const
 		return false;
 }
 
+bool OvUI::Panels::PanelWindow::IsVisible() const
+{
+	if (auto window = ImGui::FindWindowByName((name + GetPanelID()).c_str()); window)
+		return !window->Hidden;
+	else
+		return false;
+}
+
 void OvUI::Panels::PanelWindow::ScrollToBottom()
 {
     m_mustScrollToBottom = true;

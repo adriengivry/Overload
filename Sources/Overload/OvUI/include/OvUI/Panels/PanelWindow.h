@@ -74,6 +74,11 @@ namespace OvUI::Panels
 		*/
 		bool IsAppearing() const;
 
+		/**
+		* Returns true if the panel is visible
+		*/
+		bool IsVisible() const;
+
         /**
         * Scrolls to the bottom of the window
         */
