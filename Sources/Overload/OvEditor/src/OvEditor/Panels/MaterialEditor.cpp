@@ -354,7 +354,7 @@ void OvEditor::Panels::MaterialEditor::GenerateShaderSettingsContent()
 				{
 					try
 					{
-						auto texture = std::any_cast<Texture*>(*info.second);
+						auto& texture = std::any_cast<Texture*&>(*info.second);
 						GUIDrawer::DrawTexture(*m_shaderSettingsColumns, formattedType, texture);
 					}
 					catch (const std::bad_any_cast&)
