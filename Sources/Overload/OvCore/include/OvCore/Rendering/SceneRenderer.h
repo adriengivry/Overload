@@ -48,8 +48,9 @@ namespace OvCore::Rendering
 		/**
 		* Constructor of the Renderer
 		* @param p_driver
+		* @param p_stencilWrite (if set to true, also write all the scene geometry to the stencil buffer)
 		*/
-		SceneRenderer(OvRendering::Context::Driver& p_driver);
+		SceneRenderer(OvRendering::Context::Driver& p_driver, bool p_stencilWrite = false);
 
 		/**
 		* Begin Frame

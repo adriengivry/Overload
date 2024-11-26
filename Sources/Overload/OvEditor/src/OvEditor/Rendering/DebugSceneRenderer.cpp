@@ -560,7 +560,7 @@ protected:
 };
 
 OvEditor::Rendering::DebugSceneRenderer::DebugSceneRenderer(OvRendering::Context::Driver& p_driver) :
-	OvCore::Rendering::SceneRenderer(p_driver)
+	OvCore::Rendering::SceneRenderer(p_driver, true /* enable stencil write, required by the grid */)
 {
 	AddFeature<OvRendering::Features::FrameInfoRenderFeature>();
 	AddFeature<OvRendering::Features::DebugShapeRenderFeature>();
@@ -568,9 +568,9 @@ OvEditor::Rendering::DebugSceneRenderer::DebugSceneRenderer(OvRendering::Context
 	AddFeature<OvEditor::Rendering::OutlineRenderFeature>();
 	AddFeature<OvEditor::Rendering::GizmoRenderFeature>();
 
-	AddPass<GridRenderPass>("Grid", OvRendering::Settings::ERenderPassOrder::Opaque - 1);
-	AddPass<DebugCamerasRenderPass>("Debug Cameras", OvRendering::Settings::ERenderPassOrder::PostProcessing + 1);
-	AddPass<DebugLightsRenderPass>("Debug Lights", OvRendering::Settings::ERenderPassOrder::PostProcessing + 2);
-	AddPass<DebugActorRenderPass>("Debug Actor", OvRendering::Settings::ERenderPassOrder::PostProcessing + 3);
-	AddPass<PickingRenderPass>("Picking", OvRendering::Settings::ERenderPassOrder::PostProcessing + 4);
+	AddPass<GridRenderPass>("Grid", OvRendering::Settings::ERenderPassOrder::PostProcessing + 1);
+	AddPass<DebugCamerasRenderPass>("Debug Cameras", OvRendering::Settings::ERenderPassOrder::PostProcessing + 2);
+	AddPass<DebugLightsRenderPass>("Debug Lights", OvRendering::Settings::ERenderPassOrder::PostProcessing + 3);
+	AddPass<DebugActorRenderPass>("Debug Actor", OvRendering::Settings::ERenderPassOrder::PostProcessing + 4);
+	AddPass<PickingRenderPass>("Picking", OvRendering::Settings::ERenderPassOrder::PostProcessing + 5);
 }

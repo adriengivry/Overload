@@ -26,14 +26,43 @@ struct SceneRenderPassDescriptor
 	OvCore::Rendering::SceneRenderer::AllDrawables drawables;
 };
 
-class OpaqueRenderPass : public OvRendering::Core::ARenderPass
+class SceneRenderPass : public OvRendering::Core::ARenderPass
 {
 public:
-	OpaqueRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) : OvRendering::Core::ARenderPass(p_renderer) {}
+	SceneRenderPass(OvRendering::Core::CompositeRenderer& p_renderer, bool stencilWrite = false) :
+		OvRendering::Core::ARenderPass(p_renderer),
+		m_stencilWrite(stencilWrite)
+	{}
+
+protected:
+	void PrepareStencilBuffer(OvRendering::Data::PipelineState& p_pso)
+	{
+		p_pso.stencilTest = true;
+		p_pso.stencilWriteMask = 0xFF;
+		p_pso.stencilFuncRef = 1;
+		p_pso.stencilFuncMask = 0xFF;
+		p_pso.stencilOpFail = OvRendering::Settings::EOperation::REPLACE;
+		p_pso.depthOpFail = OvRendering::Settings::EOperation::REPLACE;
+		p_pso.bothOpFail = OvRendering::Settings::EOperation::REPLACE;
+		p_pso.colorWriting.mask = 0x00;
+	}
+
+private:
+	bool m_stencilWrite;
+};
+
+class OpaqueRenderPass : public SceneRenderPass
+{
+public:
+	OpaqueRenderPass(OvRendering::Core::CompositeRenderer& p_renderer, bool p_stencilWrite = false) :
+		SceneRenderPass(p_renderer, p_stencilWrite)
+	{}
 
 protected:
 	virtual void Draw(OvRendering::Data::PipelineState p_pso) override
 	{
+		PrepareStencilBuffer(p_pso);
+
 		auto& sceneContent = m_renderer.GetDescriptor<SceneRenderPassDescriptor>();
 
 		for (const auto& [distance, drawable] : sceneContent.drawables.opaques)
@@ -43,14 +72,17 @@ protected:
 	}
 };
 
-class TransparentRenderPass : public OvRendering::Core::ARenderPass
+class TransparentRenderPass : public SceneRenderPass
 {
 public:
-	TransparentRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) : OvRendering::Core::ARenderPass(p_renderer) {}
+	TransparentRenderPass(OvRendering::Core::CompositeRenderer& p_renderer, bool p_stencilWrite = false) :
+		SceneRenderPass(p_renderer, p_stencilWrite) {}
 
 protected:
 	virtual void Draw(OvRendering::Data::PipelineState p_pso) override
 	{
+		PrepareStencilBuffer(p_pso);
+
 		auto& sceneContent = m_renderer.GetDescriptor<SceneRenderPassDescriptor>();
 
 		for (const auto& [distance, drawable] : sceneContent.drawables.transparents)
@@ -60,7 +92,7 @@ protected:
 	}
 };
 
-OvCore::Rendering::SceneRenderer::SceneRenderer(OvRendering::Context::Driver& p_driver)
+OvCore::Rendering::SceneRenderer::SceneRenderer(OvRendering::Context::Driver& p_driver, bool p_stencilWrite)
 	: OvRendering::Core::CompositeRenderer(p_driver)
 {
 	AddFeature<EngineBufferRenderFeature>();
@@ -68,8 +100,8 @@ OvCore::Rendering::SceneRenderer::SceneRenderer(OvRendering::Context::Driver& p_
 	AddFeature<ShadowRenderFeature>();
 
 	AddPass<ShadowRenderPass>("Shadows", OvRendering::Settings::ERenderPassOrder::Shadows);
-	AddPass<OpaqueRenderPass>("Opaques", OvRendering::Settings::ERenderPassOrder::Opaque);
-	AddPass<TransparentRenderPass>("Transparents", OvRendering::Settings::ERenderPassOrder::Transparent);
+	AddPass<OpaqueRenderPass>("Opaques", OvRendering::Settings::ERenderPassOrder::Opaque, p_stencilWrite);
+	AddPass<TransparentRenderPass>("Transparents", OvRendering::Settings::ERenderPassOrder::Transparent, p_stencilWrite);
 	AddPass<PostProcessRenderPass>("Post-Process", OvRendering::Settings::ERenderPassOrder::PostProcessing);
 }
 
