@@ -6,7 +6,8 @@ layout(location = 1) in vec2 geo_TexCoords;
 
 out vec2 TexCoords;
 
-void main() {
+void main()
+{
     TexCoords = geo_TexCoords;
     gl_Position = vec4(geo_Pos, 0.0, 1.0);
 }

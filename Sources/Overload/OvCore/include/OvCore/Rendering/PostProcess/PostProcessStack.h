@@ -6,9 +6,7 @@
 
 #pragma once
 
-#include "OvCore/Rendering/PostProcess/BloomEffect.h"
-#include "OvCore/Rendering/PostProcess/FXAAEffect.h"
-#include "OvCore/Rendering/PostProcess/TonemappingEffect.h"
+#include <OvCore/Rendering/PostProcess/AEffect.h>
 
 namespace OvCore::Rendering::PostProcess
 {

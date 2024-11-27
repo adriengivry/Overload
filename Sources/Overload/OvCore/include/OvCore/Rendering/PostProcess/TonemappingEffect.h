@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <chrono>
+
 #include <OvCore/Rendering/PostProcess/AEffect.h>
 #include <OvRendering/Data/Material.h>
 
@@ -57,6 +59,6 @@ namespace OvCore::Rendering::PostProcess
 		) override;
 
 	private:
-		OvRendering::Data::Material m_material;
+		OvRendering::Data::Material m_tonemappingMaterial;
 	};
 }

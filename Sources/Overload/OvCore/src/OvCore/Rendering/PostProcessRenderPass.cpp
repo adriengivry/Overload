@@ -21,6 +21,7 @@ OvCore::Rendering::PostProcessRenderPass::PostProcessRenderPass(OvRendering::Cor
 	// Instantiate available effects
 	m_effects.reserve(3);
 	m_effects.push_back(std::make_unique<OvCore::Rendering::PostProcess::BloomEffect>(p_renderer));
+	m_effects.push_back(std::make_unique<OvCore::Rendering::PostProcess::AutoExposureEffect>(p_renderer));
 	m_effects.push_back(std::make_unique<OvCore::Rendering::PostProcess::TonemappingEffect>(p_renderer));
 	m_effects.push_back(std::make_unique<OvCore::Rendering::PostProcess::FXAAEffect>(p_renderer));
 }

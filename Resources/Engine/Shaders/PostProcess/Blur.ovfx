@@ -39,5 +39,5 @@ void main()
         totalWeight += weight;
     }
 
-    FRAGMENT_COLOR = color / totalWeight;
+    FRAGMENT_COLOR = max(color / totalWeight, 0.0001f);
 }

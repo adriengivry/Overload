@@ -26,7 +26,6 @@ OvRendering::Buffers::Framebuffer::Framebuffer(uint16_t p_width, uint16_t p_heig
 
 	// Setup texture
 	glBindTexture(GL_TEXTURE_2D, m_renderTexture);
-	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
@@ -102,7 +101,7 @@ void OvRendering::Buffers::Framebuffer::Resize(uint16_t p_width, uint16_t p_heig
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_width, m_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 		}
 		else {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_width, m_height, 0, GL_RGBA, GL_FLOAT, nullptr);
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -143,4 +142,12 @@ uint16_t OvRendering::Buffers::Framebuffer::GetWidth() const
 uint16_t OvRendering::Buffers::Framebuffer::GetHeight() const
 {
 	return m_height;
+}
+
+void OvRendering::Buffers::Framebuffer::GenerateMipMaps() const
+{
+	glBindTexture(GL_TEXTURE_2D, m_renderTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }

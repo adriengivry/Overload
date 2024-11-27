@@ -80,6 +80,11 @@ namespace OvRendering::Buffers
 		*/
 		uint16_t GetHeight() const;
 
+		/**
+		* Generate mip maps for the framebuffer's associated render texture
+		*/
+		void GenerateMipMaps() const;
+
 	private:
 		uint16_t m_width = 0;
 		uint16_t m_height = 0;

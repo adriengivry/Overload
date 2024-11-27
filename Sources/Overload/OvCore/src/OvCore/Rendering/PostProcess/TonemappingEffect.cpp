@@ -10,9 +10,9 @@
 
 OvCore::Rendering::PostProcess::TonemappingEffect::TonemappingEffect(OvRendering::Core::CompositeRenderer& p_renderer) : AEffect(p_renderer)
 {
-	m_material.SetShader(OVSERVICE(OvCore::ResourceManagement::ShaderManager)[":Shaders\\PostProcess\\Tonemapping.ovfx"]);
-	m_material.SetDepthTest(false);
-	m_material.SetDepthWriting(false);
+	m_tonemappingMaterial.SetShader(OVSERVICE(OvCore::ResourceManagement::ShaderManager)[":Shaders\\PostProcess\\Tonemapping.ovfx"]);
+	m_tonemappingMaterial.SetDepthTest(false);
+	m_tonemappingMaterial.SetDepthWriting(false);
 }
 
 void OvCore::Rendering::PostProcess::TonemappingEffect::Draw(
@@ -24,9 +24,10 @@ void OvCore::Rendering::PostProcess::TonemappingEffect::Draw(
 {
 	const auto& tonemappingSettings = static_cast<const TonemappingSettings&>(p_settings);
 
-	m_material.Set("_InputTexture", p_src.GetTexture(), true);
-	m_material.Set("_Exposure", tonemappingSettings.exposure, true);
-	m_material.Set("_Mode", static_cast<int>(tonemappingSettings.mode), true);
-	m_material.Set("_GammaCorrection", static_cast<int>(tonemappingSettings.gammaCorrection), true);
-	m_renderer.Blit(p_pso, p_src, p_dst, m_material);
+	// Tonemapping
+	m_tonemappingMaterial.Set("_InputTexture", p_src.GetTexture(), true);
+	m_tonemappingMaterial.Set("_Exposure", tonemappingSettings.exposure, true);
+	m_tonemappingMaterial.Set("_Mode", static_cast<int>(tonemappingSettings.mode), true);
+	m_tonemappingMaterial.Set("_GammaCorrection", static_cast<int>(tonemappingSettings.gammaCorrection), true);
+	m_renderer.Blit(p_pso, p_src, p_dst, m_tonemappingMaterial);
 }

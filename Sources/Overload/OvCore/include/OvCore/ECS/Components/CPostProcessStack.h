@@ -9,6 +9,10 @@
 #include "AComponent.h"
 
 #include <OvCore/Rendering/PostProcess/PostProcessStack.h>
+#include <OvCore/Rendering/PostProcess/BloomEffect.h>
+#include <OvCore/Rendering/PostProcess/FXAAEffect.h>
+#include <OvCore/Rendering/PostProcess/TonemappingEffect.h>
+#include <OvCore/Rendering/PostProcess/AutoExposureEffect.h>
 
 namespace OvCore::ECS { class Actor; }
 
@@ -62,6 +66,11 @@ namespace OvCore::ECS::Components
 		const OvCore::Rendering::PostProcess::BloomSettings& GetBloomSettings() const;
 
 		/**
+		* Returns the auto-exposure settings
+		*/
+		const OvCore::Rendering::PostProcess::AutoExposureSettings& GetAutoExposureSettings() const;
+
+		/**
 		* Returns the tonemapping settings
 		*/
 		const OvCore::Rendering::PostProcess::TonemappingSettings& GetTonemappingSettings() const;
@@ -76,6 +85,12 @@ namespace OvCore::ECS::Components
 		* * @param p_settings
 		*/
 		void SetBloomSettings(const OvCore::Rendering::PostProcess::BloomSettings& p_settings);
+
+		/**
+		* Sets the auto exposure settings
+		* * @param p_settings
+		*/
+		void SetAutoExposureSettings(const OvCore::Rendering::PostProcess::AutoExposureSettings& p_settings);
 
 		/**
 		* Sets the tonemapping settings

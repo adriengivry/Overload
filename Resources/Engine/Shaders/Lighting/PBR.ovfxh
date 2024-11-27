@@ -162,8 +162,5 @@ vec4 ComputePBRLighting(vec2 texCoords, vec3 normal, vec3 viewPos, vec3 fragPos,
     vec3 ambient = ambientSum * albedo * ao;
     vec3 color = ambient + Lo;
 	
-    color = color / (color + vec3(1.0));
-    color = pow(color, vec3(1.0/2.2));  
-   
     return vec4(color, albedoRGBA.a);
 }

@@ -263,6 +263,15 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"Passes", &OvCore::Rendering::PostProcess::BloomSettings::passes
 	);
 
+	p_luaState.new_usertype<OvCore::Rendering::PostProcess::AutoExposureSettings>("AutoExposureSettings",
+		sol::base_classes, sol::bases<OvCore::Rendering::PostProcess::EffectSettings>(),
+		"MinLuminanceEV", &OvCore::Rendering::PostProcess::AutoExposureSettings::minLuminanceEV,
+		"MaxLuminanceEV", &OvCore::Rendering::PostProcess::AutoExposureSettings::maxLuminanceEV,
+		"ExposureCompensationEV", &OvCore::Rendering::PostProcess::AutoExposureSettings::exposureCompensationEV,
+		"SpeedDown", &OvCore::Rendering::PostProcess::AutoExposureSettings::speedDown,
+		"SpeedUp", &OvCore::Rendering::PostProcess::AutoExposureSettings::speedUp
+	);
+
 	p_luaState.new_enum<OvCore::Rendering::PostProcess::ETonemappingMode>("TonemappingMode",
 	{
 		{"NEUTRAL", OvCore::Rendering::PostProcess::ETonemappingMode::NEUTRAL},
@@ -276,7 +285,8 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 	p_luaState.new_usertype<OvCore::Rendering::PostProcess::TonemappingSettings>("TonemappingSettings",
 		sol::base_classes, sol::bases<OvCore::Rendering::PostProcess::EffectSettings>(),
 		"Exposure", &OvCore::Rendering::PostProcess::TonemappingSettings::exposure,
-		"Mode", &OvCore::Rendering::PostProcess::TonemappingSettings::mode
+		"Mode", &OvCore::Rendering::PostProcess::TonemappingSettings::mode,
+		"GammaCorrection", &OvCore::Rendering::PostProcess::TonemappingSettings::gammaCorrection
 	);
 
 	p_luaState.new_usertype<OvCore::Rendering::PostProcess::FXAASettings>("FXAASettings",
@@ -287,9 +297,11 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		sol::base_classes, sol::bases<AComponent>(),
 		"GetTonemappingSettings", &CPostProcessStack::GetTonemappingSettings,
 		"GetBloomSettings", &CPostProcessStack::GetBloomSettings,
+		"GetAutoExposureSettings", &CPostProcessStack::GetAutoExposureSettings,
 		"GetFXAASettings", &CPostProcessStack::GetFXAASettings,
 		"SetTonemappingSettings", &CPostProcessStack::SetTonemappingSettings,
 		"SetBloomSettings", &CPostProcessStack::SetBloomSettings,
+		"SetAutoExposureSettings", &CPostProcessStack::SetAutoExposureSettings,
 		"SetFXAASettings", &CPostProcessStack::SetFXAASettings
 	);
 }
