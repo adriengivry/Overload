@@ -20,7 +20,7 @@ out vec4 FRAGMENT_COLOR;
 
 uniform sampler2D _InputTexture;
 uniform sampler2D _LuminanceTexture;
-uniform float _MinLumianceEV;
+uniform float _MinLuminanceEV;
 uniform float _MaxLuminanceEV;
 uniform float _ExposureCompensationEV;
 uniform float _ElapsedTime;
@@ -30,15 +30,6 @@ uniform int _Progressive;
 
 // Photographic Middle Gray Reference
 const float MIDDLE_GRAY = 0.18f;
-
-// Standard Luminance Coefficients (Rec. 709)
-const vec3 LUMINANCE_COEFFS = vec3(0.2126f, 0.7152f, 0.0722f);
-
-// ISO Reference Value
-const float ISO_REFERENCE = 100.0f;
-
-// Aperture Reference
-const float APERTURE_REFERENCE = 1.0f;
 
 // To avoid division by zero and log2 of zero
 const float EPSILON = 0.0001f;
@@ -51,20 +42,13 @@ float SafeLog2(float x)
 // Convert Luminance to Exposure Value (EV100)
 float LuminanceToEV100(float luminance)
 {
-    // EV100 = log2(L * ISO / (K * S))
-    // Where:
-    // L = Luminance in cd/m²
-    // K = Light meter calibration constant (typically 12.5)
-    // S = ISO sensitivity
-    // Using simplified derivation for standard scene luminance
-    return SafeLog2(luminance / (MIDDLE_GRAY * ISO_REFERENCE / 100.0f)) * 2.0f;
+    return SafeLog2(luminance / MIDDLE_GRAY) * 2.0f;
 }
 
 // Convert EV100 back to Luminance
 float EV100ToLuminance(float ev100)
 {
-    // Reverse of LuminanceToEV100
-    return exp2(ev100 * 0.5f) * (MIDDLE_GRAY * ISO_REFERENCE / 100.0f);
+    return exp2(ev100 * 0.5f) * MIDDLE_GRAY;
 }
 
 // Advanced Exposure Calculation
@@ -103,7 +87,7 @@ float InterpolateExposure(float newExposure, float oldExposure)
 void main()
 {
     const float averageLuminance = textureLod(_LuminanceTexture, vec2(0.5), textureQueryLevels(_LuminanceTexture) - 1).r;
-    const float newExposure = CalculateExposureMultiplier(averageLuminance, _MinLumianceEV, _MaxLuminanceEV, _ExposureCompensationEV);
+    const float newExposure = CalculateExposureMultiplier(averageLuminance, _MinLuminanceEV, _MaxLuminanceEV, _ExposureCompensationEV);
     const float previousExposure = max(texture(_InputTexture, vec2(0.5)).r, 0.0001);
     const float interpolatedExposure = InterpolateExposure(newExposure, previousExposure);
     FRAGMENT_COLOR = vec4(vec3(interpolatedExposure), 1.0);
