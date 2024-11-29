@@ -132,21 +132,47 @@ void OvRendering::Core::ABaseRenderer::Blit(
 	OvRendering::Data::PipelineState p_pso,
 	OvRendering::Buffers::Framebuffer& p_src,
 	OvRendering::Buffers::Framebuffer& p_dst,
-	OvRendering::Data::Material& p_material
+	OvRendering::Data::Material& p_material,
+	OvRendering::Settings::EBlitFlags p_flags
 )
 {
 	OVASSERT(m_unitQuad != nullptr, "Invalid unit quad mesh, cannot blit!");
 
-	p_dst.Resize(p_src.GetWidth(), p_src.GetHeight());
+	if (OvRendering::Settings::IsFlagSet(OvRendering::Settings::EBlitFlags::RESIZE_DST_TO_MATCH_SRC, p_flags))
+	{
+		p_dst.Resize(p_src.GetWidth(), p_src.GetHeight());
+	}
+
+	if (OvRendering::Settings::IsFlagSet(OvRendering::Settings::EBlitFlags::FILL_INPUT_TEXTURE, p_flags))
+	{
+		p_material.Set("_InputTexture", p_src.GetTexture());
+	}
 
 	OvRendering::Entities::Drawable blit;
 	blit.mesh = *m_unitQuad;
 	blit.material = p_material;
-	blit.stateMask = p_material.GenerateStateMask();
+
+	if (OvRendering::Settings::IsFlagSet(OvRendering::Settings::EBlitFlags::USE_MATERIAL_STATE_MASK, p_flags))
+	{
+		blit.stateMask = p_material.GenerateStateMask();
+	}
+	else
+	{
+		blit.stateMask.depthWriting = false;
+		blit.stateMask.colorWriting = true;
+		blit.stateMask.blendable = false;
+		blit.stateMask.frontfaceCulling = false;
+		blit.stateMask.backfaceCulling = false;
+		blit.stateMask.depthTest = false;
+	}
 
 	p_dst.Bind();
-	SetViewport(0, 0, p_dst.GetWidth(), p_dst.GetHeight());
-	Clear(true, false, false);
+
+	if (OvRendering::Settings::IsFlagSet(OvRendering::Settings::EBlitFlags::UPDATE_VIEWPORT_SIZE, p_flags))
+	{
+		SetViewport(0, 0, p_dst.GetWidth(), p_dst.GetHeight());
+	}
+
 	DrawEntity(p_pso, blit);
 	p_dst.Unbind();
 }

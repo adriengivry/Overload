@@ -14,12 +14,10 @@
 OvCore::Rendering::PostProcessRenderPass::PostProcessRenderPass(OvRendering::Core::CompositeRenderer& p_renderer) :
 	OvRendering::Core::ARenderPass(p_renderer)
 {
-	m_blitMaterial.SetShader(OVSERVICE(OvCore::ResourceManagement::ShaderManager)[":Shaders\\Blit.ovfx"]);
-	m_blitMaterial.SetDepthTest(false);
-	m_blitMaterial.SetDepthWriting(false);
+	m_blitMaterial.SetShader(OVSERVICE(OvCore::ResourceManagement::ShaderManager)[":Shaders\\PostProcess\\Blit.ovfx"]);
 
 	// Instantiate available effects
-	m_effects.reserve(3);
+	m_effects.reserve(4);
 	m_effects.push_back(std::make_unique<OvCore::Rendering::PostProcess::BloomEffect>(p_renderer));
 	m_effects.push_back(std::make_unique<OvCore::Rendering::PostProcess::AutoExposureEffect>(p_renderer));
 	m_effects.push_back(std::make_unique<OvCore::Rendering::PostProcess::TonemappingEffect>(p_renderer));
@@ -76,7 +74,6 @@ void OvCore::Rendering::PostProcessRenderPass::Draw(OvRendering::Data::PipelineS
 
 		const uint64_t lastIndex = passIndex % kPingPongBufferSize;
 
-		m_blitMaterial.Set("_InputTexture", m_pingPongBuffers[lastIndex].GetTexture(), true);
 		m_renderer.Blit(p_pso, m_pingPongBuffers[lastIndex], framebuffer, m_blitMaterial);
 	}
 }
