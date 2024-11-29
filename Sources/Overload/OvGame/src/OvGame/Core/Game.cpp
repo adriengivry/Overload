@@ -76,6 +76,11 @@ void RenderCurrentScene(
 			frameDescriptor.renderHeight = windowHeight;
 			frameDescriptor.camera = camera->GetCamera();
 
+			if (p_context.framebuffer)
+			{
+				frameDescriptor.outputBuffer = *p_context.framebuffer;
+			}
+
 			p_renderer.BeginFrame(frameDescriptor);
 			p_renderer.DrawFrame();
 			p_renderer.EndFrame();
@@ -120,6 +125,16 @@ void OvGame::Core::Game::Update(float p_deltaTime)
 		}
 
 		RenderCurrentScene(m_sceneRenderer, m_context);
+
+		if (m_context.framebuffer)
+		{
+			auto [windowWidth, windowHeight] = m_context.window->GetSize();
+
+			glBlitNamedFramebuffer(m_context.framebuffer->GetID(), 0,
+				0, 0, m_context.framebuffer->GetWidth(), m_context.framebuffer->GetHeight(),
+				0, 0, windowWidth, windowHeight,
+				GL_COLOR_BUFFER_BIT, GL_LINEAR);
+		}
 	}
 
 	m_context.sceneManager.Update();
