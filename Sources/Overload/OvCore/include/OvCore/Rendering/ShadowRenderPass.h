@@ -20,7 +20,7 @@
 namespace OvCore::Rendering
 {
 	/**
-	* Draw the scene for actor picking
+	* Draw the scene to a depth buffer from the point of view of each light source
 	*/
 	class ShadowRenderPass : public OvRendering::Core::ARenderPass
 	{
