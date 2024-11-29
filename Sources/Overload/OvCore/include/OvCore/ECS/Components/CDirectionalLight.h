@@ -41,6 +41,40 @@ namespace OvCore::ECS::Components
 		bool GetCastShadows() const;
 
 		/**
+		* Defines the area size of the shadow
+		* @param p_shadowAreaSize
+		*/
+		void SetShadowAreaSize(float p_shadowAreaSize);
+
+		/**
+		* Returns the area size of the shadow
+		*/
+		float GetShadowAreaSize() const;
+
+		/**
+		* Defines whether or not the light position should snap to the camera position
+		* @param p_enabled
+		*/
+		void SetShadowFollowCamera(bool p_enabled);
+
+		/**
+		* Returns true if the light position should snap to the camera position
+		*/
+		bool GetShadowFollowCamera() const;
+
+		/**
+		* Sets the shadow map resolution
+		* @note The resolution should be a power of 2 for better results
+		* @param p_resolution
+		*/
+		void SetShadowMapResolution(uint32_t p_resolution);
+
+		/**
+		* Returns the shadow map resolution
+		*/
+		uint32_t GetShadowMapResolution() const;
+
+		/**
 		* Serialize the component
 		* @param p_doc
 		* @param p_node

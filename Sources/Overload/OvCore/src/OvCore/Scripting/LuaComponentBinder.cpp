@@ -213,7 +213,13 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 	p_luaState.new_usertype<CDirectionalLight>("DirectionalLight",
 		sol::base_classes, sol::bases<CLight>(),
 		"GetCastShadow", &CDirectionalLight::GetCastShadows,
-		"SetCastShadow", &CDirectionalLight::SetCastShadows
+		"SetCastShadow", &CDirectionalLight::SetCastShadows,
+		"GetShadowAreaSize", &CDirectionalLight::GetShadowAreaSize,
+		"SetShadowAreaSize", &CDirectionalLight::SetShadowAreaSize,
+		"GetShadowFollowCamera", &CDirectionalLight::GetShadowFollowCamera,
+		"SetShadowFollowCamera", &CDirectionalLight::SetShadowFollowCamera,
+		"GetShadowMapResolution", &CDirectionalLight::GetShadowMapResolution,
+		"SetShadowMapResolution", &CDirectionalLight::SetShadowMapResolution
 		);
 
 	p_luaState.new_usertype<CAudioSource>("AudioSource",

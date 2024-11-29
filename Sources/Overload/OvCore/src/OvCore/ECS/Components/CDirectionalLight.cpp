@@ -34,6 +34,36 @@ bool OvCore::ECS::Components::CDirectionalLight::GetCastShadows() const
 	return m_data.castShadows;
 }
 
+void OvCore::ECS::Components::CDirectionalLight::SetShadowAreaSize(float p_shadowAreaSize)
+{
+	m_data.shadowAreaSize = p_shadowAreaSize;
+}
+
+float OvCore::ECS::Components::CDirectionalLight::GetShadowAreaSize() const
+{
+	return m_data.shadowAreaSize;
+}
+
+void OvCore::ECS::Components::CDirectionalLight::SetShadowFollowCamera(bool p_enabled)
+{
+	m_data.shadowFollowCamera = p_enabled;
+}
+
+bool OvCore::ECS::Components::CDirectionalLight::GetShadowFollowCamera() const
+{
+	return m_data.shadowFollowCamera;
+}
+
+void OvCore::ECS::Components::CDirectionalLight::SetShadowMapResolution(uint32_t p_resolution)
+{
+	m_data.shadowMapResolution = p_resolution;
+}
+
+uint32_t OvCore::ECS::Components::CDirectionalLight::GetShadowMapResolution() const
+{
+	return m_data.shadowMapResolution;
+}
+
 void OvCore::ECS::Components::CDirectionalLight::OnSerialize(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node)
 {
 	CLight::OnSerialize(p_doc, p_node);
