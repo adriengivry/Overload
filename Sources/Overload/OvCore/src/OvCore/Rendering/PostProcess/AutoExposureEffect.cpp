@@ -34,6 +34,7 @@ void OvCore::Rendering::PostProcess::AutoExposureEffect::Draw(
 
 	// Luminance calculation
 	m_luminanceBuffer.Resize(kLuminanceBufferResolution, kLuminanceBufferResolution);
+	m_luminanceMaterial.Set("_CenterWeightBias", autoExposureSettings.centerWeightBias, true);
 	m_renderer.Blit(p_pso, p_src, m_luminanceBuffer, m_luminanceMaterial,
 		OvRendering::Settings::EBlitFlags::DEFAULT & ~OvRendering::Settings::EBlitFlags::RESIZE_DST_TO_MATCH_SRC);
 	m_luminanceBuffer.GenerateMipMaps();

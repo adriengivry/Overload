@@ -32,6 +32,7 @@ void OvCore::ECS::Components::CPostProcessStack::OnSerialize(tinyxml2::XMLDocume
 	Helpers::Serializer::SerializeFloat(p_doc, p_node, "bloom_intensity", bloomSettings.intensity);
 
 	Helpers::Serializer::SerializeBoolean(p_doc, p_node, "auto_exposure_enabled", autoExposureSettings.enabled);
+	Helpers::Serializer::SerializeFloat(p_doc, p_node, "auto_exposure_center_weight_bias", autoExposureSettings.centerWeightBias);
 	Helpers::Serializer::SerializeFloat(p_doc, p_node, "auto_exposure_luminance_min", autoExposureSettings.minLuminanceEV);
 	Helpers::Serializer::SerializeFloat(p_doc, p_node, "auto_exposure_luminance_max", autoExposureSettings.maxLuminanceEV);
 	Helpers::Serializer::SerializeFloat(p_doc, p_node, "auto_exposure_exposure_compensation", autoExposureSettings.exposureCompensationEV);
@@ -61,6 +62,7 @@ void OvCore::ECS::Components::CPostProcessStack::OnDeserialize(tinyxml2::XMLDocu
 	Helpers::Serializer::DeserializeFloat(p_doc, p_node, "bloom_intensity", bloomSettings.intensity);
 
 	Helpers::Serializer::DeserializeBoolean(p_doc, p_node, "auto_exposure_enabled", autoExposureSettings.enabled);
+	Helpers::Serializer::DeserializeFloat(p_doc, p_node, "auto_exposure_center_weight_bias", autoExposureSettings.centerWeightBias);
 	Helpers::Serializer::DeserializeFloat(p_doc, p_node, "auto_exposure_min_luminance", autoExposureSettings.minLuminanceEV);
 	Helpers::Serializer::DeserializeFloat(p_doc, p_node, "auto_exposure_max_luminance", autoExposureSettings.maxLuminanceEV);
 	Helpers::Serializer::DeserializeFloat(p_doc, p_node, "auto_exposure_exposure_compensation", autoExposureSettings.exposureCompensationEV);
@@ -94,6 +96,7 @@ void OvCore::ECS::Components::CPostProcessStack::OnInspector(OvUI::Internal::Wid
 	p_root.CreateWidget<OvUI::Widgets::Layout::Spacing>();
 
 	OvCore::Helpers::GUIDrawer::DrawBoolean(p_root, "Auto Exposure Enabled", autoExposureSettings.enabled);
+	OvCore::Helpers::GUIDrawer::DrawScalar<float>(p_root, "Auto Exposure Center Weight Bias", autoExposureSettings.centerWeightBias, 0.1f, 0.0f, 1.0f);
 	OvCore::Helpers::GUIDrawer::DrawScalar<float>(p_root, "Auto Exposure Min Luminance (EV)", autoExposureSettings.minLuminanceEV, 1.0f, OvCore::Helpers::GUIDrawer::_MIN_FLOAT, OvCore::Helpers::GUIDrawer::_MAX_FLOAT);
 	OvCore::Helpers::GUIDrawer::DrawScalar<float>(p_root, "Auto Exposure Max Luminance (EV)", autoExposureSettings.maxLuminanceEV, 1.0f, OvCore::Helpers::GUIDrawer::_MIN_FLOAT, OvCore::Helpers::GUIDrawer::_MAX_FLOAT);
 	OvCore::Helpers::GUIDrawer::DrawScalar<float>(p_root, "Auto Exposure Exposure Compensation (EV)", autoExposureSettings.exposureCompensationEV, 1.0f, OvCore::Helpers::GUIDrawer::_MIN_FLOAT, OvCore::Helpers::GUIDrawer::_MAX_FLOAT);

@@ -265,6 +265,7 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 
 	p_luaState.new_usertype<OvCore::Rendering::PostProcess::AutoExposureSettings>("AutoExposureSettings",
 		sol::base_classes, sol::bases<OvCore::Rendering::PostProcess::EffectSettings>(),
+		"CenterWeightBias", &OvCore::Rendering::PostProcess::AutoExposureSettings::centerWeightBias,
 		"MinLuminanceEV", &OvCore::Rendering::PostProcess::AutoExposureSettings::minLuminanceEV,
 		"MaxLuminanceEV", &OvCore::Rendering::PostProcess::AutoExposureSettings::maxLuminanceEV,
 		"ExposureCompensationEV", &OvCore::Rendering::PostProcess::AutoExposureSettings::exposureCompensationEV,

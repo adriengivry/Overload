@@ -15,6 +15,7 @@ namespace OvCore::Rendering::PostProcess
 {
 	struct AutoExposureSettings : public EffectSettings
 	{
+		float centerWeightBias = 0.5f;
 		float minLuminanceEV = -2.0f;
 		float maxLuminanceEV = 16.0f;
 		float exposureCompensationEV = 0.0f;

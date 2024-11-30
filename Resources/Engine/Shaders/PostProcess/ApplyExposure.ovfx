@@ -24,8 +24,6 @@ uniform sampler2D _ExposureTexture;
 void main()
 {
     const float exposure = texture(_ExposureTexture, vec2(0.5)).r;
-
     vec3 color = texture(_InputTexture, TexCoords).rgb * exposure;
-
     FRAGMENT_COLOR = vec4(color, 1.0);
 }
