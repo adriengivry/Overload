@@ -113,7 +113,7 @@ vec4 ComputePBRLighting(vec2 texCoords, vec3 normal, vec3 viewPos, vec3 fragPos,
 
                     if (light[2][1] > 0.0f)
                     {
-                        const vec3 lightDir = light[1].rgb; // TODO: Check if this is correct
+                        const vec3 lightDir = light[1].rgb;
                         vec4 fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
                         float shadow = CalculateShadow(fragPosLightSpace, shadowMap, normal, lightDir);
                         lightCoeff *= 1.0 - shadow;
