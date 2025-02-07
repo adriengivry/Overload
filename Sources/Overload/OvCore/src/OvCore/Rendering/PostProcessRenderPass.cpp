@@ -17,12 +17,11 @@ OvCore::Rendering::PostProcessRenderPass::PostProcessRenderPass(OvRendering::Cor
 	m_blitMaterial.SetShader(OVSERVICE(OvCore::ResourceManagement::ShaderManager)[":Shaders\\PostProcess\\Blit.ovfx"]);
 
 	// Instantiate available effects
-	m_effects = {
-		std::make_unique<OvCore::Rendering::PostProcess::BloomEffect>(p_renderer),
-		std::make_unique<OvCore::Rendering::PostProcess::AutoExposureEffect>(p_renderer),
-		std::make_unique<OvCore::Rendering::PostProcess::TonemappingEffect>(p_renderer),
-		std::make_unique<OvCore::Rendering::PostProcess::FXAAEffect>(p_renderer)
-	};
+	m_effects.reserve(4);
+	m_effects.push_back(std::make_unique<OvCore::Rendering::PostProcess::BloomEffect>(p_renderer));
+	m_effects.push_back(std::make_unique<OvCore::Rendering::PostProcess::AutoExposureEffect>(p_renderer));
+	m_effects.push_back(std::make_unique<OvCore::Rendering::PostProcess::TonemappingEffect>(p_renderer));
+	m_effects.push_back(std::make_unique<OvCore::Rendering::PostProcess::FXAAEffect>(p_renderer));
 }
 
 OvTools::Utils::OptRef<const OvCore::Rendering::PostProcess::PostProcessStack> FindPostProcessStack(OvCore::SceneSystem::Scene& p_scene)
