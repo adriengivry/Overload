@@ -8,6 +8,7 @@
 #include "OvEditor/Rendering/DebugSceneRenderer.h"
 #include "OvEditor/Rendering/GridRenderPass.h"
 #include "OvEditor/Core/EditorActions.h"
+#include "OvEditor/Settings/EditorSettings.h"
 
 const OvMaths::FVector3 kDefaultGridColor{ 0.176f, 0.176f, 0.176f };
 const OvMaths::FVector3 kDefaultClearColor{ 0.098f, 0.098f, 0.098f };
@@ -35,6 +36,9 @@ void OvEditor::Panels::AViewControllable::Update(float p_deltaTime)
 
 void OvEditor::Panels::AViewControllable::InitFrame()
 {
+	m_camera.SetFrustumGeometryCulling(Settings::EditorSettings::EditorFrustumGeometryCulling);
+	m_camera.SetFrustumLightCulling(Settings::EditorSettings::EditorFrustumLightCulling);
+
 	AView::InitFrame();
 
 	m_renderer->AddDescriptor<Rendering::GridRenderPass::GridDescriptor>({

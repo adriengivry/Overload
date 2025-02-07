@@ -91,8 +91,11 @@ void OvCore::Rendering::SceneRenderer::BeginFrame(const OvRendering::Data::Frame
 
 	auto& sceneDescriptor = GetDescriptor<SceneDescriptor>();
 
+	const bool frustumLightCulling = p_frameDescriptor.camera.value().HasFrustumLightCulling();
+
 	AddDescriptor<OvRendering::Features::LightingRenderFeature::LightingDescriptor>({
 		FindActiveLights(sceneDescriptor.scene),
+		frustumLightCulling ? sceneDescriptor.frustumOverride : std::nullopt
 	});
 
 	OvRendering::Core::CompositeRenderer::BeginFrame(p_frameDescriptor);
@@ -137,7 +140,8 @@ OvCore::Rendering::SceneRenderer::AllDrawables OvCore::Rendering::SceneRenderer:
 	auto& scene = sceneDescriptor.scene;
 	auto overrideMaterial = sceneDescriptor.overrideMaterial;
 	auto fallbackMaterial = sceneDescriptor.fallbackMaterial;
-	std::optional<OvRendering::Data::Frustum> frustum = std::nullopt;
+
+	OvTools::Utils::OptRef<const OvRendering::Data::Frustum> frustum;
 
 	if (camera.HasFrustumGeometryCulling())
 	{

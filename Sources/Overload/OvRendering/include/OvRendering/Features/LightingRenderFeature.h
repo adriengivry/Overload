@@ -24,6 +24,7 @@ namespace OvRendering::Features
 		struct LightingDescriptor
 		{
 			LightSet lights;
+			OvTools::Utils::OptRef<const OvRendering::Data::Frustum> frustumOverride;
 		};
 
 		/**

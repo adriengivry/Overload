@@ -102,6 +102,20 @@ OvCore::Rendering::SceneRenderer::SceneDescriptor OvEditor::Panels::SceneView::C
 {
 	auto descriptor = AViewControllable::CreateSceneDescriptor();
 	descriptor.fallbackMaterial = m_fallbackMaterial;
+
+	if (Settings::EditorSettings::DebugFrustumCulling)
+	{
+		auto& scene = *GetScene();
+
+		if (auto mainCameraComponent = scene.FindMainCamera())
+		{
+			auto& sceneCamera = mainCameraComponent->GetCamera();
+			m_camera.SetFrustumGeometryCulling(sceneCamera.HasFrustumGeometryCulling());
+			m_camera.SetFrustumLightCulling(sceneCamera.HasFrustumLightCulling());
+			descriptor.frustumOverride = sceneCamera.GetFrustum();
+		}
+	}
+
 	return descriptor;
 }
 
