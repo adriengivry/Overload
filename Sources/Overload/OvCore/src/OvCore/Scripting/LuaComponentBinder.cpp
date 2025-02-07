@@ -250,8 +250,8 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		sol::base_classes, sol::bases<AComponent>()
 		);
 
-	p_luaState.new_usertype<OvCore::Rendering::PostProcess::EffectSettings>("PostProcessSettings",
-		"enabled", &OvCore::Rendering::PostProcess::EffectSettings::enabled
+	p_luaState.new_usertype<OvCore::Rendering::PostProcess::EffectSettings>("EffectSettings",
+		"Enabled", &OvCore::Rendering::PostProcess::EffectSettings::enabled
 	);
 
 	p_luaState.new_usertype<OvCore::Rendering::PostProcess::BloomSettings>("BloomSettings",
@@ -269,6 +269,7 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"MinLuminanceEV", &OvCore::Rendering::PostProcess::AutoExposureSettings::minLuminanceEV,
 		"MaxLuminanceEV", &OvCore::Rendering::PostProcess::AutoExposureSettings::maxLuminanceEV,
 		"ExposureCompensationEV", &OvCore::Rendering::PostProcess::AutoExposureSettings::exposureCompensationEV,
+		"Progressive", &OvCore::Rendering::PostProcess::AutoExposureSettings::progressive,
 		"SpeedDown", &OvCore::Rendering::PostProcess::AutoExposureSettings::speedDown,
 		"SpeedUp", &OvCore::Rendering::PostProcess::AutoExposureSettings::speedUp
 	);
