@@ -22,6 +22,7 @@
 #include "OvCore/ECS/Components/CMaterialRenderer.h"
 #include "OvCore/ECS/Components/CAudioSource.h"
 #include "OvCore/ECS/Components/CAudioListener.h"
+#include "OvCore/ECS/Components/CPostProcessStack.h"
 
 void OvCore::Scripting::LuaActorBinder::BindActor(sol::state & p_luaState)
 {
@@ -62,7 +63,8 @@ void OvCore::Scripting::LuaActorBinder::BindActor(sol::state & p_luaState)
 		"GetModelRenderer", &Actor::GetComponent<CModelRenderer>,
 		"GetMaterialRenderer", &Actor::GetComponent<CMaterialRenderer>,
 		"GetAudioSource", &Actor::GetComponent<CAudioSource>,
-		"GetAudioListener", &Actor::GetComponent<CAudioListener>,
+		"GetAudioListener", & Actor::GetComponent<CAudioListener>,
+		"GetPostProcessStack", &Actor::GetComponent<CPostProcessStack>,
 
 		/* Behaviours relatives */
 		"GetBehaviour", [](Actor& p_this, const std::string& p_name) -> sol::table
@@ -88,7 +90,8 @@ void OvCore::Scripting::LuaActorBinder::BindActor(sol::state & p_luaState)
 		"AddAmbientSphereLight", &Actor::AddComponent<CAmbientSphereLight>,
 		"AddMaterialRenderer", &Actor::AddComponent<CMaterialRenderer>,
 		"AddAudioSource", &Actor::AddComponent<CAudioSource>,
-		"AddAudioListener", &Actor::AddComponent<CAudioListener>,
+		"AddAudioListener", & Actor::AddComponent<CAudioListener>,
+		"AddPostProcessStack", &Actor::AddComponent<CPostProcessStack>,
 
 		/* Components Destructors */
 		"RemoveModelRenderer", &Actor::RemoveComponent<CModelRenderer>,
@@ -103,7 +106,8 @@ void OvCore::Scripting::LuaActorBinder::BindActor(sol::state & p_luaState)
 		"RemoveAmbientSphereLight", &Actor::RemoveComponent<CAmbientSphereLight>,
 		"RemoveMaterialRenderer", &Actor::RemoveComponent<CMaterialRenderer>,
 		"RemoveAudioSource", &Actor::RemoveComponent<CAudioSource>,
-		"RemoveAudioListener", &Actor::RemoveComponent<CAudioListener>,
+		"RemoveAudioListener", & Actor::RemoveComponent<CAudioListener>,
+		"RemovePostProcessStack", &Actor::RemoveComponent<CPostProcessStack>,
 
 		/* Behaviour management */
 		"AddBehaviour", &Actor::AddBehaviour,

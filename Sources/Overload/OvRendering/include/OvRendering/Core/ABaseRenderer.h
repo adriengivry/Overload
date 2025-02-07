@@ -13,6 +13,7 @@
 #include "OvRendering/Resources/IMesh.h"
 #include "OvRendering/Resources/Texture.h"
 #include "OvRendering/Entities/Drawable.h"
+#include "OvRendering/Settings/EBlitFlags.h"
 
 namespace OvRendering::Core
 {
@@ -106,6 +107,22 @@ namespace OvRendering::Core
 		);
 
 		/**
+		* Draw a fullscreen quad with the given material
+		* @param p_pso
+		* @param p_src
+		* @param p_dst
+		* @param p_material
+		* @param p_flags
+		*/
+		virtual void Blit(
+			OvRendering::Data::PipelineState p_pso,
+			OvRendering::Buffers::Framebuffer& p_src,
+			OvRendering::Buffers::Framebuffer& p_dst,
+			OvRendering::Data::Material& p_material,
+			OvRendering::Settings::EBlitFlags p_flags = OvRendering::Settings::EBlitFlags::DEFAULT
+		);
+
+		/**
 		* Draw a drawable entity
 		* @param p_pso
 		* @param p_drawable
@@ -119,6 +136,7 @@ namespace OvRendering::Core
 		Data::FrameDescriptor m_frameDescriptor;
 		Context::Driver& m_driver;
 		OvRendering::Resources::Texture* m_emptyTexture;
+		std::unique_ptr<OvRendering::Resources::IMesh> m_unitQuad;
 		OvRendering::Data::PipelineState m_basePipelineState;
 		bool m_isDrawing;
 

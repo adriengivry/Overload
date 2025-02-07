@@ -22,6 +22,7 @@
 #include "OvCore/ECS/Components/CMaterialRenderer.h"
 #include "OvCore/ECS/Components/CAudioSource.h"
 #include "OvCore/ECS/Components/CAudioListener.h"
+#include "OvCore/ECS/Components/CPostProcessStack.h"
 
 void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaState)
 {
@@ -248,4 +249,60 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 	p_luaState.new_usertype<CAudioListener>("AudioListener",
 		sol::base_classes, sol::bases<AComponent>()
 		);
+
+	p_luaState.new_usertype<OvCore::Rendering::PostProcess::EffectSettings>("PostProcessSettings",
+		"enabled", &OvCore::Rendering::PostProcess::EffectSettings::enabled
+	);
+
+	p_luaState.new_usertype<OvCore::Rendering::PostProcess::BloomSettings>("BloomSettings",
+		sol::base_classes, sol::bases<OvCore::Rendering::PostProcess::EffectSettings>(),
+		"Threshold", &OvCore::Rendering::PostProcess::BloomSettings::threshold,
+		"KernelSize", &OvCore::Rendering::PostProcess::BloomSettings::kernelSize,
+		"Radius", &OvCore::Rendering::PostProcess::BloomSettings::radius,
+		"Intensity", &OvCore::Rendering::PostProcess::BloomSettings::intensity,
+		"Passes", &OvCore::Rendering::PostProcess::BloomSettings::passes
+	);
+
+	p_luaState.new_usertype<OvCore::Rendering::PostProcess::AutoExposureSettings>("AutoExposureSettings",
+		sol::base_classes, sol::bases<OvCore::Rendering::PostProcess::EffectSettings>(),
+		"CenterWeightBias", &OvCore::Rendering::PostProcess::AutoExposureSettings::centerWeightBias,
+		"MinLuminanceEV", &OvCore::Rendering::PostProcess::AutoExposureSettings::minLuminanceEV,
+		"MaxLuminanceEV", &OvCore::Rendering::PostProcess::AutoExposureSettings::maxLuminanceEV,
+		"ExposureCompensationEV", &OvCore::Rendering::PostProcess::AutoExposureSettings::exposureCompensationEV,
+		"SpeedDown", &OvCore::Rendering::PostProcess::AutoExposureSettings::speedDown,
+		"SpeedUp", &OvCore::Rendering::PostProcess::AutoExposureSettings::speedUp
+	);
+
+	p_luaState.new_enum<OvCore::Rendering::PostProcess::ETonemappingMode>("TonemappingMode",
+	{
+		{"NEUTRAL", OvCore::Rendering::PostProcess::ETonemappingMode::NEUTRAL},
+		{"REINHARD", OvCore::Rendering::PostProcess::ETonemappingMode::REINHARD},
+		{"REINHARD_JODIE", OvCore::Rendering::PostProcess::ETonemappingMode::REINHARD_JODIE},
+		{"UNCHARTED2", OvCore::Rendering::PostProcess::ETonemappingMode::UNCHARTED2},
+		{"UNCHARTED2_FILMIC", OvCore::Rendering::PostProcess::ETonemappingMode::UNCHARTED2_FILMIC},
+		{"ACES", OvCore::Rendering::PostProcess::ETonemappingMode::ACES}
+	});
+
+	p_luaState.new_usertype<OvCore::Rendering::PostProcess::TonemappingSettings>("TonemappingSettings",
+		sol::base_classes, sol::bases<OvCore::Rendering::PostProcess::EffectSettings>(),
+		"Exposure", &OvCore::Rendering::PostProcess::TonemappingSettings::exposure,
+		"Mode", &OvCore::Rendering::PostProcess::TonemappingSettings::mode,
+		"GammaCorrection", &OvCore::Rendering::PostProcess::TonemappingSettings::gammaCorrection
+	);
+
+	p_luaState.new_usertype<OvCore::Rendering::PostProcess::FXAASettings>("FXAASettings",
+		sol::base_classes, sol::bases<OvCore::Rendering::PostProcess::EffectSettings>()
+	);
+
+	p_luaState.new_usertype<CPostProcessStack>("PostProcessStack",
+		sol::base_classes, sol::bases<AComponent>(),
+		"GetTonemappingSettings", &CPostProcessStack::GetTonemappingSettings,
+		"GetBloomSettings", &CPostProcessStack::GetBloomSettings,
+		"GetAutoExposureSettings", &CPostProcessStack::GetAutoExposureSettings,
+		"GetFXAASettings", &CPostProcessStack::GetFXAASettings,
+		"SetTonemappingSettings", &CPostProcessStack::SetTonemappingSettings,
+		"SetBloomSettings", &CPostProcessStack::SetBloomSettings,
+		"SetAutoExposureSettings", &CPostProcessStack::SetAutoExposureSettings,
+		"SetFXAASettings", &CPostProcessStack::SetFXAASettings
+	);
 }

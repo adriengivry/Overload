@@ -1,0 +1,82 @@
+#shader vertex
+#version 430 core
+
+layout(location = 0) in vec2 geo_Pos;
+layout(location = 1) in vec2 geo_TexCoords;
+
+out vec2 TexCoords;
+
+void main()
+{
+    TexCoords = geo_TexCoords;
+    gl_Position = vec4(geo_Pos, 0.0, 1.0);
+}
+
+#shader fragment
+#version 430 core
+
+in vec2 TexCoords;
+out vec4 FRAGMENT_COLOR;
+
+uniform sampler2D _InputTexture;
+
+vec3 applyFXAA(sampler2D tex, vec2 uv)
+{
+    vec2 resolution = vec2(textureSize(tex, 0));
+    vec2 pixelSize = 1.0 / resolution;
+
+    // Sample the neighborhood pixels
+    vec3 rgbNW = texture(tex, uv + vec2(-1.0, -1.0) * pixelSize).rgb;
+    vec3 rgbNE = texture(tex, uv + vec2(1.0, -1.0) * pixelSize).rgb;
+    vec3 rgbSW = texture(tex, uv + vec2(-1.0, 1.0) * pixelSize).rgb;
+    vec3 rgbSE = texture(tex, uv + vec2(1.0, 1.0) * pixelSize).rgb;
+    vec3 rgbM  = texture(tex, uv).rgb;
+
+    // Luminance (perceived brightness)
+    float lumaNW = dot(rgbNW, vec3(0.299, 0.587, 0.114));
+    float lumaNE = dot(rgbNE, vec3(0.299, 0.587, 0.114));
+    float lumaSW = dot(rgbSW, vec3(0.299, 0.587, 0.114));
+    float lumaSE = dot(rgbSE, vec3(0.299, 0.587, 0.114));
+    float lumaM  = dot(rgbM, vec3(0.299, 0.587, 0.114));
+
+    // Edge detection
+    float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));
+    float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));
+    float lumaRange = lumaMax - lumaMin;
+
+    // Threshold for edge detection
+    if (lumaRange < 0.1)
+    { 
+        return rgbM; // No significant edge, return original
+    }
+
+    // Direction of the edge
+    vec2 dir;
+    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));
+    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));
+
+    // Normalize the direction
+    float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) * 0.25, 0.0001);
+    float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);
+    dir = clamp(dir * rcpDirMin, -pixelSize, pixelSize);
+
+    // Final FXAA sampling
+    vec3 rgbA = 0.5 * (
+        texture(tex, uv + dir * (1.0 / 3.0 - 0.5)).rgb +
+        texture(tex, uv + dir * (2.0 / 3.0 - 0.5)).rgb
+    );
+
+    vec3 rgbB = rgbA * 0.5 + 0.25 * (
+        texture(tex, uv + dir * -0.5).rgb +
+        texture(tex, uv + dir *  0.5).rgb
+    );
+
+    // Choose between original and anti-aliased
+    float lumaB = dot(rgbB, vec3(0.299, 0.587, 0.114));
+    return (lumaB < lumaMin || lumaB > lumaMax) ? rgbA : rgbB;
+}
+
+void main()
+{
+    FRAGMENT_COLOR = vec4(applyFXAA(_InputTexture, TexCoords), 1.0);
+}

@@ -13,10 +13,28 @@ std::atomic_bool OvRendering::Core::ABaseRenderer::s_isDrawing{ false };
 
 const OvRendering::Entities::Camera kDefaultCamera;
 
+std::unique_ptr<OvRendering::Resources::Mesh> CreateUnitQuad()
+{
+	const std::vector<OvRendering::Geometry::Vertex> vertices = {
+		{ {-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f} }, // Bottom-left
+		{ { 1.0f, -1.0f, 0.0f}, {1.0f, 0.0f} }, // Bottom-right
+		{ { 1.0f,  1.0f, 0.0f}, {1.0f, 1.0f} }, // Top-right
+		{ {-1.0f,  1.0f, 0.0f}, {0.0f, 1.0f} }  // Top-left
+	};
+
+	const std::vector<uint32_t> indices = {
+		0, 1, 2, // First triangle
+		0, 2, 3  // Second triangle
+	};
+
+	return std::make_unique<OvRendering::Resources::Mesh>(vertices, indices, 0);
+}
+
 OvRendering::Core::ABaseRenderer::ABaseRenderer(Context::Driver& p_driver) : 
 	m_driver(p_driver),
 	m_isDrawing(false),
-	m_emptyTexture(OvRendering::Resources::Loaders::TextureLoader::CreatePixel(255, 255, 255, 255))
+	m_emptyTexture(OvRendering::Resources::Loaders::TextureLoader::CreatePixel(255, 255, 255, 255)),
+	m_unitQuad(CreateUnitQuad())
 {
 }
 
@@ -108,6 +126,55 @@ void OvRendering::Core::ABaseRenderer::Clear(
 )
 {
 	m_driver.Clear(p_colorBuffer, p_depthBuffer, p_stencilBuffer, p_color);
+}
+
+void OvRendering::Core::ABaseRenderer::Blit(
+	OvRendering::Data::PipelineState p_pso,
+	OvRendering::Buffers::Framebuffer& p_src,
+	OvRendering::Buffers::Framebuffer& p_dst,
+	OvRendering::Data::Material& p_material,
+	OvRendering::Settings::EBlitFlags p_flags
+)
+{
+	OVASSERT(m_unitQuad != nullptr, "Invalid unit quad mesh, cannot blit!");
+
+	if (OvRendering::Settings::IsFlagSet(OvRendering::Settings::EBlitFlags::RESIZE_DST_TO_MATCH_SRC, p_flags))
+	{
+		p_dst.Resize(p_src.GetWidth(), p_src.GetHeight());
+	}
+
+	if (OvRendering::Settings::IsFlagSet(OvRendering::Settings::EBlitFlags::FILL_INPUT_TEXTURE, p_flags))
+	{
+		p_material.Set("_InputTexture", p_src.GetTexture());
+	}
+
+	OvRendering::Entities::Drawable blit;
+	blit.mesh = *m_unitQuad;
+	blit.material = p_material;
+
+	if (OvRendering::Settings::IsFlagSet(OvRendering::Settings::EBlitFlags::USE_MATERIAL_STATE_MASK, p_flags))
+	{
+		blit.stateMask = p_material.GenerateStateMask();
+	}
+	else
+	{
+		blit.stateMask.depthWriting = false;
+		blit.stateMask.colorWriting = true;
+		blit.stateMask.blendable = false;
+		blit.stateMask.frontfaceCulling = false;
+		blit.stateMask.backfaceCulling = false;
+		blit.stateMask.depthTest = false;
+	}
+
+	p_dst.Bind();
+
+	if (OvRendering::Settings::IsFlagSet(OvRendering::Settings::EBlitFlags::UPDATE_VIEWPORT_SIZE, p_flags))
+	{
+		SetViewport(0, 0, p_dst.GetWidth(), p_dst.GetHeight());
+	}
+
+	DrawEntity(p_pso, blit);
+	p_dst.Unbind();
 }
 
 void OvRendering::Core::ABaseRenderer::DrawEntity(

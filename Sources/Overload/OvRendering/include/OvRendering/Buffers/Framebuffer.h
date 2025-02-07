@@ -70,6 +70,21 @@ namespace OvRendering::Buffers
 		*/
 		uint32_t GetRenderBufferID() const;
 
+		/**
+		* Returns the width of the framebuffer
+		*/
+		uint16_t GetWidth() const;
+
+		/**
+		* Returns the width of the framebuffer
+		*/
+		uint16_t GetHeight() const;
+
+		/**
+		* Generate mip maps for the framebuffer's associated render texture
+		*/
+		void GenerateMipMaps() const;
+
 	private:
 		uint16_t m_width = 0;
 		uint16_t m_height = 0;

@@ -13,6 +13,7 @@
 #include "OvCore/ECS/Components/CModelRenderer.h"
 #include "OvCore/ECS/Components/CCamera.h"
 #include "OvCore/ECS/Components/CLight.h"
+#include "OvCore/ECS/Components/CPostProcessStack.h"
 
 namespace OvCore::SceneSystem
 {
@@ -31,6 +32,7 @@ namespace OvCore::SceneSystem
 			std::vector<ECS::Components::CModelRenderer*>	modelRenderers;
 			std::vector<ECS::Components::CCamera*>			cameras;
 			std::vector<ECS::Components::CLight*>			lights;
+			std::vector<ECS::Components::CPostProcessStack*> postProcessStacks;
 		};
 
 		/**

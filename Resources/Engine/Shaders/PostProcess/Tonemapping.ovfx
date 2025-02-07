@@ -1,0 +1,120 @@
+#shader vertex
+#version 430 core
+
+layout(location = 0) in vec2 geo_Pos;
+layout(location = 1) in vec2 geo_TexCoords;
+
+out vec2 TexCoords;
+
+void main()
+{
+    TexCoords = geo_TexCoords;
+    gl_Position = vec4(geo_Pos, 0.0, 1.0);
+}
+
+#shader fragment
+#version 430 core
+
+in vec2 TexCoords;
+out vec4 FRAGMENT_COLOR;
+
+uniform sampler2D _InputTexture;
+uniform float _Exposure;
+uniform int _Mode;
+uniform int _GammaCorrection;
+
+float luminance(vec3 v)
+{
+    return dot(v, vec3(0.2126, 0.7152, 0.0722));
+}
+
+vec3 applyGammaCorrection(vec3 color)
+{
+    const float gamma = 2.2;
+    return pow(color, vec3(1.0 / gamma));
+}
+
+vec3 neutral(vec3 color)
+{
+    const float startCompression = 0.8 - 0.04;
+    const float desaturation = 0.15;
+
+    float x = min(color.r, min(color.g, color.b));
+    float offset = x < 0.08 ? x - 6.25 * x * x : 0.04;
+    color -= offset;
+
+    float peak = max(color.r, max(color.g, color.b));
+    if (peak < startCompression) return color;
+
+    const float d = 1.0 - startCompression;
+    float newPeak = 1.0 - d * d / (peak + d - startCompression);
+    color *= newPeak / peak;
+
+    float g = 1.0 - 1.0 / (desaturation * (peak - newPeak) + 1.0);
+    return mix(color, vec3(newPeak), g);
+}
+
+vec3 reinhard(vec3 v)
+{
+    return v / (1.0f + v);
+}
+
+vec3 reinhard_jodie(vec3 v)
+{
+    float l = luminance(v);
+    vec3 tv = v / (1.0f + v);
+    return mix(v / (1.0f + l), tv, tv);
+}
+
+vec3 uncharted2_tonemap_partial(vec3 x)
+{
+    const float A = 0.15f;
+    const float B = 0.50f;
+    const float C = 0.10f;
+    const float D = 0.20f;
+    const float E = 0.02f;
+    const float F = 0.30f;
+    return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F))-E/F;
+}
+
+vec3 uncharted2_filmic(vec3 v)
+{
+    float exposure_bias = 2.0f;
+    vec3 curr = uncharted2_tonemap_partial(v * exposure_bias);
+
+    vec3 W = vec3(11.2f);
+    vec3 white_scale = vec3(1.0f) / uncharted2_tonemap_partial(W);
+    return curr * white_scale;
+}
+
+vec3 ACESFilm(vec3 x)
+{
+    const float a = 2.51;
+    const float b = 0.03;
+    const float c = 2.43;
+    const float d = 0.59;
+    const float e = 0.14;
+    return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
+}
+
+void main()
+{
+    vec3 color = texture(_InputTexture, TexCoords).rgb * _Exposure;
+
+    switch(_Mode)
+    {
+        case 0: color = neutral(color); break;
+        case 1: color = reinhard(color); break;
+        case 2: color = reinhard_jodie(color); break;
+        case 3: color = uncharted2_tonemap_partial(color); break;
+        case 4: color = uncharted2_filmic(color); break;
+        case 5: color = ACESFilm(color); break;
+    }
+
+    if (_GammaCorrection != 0)
+    {
+        color = applyGammaCorrection(color);
+    }
+
+    FRAGMENT_COLOR = vec4(color, 1.0);
+}

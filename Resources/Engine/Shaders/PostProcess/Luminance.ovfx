@@ -1,0 +1,58 @@
+#shader vertex
+#version 430 core
+
+layout(location = 0) in vec2 geo_Pos;
+layout(location = 1) in vec2 geo_TexCoords;
+
+out vec2 TexCoords;
+
+void main()
+{
+    TexCoords = geo_TexCoords;
+    gl_Position = vec4(geo_Pos, 0.0, 1.0);
+}
+
+#shader fragment
+#version 430 core
+
+in vec2 TexCoords;
+out vec4 FRAGMENT_COLOR;
+
+uniform sampler2D _InputTexture;
+uniform float _CenterWeightBias;
+
+const float EPSILON = 0.0001f;
+
+float luminance(vec3 v)
+{
+    return max(dot(v, vec3(0.2126, 0.7152, 0.0722)), EPSILON);
+}
+
+float remapStrength(float userStrength)
+{
+    return log(max(userStrength, EPSILON));
+}
+
+vec2 bulge(vec2 texCoords, float strength)
+{
+    if (strength < EPSILON)
+    {
+        return texCoords;
+    }
+
+    const float scale = remapStrength(strength);
+    const float radius = 1;
+    vec2 center = vec2(0.5);
+    vec2 uv = texCoords - center;
+    float bulgeDist = smoothstep(scale, radius, distance(center, texCoords) / distance(center, vec2(1.0)));
+    uv = uv * bulgeDist * 0.5 + center;
+    uv = uv * 2.0 - 0.5;
+    return uv;
+}
+
+void main()
+{
+    const vec2 bulgeCoords = bulge(TexCoords, _CenterWeightBias);
+    const vec3 color = texture(_InputTexture, bulgeCoords).rgb;
+    FRAGMENT_COLOR = vec4(vec3(luminance(color)), 1.0);
+}
