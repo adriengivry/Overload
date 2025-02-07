@@ -63,6 +63,9 @@ uniform float u_Roughness = 1.0;
 uniform sampler2D u_HeightMap;
 uniform sampler2D u_MaskMap;
 
+uniform sampler2D _ShadowMap;
+uniform mat4 _LightSpaceMatrix;
+
 out vec4 FRAGMENT_COLOR;
 
 void main()
@@ -73,7 +76,7 @@ void main()
     if (!IsMasked(u_MaskMap, texCoords))
     {
         vec3 normal = ComputeNormal(u_EnableNormalMapping, texCoords, fs_in.Normal, u_NormalMap, fs_in.TBN);
-        FRAGMENT_COLOR = ComputePBRLighting(texCoords, normal, ubo_ViewPos, fs_in.FragPos, u_Albedo, u_Metallic, u_Roughness, u_AlbedoMap, u_MetallicMap, u_RoughnessMap, u_AmbientOcclusionMap);
+        FRAGMENT_COLOR = ComputePBRLighting(texCoords, normal, ubo_ViewPos, fs_in.FragPos, u_Albedo, u_Metallic, u_Roughness, u_AlbedoMap, u_MetallicMap, u_RoughnessMap, u_AmbientOcclusionMap, _ShadowMap, _LightSpaceMatrix);
     }
     else
     {

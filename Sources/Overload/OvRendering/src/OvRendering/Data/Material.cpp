@@ -28,19 +28,19 @@ void OvRendering::Data::Material::SetShader(OvRendering::Resources::Shader* p_sh
 	}
 	else
 	{
-		m_uniformsData.clear();
+		m_properties.clear();
 	}
 }
 
 void OvRendering::Data::Material::FillUniform()
 {
-	m_uniformsData.clear();
+	m_properties.clear();
 
 	for (const OvRendering::Resources::UniformInfo& element : m_shader->uniforms)
-		m_uniformsData.emplace(element.name, element.defaultValue);
+		m_properties.emplace(element.name, MaterialProperty{ element.defaultValue, false });
 }
 
-void OvRendering::Data::Material::Bind(OvRendering::Resources::Texture* p_emptyTexture) const
+void OvRendering::Data::Material::Bind(OvRendering::Resources::Texture* p_emptyTexture)
 {
 	if (HasShader())
 	{
@@ -51,9 +51,11 @@ void OvRendering::Data::Material::Bind(OvRendering::Resources::Texture* p_emptyT
 
 		int textureSlot = 0;
 
-		for (auto& [name, value] : m_uniformsData)
+		for (auto& [name, prop] : m_properties)
 		{
-			auto uniformData = m_shader->GetUniformInfo(name);
+			auto& value = prop.value;
+
+			const auto uniformData = m_shader->GetUniformInfo(name);
 
 			if (uniformData)
 			{
@@ -65,9 +67,16 @@ void OvRendering::Data::Material::Bind(OvRendering::Resources::Texture* p_emptyT
 				case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC2:	if (value.type() == typeid(FVector2))	m_shader->SetUniformVec2(name, std::any_cast<FVector2>(value));		break;
 				case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC3:	if (value.type() == typeid(FVector3))	m_shader->SetUniformVec3(name, std::any_cast<FVector3>(value));		break;
 				case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC4:	if (value.type() == typeid(FVector4))	m_shader->SetUniformVec4(name, std::any_cast<FVector4>(value));		break;
+				case OvRendering::Resources::UniformType::UNIFORM_FLOAT_MAT4:	if (value.type() == typeid(FMatrix4))	m_shader->SetUniformMat4(name, std::any_cast<FMatrix4>(value));		break;
 				case OvRendering::Resources::UniformType::UNIFORM_SAMPLER_2D:
 				{
-					if (value.type() == typeid(Texture*))
+					if (value.type() == typeid(TextureHandle))
+					{
+						auto tex = std::any_cast<TextureHandle>(value);
+						tex.Bind(textureSlot);
+						m_shader->SetUniformInt(uniformData->name, textureSlot++);
+					}
+					else if (value.type() == typeid(Texture*))
 					{
 						if (auto tex = std::any_cast<Texture*>(value); tex)
 						{
@@ -81,6 +90,11 @@ void OvRendering::Data::Material::Bind(OvRendering::Resources::Texture* p_emptyT
 						}
 					}
 				}
+				}
+
+				if (prop.singleUse)
+				{
+					value = uniformData->defaultValue;
 				}
 			}
 		}
@@ -140,6 +154,16 @@ void OvRendering::Data::Material::SetColorWriting(bool p_colorWriting)
 	m_colorWriting = p_colorWriting;
 }
 
+void OvRendering::Data::Material::SetCastShadows(bool p_castShadows)
+{
+	m_castShadows = p_castShadows;
+}
+
+void OvRendering::Data::Material::SetReceiveShadows(bool p_receiveShadows)
+{
+	m_receiveShadows = p_receiveShadows;
+}
+
 void OvRendering::Data::Material::SetGPUInstances(int p_instances)
 {
 	m_gpuInstances = p_instances;
@@ -175,6 +199,16 @@ bool OvRendering::Data::Material::HasColorWriting() const
 	return m_colorWriting;
 }
 
+bool OvRendering::Data::Material::IsShadowCaster() const
+{
+	return m_castShadows;
+}
+
+bool OvRendering::Data::Material::IsShadowReceiver() const
+{
+	return m_receiveShadows;
+}
+
 int OvRendering::Data::Material::GetGPUInstances() const
 {
 	return m_gpuInstances;
@@ -192,7 +226,7 @@ const OvRendering::Data::StateMask OvRendering::Data::Material::GenerateStateMas
 	return stateMask;
 }
 
-std::map<std::string, std::any>& OvRendering::Data::Material::GetUniformsData()
+OvRendering::Data::Material::PropertyMap& OvRendering::Data::Material::GetProperties()
 {
-	return m_uniformsData;
+	return m_properties;
 }

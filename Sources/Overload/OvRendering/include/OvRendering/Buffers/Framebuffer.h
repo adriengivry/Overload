@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "OvRendering/Context/Driver.h"
+#include "OvRendering/Resources/Texture.h"
 
 namespace OvRendering::Buffers
 {
@@ -22,8 +23,9 @@ namespace OvRendering::Buffers
 		* Create the framebuffer
 		* @param p_width
 		* @param p_height
+		* @param p_depthOnly
 		*/
-		Framebuffer(uint16_t p_width = 0, uint16_t p_height = 0);
+		Framebuffer(uint16_t p_width = 0, uint16_t p_height = 0, bool p_depthOnly = false);
 
 		/**
 		* Destructor
@@ -59,6 +61,11 @@ namespace OvRendering::Buffers
 		uint32_t GetTextureID() const;
 
 		/**
+		* Returns the ID of the OpenGL render texture
+		*/
+		Resources::TextureHandle GetTexture() const;
+
+		/**
 		* Returns the ID of the OpenGL render buffer
 		*/
 		uint32_t GetRenderBufferID() const;
@@ -66,6 +73,7 @@ namespace OvRendering::Buffers
 	private:
 		uint16_t m_width = 0;
 		uint16_t m_height = 0;
+		bool m_depthOnly = false;
 
 		uint32_t m_bufferID = 0;
 		uint32_t m_renderTexture = 0;

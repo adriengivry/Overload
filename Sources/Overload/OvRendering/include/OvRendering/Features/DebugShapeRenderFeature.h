@@ -28,12 +28,6 @@ namespace OvRendering::Features
 		virtual ~DebugShapeRenderFeature();
 
 		/**
-		* Defines the view projection to use when drawing
-		* @param p_viewProjection
-		*/
-		void SetViewProjection(const OvMaths::FMatrix4& p_viewProjection);
-
-		/**
 		* Draw a line in world space
 		* @param p_pso
 		* @param p_start

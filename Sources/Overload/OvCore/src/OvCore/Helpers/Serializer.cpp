@@ -115,6 +115,19 @@ void OvCore::Helpers::Serializer::SerializeVec4(tinyxml2::XMLDocument & p_doc, t
 	element->InsertEndChild(w);
 }
 
+void OvCore::Helpers::Serializer::SerializeMat4(tinyxml2::XMLDocument& p_doc, tinyxml2::XMLNode* p_node, const std::string& p_name, const OvMaths::FMatrix4& p_value)
+{
+	tinyxml2::XMLNode* node = p_doc.NewElement(p_name.c_str());
+	p_node->InsertEndChild(node);
+
+	for (uint32_t i = 0; i < 16; ++i)
+	{
+		tinyxml2::XMLElement* element = p_doc.NewElement(("d" + std::to_string(i)).c_str());
+		element->SetText(p_value.data[i]);
+		node->InsertEndChild(element);
+	}
+}
+
 void OvCore::Helpers::Serializer::SerializeQuat(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, const OvMaths::FQuaternion & p_value)
 {
 	tinyxml2::XMLNode* element = p_doc.NewElement(p_name.c_str());
@@ -274,6 +287,18 @@ void OvCore::Helpers::Serializer::DeserializeVec4(tinyxml2::XMLDocument & p_doc,
 	}
 }
 
+void OvCore::Helpers::Serializer::DeserializeMat4(tinyxml2::XMLDocument& p_doc, tinyxml2::XMLNode* p_node, const std::string& p_name, OvMaths::FMatrix4& p_out)
+{
+	if (auto node = p_node->FirstChildElement(p_name.c_str()); node)
+	{
+		for (uint32_t i = 0; i < 16; ++i)
+		{
+			if (auto element = node->FirstChildElement(("d" + std::to_string(i)).c_str()); element)
+				element->QueryFloatText(&(p_out.data[i]));
+		}
+	}
+}
+
 void OvCore::Helpers::Serializer::DeserializeQuat(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node, const std::string & p_name, OvMaths::FQuaternion & p_out)
 {
 	if (auto node = p_node->FirstChildElement(p_name.c_str()); node)
@@ -417,6 +442,13 @@ OvMaths::FVector4 OvCore::Helpers::Serializer::DeserializeVec4(tinyxml2::XMLDocu
 {
 	OvMaths::FVector4 result;
 	DeserializeVec4(p_doc, p_node, p_name, result);
+	return result;
+}
+
+OvMaths::FMatrix4 OvCore::Helpers::Serializer::DeserializeMat4(tinyxml2::XMLDocument& p_doc, tinyxml2::XMLNode* p_node, const std::string& p_name)
+{
+	OvMaths::FMatrix4 result;
+	DeserializeMat4(p_doc, p_node, p_name, result);
 	return result;
 }
 

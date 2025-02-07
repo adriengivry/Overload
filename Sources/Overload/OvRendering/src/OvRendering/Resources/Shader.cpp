@@ -149,6 +149,7 @@ void OvRendering::Resources::Shader::QueryUniforms()
 			case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC2:	defaultValue = std::make_any<OvMaths::FVector2>(GetUniformVec2(name));		break;
 			case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC3:	defaultValue = std::make_any<OvMaths::FVector3>(GetUniformVec3(name));		break;
 			case OvRendering::Resources::UniformType::UNIFORM_FLOAT_VEC4:	defaultValue = std::make_any<OvMaths::FVector4>(GetUniformVec4(name));		break;
+			case OvRendering::Resources::UniformType::UNIFORM_FLOAT_MAT4:	defaultValue = std::make_any<OvMaths::FMatrix4>(GetUniformMat4(name));		break;
 			case OvRendering::Resources::UniformType::UNIFORM_SAMPLER_2D:	defaultValue = std::make_any<OvRendering::Resources::Texture*>(nullptr);	break;
 			}
 

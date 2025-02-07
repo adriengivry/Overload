@@ -5,6 +5,8 @@
         <backface_culling>true</backface_culling>
         <depth_test>true</depth_test>
         <gpu_instances>1</gpu_instances>
+        <cast_shadows>1</cast_shadows>
+        <receive_shadows>1</receive_shadows>
     </settings>
     <uniforms>
         <uniform>

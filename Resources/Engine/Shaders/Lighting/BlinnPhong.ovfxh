@@ -25,9 +25,19 @@ vec3 ComputePointLight(mat4 light, vec3 fragPos, vec4 diffuseTexel, vec4 specula
     return BlinnPhong(lightDirection, lightColor, intensity * luminosity, diffuseTexel, specularTexel, normal, viewDir, shininess);
 }
 
-vec3 ComputeDirectionalLight(mat4 light, vec4 diffuseTexel, vec4 specularTexel, vec3 normal, vec3 viewDir, float shininess)
+vec3 ComputeDirectionalLight(mat4 light, vec3 fragPos, vec4 diffuseTexel, vec4 specularTexel, vec3 normal, vec3 viewDir, float shininess, sampler2D shadowMap, mat4 lightSpaceMatrix)
 {
-    return BlinnPhong(-light[1].rgb, UnPack(light[2][0]), light[3][3], diffuseTexel, specularTexel, normal, viewDir, shininess);
+    vec3 lightDir = -light[1].rgb;
+    vec3 blinnPhong = BlinnPhong(lightDir, UnPack(light[2][0]), light[3][3], diffuseTexel, specularTexel, normal, viewDir, shininess);
+
+    if (light[2][1] > 0.0f)
+    {
+        vec4 fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
+        float shadow = CalculateShadow(fragPosLightSpace, shadowMap, normal, lightDir);
+        blinnPhong *= 1.0 - shadow;
+    }
+
+    return blinnPhong;
 }
 
 vec3 ComputeSpotLight(mat4 light, vec3 fragPos, vec4 diffuseTexel, vec4 specularTexel, vec3 normal, vec3 viewDir, float shininess)
@@ -71,7 +81,7 @@ vec3 ComputeAmbientSphereLight(mat4 light, vec3 fragPos, vec4 diffuseTexel)
     return IsPointInSphere(fragPos, lightPosition, radius) ? diffuseTexel.rgb * lightColor * intensity : vec3(0.0);
 }
 
-vec4 ComputeBlinnPhongLighting(vec2 texCoords, vec3 normal, vec3 viewPos, vec3 fragPos, vec4 diffuse, vec3 specular, sampler2D diffuseMap, sampler2D specularMap, float shininess)
+vec4 ComputeBlinnPhongLighting(vec2 texCoords, vec3 normal, vec3 viewPos, vec3 fragPos, vec4 diffuse, vec3 specular, sampler2D diffuseMap, sampler2D specularMap, float shininess, sampler2D shadowMap, mat4 lightSpaceMatrix)
 {
     vec3 viewDir = normalize(viewPos - fragPos);
     vec4 diffuseTexel = texture(diffuseMap,  texCoords) * diffuse;
@@ -87,7 +97,7 @@ vec4 ComputeBlinnPhongLighting(vec2 texCoords, vec3 normal, vec3 viewPos, vec3 f
         switch(lightType)
         {
             case 0: lightAccumulation += ComputePointLight(light, fragPos, diffuseTexel, specularTexel, normal, viewDir, shininess); break;
-            case 1: lightAccumulation += ComputeDirectionalLight(light, diffuseTexel, specularTexel, normal, viewDir, shininess); break;
+            case 1: lightAccumulation += ComputeDirectionalLight(light, fragPos, diffuseTexel, specularTexel, normal, viewDir, shininess, shadowMap, lightSpaceMatrix); break;
             case 2: lightAccumulation += ComputeSpotLight(light, fragPos, diffuseTexel, specularTexel, normal, viewDir, shininess); break;
             case 3: lightAccumulation += ComputeAmbientBoxLight(light, fragPos, diffuseTexel); break;
             case 4: lightAccumulation += ComputeAmbientSphereLight(light, fragPos, diffuseTexel); break;

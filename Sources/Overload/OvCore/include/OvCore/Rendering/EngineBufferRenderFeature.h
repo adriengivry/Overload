@@ -35,5 +35,6 @@ namespace OvCore::Rendering
 	protected:
 		std::chrono::high_resolution_clock::time_point m_startTime;
 		std::unique_ptr<OvRendering::Buffers::UniformBuffer> m_engineBuffer;
+		OvRendering::Data::FrameDescriptor m_cachedFrameDescriptor;
 	};
 }

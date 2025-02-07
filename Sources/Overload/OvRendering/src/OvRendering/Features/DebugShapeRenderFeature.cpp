@@ -73,17 +73,11 @@ OvRendering::Features::DebugShapeRenderFeature::~DebugShapeRenderFeature()
 
 void OvRendering::Features::DebugShapeRenderFeature::OnBeginFrame(const Data::FrameDescriptor& p_frameDescriptor)
 {
-	SetViewProjection(
+	const OvMaths::FMatrix4 viewProjection =
 		p_frameDescriptor.camera->GetProjectionMatrix() *
-		p_frameDescriptor.camera->GetViewMatrix()
-	);
-}
+		p_frameDescriptor.camera->GetViewMatrix();
 
-void OvRendering::Features::DebugShapeRenderFeature::SetViewProjection(const OvMaths::FMatrix4& p_viewProjection)
-{
-	m_lineShader->Bind();
-	m_lineShader->SetUniformMat4("viewProjection", p_viewProjection);
-	m_lineShader->Unbind();
+	m_lineMaterial->Set("viewProjection", viewProjection);
 }
 
 void OvRendering::Features::DebugShapeRenderFeature::DrawLine(
@@ -94,9 +88,12 @@ void OvRendering::Features::DebugShapeRenderFeature::DrawLine(
 	float p_lineWidth
 )
 {
+	m_lineMaterial->SetBackfaceCulling(false);
+	m_lineMaterial->SetFrontfaceCulling(false);
 	m_lineMaterial->Set("start", p_start);
 	m_lineMaterial->Set("end", p_end);
 	m_lineMaterial->Set("color", p_color);
+
 
 	p_pso.rasterizationMode = Settings::ERasterizationMode::LINE;
 	p_pso.lineWidthPow2 = Utils::Conversions::FloatToPow2(p_lineWidth);

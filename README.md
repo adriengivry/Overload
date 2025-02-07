@@ -92,9 +92,7 @@ Here is a non-exhaustive list of Overload main features:
 
 ## 3.2. To implement
 Again, a non-exhaustive list of Overload in-coming features:
-- Shadow mapping
 - Custom post-processing
-- Renderer Hardware Interface (Multiple graphics backend support)
 - More input device support (Gamepad)
 - Prefab system
 - Skeletal animation
@@ -130,7 +128,7 @@ Overload is licenced under an MIT licence.
 
 ## 4.6. More information
 If you are interested in Overload, you can download our engine and the demo game we made with it on our website:<br>
-http://overloadengine.org
+https://overloadengine.org
 
 Learn about Overload (Tutorials and Scripting API) by visiting our Wiki:<br>
 https://github.com/adriengivry/Overload/wiki

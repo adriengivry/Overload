@@ -19,7 +19,7 @@ namespace OvRendering::Features
 	{
 	public:
 		// TODO: Consider not using references here, but copying the light instead (should be fairly cheap and doesn't require to keep an instance outside of the scope)
-		using LightSet = std::vector<std::reference_wrapper<const OvRendering::Entities::Light>>;
+		using LightSet = std::vector<std::reference_wrapper<OvRendering::Entities::Light>>;
 
 		struct LightingDescriptor
 		{

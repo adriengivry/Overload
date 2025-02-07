@@ -12,6 +12,8 @@
 #include "OvCore/Rendering/SceneRenderer.h"
 #include "OvCore/Rendering/EngineBufferRenderFeature.h"
 #include "OvCore/Rendering/EngineDrawableDescriptor.h"
+#include "OvCore/Rendering/ShadowRenderFeature.h"
+#include "OvCore/Rendering/ShadowRenderPass.h"
 #include "OvCore/ECS/Components/CModelRenderer.h"
 #include "OvCore/ECS/Components/CMaterialRenderer.h"
 
@@ -59,7 +61,9 @@ OvCore::Rendering::SceneRenderer::SceneRenderer(OvRendering::Context::Driver& p_
 {
 	AddFeature<EngineBufferRenderFeature>();
 	AddFeature<OvRendering::Features::LightingRenderFeature>();
+	AddFeature<ShadowRenderFeature>();
 
+	AddPass<ShadowRenderPass>("Shadows", OvRendering::Settings::ERenderPassOrder::Shadows);
 	AddPass<OpaqueRenderPass>("Opaques", OvRendering::Settings::ERenderPassOrder::Opaque);
 	AddPass<TransparentRenderPass>("Transparents", OvRendering::Settings::ERenderPassOrder::Transparent);
 }

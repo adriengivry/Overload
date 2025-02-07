@@ -29,6 +29,8 @@ OvCore::Rendering::EngineBufferRenderFeature::EngineBufferRenderFeature(OvRender
 
 void OvCore::Rendering::EngineBufferRenderFeature::OnBeginFrame(const OvRendering::Data::FrameDescriptor& p_frameDescriptor)
 {
+	m_cachedFrameDescriptor = p_frameDescriptor;
+
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	auto elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTime - m_startTime);
 

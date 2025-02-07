@@ -312,13 +312,13 @@ void OvEditor::Panels::MaterialEditor::GenerateShaderSettingsContent()
 
 	std::multimap<int, std::pair<std::string, std::any*>> sortedUniformsData;
 
-	for (auto&[name, value] : m_target->GetUniformsData())
+	for (auto&[name, value] : m_target->GetProperties())
 	{
 		int orderID = 0;
 
 		auto uniformData = m_target->GetShader()->GetUniformInfo(name);
 
-		if (uniformData)
+		if (uniformData && name.length() > 0 && name[0] != '_') // Uniforms starting with '_' are internal (private), so not exposed
 		{
 			switch (uniformData->type)
 			{
@@ -331,7 +331,7 @@ void OvEditor::Panels::MaterialEditor::GenerateShaderSettingsContent()
 			case UniformType::UNIFORM_BOOL:			orderID = 6; break;
 			}
 
-			sortedUniformsData.emplace(orderID, std::pair<std::string, std::any*>{ name, & value });
+			sortedUniformsData.emplace(orderID, std::pair<std::string, std::any*>{ name, & value.value });
 		}
 	}
 
@@ -341,15 +341,27 @@ void OvEditor::Panels::MaterialEditor::GenerateShaderSettingsContent()
 		
 		if (uniformData)
 		{
+			const auto formattedType = UniformFormat(info.first);
 			switch (uniformData->type)
 			{
-			case UniformType::UNIFORM_BOOL:			GUIDrawer::DrawBoolean(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<bool&>(*info.second));																	break;
-			case UniformType::UNIFORM_INT:			GUIDrawer::DrawScalar<int>(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<int&>(*info.second));																break;
-			case UniformType::UNIFORM_FLOAT:		GUIDrawer::DrawScalar<float>(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<float&>(*info.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);		break;
-			case UniformType::UNIFORM_FLOAT_VEC2:	GUIDrawer::DrawVec2(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<OvMaths::FVector2&>(*info.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);	break;
-			case UniformType::UNIFORM_FLOAT_VEC3:	DrawHybridVec3(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<OvMaths::FVector3&>(*info.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);			break;
-			case UniformType::UNIFORM_FLOAT_VEC4:	DrawHybridVec4(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<OvMaths::FVector4&>(*info.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);			break;
-			case UniformType::UNIFORM_SAMPLER_2D:	GUIDrawer::DrawTexture(*m_shaderSettingsColumns, UniformFormat(info.first), reinterpret_cast<Texture * &>(*info.second));																break;
+			case UniformType::UNIFORM_BOOL:			GUIDrawer::DrawBoolean(*m_shaderSettingsColumns, formattedType, reinterpret_cast<bool&>(*info.second));																	break;
+			case UniformType::UNIFORM_INT:			GUIDrawer::DrawScalar<int>(*m_shaderSettingsColumns, formattedType, reinterpret_cast<int&>(*info.second));																break;
+			case UniformType::UNIFORM_FLOAT:		GUIDrawer::DrawScalar<float>(*m_shaderSettingsColumns, formattedType, reinterpret_cast<float&>(*info.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);		break;
+			case UniformType::UNIFORM_FLOAT_VEC2:	GUIDrawer::DrawVec2(*m_shaderSettingsColumns, formattedType, reinterpret_cast<OvMaths::FVector2&>(*info.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);	break;
+			case UniformType::UNIFORM_FLOAT_VEC3:	DrawHybridVec3(*m_shaderSettingsColumns, formattedType, reinterpret_cast<OvMaths::FVector3&>(*info.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);			break;
+			case UniformType::UNIFORM_FLOAT_VEC4:	DrawHybridVec4(*m_shaderSettingsColumns, formattedType, reinterpret_cast<OvMaths::FVector4&>(*info.second), 0.01f, GUIDrawer::_MIN_FLOAT, GUIDrawer::_MAX_FLOAT);			break;
+			case UniformType::UNIFORM_SAMPLER_2D:
+				{
+					try
+					{
+						auto& texture = std::any_cast<Texture*&>(*info.second);
+						GUIDrawer::DrawTexture(*m_shaderSettingsColumns, formattedType, texture);
+					}
+					catch (const std::bad_any_cast&)
+					{
+						// If the cast failed, it means that the uniform is not a texture (It's a texture handle)
+					}
+				}
 			}
 		}
 	}
@@ -365,5 +377,7 @@ void OvEditor::Panels::MaterialEditor::GenerateMaterialSettingsContent()
 	GUIDrawer::DrawBoolean(*m_materialSettingsColumns, "Depth Test", std::bind(&OvCore::Resources::Material::HasDepthTest, m_target), std::bind(&OvCore::Resources::Material::SetDepthTest, m_target, std::placeholders::_1));
 	GUIDrawer::DrawBoolean(*m_materialSettingsColumns, "Depth Writing", std::bind(&OvCore::Resources::Material::HasDepthWriting, m_target), std::bind(&OvCore::Resources::Material::SetDepthWriting, m_target, std::placeholders::_1));
 	GUIDrawer::DrawBoolean(*m_materialSettingsColumns, "Color Writing", std::bind(&OvCore::Resources::Material::HasColorWriting, m_target), std::bind(&OvCore::Resources::Material::SetColorWriting, m_target, std::placeholders::_1));
+	GUIDrawer::DrawBoolean(*m_materialSettingsColumns, "Shadow Casting", std::bind(&OvCore::Resources::Material::IsShadowCaster, m_target), std::bind(&OvCore::Resources::Material::SetCastShadows, m_target, std::placeholders::_1));
+	GUIDrawer::DrawBoolean(*m_materialSettingsColumns, "Shadow Receiving", std::bind(&OvCore::Resources::Material::IsShadowReceiver, m_target), std::bind(&OvCore::Resources::Material::SetReceiveShadows, m_target, std::placeholders::_1));
 	GUIDrawer::DrawScalar<int>(*m_materialSettingsColumns, "GPU Instances", std::bind(&OvCore::Resources::Material::GetGPUInstances, m_target), std::bind(&OvCore::Resources::Material::SetGPUInstances, m_target, std::placeholders::_1), 1.0f, 0, 100000);
 }

@@ -38,7 +38,7 @@ void OvRendering::Core::ABaseRenderer::BeginFrame(const Data::FrameDescriptor& p
 	}
 
 	m_basePipelineState = m_driver.CreatePipelineState();
-	m_driver.SetViewport(0, 0, p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
+	SetViewport(0, 0, p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
 
 	Clear(
 		p_frameDescriptor.camera->GetClearColorBuffer(),
@@ -93,6 +93,11 @@ void OvRendering::Core::ABaseRenderer::ReadPixels(
 ) const
 {
 	return m_driver.ReadPixels(p_x, p_y, p_width, p_height, p_format, p_type, p_data);
+}
+
+void OvRendering::Core::ABaseRenderer::SetViewport(uint32_t p_x, uint32_t p_y, uint32_t p_width, uint32_t p_height)
+{
+	m_driver.SetViewport(p_x, p_y, p_width, p_height);
 }
 
 void OvRendering::Core::ABaseRenderer::Clear(

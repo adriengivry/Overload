@@ -20,7 +20,7 @@ OvCore::ECS::Components::CLight::CLight(ECS::Actor & p_owner) :
 {
 }
 
-const OvRendering::Entities::Light& OvCore::ECS::Components::CLight::GetData() const
+OvRendering::Entities::Light& OvCore::ECS::Components::CLight::GetData()
 {
 	return m_data;
 }

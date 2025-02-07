@@ -61,6 +61,9 @@ uniform sampler2D u_NormalMap;
 uniform sampler2D u_HeightMap;
 uniform sampler2D u_MaskMap;
 
+uniform sampler2D _ShadowMap;
+uniform mat4 _LightSpaceMatrix;
+
 out vec4 FRAGMENT_COLOR;
 
 void main()
@@ -71,7 +74,19 @@ void main()
     if (!IsMasked(u_MaskMap, texCoords))
     {
         vec3 normal = ComputeNormal(u_EnableNormalMapping, texCoords, fs_in.Normal, u_NormalMap, fs_in.TBN);
-        FRAGMENT_COLOR = ComputeBlinnPhongLighting(texCoords, normal, ubo_ViewPos, fs_in.FragPos, u_Diffuse, u_Specular, u_DiffuseMap, u_SpecularMap, u_Shininess);
+        FRAGMENT_COLOR = ComputeBlinnPhongLighting(
+            texCoords,
+            normal,
+            ubo_ViewPos,
+            fs_in.FragPos,
+            u_Diffuse,
+            u_Specular,
+            u_DiffuseMap,
+            u_SpecularMap,
+            u_Shininess,
+            _ShadowMap,
+            _LightSpaceMatrix
+        );
     }
     else
     {
