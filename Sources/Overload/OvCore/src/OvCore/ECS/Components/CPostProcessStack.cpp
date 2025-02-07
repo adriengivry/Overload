@@ -111,12 +111,14 @@ void OvCore::ECS::Components::CPostProcessStack::OnInspector(OvUI::Internal::Wid
 	OvCore::Helpers::GUIDrawer::DrawScalar<float>(p_root, "Tonemapping Exposure", tonemappingSettings.exposure, 0.05f, 0.0f);
 	Helpers::GUIDrawer::CreateTitle(p_root, "Tonemapping Mode");
 	auto& tonemappingMode = p_root.CreateWidget<OvUI::Widgets::Selection::ComboBox>(static_cast<int>(tonemappingSettings.mode));
-	tonemappingMode.choices.emplace(0, "Neutral");
-	tonemappingMode.choices.emplace(1, "Reinhard");
-	tonemappingMode.choices.emplace(2, "Reinhard-Jodie");
-	tonemappingMode.choices.emplace(3, "Uncharted 2");
-	tonemappingMode.choices.emplace(4, "Uncharted 2 (Filmic)");
-	tonemappingMode.choices.emplace(5, "ACES");
+	tonemappingMode.choices = {
+		{ 0, "Neutral" },
+		{ 1, "Reinhard" },
+		{ 2, "Reinhard-Jodie" },
+		{ 3, "Uncharted 2" },
+		{ 4, "Uncharted 2 (Filmic)" },
+		{ 5, "ACES" }
+	};
 	tonemappingMode.ValueChangedEvent += [this](int p_choice)
 	{
 		auto& tonemappingSettings = m_settings.Get<Rendering::PostProcess::TonemappingEffect, Rendering::PostProcess::TonemappingSettings>();
