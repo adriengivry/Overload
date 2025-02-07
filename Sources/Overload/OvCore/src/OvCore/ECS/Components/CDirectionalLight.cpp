@@ -92,12 +92,15 @@ void OvCore::ECS::Components::CDirectionalLight::OnInspector(OvUI::Internal::Wid
 	Helpers::GUIDrawer::CreateTitle(p_root, "Shadow Map Resolution");
 
 	auto& shadowMapResolution = p_root.CreateWidget<OvUI::Widgets::Selection::ComboBox>(m_data.shadowMapResolution);
-	shadowMapResolution.choices.emplace(512, "512");
-	shadowMapResolution.choices.emplace(1024, "1024");
-	shadowMapResolution.choices.emplace(2048, "2048");
-	shadowMapResolution.choices.emplace(4096, "4096");
-	shadowMapResolution.choices.emplace(8192, "8192");
-	shadowMapResolution.choices.emplace(16384, "16384 (Experimental)");
+	shadowMapResolution.choices = {
+		{ 512, "512" },
+		{ 1024, "1024" },
+		{ 2048, "2048" },
+		{ 4096, "4096" },
+		{ 8192, "8192" },
+		{ 16384, "16384 (Experimental)" }
+	};
+
 	auto& shadowMapResolutionDispatcher = shadowMapResolution.AddPlugin<OvUI::Plugins::DataDispatcher<int>>();
 	shadowMapResolutionDispatcher.RegisterGatherer([this]() { return m_data.shadowMapResolution; });
 	shadowMapResolutionDispatcher.RegisterProvider([this](int p_choice) { m_data.shadowMapResolution = p_choice; });
