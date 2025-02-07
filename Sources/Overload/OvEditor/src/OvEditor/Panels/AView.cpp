@@ -37,8 +37,6 @@ void OvEditor::Panels::AView::_Draw_Impl()
 
 void OvEditor::Panels::AView::InitFrame()
 {
-	auto camera = GetCamera();
-
 	m_renderer->AddDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>(
 		CreateSceneDescriptor()
 	);
