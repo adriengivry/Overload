@@ -80,6 +80,14 @@ void RenderCurrentScene(
 			p_renderer.DrawFrame();
 			p_renderer.EndFrame();
 		}
+		else
+		{
+			p_renderer.Clear(true, true, true);
+		}
+	}
+	else
+	{
+		p_renderer.Clear(true, true, true);
 	}
 }
 

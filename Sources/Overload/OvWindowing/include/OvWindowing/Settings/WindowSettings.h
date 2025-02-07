@@ -27,17 +27,17 @@ namespace OvWindowing::Settings
 		/**
 		* Title of the window (Displayed in the title bar)
 		*/
-		std::string title;
+		std::string title = "Overload";
 
 		/**
 		* Width in pixels of the window
 		*/
-		uint16_t width;
+		uint16_t width = 800;
 
 		/**
 		* Height in pixels of the window
 		*/
-		uint16_t height;
+		uint16_t height = 600;
 
 		/**
 		* Minimum width of the window.

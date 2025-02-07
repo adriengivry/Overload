@@ -25,13 +25,13 @@ project "OvEditor"
 		"xcopy \"%{resdir}Editor\\*\" \"%{builddir}%{cfg.buildcfg}\\Data\\Editor\" /y /i /r /e /q",
 		"xcopy \"%{prj.location}\\Layout.ini\" \"%{builddir}%{cfg.buildcfg}\\Config\\\" /y /i",
 
-		"xcopy /Y /I /Q /D \"%{outputdir}Debug\\%{prj.name}\\*.exe\" \"%{builddir}%{cfg.buildcfg}\\\"",
-		"xcopy /Y /I /Q /D \"%{outputdir}Debug\\%{prj.name}\\*.dll\" \"%{builddir}%{cfg.buildcfg}\\\"",
-		"xcopy /Y /I /Q /D \"%{outputdir}Release\\%{prj.name}\\*.exe\" \"%{builddir}%{cfg.buildcfg}\\\"",
-		"xcopy /Y /I /Q /D \"%{outputdir}Release\\%{prj.name}\\*.dll\" \"%{builddir}%{cfg.buildcfg}\\\"",
+		"xcopy /Y /I /Q /D \"%{outputdir}%{cfg.buildcfg}\\%{prj.name}\\*.exe\" \"%{builddir}%{cfg.buildcfg}\\\"",
+		"xcopy /Y /I /Q /D \"%{outputdir}%{cfg.buildcfg}\\%{prj.name}\\*.dll\" \"%{builddir}%{cfg.buildcfg}\\\"",
 
 		"xcopy \"%{outputdir}Debug\\OvGame\\*.exe\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Development\" /y /i /c",
+		"xcopy \"%{outputdir}Debug\\OvGame\\*.dll\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Development\" /y /i /c",
 		"xcopy \"%{outputdir}Release\\OvGame\\*.exe\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Shipping\" /y /i /c",
+		"xcopy \"%{outputdir}Release\\OvGame\\*.dll\" \"%{builddir}%{cfg.buildcfg}\\Builder\\Shipping\" /y /i /c",
 
 		"EXIT /B 0"
 	}

@@ -28,18 +28,18 @@ OvGame::Core::Context::Context() :
 
 	/* Settings */
 	OvWindowing::Settings::DeviceSettings deviceSettings;
-	deviceSettings.contextMajorVersion = projectSettings.Get<int>("opengl_major");
-	deviceSettings.contextMinorVersion = projectSettings.Get<int>("opengl_minor");
-	deviceSettings.samples = projectSettings.Get<int>("samples");
+	projectSettings.TryGet("opengl_major", deviceSettings.contextMajorVersion);
+	projectSettings.TryGet("opengl_minor", deviceSettings.contextMinorVersion);
+	projectSettings.TryGet("samples", deviceSettings.samples);
 
 	OvWindowing::Settings::WindowSettings windowSettings;
-	windowSettings.title = projectSettings.Get<std::string>("executable_name");
-	windowSettings.width = projectSettings.Get<int>("x_resolution");
-	windowSettings.height = projectSettings.Get<int>("y_resolution");
+	projectSettings.TryGet("executable_name", windowSettings.title);
+	projectSettings.TryGet("x_resolution", windowSettings.width);
+	projectSettings.TryGet("y_resolution", windowSettings.height);
 	windowSettings.maximized = false;
 	windowSettings.resizable = false;
-	windowSettings.fullscreen = projectSettings.Get<bool>("fullscreen");
-	windowSettings.samples = projectSettings.Get<int>("samples");
+	projectSettings.TryGet("fullscreen", windowSettings.fullscreen);
+	projectSettings.TryGet("samples", windowSettings.samples);
 
 	/* Window creation */
 	device = std::make_unique<OvWindowing::Context::Device>(deviceSettings);
@@ -49,10 +49,10 @@ OvGame::Core::Context::Context() :
 	inputManager = std::make_unique<OvWindowing::Inputs::InputManager>(*window);
 	window->MakeCurrentContext();
 
-	device->SetVsync(projectSettings.Get<bool>("vsync"));
+	device->SetVsync(projectSettings.GetOrDefault<bool>("vsync", true));
 
 	OvRendering::Data::PipelineState basePSO;
-	basePSO.multisample = projectSettings.Get<bool>("multisampling");
+	basePSO.multisample = projectSettings.GetOrDefault<bool>("multisampling", false);
 
 	/* Graphics context creation */
 	driver = std::make_unique<OvRendering::Context::Driver>(OvRendering::Settings::DriverSettings{

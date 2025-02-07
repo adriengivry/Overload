@@ -56,6 +56,14 @@ namespace OvTools::Filesystem
 		T GetOrDefault(const std::string& p_key, T p_default);
 
 		/**
+		* Try to get the value attached to the given key
+		* @param p_key
+		* @param p_outValue
+		*/
+		template<typename T>
+		bool TryGet(const std::string& p_key, T& p_outValue);
+
+		/**
 		* Set a new value to the given key (Not applied to the real file untill Rewrite() or Save() is called)
 		* @param p_key
 		* @param p_value
