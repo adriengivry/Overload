@@ -75,8 +75,8 @@ namespace OvEditor::Settings
 
 		inline static Property<bool> ShowGeometryBounds = { false };
 		inline static Property<bool> ShowLightBounds = { false };
-		inline static Property<bool> EditorFrustumGeometryCulling = { false };
-		inline static Property<bool> EditorFrustumLightCulling = { false };
+		inline static Property<bool> EditorFrustumGeometryCulling = { true };
+		inline static Property<bool> EditorFrustumLightCulling = { true };
 		inline static Property<bool> DebugFrustumCulling = { false };
 		inline static Property<float> LightBillboardScale = { 0.5f };
 		inline static Property<float> TranslationSnapUnit = { 1.0f };

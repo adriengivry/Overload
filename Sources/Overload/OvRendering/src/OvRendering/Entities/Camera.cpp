@@ -20,8 +20,8 @@ OvRendering::Entities::Camera::Camera(OvTools::Utils::OptRef<OvMaths::FTransform
 	m_clearColorBuffer(true),
 	m_clearDepthBuffer(true),
 	m_clearStencilBuffer(true),
-	m_frustumGeometryCulling(false),
-	m_frustumLightCulling(false),
+	m_frustumGeometryCulling(true),
+	m_frustumLightCulling(true),
 	m_frustum{}
 {
 }
