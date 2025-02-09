@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "OvMaths/Internal/TransformNotifier.h"
 #include "OvMaths/FQuaternion.h"
 #include "OvMaths/FMatrix4.h"
 #include "OvMaths/FVector3.h"
@@ -219,10 +218,6 @@ namespace OvMaths
 		*/
 		FVector3 GetLocalRight() const;
 
-	public:
-		Internal::TransformNotifier Notifier;
-		Internal::TransformNotifier::NotificationHandlerID m_notificationHandlerID;
-
 	private:
 		void PreDecomposeWorldMatrix();
 		void PreDecomposeLocalMatrix();
@@ -239,5 +234,8 @@ namespace OvMaths
 		FMatrix4 m_worldMatrix;
 
 		FTransform*	m_parent;
+		
+		Internal::TransformNotifier m_notifier;
+		Internal::TransformNotifier::NotificationHandlerID m_notificationHandlerID;
 	};
 }
