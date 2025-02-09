@@ -4,7 +4,6 @@
 * @licence: MIT
 */
 
-#include "OvMaths/Internal/TransformNotifier.h"
 #include "OvMaths/FTransform.h"
 
 OvMaths::FTransform::FTransform(FVector3 p_localPosition, FQuaternion p_localRotation, FVector3 p_localScale) :
