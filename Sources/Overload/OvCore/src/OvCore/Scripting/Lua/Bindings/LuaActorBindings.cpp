@@ -24,7 +24,7 @@
 
 #include <sol.hpp>
 
-void BindLuaActors(sol::state& p_luaState)
+void BindLuaActor(sol::state& p_luaState)
 {
 	using namespace OvCore::ECS;
 	using namespace OvCore::ECS::Components;

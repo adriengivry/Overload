@@ -14,15 +14,15 @@
 
 #include <sol.hpp>
 
-void BindLuaActors(sol::state& p_state);
+void BindLuaActor(sol::state& p_state);
 void BindLuaComponents(sol::state& p_state);
-void BindLuaGlobals(sol::state& p_state);
+void BindLuaGlobal(sol::state& p_state);
 void BindLuaMath(sol::state& p_state);
 
 constexpr auto luaBindings = std::array{
-	BindLuaActors,
+	BindLuaActor,
 	BindLuaComponents,
-	BindLuaGlobals,
+	BindLuaGlobal,
 	BindLuaMath
 };
 
