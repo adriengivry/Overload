@@ -24,9 +24,9 @@
 <a href="https://discord.gg/wqe775s"><img src="https://img.shields.io/discord/622075717659656195.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" height=30></img></a>
 </p>
 
-# 1. What is Overload
+# 1. What's Overload?
 ## 1.1. Description
-Overload is an alternative game engine, inspired by industry standards, initiated by [Benjamin VIRANIN](https://github.com/BenjaminViranin), [Max BRUN](https://github.com/maxbrundev) and [Adrien GIVRY](https://github.com/adriengivry). Overload is now a community project, opened to any contribution.
+Overload is a 3D game engine inspired by industry standards, initiated by [Benjamin VIRANIN](https://github.com/BenjaminViranin), [Max BRUN](https://github.com/maxbrundev) and [Adrien GIVRY](https://github.com/adriengivry) as a graduation project. It is now a community project open to external contribution.
 
 Overload pillars are:
 - Simplicity
@@ -37,52 +37,54 @@ Overload pillars are:
 Overload is divided into 12 modules (10 DLLs and 2 executables):
 
 ### 1.2.1. Overload SDK
-The Overload SDK is the core of the engine. It is a set of libraries that our applications (`OvGame` and `OvEditor`) are using.
-We designed theses libraries with reusability in mind. They are extremely modular and easy to extract from a game engine context.
+The Overload SDK is the core of the engine. It is a set of libraries used by our applications: `OvGame` and `OvEditor`.
+We designed theses libraries with reusability in mind. They are highly modular and easy to extract from a game engine context.
 - `OvAnalytics`: Code and hardware profiling
-- `OvDebug`: Logging, assertions
-- `OvTools`: Serialization, ini files, events, time
-- `OvMaths`: Vectors, Matrices, Quaternion, Transform
+- `OvDebug`: Logging and assertions
+- `OvTools`: Serialization, INI files, events, clock
+- `OvMaths`: Vectors, matrices, quaternions, transforms
 - `OvAudio`: Wraps irrKlang
 - `OvPhysics`: Wraps Bullet3
 - `OvRendering`: Rendering engine using OpenGL
-- `OvWindowing`: GLFW + Windows API wrapper
-- `OvUI`: Dear imGui wrapped into an event-based and component-based UI system
-- `OvCore`: Mediator, resource management, scripting, component-based scene system
+- `OvWindowing`: GLFW and Windows API wrapper
+- `OvUI`: Dear ImGui wrapped into an event-based and component-based UI system
+- `OvCore`: Component-based scene system, scripting, and resource management
 
 ### 1.2.2. Overload Applications
-- `OvGame`: Uses OvCore, asset dependent, generic executable for any game built with Overload
-- `OvEditor`: Uses OvCore, expose game development to the end-user (From creation to building)
+- `OvGame`: Uses OvCore, asset-dependent, a generic executable for any game built with Overload
+- `OvEditor`: Uses OvCore, exposes game development to the end-user (from creation to building)
 
 ![Editor](https://user-images.githubusercontent.com/33324216/94352908-fd228a80-0038-11eb-849a-c076bde4c7c6.PNG)
 
 # 2. History of Overload
 ## 2.1. Context
-Initially, Overload was a graduation project. We were 3 ([Benjamin VIRANIN](https://github.com/BenjaminViranin), [Max BRUN](https://github.com/maxbrundev) and [Adrien GIVRY](https://github.com/adriengivry)) working on it for 5 months. We had to create a game engine from scratch, using the fewest libraries possible.
+Overload started as a graduation project. The three os us, ([Benjamin VIRANIN](https://github.com/BenjaminViranin), [Max BRUN](https://github.com/maxbrundev) and [Adrien GIVRY](https://github.com/adriengivry), worked on it for five months. Our task was to create a game engine from scratch, using as few external libraries as possible.
 
 ## 2.2. Goals
-Our goals for this project were:
-- Understanding how to architect a game engine
-- Designing an application thinking of end-users
-- Making a game engine as simple as possible
-- Producing high-quality modern code
-- Creating a game with our engine
-- Dealing with a long-term project
-- Developping documentation for developers and end-users
+Our goals for this project were to:
+- Understand how to architect a game engine
+- Design an application with end-users in mind
+- Make the game engine as simple as possible
+- Produce high-quality modern code
+- Create a game using our engine
+- Structure and manage a long-term project
+- Develop documentation for both developers and end-users
 
 ## 2.3. Pre-production
-We spent about a month designing our initial architecture. We tried to provide a technical solution with UML diagrams, flowcharts, package diagrams and use-case diagrams. This was a long and tedious work, but it really helped us to start the production with a clear vision of the engine. We defined some coding convention to ensure that all of our work will stay homogeneous during the production. Defining these kinds of rules is crucial to keep a maintainable code during the whole project.
+We spent about a month designing our initial architecture.  We provided technical solutions using UML diagrams, flowcharts, package diagrams, and use-case diagrams. This helped us to start the production with a clear vision of the engine.
+
+We also defined coding conventions to ensure our work remained consistent throughout the production process. Defining these kinds of rules is crucial to maintaining clean, manageable code over the course of the project.
 
 ## 2.4. Production
-The production made us realize that we had a naive idea of what a game engine is. During this phase our architecture has evolved. We found that our initial architecture was sometimes too complex, non-optimal. We went back to architecture design multiple times during the project.
+During production, we realized that our initial understanding of what a game engine entails was naive. As we progressed, our architecture evolved. We discovered that our original design was sometimes overly complex or suboptimal. As a result, we revisited and refined the architecture multiple times throughout the project.
 
 <span name="features"></span>
 # 3. Features
 ## 3.1. Implemented
-Here is a non-exhaustive list of Overload main features:
+Here is a non-exhaustive list of Overload's main features:
 - Game Editor
 - Lua scripting
-- Physically-based rendering (PBR)
+- Physically-Based Rendering (PBR)
 - Custom shaders support
 - Windows game building
 - Profiling tools (Editor and build)
@@ -90,13 +92,12 @@ Here is a non-exhaustive list of Overload main features:
 - 3D sound system
 - Rigidbody physics
 
-## 3.2. To implement
-Again, a non-exhaustive list of Overload in-coming features:
-- Custom post-processing
-- More input device support (Gamepad)
+## 3.2. To Be Implemented
+A non-exhaustive list of upcoming features for Overload:
+- Expanded input device support (Gamepad)
 - Prefab system
 - Skeletal animation
-- User scripts profiling
+- User script profiling
 
 # 4. Details
 ## 4.1. Software
@@ -110,7 +111,7 @@ Again, a non-exhaustive list of Overload in-coming features:
 - irrKlang (Audio)
 - Tinyxml2 (XML Serializer)
 - SOL2 (Lua binder)
-- imGui (GUI)
+- ImGui (GUI)
 
 ## 4.3. Requirements
 Overload requires:
@@ -120,32 +121,33 @@ Overload requires:
 - CPU: x64
 
 ## 4.4. Compiling sources
-Overload is using Premake5 to generate project files. To generate these project files, execute `GenerateProjects.bat` located at the root of the repository. By default, `GenerateProjects.bat` will generate project files for Visual Studio 2022. If you want to use another version of Visual Studio (vs2019, vs2017...) or another IDE (c.f. https://github.com/premake/premake-core/), you can execute `GenerateProjects.bat` from the command line with an argument. (ex: `.\GeneratedProjects.bat vs2019`)<br><br>
-*Overload only targets Windows x64.*
+Overload uses Premake5 to generate project files. To generate these files, execute `GenerateProjects.bat` located at the root of the repository. By default, `GenerateProjects.bat` will generate project files for Visual Studio 2022. If you want to use another version of Visual Studio (e.g., VS2019, VS2017) or different IDE (see https://github.com/premake/premake-core/), you can execute `GenerateProjects.bat` from the command line with an argument. (e.g., `.\GeneratedProjects.bat vs2019`)<br><br>
+
+*Overload only targets Windows 64 bits.*
 
 ## 4.5. Licence
 Overload is licenced under an MIT licence.
 
 ## 4.6. More information
-If you are interested in Overload, you can download our engine and the demo game we made with it on our website:<br>
+If you're interested in Overload, you can download our engine and the demo game we created with it on our website:<br>
 https://overloadengine.org
 
-Learn about Overload (Tutorials and Scripting API) by visiting our Wiki:<br>
+Learn about Overload (tutorials and scripting API) by visiting our Wiki:<br>
 https://github.com/adriengivry/Overload/wiki
 
 You can also watch our features reel (Overload v1.0.0) on YouTube:<br>
 https://www.youtube.com/watch?v=ARXSJh-ZMHM
 
-And join our Discord Server:<br>
+Join our Discord Server:<br>
 https://discord.gg/wqe775s<br>
 
 # 5. Getting started
 Learn how to create your own games using Overload by visiting our [wiki](https://github.com/adriengivry/Overload/wiki).
 
 # 6. Contributing
-Overload is opened to any contribution. Do not hesitate to open issues (Features or bugs) or create pull requests.
+Overload is open to contributions of all kinds. Feel free to open issues (feature requests or bug reports) or submit pull requests.
 
-If you want to help us, visit our [CONTRIBUTING.md](https://github.com/adriengivry/Overload/blob/develop/CONTRIBUTING.md) guidelines document.
+If you'd like to contribute, please refer to our [CONTRIBUTING.md](https://github.com/adriengivry/Overload/blob/develop/CONTRIBUTING.md) guidelines.
 
 <span name="screenshots"></span>
 # 7. Screenshots
