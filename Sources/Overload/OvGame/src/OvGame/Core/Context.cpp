@@ -80,6 +80,9 @@ OvGame::Core::Context::Context() :
 	/* Physics engine */
 	physicsEngine = std::make_unique<OvPhysics::Core::PhysicsEngine>(OvPhysics::Settings::PhysicsSettings{ {0.0f, projectSettings.Get<float>("gravity"), 0.0f } });
 
+	/* Scripting */
+	scriptInterpreter = std::make_unique<OvCore::Scripting::LuaScriptingBackend>(projectScriptsPath);
+
 	/* Service Locator providing */
 	ServiceLocator::Provide<OvPhysics::Core::PhysicsEngine>(*physicsEngine);
 	ServiceLocator::Provide<ModelManager>(modelManager);
