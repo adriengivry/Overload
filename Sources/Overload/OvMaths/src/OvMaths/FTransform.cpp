@@ -15,7 +15,7 @@ OvMaths::FTransform::FTransform(FVector3 p_localPosition, FQuaternion p_localRot
 
 OvMaths::FTransform::~FTransform()
 {
-	Notifier.NotifyChildren(Internal::TransformNotifier::ENotification::TRANSFORM_DESTROYED);
+	m_notifier.NotifyChildren(Internal::TransformNotifier::ENotification::TRANSFORM_DESTROYED);
 }
 
 OvMaths::FTransform::FTransform(const FTransform& p_other) :
@@ -58,7 +58,7 @@ void OvMaths::FTransform::SetParent(FTransform& p_parent)
 {
 	m_parent = &p_parent;
 
-	m_notificationHandlerID = m_parent->Notifier.AddNotificationHandler(std::bind(&FTransform::NotificationHandler, this, std::placeholders::_1));
+	m_notificationHandlerID = m_parent->m_notifier.AddNotificationHandler(std::bind(&FTransform::NotificationHandler, this, std::placeholders::_1));
 
 	UpdateWorldMatrix();
 }
@@ -67,7 +67,7 @@ bool OvMaths::FTransform::RemoveParent()
 {
 	if (m_parent != nullptr)
 	{
-		m_parent->Notifier.RemoveNotificationHandler(m_notificationHandlerID);
+		m_parent->m_notifier.RemoveNotificationHandler(m_notificationHandlerID);
 		m_parent = nullptr;
 		UpdateWorldMatrix();
 
@@ -107,7 +107,7 @@ void OvMaths::FTransform::UpdateWorldMatrix()
 	m_worldMatrix = HasParent() ? m_parent->m_worldMatrix * m_localMatrix : m_localMatrix;
 	PreDecomposeWorldMatrix();
 
-	Notifier.NotifyChildren(Internal::TransformNotifier::ENotification::TRANSFORM_CHANGED);
+	m_notifier.NotifyChildren(Internal::TransformNotifier::ENotification::TRANSFORM_CHANGED);
 }
 
 void OvMaths::FTransform::UpdateLocalMatrix()
@@ -115,7 +115,7 @@ void OvMaths::FTransform::UpdateLocalMatrix()
 	m_localMatrix = HasParent() ? FMatrix4::Inverse(m_parent->m_worldMatrix) * m_worldMatrix : m_worldMatrix;
 	PreDecomposeLocalMatrix();
 
-	Notifier.NotifyChildren(Internal::TransformNotifier::ENotification::TRANSFORM_CHANGED);
+	m_notifier.NotifyChildren(Internal::TransformNotifier::ENotification::TRANSFORM_CHANGED);
 }
 
 void OvMaths::FTransform::SetLocalPosition(FVector3 p_newPosition)
