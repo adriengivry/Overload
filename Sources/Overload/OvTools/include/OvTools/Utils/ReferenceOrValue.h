@@ -26,7 +26,7 @@ namespace OvTools::Utils
 	public:
 		/*
 		* Construct the ReferenceOrValue instance
-		* @param p_instance
+		* @param p_ref
 		*/
 		ReferenceOrValue(OptRef<T> p_ref = std::nullopt)
 		{
@@ -38,6 +38,15 @@ namespace OvTools::Utils
 			{
 				m_data = T();
 			}
+		}
+
+		/**
+		* Construct the ReferenceOrValue instance
+		* @param p_ref
+		*/
+		ReferenceOrValue(T& p_ref)
+		{
+			m_data = &p_ref;
 		}
 
 		/**
