@@ -9,7 +9,7 @@
 #include "OvGame/Core/Context.h"
 
 #include <OvCore/Global/ServiceLocator.h>
-#include <OvCore/Scripting/Lua/LuaScriptingBackend.h>
+#include <OvCore/Scripting/Lua/LuaScriptEngine.h>
 
 using namespace OvCore::Global;
 using namespace OvCore::ResourceManagement;
@@ -81,7 +81,7 @@ OvGame::Core::Context::Context() :
 	physicsEngine = std::make_unique<OvPhysics::Core::PhysicsEngine>(OvPhysics::Settings::PhysicsSettings{ {0.0f, projectSettings.Get<float>("gravity"), 0.0f } });
 
 	/* Scripting */
-	scriptInterpreter = std::make_unique<OvCore::Scripting::LuaScriptingBackend>(projectScriptsPath);
+	scriptEngine = std::make_unique<OvCore::Scripting::LuaScriptEngine>(projectScriptsPath);
 
 	/* Service Locator providing */
 	ServiceLocator::Provide<OvPhysics::Core::PhysicsEngine>(*physicsEngine);

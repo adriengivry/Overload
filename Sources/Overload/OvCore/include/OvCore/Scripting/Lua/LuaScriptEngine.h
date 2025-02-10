@@ -6,16 +6,27 @@
 
 #pragma once
 
-#include <OvCore/Scripting/IScriptingBackend.h>
+#include <vector>
+#include <memory>
+
+#include <OvCore/Scripting/IScriptEngine.h>
+
+namespace sol
+{
+	class state;
+}
 
 namespace OvCore::Scripting
 {
 	/**
-	* Dummy scripting backend that does nothing
+	* Lua scripting backend implementation
 	*/
-	class NullScriptingBackend : public IScriptingBackend
+	class LuaScriptEngine : public IScriptEngine
 	{
 	public:
+		LuaScriptEngine(const std::string& p_scriptRootFolder);
+		~LuaScriptEngine();
+
 		void AddBehaviour(OvCore::ECS::Components::Behaviour& p_toAdd);
 		void RemoveBehaviour(OvCore::ECS::Components::Behaviour& p_toRemove);
 		void Reload();
@@ -35,5 +46,15 @@ namespace OvCore::Scripting
 		void OnTriggerEnter(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject) override;
 		void OnTriggerStay(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject) override;
 		void OnTriggerExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject) override;
+
+	private:
+		void CreateContext();
+		void DestroyContext();
+
+	private:
+		std::unique_ptr<sol::state> m_luaState;
+		std::string m_scriptRootFolder;
+		std::vector<std::reference_wrapper<OvCore::ECS::Components::Behaviour>> m_behaviours;
+		bool m_isOk;
 	};
 }

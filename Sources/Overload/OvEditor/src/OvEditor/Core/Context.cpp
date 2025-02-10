@@ -10,7 +10,7 @@
 #include <OvCore/Global/ServiceLocator.h>
 #include <OvTools/Utils/SystemCalls.h>
 #include <OvDebug/Assertion.h>
-#include <OvCore/Scripting/Lua/LuaScriptingBackend.h>
+#include <OvCore/Scripting/Lua/LuaScriptEngine.h>
 
 #include "OvEditor/Core/Context.h"
 
@@ -135,7 +135,7 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 	physicsEngine = std::make_unique<OvPhysics::Core::PhysicsEngine>(OvPhysics::Settings::PhysicsSettings{ {0.0f, -9.81f, 0.0f } });
 
 	/* Scripting */
-	scriptInterpreter = std::make_unique<OvCore::Scripting::LuaScriptingBackend>(projectScriptsPath);
+	scriptEngine = std::make_unique<OvCore::Scripting::LuaScriptEngine>(projectScriptsPath);
 
 	/* Service Locator providing */
 	ServiceLocator::Provide<OvPhysics::Core::PhysicsEngine>(*physicsEngine);
@@ -149,7 +149,7 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 	ServiceLocator::Provide<OvCore::SceneSystem::SceneManager>(sceneManager);
 	ServiceLocator::Provide<OvAudio::Core::AudioEngine>(*audioEngine);
 	ServiceLocator::Provide<OvAudio::Core::AudioPlayer>(*audioPlayer);
-	ServiceLocator::Provide<OvCore::Scripting::IScriptingBackend>(*scriptInterpreter);
+	ServiceLocator::Provide<OvCore::Scripting::IScriptEngine>(*scriptEngine);
 
 	ApplyProjectSettings();
 }

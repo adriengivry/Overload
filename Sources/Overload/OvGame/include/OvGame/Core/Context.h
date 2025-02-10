@@ -23,7 +23,7 @@
 #include <OvCore/ResourceManagement/MaterialManager.h>
 #include <OvCore/ResourceManagement/SoundManager.h>
 #include <OvCore/SceneSystem/SceneManager.h>
-#include <OvCore/Scripting/IScriptingBackend.h>
+#include <OvCore/Scripting/IScriptEngine.h>
 
 #include <OvAudio/Core/AudioEngine.h>
 #include <OvAudio/Core/AudioPlayer.h>
@@ -61,7 +61,6 @@ namespace OvGame::Core
 		std::unique_ptr<OvPhysics::Core::PhysicsEngine> physicsEngine;
 		std::unique_ptr<OvAudio::Core::AudioEngine> audioEngine;
 		std::unique_ptr<OvAudio::Core::AudioPlayer> audioPlayer;
-		std::unique_ptr<OvCore::Scripting::IScriptingBackend> scriptEngine;
 		std::unique_ptr<OvRendering::Buffers::Framebuffer> framebuffer;
 
 		OvCore::SceneSystem::SceneManager sceneManager;

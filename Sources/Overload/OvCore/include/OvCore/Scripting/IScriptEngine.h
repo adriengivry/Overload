@@ -16,7 +16,7 @@ namespace OvCore::ECS::Components
 
 namespace OvCore::Scripting
 {
-	class IScriptingBackend
+	class IScriptEngine
 	{
 	public:
 		virtual void AddBehaviour(OvCore::ECS::Components::Behaviour& p_toAdd) = 0;

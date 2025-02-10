@@ -7,7 +7,7 @@
 #include <OvDebug/Logger.h>
 #include <OvDebug/Assertion.h>
 
-#include <OvCore/Scripting/Lua/LuaScriptingBackend.h>
+#include <OvCore/Scripting/Lua/LuaScriptEngine.h>
 #include <OvCore/Scripting/Lua/LuaScriptContext.h>
 #include <OvCore/ECS/Components/Behaviour.h>
 #include <OvCore/ECS/Actor.h>
@@ -48,13 +48,13 @@ void ExecuteLuaFunction(OvCore::ECS::Components::Behaviour& p_behaviour, const s
 	}
 }
 
-OvCore::Scripting::LuaScriptingBackend::LuaScriptingBackend(const std::string& p_scriptRootFolder) :
+OvCore::Scripting::LuaScriptEngine::LuaScriptEngine(const std::string& p_scriptRootFolder) :
 	m_scriptRootFolder(p_scriptRootFolder)
 {
 	CreateContext();
 }
 
-OvCore::Scripting::LuaScriptingBackend::~LuaScriptingBackend()
+OvCore::Scripting::LuaScriptEngine::~LuaScriptEngine()
 {
 	DestroyContext();
 }
@@ -106,11 +106,11 @@ bool RegisterBehaviour(sol::state& p_luaState, OvCore::ECS::Components::Behaviou
 	return false;
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnTriggerExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
+void OvCore::Scripting::LuaScriptEngine::OnTriggerExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 }
 
-void OvCore::Scripting::LuaScriptingBackend::CreateContext()
+void OvCore::Scripting::LuaScriptEngine::CreateContext()
 {
 	// TODO: Asset if already has a lua state
 	if (!m_luaState)
@@ -142,7 +142,7 @@ void OvCore::Scripting::LuaScriptingBackend::CreateContext()
 	}
 }
 
-void OvCore::Scripting::LuaScriptingBackend::DestroyContext()
+void OvCore::Scripting::LuaScriptEngine::DestroyContext()
 {
 	// TODO: Assert if no lua state
 	if (m_luaState)
@@ -159,7 +159,7 @@ void OvCore::Scripting::LuaScriptingBackend::DestroyContext()
 	}
 }
 
-void OvCore::Scripting::LuaScriptingBackend::AddBehaviour(OvCore::ECS::Components::Behaviour& p_toAdd)
+void OvCore::Scripting::LuaScriptEngine::AddBehaviour(OvCore::ECS::Components::Behaviour& p_toAdd)
 {
 	// TODO: Assert if no lua state
 	if (m_luaState)
@@ -173,7 +173,7 @@ void OvCore::Scripting::LuaScriptingBackend::AddBehaviour(OvCore::ECS::Component
 	}
 }
 
-void OvCore::Scripting::LuaScriptingBackend::RemoveBehaviour(OvCore::ECS::Components::Behaviour& p_toRemove)
+void OvCore::Scripting::LuaScriptEngine::RemoveBehaviour(OvCore::ECS::Components::Behaviour& p_toRemove)
 {
 	if (m_luaState)
 		p_toRemove.ResetScriptContext();
@@ -191,78 +191,78 @@ void OvCore::Scripting::LuaScriptingBackend::RemoveBehaviour(OvCore::ECS::Compon
 	Reload(); 
 }
 
-void OvCore::Scripting::LuaScriptingBackend::Reload()
+void OvCore::Scripting::LuaScriptEngine::Reload()
 {
 	DestroyContext();
 	CreateContext();
 }
 
-bool OvCore::Scripting::LuaScriptingBackend::IsOk() const
+bool OvCore::Scripting::LuaScriptEngine::IsOk() const
 {
 	return m_isOk;
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnAwake(OvCore::ECS::Components::Behaviour& p_target)
+void OvCore::Scripting::LuaScriptEngine::OnAwake(OvCore::ECS::Components::Behaviour& p_target)
 {
 	ExecuteLuaFunction(p_target, "OnAwake");
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnStart(OvCore::ECS::Components::Behaviour& p_target)
+void OvCore::Scripting::LuaScriptEngine::OnStart(OvCore::ECS::Components::Behaviour& p_target)
 {
 	ExecuteLuaFunction(p_target, "OnStart");
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnEnable(OvCore::ECS::Components::Behaviour& p_target)
+void OvCore::Scripting::LuaScriptEngine::OnEnable(OvCore::ECS::Components::Behaviour& p_target)
 {
 	ExecuteLuaFunction(p_target, "OnEnable");
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnDisable(OvCore::ECS::Components::Behaviour& p_target)
+void OvCore::Scripting::LuaScriptEngine::OnDisable(OvCore::ECS::Components::Behaviour& p_target)
 {
 	ExecuteLuaFunction(p_target, "OnDisable");
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnDestroy(OvCore::ECS::Components::Behaviour& p_target)
+void OvCore::Scripting::LuaScriptEngine::OnDestroy(OvCore::ECS::Components::Behaviour& p_target)
 {
 	ExecuteLuaFunction(p_target, "OnDestroy");
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
+void OvCore::Scripting::LuaScriptEngine::OnUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
 {
 	ExecuteLuaFunction(p_target, "OnUpdate", p_deltaTime);
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnFixedUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
+void OvCore::Scripting::LuaScriptEngine::OnFixedUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
 {
 	ExecuteLuaFunction(p_target, "OnFixedUpdate", p_deltaTime);
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnLateUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
+void OvCore::Scripting::LuaScriptEngine::OnLateUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
 {
 	ExecuteLuaFunction(p_target, "OnLateUpdate", p_deltaTime);
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnCollisionEnter(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
+void OvCore::Scripting::LuaScriptEngine::OnCollisionEnter(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 	ExecuteLuaFunction(p_target, "OnCollisionEnter", p_otherObject);
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnCollisionStay(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
+void OvCore::Scripting::LuaScriptEngine::OnCollisionStay(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 	ExecuteLuaFunction(p_target, "OnCollisionStay", p_otherObject);
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnCollisionExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
+void OvCore::Scripting::LuaScriptEngine::OnCollisionExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 	ExecuteLuaFunction(p_target, "OnCollisionExit", p_otherObject);
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnTriggerEnter(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
+void OvCore::Scripting::LuaScriptEngine::OnTriggerEnter(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 	ExecuteLuaFunction(p_target, "OnTriggerEnter", p_otherObject);
 }
 
-void OvCore::Scripting::LuaScriptingBackend::OnTriggerStay(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
+void OvCore::Scripting::LuaScriptEngine::OnTriggerStay(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 	ExecuteLuaFunction(p_target, "OnTriggerStay", p_otherObject);
 }
