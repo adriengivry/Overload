@@ -217,10 +217,7 @@ namespace OvMaths
 		/**
 		* Return the transform local right
 		*/
-		FVector3 GetLocalRight() const;
-
-	public:
-		Internal::TransformNotifier::NotificationHandlerID m_notificationHandlerID;
+		FVector3 GetLocalRight() const;		
 	
 	private:
 		void PreDecomposeWorldMatrix();
@@ -240,5 +237,6 @@ namespace OvMaths
 		FTransform*	m_parent;
 		
 		Internal::TransformNotifier m_notifier;
+		Internal::TransformNotifier::NotificationHandlerID m_notificationHandlerID;
 	};
 }
