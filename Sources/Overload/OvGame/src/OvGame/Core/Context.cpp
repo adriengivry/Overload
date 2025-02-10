@@ -94,6 +94,8 @@ OvGame::Core::Context::Context() :
 
 	/* Scripting */
 	scriptInterpreter = std::make_unique<OvCore::Scripting::ScriptInterpreter>(projectScriptsPath);
+
+	framebuffer = std::make_unique<OvRendering::Buffers::Framebuffer>(windowSettings.width, windowSettings.height);
 }
 
 OvGame::Core::Context::~Context()

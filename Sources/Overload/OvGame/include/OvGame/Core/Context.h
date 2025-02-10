@@ -62,6 +62,7 @@ namespace OvGame::Core
 		std::unique_ptr<OvAudio::Core::AudioEngine> audioEngine;
 		std::unique_ptr<OvAudio::Core::AudioPlayer> audioPlayer;
 		std::unique_ptr<OvCore::Scripting::ScriptInterpreter> scriptInterpreter;
+		std::unique_ptr<OvRendering::Buffers::Framebuffer> framebuffer;
 
 		OvCore::SceneSystem::SceneManager sceneManager;
 
