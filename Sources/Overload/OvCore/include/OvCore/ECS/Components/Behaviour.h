@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <sol.hpp>
-
-#include "OvCore/ECS/Components/CPhysicalObject.h"
+#include <OvCore/ECS/Components/CPhysicalObject.h>
+#include <OvCore/Scripting/IScriptContext.h>
+#include <OvTools/Utils/OptRef.h>
 
 namespace OvCore::ECS { class Actor; }
 
@@ -38,31 +38,20 @@ namespace OvCore::ECS::Components
 		virtual std::string GetName() override;
 
 		/**
-		* Register the behaviour to lua
-		* Returns true on success
-		* @param p_luaState
-		* @param p_rootFolder
+		* Sets the script context of this behaviour
+		* @param p_scriptContext
 		*/
-		bool RegisterToLuaContext(sol::state& p_luaState, const std::string& p_scriptFolder);
+		void SetScriptContext(std::unique_ptr<Scripting::IScriptContext>&& p_scriptContext);
 
 		/**
-		* Register the behaviour to lua
-		* Returns true on success
+		* Returns the script context of this behaviour
 		*/
-		void UnregisterFromLuaContext();
+		OvTools::Utils::OptRef<Scripting::IScriptContext> GetScriptContext();
 
 		/**
-		* Call a lua function for this behaviour
-		* @param p_functionName
-		* @param p_args
+		* Removes the script context of this behaviour
 		*/
-		template<typename... Args>
-		void LuaCall(const std::string& p_functionName, Args&&... p_args);
-
-		/**
-		* Return the lua table attached to this behaviour
-		*/
-		sol::table& GetTable();
+		void ResetScriptContext();
 
 		/**
 		* Called when the scene start right before OnStart
@@ -166,14 +155,9 @@ namespace OvCore::ECS::Components
 		virtual void OnInspector(OvUI::Internal::WidgetContainer & p_root) override;
 
 	public:
-		static OvTools::Eventing::Event<Behaviour*> CreatedEvent;
-		static OvTools::Eventing::Event<Behaviour*> DestroyedEvent;
-
 		const std::string name;
 
 	private:
-		sol::table m_object = sol::nil;
+		std::unique_ptr<Scripting::IScriptContext> m_scriptContext;
 	};
 }
-
-#include "OvCore/ECS/Components/Behaviour.inl"

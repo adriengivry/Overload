@@ -128,7 +128,7 @@ void OvEditor::Core::EditorActions::SaveAs()
 
 void OvEditor::Core::EditorActions::RefreshScripts()
 {
-	m_context.scriptInterpreter->RefreshAll();
+	m_context.scriptInterpreter->Reload();
 	m_panelsManager.GetPanelAs<Panels::Inspector>("Inspector").Refresh();
 	if (m_context.scriptInterpreter->IsOk())
 		OVLOG_INFO("Scripts interpretation succeeded!");
@@ -422,7 +422,7 @@ void OvEditor::Core::EditorActions::StartPlaying()
 {
 	if (m_editorMode == EEditorMode::EDIT)
 	{
-		m_context.scriptInterpreter->RefreshAll();
+		m_context.scriptInterpreter->Reload();
 		EDITOR_PANEL(Panels::Inspector, "Inspector").Refresh();
 
 		if (m_context.scriptInterpreter->IsOk())

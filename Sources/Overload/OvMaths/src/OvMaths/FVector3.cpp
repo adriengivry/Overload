@@ -26,7 +26,7 @@ OvMaths::FVector3::FVector3(const FVector3& p_toCopy) : x(p_toCopy.x), y(p_toCop
 
 OvMaths::FVector3 OvMaths::FVector3::operator-() const
 {
-	return operator*(-1);
+	return operator*(-1.0f);
 }
 
 OvMaths::FVector3 OvMaths::FVector3::operator=(const FVector3& p_other)

@@ -10,6 +10,7 @@
 #include <OvCore/Global/ServiceLocator.h>
 #include <OvTools/Utils/SystemCalls.h>
 #include <OvDebug/Assertion.h>
+#include <OvCore/Scripting/Lua/LuaScriptingBackend.h>
 
 #include "OvEditor/Core/Context.h"
 
@@ -147,7 +148,7 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 	ServiceLocator::Provide<OvAudio::Core::AudioPlayer>(*audioPlayer);
 
 	/* Scripting */
-	scriptInterpreter = std::make_unique<OvCore::Scripting::ScriptInterpreter>(projectScriptsPath);
+	scriptInterpreter = std::make_unique<OvCore::Scripting::LuaScriptingBackend>(projectScriptsPath);
 
 	ApplyProjectSettings();
 }

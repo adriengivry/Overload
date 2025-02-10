@@ -4,7 +4,6 @@
 * @licence: MIT
 */
 
-#include "OvCore/Scripting/LuaMathsBinder.h"
 
 #include <OvMaths/FVector2.h>
 #include <OvMaths/FVector3.h>
@@ -13,16 +12,17 @@
 #include <OvMaths/FMatrix4.h>
 #include <OvMaths/FQuaternion.h>
 
-void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
+#include <sol.hpp>
+
+void BindLuaMath(sol::state& p_luaState)
 {
 	using namespace OvMaths;
 
 	p_luaState.new_usertype<FVector2>("Vector2",
 		/* Constructors */
-		sol::constructors
-		<
-		FVector2(),
-		FVector2(float, float)
+		sol::constructors<
+			FVector2(),
+			FVector2(float, float)
 		>(),
 
 		/* Operators */
@@ -37,7 +37,7 @@ void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
 		"x", &FVector2::x,
 		"y", &FVector2::y,
 
-		/* Data */
+		/* Static Consts */
 		"One", []() { return FVector2::One; },
 		"Zero", []() { return FVector2::Zero; },
 
@@ -47,22 +47,20 @@ void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
 		"Normalize", &FVector2::Normalize,
 		"Lerp", &FVector2::Lerp,
 		"AngleBetween", &FVector2::AngleBetween
-		);
+	);
 
 	p_luaState.new_usertype<FVector3>("Vector3",
 		/* Constructors */
-		sol::constructors
-		<
-		FVector3(),
-		FVector3(float, float, float)
+		sol::constructors<
+			FVector3(),
+			FVector3(float, float, float)
 		>(),
 
 		/* Operators */
 		sol::meta_function::addition, &FVector3::operator+,
 		sol::meta_function::subtraction, sol::resolve<FVector3(const FVector3&) const>(&FVector3::operator-),
 		sol::meta_function::unary_minus, sol::resolve<FVector3() const>(&FVector3::operator-),
-		sol::meta_function::multiplication, sol::overload
-		(
+		sol::meta_function::multiplication, sol::overload(
 			sol::resolve<FVector3(float) const>(&FVector3::operator*),
 			sol::resolve<FVector3(const FVector3&) const>(&FVector3::operator*)
 		),
@@ -74,15 +72,15 @@ void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
 		"y", &FVector3::y,
 		"z", &FVector3::z,
 
-		/* Data */
+		/* Static Consts */
 		"One", []() { return FVector3::One; },
 		"Zero", []() { return FVector3::Zero; },
 		"Forward", []() { return FVector3::Forward; },
 		"Up", []() { return FVector3::Up; },
 		"Right", []() { return FVector3::Right; },
-		"Backward", []() { return FVector3::Forward * -1; },
-		"Down", []() { return FVector3::Up * -1; },
-		"Left", []() { return FVector3::Right * -1; },
+		"Backward", []() { return -FVector3::Forward; },
+		"Down", []() { return -FVector3::Up; },
+		"Left", []() { return -FVector3::Right; },
 
 		/* Methods */
 		"Length", &FVector3::Length,
@@ -92,14 +90,13 @@ void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
 		"Lerp", &FVector3::Lerp,
 		"AngleBetween", &FVector3::AngleBetween,
 		"Distance", &FVector3::Distance
-		);
+	);
 
 	p_luaState.new_usertype<FVector4>("Vector4",
 		/* Constructors */
-		sol::constructors
-		<
-		FVector4(),
-		FVector4(float, float, float, float)
+		sol::constructors<
+			FVector4(),
+			FVector4(float, float, float, float)
 		>(),
 
 		/* Operators */
@@ -116,7 +113,7 @@ void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
 		"z", &FVector4::z,
 		"w", &FVector4::w,
 
-		/* Data */
+		/* Static Consts */
 		"One", []() { return FVector4::One; },
 		"Zero", []() { return FVector4::Zero; },
 
@@ -129,30 +126,27 @@ void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
 
 	p_luaState.new_usertype<FMatrix3>("Matrix3",
 		/* Constructors */
-		sol::constructors
-		<
-		FMatrix3(),
-		FMatrix3(float),
-		FMatrix3(float, float, float, float, float, float, float, float, float)
+		sol::constructors<
+			FMatrix3(),
+			FMatrix3(float),
+			FMatrix3(float, float, float, float, float, float, float, float, float)
 		>(),
 
 		/* Operators */
 		sol::meta_function::addition, &FMatrix3::operator+,
 		sol::meta_function::subtraction, &FMatrix3::operator-,
-		sol::meta_function::multiplication, sol::overload
-		(
+		sol::meta_function::multiplication, sol::overload(
 			sol::resolve<FMatrix3(float) const>(&FMatrix3::operator*),
 			sol::resolve<FVector3(const FVector3&) const>(&FMatrix3::operator*),
 			sol::resolve<FMatrix3(const FMatrix3&) const>(&FMatrix3::operator*)
 		),
-		sol::meta_function::division, sol::overload
-		(
+		sol::meta_function::division, sol::overload(
 			sol::resolve<FMatrix3(float) const>(&FMatrix3::operator/),
 			sol::resolve<FMatrix3(const FMatrix3&) const>(&FMatrix3::operator/)
 		),
 		sol::meta_function::to_string, [](const FMatrix3& target) { return "Can't show matrix as string for now"; },
 
-		/* Data */
+		/* Static Consts */
 		"Identity", []() { return FMatrix3::Identity; },
 
 		/* Methods */
@@ -177,33 +171,29 @@ void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
 
 	p_luaState.new_usertype<FMatrix4>("Matrix4",
 		/* Constructors */
-		sol::constructors
-		<
-		FMatrix4(),
-		FMatrix4(float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float)
+		sol::constructors<
+			FMatrix4(),
+			FMatrix4(float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float)
 		>(),
 
 		/* Operators */
 		sol::meta_function::addition, &FMatrix4::operator+,
-		sol::meta_function::subtraction, sol::overload
-		(
+		sol::meta_function::subtraction, sol::overload(
 			sol::resolve<FMatrix4(float) const>(&FMatrix4::operator-),
 			sol::resolve<FMatrix4(const FMatrix4&) const>(&FMatrix4::operator-)
 		),
-		sol::meta_function::multiplication, sol::overload
-		(
+		sol::meta_function::multiplication, sol::overload(
 			sol::resolve<FMatrix4(float) const>(&FMatrix4::operator*),
 			sol::resolve<FVector4(const FVector4&) const>(&FMatrix4::operator*),
 			sol::resolve<FMatrix4(const FMatrix4&) const>(&FMatrix4::operator*)
 		),
-		sol::meta_function::division, sol::overload
-		(
+		sol::meta_function::division, sol::overload(
 			sol::resolve<FMatrix4(float) const>(&FMatrix4::operator/),
 			sol::resolve<FMatrix4(const FMatrix4&) const>(&FMatrix4::operator/)
 		),
 		sol::meta_function::to_string, [](const FMatrix4& target) { return "Can't show matrix as string for now"; },
 
-		/* Data */
+		/* Static Consts */
 		"Identity", []() { return FMatrix4::Identity; },
 
 		/* Methods */
@@ -235,11 +225,7 @@ void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
 		"Set", [](FMatrix4& target, int row, int col, float value) { target(row, col) = value; }
 	);
 
-	auto RotatePointOverload = sol::overload
-	(
-		sol::resolve<FVector3(const FVector3&, const FQuaternion&)>(&FQuaternion::RotatePoint),					// Rotate without pivot
-		sol::resolve<FVector3(const FVector3&, const FQuaternion&, const FVector3&)>(&FQuaternion::RotatePoint) // Rotate with pivot
-	);
+	
 
 	p_luaState.new_usertype<FQuaternion>("Quaternion",
 		/* Constructors */
@@ -282,7 +268,10 @@ void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
 		"Lerp", &FQuaternion::Lerp,
 		"Slerp", &FQuaternion::Slerp,
 		"Nlerp", &FQuaternion::Nlerp,
-		"RotatePoint", RotatePointOverload,
+		"RotatePoint", sol::overload(
+			sol::resolve<FVector3(const FVector3&, const FQuaternion&)>(&FQuaternion::RotatePoint), // Rotate without pivot
+			sol::resolve<FVector3(const FVector3&, const FQuaternion&, const FVector3&)>(&FQuaternion::RotatePoint) // Rotate with pivot
+		),
 		"EulerAngles", &FQuaternion::EulerAngles,
 		"ToMatrix3", &FQuaternion::ToMatrix3,
 		"ToMatrix4", &FQuaternion::ToMatrix4,
@@ -292,5 +281,5 @@ void OvCore::Scripting::LuaMathsBinder::BindMaths(sol::state & p_luaState)
 		"y", &FQuaternion::y,
 		"z", &FQuaternion::z,
 		"w", &FQuaternion::w
-		);
+	);
 }

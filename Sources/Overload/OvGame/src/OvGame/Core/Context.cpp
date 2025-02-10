@@ -9,6 +9,7 @@
 #include "OvGame/Core/Context.h"
 
 #include <OvCore/Global/ServiceLocator.h>
+#include <OvCore/Scripting/Lua/LuaScriptingBackend.h>
 
 using namespace OvCore::Global;
 using namespace OvCore::ResourceManagement;

@@ -4,8 +4,6 @@
 * @licence: MIT
 */
 
-#include "OvCore/Scripting/LuaComponentBinder.h"
-
 #include "OvCore/ECS/Actor.h"
 
 #include "OvCore/ECS/Components/CTransform.h"
@@ -24,7 +22,9 @@
 #include "OvCore/ECS/Components/CAudioListener.h"
 #include "OvCore/ECS/Components/CPostProcessStack.h"
 
-void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaState)
+#include <sol.hpp>
+
+void BindLuaComponents(sol::state& p_luaState)
 {
 	using namespace OvMaths;
 	using namespace OvCore::ECS;
@@ -36,7 +36,6 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 
 	p_luaState.new_usertype<CTransform>("Transform",
 		sol::base_classes, sol::bases<AComponent>(),
-		/* Methods */
 		"SetPosition", &CTransform::SetLocalPosition,
 		"SetRotation", &CTransform::SetLocalRotation,
 		"SetScale", &CTransform::SetLocalScale,
@@ -64,15 +63,14 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"GetWorldForward", &CTransform::GetWorldForward,
 		"GetWorldUp", &CTransform::GetWorldUp,
 		"GetWorldRight", &CTransform::GetWorldRight
-		);
-    
-    p_luaState.new_enum<OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour>("FrustumBehaviour",
-        {
-            {"DISABLED",		OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::DISABLED},
-            {"CULL_MODEL",		OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::CULL_MODEL},
-            {"CULL_MESHES",		OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::CULL_MESHES},
-            {"CULL_CUSTOM",		OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::CULL_CUSTOM}
-        });
+	);
+
+	p_luaState.new_enum<OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour>("FrustumBehaviour", {
+		{"DISABLED", OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::DISABLED},
+		{"CULL_MODEL", OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::CULL_MODEL},
+		{"CULL_MESHES", OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::CULL_MESHES},
+		{"CULL_CUSTOM", OvCore::ECS::Components::CModelRenderer::EFrustumBehaviour::CULL_CUSTOM}
+	});
 
 	p_luaState.new_usertype<CModelRenderer>("ModelRenderer",
 		sol::base_classes, sol::bases<AComponent>(),
@@ -89,11 +87,10 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"GetUserMatrixElement", &CMaterialRenderer::GetUserMatrixElement
 	);
 
-	p_luaState.new_enum<OvPhysics::Entities::PhysicalObject::ECollisionDetectionMode>("CollisionDetectionMode",
-		{
-			{"DISCRETE",		OvPhysics::Entities::PhysicalObject::ECollisionDetectionMode::DISCRETE},
-			{"CONTINUOUS",		OvPhysics::Entities::PhysicalObject::ECollisionDetectionMode::CONTINUOUS}
-		});
+	p_luaState.new_enum<OvPhysics::Entities::PhysicalObject::ECollisionDetectionMode>("CollisionDetectionMode", {
+		{"DISCRETE", OvPhysics::Entities::PhysicalObject::ECollisionDetectionMode::DISCRETE},
+		{"CONTINUOUS", OvPhysics::Entities::PhysicalObject::ECollisionDetectionMode::CONTINUOUS}
+	});
 
 	p_luaState.new_usertype<CPhysicalObject>("PhysicalObject",
 		sol::base_classes, sol::bases<AComponent>(),
@@ -125,13 +122,13 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		sol::base_classes, sol::bases<CPhysicalObject>(),
 		"GetSize", &CPhysicalBox::GetSize,
 		"SetSize", &CPhysicalBox::SetSize
-		);
+	);
 
 	p_luaState.new_usertype<CPhysicalSphere>("PhysicalSphere",
 		sol::base_classes, sol::bases<CPhysicalObject>(),
 		"GetRadius", &CPhysicalSphere::GetRadius,
 		"SetRadius", &CPhysicalSphere::SetRadius
-		);
+	);
 
 	p_luaState.new_usertype<CPhysicalCapsule>("PhysicalCapsule",
 		sol::base_classes, sol::bases<CPhysicalObject>(),
@@ -139,13 +136,12 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"SetRadius", &CPhysicalCapsule::SetRadius,
 		"GetHeight", &CPhysicalCapsule::GetHeight,
 		"SetHeight", &CPhysicalCapsule::SetHeight
-		);
+	);
 
-    p_luaState.new_enum<OvRendering::Settings::EProjectionMode>("ProjectionMode",
-    {
-        {"ORTHOGRAPHIC",	OvRendering::Settings::EProjectionMode::ORTHOGRAPHIC},
-        {"PERSPECTIVE",		OvRendering::Settings::EProjectionMode::PERSPECTIVE}
-    });
+	p_luaState.new_enum<OvRendering::Settings::EProjectionMode>("ProjectionMode", {
+		{"ORTHOGRAPHIC", OvRendering::Settings::EProjectionMode::ORTHOGRAPHIC},
+		{"PERSPECTIVE", OvRendering::Settings::EProjectionMode::PERSPECTIVE}
+	});
 
 	p_luaState.new_usertype<CCamera>("Camera",
 		sol::base_classes, sol::bases<AComponent>(),
@@ -159,13 +155,13 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"SetNear", &CCamera::SetNear,
 		"SetFar", &CCamera::SetFar,
 		"SetClearColor", &CCamera::SetClearColor,
-        "HasFrustumGeometryCulling", &CCamera::HasFrustumGeometryCulling,
-        "HasFrustumLightCulling", &CCamera::HasFrustumLightCulling,
-        "GetProjectionMode", &CCamera::GetProjectionMode,
-        "SetFrustumGeometryCulling", &CCamera::SetFrustumGeometryCulling,
-        "SetFrustumLightCulling", &CCamera::SetFrustumLightCulling,
-        "SetProjectionMode", &CCamera::SetProjectionMode
-		);
+		"HasFrustumGeometryCulling", &CCamera::HasFrustumGeometryCulling,
+		"HasFrustumLightCulling", &CCamera::HasFrustumLightCulling,
+		"GetProjectionMode", &CCamera::GetProjectionMode,
+		"SetFrustumGeometryCulling", &CCamera::SetFrustumGeometryCulling,
+		"SetFrustumLightCulling", &CCamera::SetFrustumLightCulling,
+		"SetProjectionMode", &CCamera::SetProjectionMode
+	);
 
 	p_luaState.new_usertype<CLight>("Light",
 		sol::base_classes, sol::bases<AComponent>(),
@@ -173,7 +169,7 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"GetIntensity", &CPointLight::GetIntensity,
 		"SetColor", &CPointLight::SetColor,
 		"SetIntensity", &CPointLight::SetIntensity
-		);
+	);
 
 	p_luaState.new_usertype<CPointLight>("PointLight",
 		sol::base_classes, sol::bases<CLight>(),
@@ -183,7 +179,7 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"SetConstant", &CPointLight::SetConstant,
 		"SetLinear", &CPointLight::SetLinear,
 		"SetQuadratic", &CPointLight::SetQuadratic
-		);
+	);
 
 	p_luaState.new_usertype<CSpotLight>("SpotLight",
 		sol::base_classes, sol::bases<CLight>(),
@@ -197,19 +193,19 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"SetQuadratic", &CSpotLight::SetQuadratic,
 		"SetCutOff", &CSpotLight::SetCutoff,
 		"SetOuterCutOff", &CSpotLight::SetOuterCutoff
-		);
+	);
 
 	p_luaState.new_usertype<CAmbientBoxLight>("AmbientBoxLight",
 		sol::base_classes, sol::bases<CLight>(),
 		"GetSize", &CAmbientBoxLight::GetSize,
 		"SetSize", &CAmbientBoxLight::SetSize
-		);
+	);
 
 	p_luaState.new_usertype<CAmbientSphereLight>("AmbientSphereLight",
 		sol::base_classes, sol::bases<CLight>(),
 		"GetRadius", &CAmbientSphereLight::GetRadius,
 		"SetRadius", &CAmbientSphereLight::SetRadius
-		);
+	);
 
 	p_luaState.new_usertype<CDirectionalLight>("DirectionalLight",
 		sol::base_classes, sol::bases<CLight>(),
@@ -221,7 +217,7 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"SetShadowFollowCamera", &CDirectionalLight::SetShadowFollowCamera,
 		"GetShadowMapResolution", &CDirectionalLight::GetShadowMapResolution,
 		"SetShadowMapResolution", &CDirectionalLight::SetShadowMapResolution
-		);
+	);
 
 	p_luaState.new_usertype<CAudioSource>("AudioSource",
 		sol::base_classes, sol::bases<AComponent>(),
@@ -244,11 +240,11 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"SetPitch", &CAudioSource::SetPitch,
 		"SetSpatial", &CAudioSource::SetSpatial,
 		"SetAttenuationThreshold", &CAudioSource::SetAttenuationThreshold
-		);
+	);
 
 	p_luaState.new_usertype<CAudioListener>("AudioListener",
 		sol::base_classes, sol::bases<AComponent>()
-		);
+	);
 
 	p_luaState.new_usertype<OvCore::Rendering::PostProcess::EffectSettings>("EffectSettings",
 		"Enabled", &OvCore::Rendering::PostProcess::EffectSettings::enabled
@@ -274,8 +270,7 @@ void OvCore::Scripting::LuaComponentBinder::BindComponent(sol::state & p_luaStat
 		"SpeedUp", &OvCore::Rendering::PostProcess::AutoExposureSettings::speedUp
 	);
 
-	p_luaState.new_enum<OvCore::Rendering::PostProcess::ETonemappingMode>("TonemappingMode",
-	{
+	p_luaState.new_enum<OvCore::Rendering::PostProcess::ETonemappingMode>("TonemappingMode", {
 		{"NEUTRAL", OvCore::Rendering::PostProcess::ETonemappingMode::NEUTRAL},
 		{"REINHARD", OvCore::Rendering::PostProcess::ETonemappingMode::REINHARD},
 		{"REINHARD_JODIE", OvCore::Rendering::PostProcess::ETonemappingMode::REINHARD_JODIE},
