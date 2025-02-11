@@ -48,13 +48,7 @@ void ExecuteLuaFunction(OvCore::ECS::Components::Behaviour& p_behaviour, const s
 	}
 }
 
-struct ScriptRegistrationResult
-{
-	bool success;
-	std::optional<sol::table> table;
-};
-
-ScriptRegistrationResult RegisterScript(sol::state& p_luaState, const std::string& p_scriptName)
+sol::table RegisterScript(sol::state& p_luaState, const std::string& p_scriptName)
 {
 	using namespace OvCore::Scripting;
 
@@ -64,31 +58,35 @@ ScriptRegistrationResult RegisterScript(sol::state& p_luaState, const std::strin
 	{
 		sol::error err = result; // TODO: is there a better way to do that?
 		OVLOG_ERROR(err.what());
-		return { false };
+		return {};
 	}
 	else
 	{
 		if (result.return_count() == 1 && result[0].is<sol::table>())
 		{
-			return { true, result[0] };
+			return result[0];
 		}
 		else
 		{
 			OVLOG_ERROR("'" + p_scriptName + "' missing return expression");
-			return { false };
+			return {};
 		}
 	}
 }
 
 bool RegisterBehaviour(sol::state& p_luaState, OvCore::ECS::Components::Behaviour& p_behaviour, const std::string& p_scriptName)
 {
-	auto result = RegisterScript(p_luaState, p_scriptName);
+	p_behaviour.SetScriptContext(
+		std::make_unique<OvCore::Scripting::LuaScriptContext>(
+			RegisterScript(p_luaState, p_scriptName)
+		)
+	);
 
-	if (result.success && result.table.has_value())
+	// Update the script context to add the owner reference
+	if (auto context = p_behaviour.GetScriptContext(); context.has_value() && context->IsValid())
 	{
-		result.table.value()["owner"] = &p_behaviour.owner;
-		auto scriptContext = std::make_unique<OvCore::Scripting::LuaScriptContext>(result.table.value());
-		p_behaviour.SetScriptContext(std::move(scriptContext));
+		auto& luaScriptContext = static_cast<OvCore::Scripting::LuaScriptContext&>(context.value());
+		luaScriptContext.table["owner"] = &p_behaviour.owner;
 		return true;
 	}
 
