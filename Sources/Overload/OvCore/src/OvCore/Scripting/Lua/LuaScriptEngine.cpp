@@ -120,77 +120,69 @@ std::string OvCore::Scripting::LuaScriptEngine::GetDefaultExtension()
 	return ".lua";
 }
 
-void OvCore::Scripting::LuaScriptEngine::OnTriggerExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
-{
-}
-
 void OvCore::Scripting::LuaScriptEngine::CreateContext()
 {
-	// TODO: Asset if already has a lua state
-	if (!m_luaState)
+	OVASSERT(m_luaState == nullptr, "A Lua context already exists!");
+
+	m_luaState = std::make_unique<sol::state>();
+	m_luaState->open_libraries(sol::lib::base, sol::lib::math);
+
+	for (auto& callback : luaBindings)
 	{
-		m_luaState = std::make_unique<sol::state>();
-		m_luaState->open_libraries(sol::lib::base, sol::lib::math);
+		callback(*m_luaState);
+	}
 
-		for (auto& callback : luaBindings)
+	m_errorCount = 0;
+
+	std::for_each(m_behaviours.begin(), m_behaviours.end(),
+		[this](std::reference_wrapper<OvCore::ECS::Components::Behaviour> behaviour)
 		{
-			callback(*m_luaState);
-		}
-
-		m_isOk = true;
-
-		std::for_each(m_behaviours.begin(), m_behaviours.end(),
-			[this](std::reference_wrapper<OvCore::ECS::Components::Behaviour> behaviour)
+			if (!RegisterBehaviour(*m_luaState, behaviour.get(), m_scriptRootFolder + behaviour.get().name + GetDefaultExtension()))
 			{
-				if (!RegisterBehaviour(*m_luaState, behaviour.get(), m_scriptRootFolder + behaviour.get().name + GetDefaultExtension()))
-				{
-					m_isOk = false;
-				}
+				++m_errorCount;
 			}
-		);
-
-		if (!m_isOk)
-		{
-			OVLOG_ERROR("Script interpreter failed to register scripts. Check your lua scripts");
 		}
+	);
+
+	if (m_errorCount > 0)
+	{
+		const std::string message = std::to_string(m_errorCount) + " script(s) failed to register";
+		OVLOG_ERROR(message);
 	}
 }
 
 void OvCore::Scripting::LuaScriptEngine::DestroyContext()
 {
-	// TODO: Assert if no lua state
-	if (m_luaState)
-	{
-		std::for_each(m_behaviours.begin(), m_behaviours.end(),
-			[this](std::reference_wrapper<OvCore::ECS::Components::Behaviour> behaviour)
-			{
-				behaviour.get().ResetScriptContext();
-			}
-		);
+	OVASSERT(m_luaState != nullptr, "No valid Lua context");
 
-		m_luaState.reset();
-		m_isOk = false;
-	}
+	std::for_each(m_behaviours.begin(), m_behaviours.end(),
+		[this](std::reference_wrapper<OvCore::ECS::Components::Behaviour> behaviour)
+		{
+			behaviour.get().ResetScriptContext();
+		}
+	);
+
+	m_luaState.reset();
 }
 
 void OvCore::Scripting::LuaScriptEngine::AddBehaviour(OvCore::ECS::Components::Behaviour& p_toAdd)
 {
-	// TODO: Assert if no lua state
-	if (m_luaState)
-	{
-		m_behaviours.push_back(std::ref(p_toAdd));
+	OVASSERT(m_luaState != nullptr, "No valid Lua context");
 
-		if (!RegisterBehaviour(*m_luaState, p_toAdd, m_scriptRootFolder + p_toAdd.name + GetDefaultExtension()))
-		{
-			m_isOk = false;
-		}
+	m_behaviours.push_back(std::ref(p_toAdd));
+
+	if (!RegisterBehaviour(*m_luaState, p_toAdd, m_scriptRootFolder + p_toAdd.name + GetDefaultExtension()))
+	{
+		++m_errorCount;
 	}
 }
 
 void OvCore::Scripting::LuaScriptEngine::RemoveBehaviour(OvCore::ECS::Components::Behaviour& p_toRemove)
 {
 	if (m_luaState)
+	{
 		p_toRemove.ResetScriptContext();
+	}
 
 	m_behaviours.erase(
 		std::remove_if(m_behaviours.begin(), m_behaviours.end(),
@@ -201,7 +193,7 @@ void OvCore::Scripting::LuaScriptEngine::RemoveBehaviour(OvCore::ECS::Components
 	);
 
 	// Unconsidering a script is impossible with Lua, we have to reparse every behaviours
-	// @note this might be constly, we should look into it more seriously.
+	// @note this might be costly, we should look into it more seriously.
 	Reload(); 
 }
 
@@ -213,7 +205,7 @@ void OvCore::Scripting::LuaScriptEngine::Reload()
 
 bool OvCore::Scripting::LuaScriptEngine::IsOk() const
 {
-	return m_isOk;
+	return m_luaState && m_errorCount == 0;
 }
 
 void OvCore::Scripting::LuaScriptEngine::OnAwake(OvCore::ECS::Components::Behaviour& p_target)
@@ -279,4 +271,9 @@ void OvCore::Scripting::LuaScriptEngine::OnTriggerEnter(OvCore::ECS::Components:
 void OvCore::Scripting::LuaScriptEngine::OnTriggerStay(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 	ExecuteLuaFunction(p_target, "OnTriggerStay", p_otherObject);
+}
+
+void OvCore::Scripting::LuaScriptEngine::OnTriggerExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
+{
+	ExecuteLuaFunction(p_target, "OnTriggerExit", p_otherObject);
 }

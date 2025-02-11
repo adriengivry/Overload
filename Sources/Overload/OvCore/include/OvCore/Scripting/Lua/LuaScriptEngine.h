@@ -176,6 +176,6 @@ namespace OvCore::Scripting
 		std::unique_ptr<sol::state> m_luaState;
 		std::string m_scriptRootFolder;
 		std::vector<std::reference_wrapper<OvCore::ECS::Components::Behaviour>> m_behaviours;
-		bool m_isOk;
+		uint32_t m_errorCount;
 	};
 }
