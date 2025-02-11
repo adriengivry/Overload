@@ -138,11 +138,11 @@ void OvCore::ECS::Components::Behaviour::OnInspector(OvUI::Internal::WidgetConta
 	else if (m_scriptContext->IsValid())
 	{
 		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Ready", OvUI::Types::Color::Green);
-		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Your script gets interpreted by the engine with success", OvUI::Types::Color::White);
+		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Your script will execute in play mode.", OvUI::Types::Color::White);
 	}
 	else
 	{
 		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Ivalid Script", OvUI::Types::Color::Red);
-		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Check the console for more information", OvUI::Types::Color::White);
+		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Check the console for more information.", OvUI::Types::Color::White);
 	}
 }

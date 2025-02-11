@@ -608,7 +608,6 @@ public:
 				return std::find(FILENAMES_CHARS.begin(), FILENAMES_CHARS.end(), c) == FILENAMES_CHARS.end();
 			}), p_newName.end());
 
-			// TODO: Ensure that using the default extension is the way to go.
 			const std::string extension = OVSERVICE(OvCore::Scripting::IScriptEngine).GetDefaultExtension();
 			const std::string newPath = filePath + p_newName + extension;
 
