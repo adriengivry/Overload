@@ -95,9 +95,7 @@ OvGame::Core::Context::Context() :
 	ServiceLocator::Provide<OvCore::SceneSystem::SceneManager>(sceneManager);
 	ServiceLocator::Provide<OvAudio::Core::AudioEngine>(*audioEngine);
 	ServiceLocator::Provide<OvAudio::Core::AudioPlayer>(*audioPlayer);
-
-	/* Scripting */
-	scriptInterpreter = std::make_unique<OvCore::Scripting::ScriptInterpreter>(projectScriptsPath);
+	ServiceLocator::Provide<OvCore::Scripting::IScriptEngine>(*scriptEngine);
 
 	framebuffer = std::make_unique<OvRendering::Buffers::Framebuffer>(windowSettings.width, windowSettings.height);
 }

@@ -61,6 +61,7 @@ namespace OvGame::Core
 		std::unique_ptr<OvPhysics::Core::PhysicsEngine> physicsEngine;
 		std::unique_ptr<OvAudio::Core::AudioEngine> audioEngine;
 		std::unique_ptr<OvAudio::Core::AudioPlayer> audioPlayer;
+		std::unique_ptr<OvCore::Scripting::IScriptEngine> scriptEngine;
 		std::unique_ptr<OvRendering::Buffers::Framebuffer> framebuffer;
 
 		OvCore::SceneSystem::SceneManager sceneManager;
