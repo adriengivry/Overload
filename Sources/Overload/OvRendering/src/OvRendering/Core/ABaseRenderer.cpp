@@ -58,11 +58,14 @@ void OvRendering::Core::ABaseRenderer::BeginFrame(const Data::FrameDescriptor& p
 	m_basePipelineState = m_driver.CreatePipelineState();
 	SetViewport(0, 0, p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
 
+	OvMaths::FVector4 clearColor = p_frameDescriptor.camera.value().GetClearColor();
+	clearColor.w = 1.0f;
+
 	Clear(
 		p_frameDescriptor.camera->GetClearColorBuffer(),
 		p_frameDescriptor.camera->GetClearDepthBuffer(),
 		p_frameDescriptor.camera->GetClearStencilBuffer(),
-		p_frameDescriptor.camera.value().GetClearColor()
+		clearColor
 	);
 
 	p_frameDescriptor.camera->CacheMatrices(p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
