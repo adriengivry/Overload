@@ -62,7 +62,7 @@ void OvRendering::Core::ABaseRenderer::BeginFrame(const Data::FrameDescriptor& p
 		p_frameDescriptor.camera->GetClearColorBuffer(),
 		p_frameDescriptor.camera->GetClearDepthBuffer(),
 		p_frameDescriptor.camera->GetClearStencilBuffer(),
-		p_frameDescriptor.camera.value().GetClearColor()
+		{ p_frameDescriptor.camera.value().GetClearColor(), 1.0f }
 	);
 
 	p_frameDescriptor.camera->CacheMatrices(p_frameDescriptor.renderWidth, p_frameDescriptor.renderHeight);
