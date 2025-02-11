@@ -6,6 +6,21 @@
 
 #include <OvCore/Scripting/Null/NullScriptEngine.h>
 
+std::vector<std::string> OvCore::Scripting::NullScriptEngine::GetValidExtensions()
+{
+	return { ".ovscript" };
+}
+
+std::string OvCore::Scripting::NullScriptEngine::GetDefaultScriptContent(const std::string& p_name)
+{
+	return "class " + p_name + " {\n}";
+}
+
+std::string OvCore::Scripting::NullScriptEngine::GetDefaultExtension()
+{
+	return ".ovscript";
+}
+
 void OvCore::Scripting::NullScriptEngine::AddBehaviour(OvCore::ECS::Components::Behaviour& p_toAdd)
 {
 }
@@ -20,7 +35,7 @@ void OvCore::Scripting::NullScriptEngine::Reload()
 
 bool OvCore::Scripting::NullScriptEngine::IsOk() const
 {
-	return false;
+	return true;
 }
 
 void OvCore::Scripting::NullScriptEngine::OnAwake(OvCore::ECS::Components::Behaviour& p_target)

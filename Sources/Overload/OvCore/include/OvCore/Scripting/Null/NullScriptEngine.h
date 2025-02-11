@@ -19,6 +19,22 @@ namespace OvCore::Scripting
 	{
 	public:
 		/**
+		* Returns a list of valid extensions for scripts.
+		*/
+		std::vector<std::string> GetValidExtensions();
+
+		/**
+		* Returns the content for a default script
+		* @param p_name Name of the class or object represented by this script
+		*/
+		std::string GetDefaultScriptContent(const std::string& p_name);
+
+		/**
+		* Returns the extension for a default script
+		*/
+		std::string GetDefaultExtension();
+
+		/**
 		* Adds a behaviour to the scripting engine.
 		* This implementation does nothing.
 		* @param p_toAdd The behaviour to add.

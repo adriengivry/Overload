@@ -111,7 +111,7 @@ OvTools::Utils::PathParser::EFileType OvTools::Utils::PathParser::GetFileType(co
 	else if (ext == "ovmat")													return EFileType::MATERIAL;
 	else if (ext == "wav" || ext == "mp3" || ext == "ogg")						return EFileType::SOUND;
 	else if (ext == "ovscene")													return EFileType::SCENE;
-	else if (ext == "lua")														return EFileType::SCRIPT;
+	else if (ext == "lua" || ext == "ovscript")									return EFileType::SCRIPT;
 	else if (ext == "ttf")														return EFileType::FONT;
 
 	return EFileType::UNKNOWN;

@@ -48,17 +48,6 @@ void ExecuteLuaFunction(OvCore::ECS::Components::Behaviour& p_behaviour, const s
 	}
 }
 
-OvCore::Scripting::LuaScriptEngine::LuaScriptEngine(const std::string& p_scriptRootFolder) :
-	m_scriptRootFolder(p_scriptRootFolder)
-{
-	CreateContext();
-}
-
-OvCore::Scripting::LuaScriptEngine::~LuaScriptEngine()
-{
-	DestroyContext();
-}
-
 struct ScriptRegistrationResult
 {
 	bool success;
@@ -106,6 +95,31 @@ bool RegisterBehaviour(sol::state& p_luaState, OvCore::ECS::Components::Behaviou
 	return false;
 }
 
+OvCore::Scripting::LuaScriptEngine::LuaScriptEngine(const std::string& p_scriptRootFolder) : m_scriptRootFolder(p_scriptRootFolder)
+{
+	CreateContext();
+}
+
+OvCore::Scripting::LuaScriptEngine::~LuaScriptEngine()
+{
+	DestroyContext();
+}
+
+std::vector<std::string> OvCore::Scripting::LuaScriptEngine::GetValidExtensions()
+{
+	return { ".lua" };
+}
+
+std::string OvCore::Scripting::LuaScriptEngine::GetDefaultScriptContent(const std::string& p_name)
+{
+	return "local " + p_name + " =\n{\n}\n\nfunction " + p_name + ":OnStart()\nend\n\nfunction " + p_name + ":OnUpdate(deltaTime)\nend\n\nreturn " + p_name;
+}
+
+std::string OvCore::Scripting::LuaScriptEngine::GetDefaultExtension()
+{
+	return ".lua";
+}
+
 void OvCore::Scripting::LuaScriptEngine::OnTriggerExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 }
@@ -128,7 +142,7 @@ void OvCore::Scripting::LuaScriptEngine::CreateContext()
 		std::for_each(m_behaviours.begin(), m_behaviours.end(),
 			[this](std::reference_wrapper<OvCore::ECS::Components::Behaviour> behaviour)
 			{
-				if (!RegisterBehaviour(*m_luaState, behaviour.get(), m_scriptRootFolder + behaviour.get().name + ".lua"))
+				if (!RegisterBehaviour(*m_luaState, behaviour.get(), m_scriptRootFolder + behaviour.get().name + GetDefaultExtension()))
 				{
 					m_isOk = false;
 				}
@@ -166,7 +180,7 @@ void OvCore::Scripting::LuaScriptEngine::AddBehaviour(OvCore::ECS::Components::B
 	{
 		m_behaviours.push_back(std::ref(p_toAdd));
 
-		if (!RegisterBehaviour(*m_luaState, p_toAdd, m_scriptRootFolder + p_toAdd.name + ".lua"))
+		if (!RegisterBehaviour(*m_luaState, p_toAdd, m_scriptRootFolder + p_toAdd.name + GetDefaultExtension()))
 		{
 			m_isOk = false;
 		}

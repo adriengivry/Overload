@@ -131,14 +131,18 @@ void OvCore::ECS::Components::Behaviour::OnInspector(OvUI::Internal::WidgetConta
 	using namespace OvMaths;
 	using namespace OvCore::Helpers;
 
-	if (m_scriptContext && m_scriptContext->IsValid())
+	if (!m_scriptContext)
+	{
+		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("No scripting context", OvUI::Types::Color::White);
+	}
+	else if (m_scriptContext->IsValid())
 	{
 		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Ready", OvUI::Types::Color::Green);
 		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Your script gets interpreted by the engine with success", OvUI::Types::Color::White);
 	}
 	else
 	{
-		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Compilation failed!", OvUI::Types::Color::Red);
+		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Ivalid Script", OvUI::Types::Color::Red);
 		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Check the console for more information", OvUI::Types::Color::White);
 	}
 }

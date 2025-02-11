@@ -744,7 +744,14 @@ std::string OvEditor::Core::EditorActions::GetScriptPath(const std::string & p_p
 	std::string result = p_path;
 
 	OvTools::Utils::String::Replace(result, m_context.projectScriptsPath, "");
-	OvTools::Utils::String::Replace(result, ".lua", "");
+
+	for (auto& extension : OVSERVICE(OvCore::Scripting::IScriptEngine).GetValidExtensions())
+	{
+		if (result.ends_with(extension))
+		{
+			result = result.substr(0, result.size() - extension.size());
+		}
+	}
 
 	return result;
 }

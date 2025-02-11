@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace OvCore::ECS::Components
 {
@@ -24,6 +25,22 @@ namespace OvCore::Scripting
 	class IScriptEngine
 	{
 	public:
+		/**
+		* Returns a list of valid extensions for scripts.
+		*/
+		virtual std::vector<std::string> GetValidExtensions() = 0;
+
+		/**
+		* Returns the content for a default script
+		* @param p_name Name of the class or object represented by this script
+		*/
+		virtual std::string GetDefaultScriptContent(const std::string& p_name) = 0;
+
+		/**
+		* Returns the extension for a default script
+		*/
+		virtual std::string GetDefaultExtension() = 0;
+
 		/**
 		* Adds a behaviour to the scripting engine.
 		* @param p_toAdd The behaviour to add.
