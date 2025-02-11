@@ -56,7 +56,7 @@ sol::table RegisterScript(sol::state& p_luaState, const std::string& p_scriptNam
 
 	if (!result.valid())
 	{
-		sol::error err = result; // TODO: is there a better way to do that?
+		sol::error err = result;
 		OVLOG_ERROR(err.what());
 		return {};
 	}
