@@ -20,12 +20,13 @@
 #include <OvUI/Widgets/InputFields/InputText.h>
 
 #include <OvTools/Utils/PathParser.h>
+#include <OvTools/Utils/SystemCalls.h>
 
 #include <OvWindowing/Dialogs/SaveFileDialog.h>
 #include <OvWindowing/Dialogs/OpenFileDialog.h>
 #include <OvWindowing/Dialogs/MessageBox.h>
 
-#define PROJECTS_FILE std::string(std::string(getenv("APPDATA")) + "\\OverloadTech\\OvEditor\\projects.ini")
+#define PROJECTS_FILE std::string(OvTools::Utils::SystemCalls::GetPathToAppdata() + "\\OverloadTech\\OvEditor\\projects.ini")
 
 class ProjectHubPanel : public OvUI::Panels::PanelWindow
 {
@@ -40,7 +41,7 @@ public:
 		movable = false;
 		titleBar = false;
 
-		std::filesystem::create_directories(std::string(getenv("APPDATA")) + "\\OverloadTech\\OvEditor\\");
+		std::filesystem::create_directories(OvTools::Utils::SystemCalls::GetPathToAppdata() + "\\OverloadTech\\OvEditor\\");
 
 		SetSize({ 1000, 580 });
 		SetPosition({ 0.f, 0.f });

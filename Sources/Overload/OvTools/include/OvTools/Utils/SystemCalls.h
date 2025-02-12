@@ -43,5 +43,10 @@ namespace OvTools::Utils
 		* @param p_url
 		*/
 		static void OpenURL(const std::string& p_url);
+
+		/**
+		* Return the path to APPDATA
+ 		*/
+		static std::string GetPathToAppdata();
 	};
 }

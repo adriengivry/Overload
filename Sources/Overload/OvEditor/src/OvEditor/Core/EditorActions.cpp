@@ -154,7 +154,7 @@ void OvEditor::Core::EditorActions::Build(bool p_autoRun, bool p_tempFolder)
 
 	if (p_tempFolder)
 	{
-		destinationFolder = std::string(getenv("APPDATA")) + "\\OverloadTech\\OvEditor\\TempBuild\\";
+		destinationFolder = OvTools::Utils::SystemCalls::GetPathToAppdata() + "\\OverloadTech\\OvEditor\\TempBuild\\";
 		try
 		{
 			std::filesystem::remove_all(destinationFolder);
