@@ -75,6 +75,7 @@ void RenderCurrentScene(
 			frameDescriptor.renderWidth = windowWidth;
 			frameDescriptor.renderHeight = windowHeight;
 			frameDescriptor.camera = camera->GetCamera();
+			frameDescriptor.outputBuffer = *p_context.framebuffer;
 
 			p_renderer.BeginFrame(frameDescriptor);
 			p_renderer.DrawFrame();
@@ -120,6 +121,9 @@ void OvGame::Core::Game::Update(float p_deltaTime)
 		}
 
 		RenderCurrentScene(m_sceneRenderer, m_context);
+
+		auto [windowWidth, windowHeight] = m_context.window->GetSize();
+		m_context.framebuffer->BlitToBackBuffer(windowWidth, windowHeight);
 	}
 
 	m_context.sceneManager.Update();

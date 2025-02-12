@@ -85,6 +85,13 @@ namespace OvRendering::Buffers
 		*/
 		void GenerateMipMaps() const;
 
+		/**
+		* Blit the framebuffer to the back buffer
+		* @param p_backBufferWidth
+		* @param p_backBufferHeight
+		*/
+		void BlitToBackBuffer(uint16_t p_backBufferWidth, uint16_t p_backBufferHeight) const;
+
 	private:
 		uint16_t m_width = 0;
 		uint16_t m_height = 0;

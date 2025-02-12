@@ -216,8 +216,13 @@ namespace OvMaths
 		/**
 		* Return the transform local right
 		*/
+<<<<<<< HEAD
 		FVector3 GetLocalRight() const;
 
+=======
+		FVector3 GetLocalRight() const;		
+	
+>>>>>>> 4f0b5fdba35b1719c38a59f189f0b97f4a26171c
 	private:
 		void PreDecomposeWorldMatrix();
 		void PreDecomposeLocalMatrix();

@@ -1,7 +1,7 @@
 project "OvDebug"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	files { "**.h", "**.inl", "**.cpp", "**.lua" }
 	includedirs { "include", "%{wks.location}/OvTools/include" }
 	targetdir (outputdir .. "%{cfg.buildcfg}/%{prj.name}")

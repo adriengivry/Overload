@@ -50,8 +50,7 @@ const OvRendering::Geometry::BoundingSphere& OvRendering::Resources::Mesh::GetBo
 void OvRendering::Resources::Mesh::CreateBuffers(const std::vector<Geometry::Vertex>& p_vertices, const std::vector<uint32_t>& p_indices)
 {
 	std::vector<float> vertexData;
-
-	std::vector<unsigned int> rawIndices;
+	vertexData.reserve(p_vertices.size() * 14);
 
 	for (const auto& vertex : p_vertices)
 	{

@@ -151,3 +151,11 @@ void OvRendering::Buffers::Framebuffer::GenerateMipMaps() const
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+void OvRendering::Buffers::Framebuffer::BlitToBackBuffer(uint16_t p_backBufferWidth, uint16_t p_backBufferHeight) const
+{
+	glBlitNamedFramebuffer(m_bufferID, 0,
+		0, 0, m_width, m_height,
+		0, 0, p_backBufferWidth, p_backBufferHeight,
+		GL_COLOR_BUFFER_BIT, GL_LINEAR);
+}
