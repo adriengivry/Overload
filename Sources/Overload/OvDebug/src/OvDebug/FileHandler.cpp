@@ -7,6 +7,7 @@
 #define _CRT_SECURE_NO_WARNINGS // Enable getenv
 
 #include <OvTools/Time/Date.h>
+#include <OvTools/Utils/SystemCalls.h>
 
 #include "OvDebug/FileHandler.h"
 
@@ -21,7 +22,7 @@ std::string OvDebug::FileHandler::__APP_LAUNCH_DATE			= OvTools::Time::Date::Get
 std::string const OvDebug::FileHandler::__LOG_EXTENSION		= ".ovlog";
 
 std::ofstream OvDebug::FileHandler::OUTPUT_FILE;
-std::string OvDebug::FileHandler::LOG_FILE_PATH = std::string(getenv("APPDATA")) + std::string("\\OverloadTech\\OvEditor\\Log\\") + __APP_LAUNCH_DATE + __LOG_EXTENSION;
+std::string OvDebug::FileHandler::LOG_FILE_PATH = OvTools::Utils::SystemCalls::GetPathToAppdata() + std::string("\\OverloadTech\\OvEditor\\Log\\") + __APP_LAUNCH_DATE + __LOG_EXTENSION;
 
 void OvDebug::FileHandler::Log(const LogData& p_logData)
 {
