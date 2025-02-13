@@ -211,7 +211,7 @@ void OvEditor::Panels::MenuBar::CreateHelpMenu()
     helpMenu.CreateWidget<MenuItem>("Bug Report").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("https://github.com/adriengivry/Overload/issues/new?assignees=&labels=Bug&template=bug_report.md&title="); };
     helpMenu.CreateWidget<MenuItem>("Feature Request").ClickedEvent += [] {OvTools::Utils::SystemCalls::OpenURL("https://github.com/adriengivry/Overload/issues/new?assignees=&labels=Feature&template=feature_request.md&title="); };
     helpMenu.CreateWidget<Visual::Separator>();
-    helpMenu.CreateWidget<Texts::Text>("Version: 1.3.0");
+    helpMenu.CreateWidget<Texts::Text>("Version: " + std::string(OVERLOAD_VERSION));
 }
 
 void OvEditor::Panels::MenuBar::RegisterPanel(const std::string& p_name, OvUI::Panels::PanelWindow& p_panel)
