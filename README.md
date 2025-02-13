@@ -93,32 +93,39 @@ After downloading the archive, unzip it and run the `Overload.exe` executable fi
 
 ## Building Overload from Sources
 
-### Quick Start
-*Note: This section will assume that you have Visual Studio 2022 installed on your machine. If you'd like to use another IDE, please refer to the "Using a Different IDE" section below.*
+### Quick Start (For Visual Studio 2022)
+To start working with Overload quickly, clone the repository and run the `OpenInVisualStudio.bat` script. Project files will be automatically generated, and Visual Studio will open with the generated solution (`Overload/Sources/Overload.sln`).
+
 ```powershell
-# Clone the repository
+# These 2 lines will clone Overload, generate project files, and open the Visual Studio solution.
 git clone https://github.com/adriengivry/Overload
-cd .\Overload
-
-# Generate project files (default IDE: vs2022)
-.\GenerateProjects.bat
-
-# Open the Visual Studio solution
-.\Sources\Overload\Overload.sln
+.\Overload\OpenInVisualStudio.bat
 ```
 
-### Generating Project Files
-Overload uses Premake5 to generate project files. To generate these files, execute `GenerateProjects.bat` located at the root of the repository. By default, `GenerateProjects.bat` will generate project files for Visual Studio 2022.
+### Generating Project Files (For Any IDE)
+*Note: This step is performed automatically when using `OpenInVisualStudio.bat`*
 
-### Using a Different IDE
+Overload uses Premake5 to generate project files. To generate these files, execute the `GenerateProjects.bat` located in the `Scripts/` folder.
+
+By default, `GenerateProjects.bat` will generate project files for Visual Studio 2022.
+
 If you'd like to use another IDE, you'll need to run `GenerateProjects.bat` from the command line:
+
 ```powershell
-.\GenerateProjects.bat <ide_of_your_choice>
+.\Scripts\GenerateProjects.bat <ide_of_your_choice>
 ```
 
 *Please refer to [Premake5's documentation](https://premake.github.io/docs/Using-Premake) to find supported IDEs.*
 
 > ⚠️ Some Premake5-supported IDEs might still not work with Overload.
+
+### Building From the Command Line (MSVC Only)
+*Note: Before building, make sure that you generated the Visual Studio solution.*
+
+If you'd like to build Overload directly from the command line (without opening Visual Studio), you can use the `BuildAll.bat` script located in `Scripts/MSVC/`. By default, `BuildAll.bat` will build the project in `Debug` mode, but you can choose the configuration you want by providing an argument:
+```powershell
+.\Scripts\MSVC\BuildAll.bat Release
+```
 
 ## Tutorials & Scripting API
 Learn how to create your own games using Overload by visiting our [wiki](https://github.com/adriengivry/Overload/wiki).
