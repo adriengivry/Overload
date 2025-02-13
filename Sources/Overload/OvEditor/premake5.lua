@@ -1,3 +1,17 @@
+-- Function to read the version number from VERSION.txt
+local function readVersion()
+    local versionFile = io.open("../../../VERSION.txt", "r")
+    if versionFile then
+        local version = versionFile:read("*l")
+        versionFile:close()
+        return version
+    else
+        error("Could not open VERSION.txt")
+    end
+end
+
+local version = readVersion()
+
 project "OvEditor"
 	language "C++"
 	cppdialect "C++20"
@@ -15,6 +29,8 @@ project "OvEditor"
 	objdir (objoutdir .. "%{cfg.buildcfg}/%{prj.name}")
 	characterset ("MBCS")
 	debugdir "%{wks.location}/../../Build/%{cfg.buildcfg}"
+
+	defines { "OVERLOAD_VERSION=\"" .. version .. "\"" }
 
 	postbuildcommands {
 		"for /f \"delims=|\" %%i in ('dir /B /S \"%{dependdir}\\*.dll\"') do xcopy /Q /Y \"%%i\" \"%{outputdir}%{cfg.buildcfg}\\%{prj.name}\"",
