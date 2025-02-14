@@ -48,9 +48,9 @@ namespace OvCore::SceneSystem
 		void LoadEmptyScene();
 
 		/**
-		* Load an empty lighted scene in memory
+		* Load a default scene in memory
 		*/
-		void LoadEmptyLightedScene();
+		void LoadDefaultScene();
 
 		/**
 		* Load specific scene in memory
@@ -108,7 +108,7 @@ namespace OvCore::SceneSystem
 
 	private:
 		const std::string m_sceneRootFolder;
-		Scene* m_currentScene = nullptr;
+		std::unique_ptr<Scene> m_currentScene = nullptr;
 
 		bool m_currentSceneLoadedFromPath = false;
 		std::string m_currentSceneSourcePath = "";

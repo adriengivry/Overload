@@ -303,9 +303,10 @@ namespace OvEditor::Core
 
 		/**
 		* Save the current scene to the given path
+		* @param p_sceneToSave
 		* @param p_path
 		*/
-		void SaveCurrentSceneTo(const std::string& p_path);
+		void SaveSceneToDisk(OvCore::SceneSystem::Scene& p_scene, const std::string& p_path);
 
 		/**
 		* Load a scene from the disk

@@ -45,32 +45,17 @@ void OvCore::SceneSystem::SceneManager::LoadAndPlayDelayed(const std::string& p_
 void OvCore::SceneSystem::SceneManager::LoadEmptyScene()
 {
 	UnloadCurrentScene();
-
-	m_currentScene = new Scene();
-
+	m_currentScene.reset(new Scene());
 	SceneLoadEvent.Invoke();
 }
 
-void OvCore::SceneSystem::SceneManager::LoadEmptyLightedScene()
+void OvCore::SceneSystem::SceneManager::LoadDefaultScene()
 {
 	UnloadCurrentScene();
-
-	m_currentScene = new Scene();
-
+	m_currentScene.reset(new Scene());
+	m_currentScene->AddDefaultCamera();
+	m_currentScene->AddDefaultLights();
 	SceneLoadEvent.Invoke();
-
-	auto& directionalLight = m_currentScene->CreateActor("Directional Light");
-	directionalLight.AddComponent<ECS::Components::CDirectionalLight>().SetIntensity(0.75f);
-	directionalLight.transform.SetLocalPosition({ 0.0f, 10.0f, 0.0f });
-	directionalLight.transform.SetLocalRotation(OvMaths::FQuaternion({ 120.0f, -40.0f, 0.0f }));
-
-	auto& ambientLight = m_currentScene->CreateActor("Ambient Light");
-	ambientLight.AddComponent<ECS::Components::CAmbientSphereLight>().SetRadius(10000.0f);
-
-	auto& camera = m_currentScene->CreateActor("Main Camera");
-	camera.AddComponent<ECS::Components::CCamera>();
-	camera.transform.SetLocalPosition({ 0.0f, 3.0f, 8.0f });
-	camera.transform.SetLocalRotation(OvMaths::FQuaternion({ 20.0f, 180.0f, 0.0f }));
 }
 
 bool OvCore::SceneSystem::SceneManager::LoadScene(const std::string& p_path, bool p_absolute)
@@ -114,8 +99,7 @@ void OvCore::SceneSystem::SceneManager::UnloadCurrentScene()
 {
 	if (m_currentScene)
 	{
-		delete m_currentScene;
-		m_currentScene = nullptr;
+		m_currentScene.release();
 		SceneUnloadEvent.Invoke();
 	}
 
@@ -124,12 +108,12 @@ void OvCore::SceneSystem::SceneManager::UnloadCurrentScene()
 
 bool OvCore::SceneSystem::SceneManager::HasCurrentScene() const
 {
-	return m_currentScene;
+	return m_currentScene != nullptr;
 }
 
 OvCore::SceneSystem::Scene* OvCore::SceneSystem::SceneManager::GetCurrentScene() const
 {
-	return m_currentScene;
+	return m_currentScene.get();
 }
 
 std::string OvCore::SceneSystem::SceneManager::GetCurrentSceneSourcePath() const

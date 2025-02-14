@@ -36,7 +36,7 @@ OvEditor::Core::Editor::Editor(Context& p_context) :
 {
 	SetupUI();
 
-	m_context.sceneManager.LoadEmptyLightedScene();
+	m_context.sceneManager.LoadDefaultScene();
 }
 
 OvEditor::Core::Editor::~Editor()

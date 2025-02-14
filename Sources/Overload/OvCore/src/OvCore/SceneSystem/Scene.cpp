@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <string>
 
-#include "OvCore/SceneSystem/Scene.h"
+#include <OvCore/SceneSystem/Scene.h>
+#include <OvCore/ECS/Components/CDirectionalLight.h>
+#include <OvCore/ECS/Components/CAmbientSphereLight.h>
 
 OvCore::SceneSystem::Scene::Scene()
 {
@@ -22,6 +24,25 @@ OvCore::SceneSystem::Scene::~Scene()
 	});
 
 	m_actors.clear();
+}
+
+void OvCore::SceneSystem::Scene::AddDefaultCamera()
+{
+	auto& camera = CreateActor("Main Camera");
+	camera.AddComponent<ECS::Components::CCamera>();
+	camera.transform.SetLocalPosition({ 0.0f, 3.0f, 8.0f });
+	camera.transform.SetLocalRotation(OvMaths::FQuaternion({ 20.0f, 180.0f, 0.0f }));
+}
+
+void OvCore::SceneSystem::Scene::AddDefaultLights()
+{
+	auto& directionalLight = CreateActor("Directional Light");
+	directionalLight.AddComponent<ECS::Components::CDirectionalLight>().SetIntensity(0.75f);
+	directionalLight.transform.SetLocalPosition({ 0.0f, 10.0f, 0.0f });
+	directionalLight.transform.SetLocalRotation(OvMaths::FQuaternion({ 120.0f, -40.0f, 0.0f }));
+
+	auto& ambientLight = CreateActor("Ambient Light");
+	ambientLight.AddComponent<ECS::Components::CAmbientSphereLight>().SetRadius(10000.0f);
 }
 
 void OvCore::SceneSystem::Scene::Play()
