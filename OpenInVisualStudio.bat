@@ -1,7 +1,7 @@
 @echo off
 
 REM Call the GenerateProjects script
-call %~dp0\Scripts\GenerateProjects.bat
+call "%~dp0\Scripts\GenerateProjects.bat"
 
 REM Check if the project generation was successful
 if %errorlevel% neq 0 (
@@ -10,6 +10,6 @@ if %errorlevel% neq 0 (
 )
 
 REM Call the OpenSolution script
-call %~dp0\Scripts\MSVC\OpenSolution.bat
+call "%~dp0\Scripts\MSVC\OpenSolution.bat"
 
 exit /b 0

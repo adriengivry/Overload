@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 set "CONFIGURATION=%~1"
 
 :: Generate the projects
-pushd %~dp0\..\
+pushd "%~dp0\..\"
 call GenerateProjects vs2022 %CONFIGURATION%
 popd
 
@@ -59,7 +59,7 @@ echo msbuild.exe found at: "!MSBUILD_PATH!"
 echo.
 
 :: Build the solution
-pushd %~dp0..\..\Sources\Overload\
+pushd "%~dp0..\..\Sources\Overload\"
 if "%CONFIGURATION%"=="" (
     echo Building with default configuration configuration...
     "!MSBUILD_PATH!" Overload.sln -m -verbosity:minimal
