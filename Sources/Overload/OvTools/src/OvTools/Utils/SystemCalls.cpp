@@ -9,6 +9,8 @@
 
 #include <Windows.h>
 #include <ShlObj.h>
+#include <memory>
+#include <assert.h>
 
 void OvTools::Utils::SystemCalls::ShowInExplorer(const std::string & p_path)
 {
@@ -34,22 +36,16 @@ void OvTools::Utils::SystemCalls::OpenURL(const std::string& p_url)
 
 std::string OvTools::Utils::SystemCalls::GetPathToAppdata()
 {
-	PWSTR path = nullptr;
-	std::string result;
-
-	HRESULT getPath = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, &path);
+	// Retrieve app-data path
+	PWSTR rawPath = nullptr;
+	const HRESULT hr = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, &rawPath);
+	std::unique_ptr<wchar_t, decltype(&CoTaskMemFree)> path(rawPath, CoTaskMemFree);
+	assert(SUCCEEDED(hr) && "Failed to get AppData path");
 	
-	// We get a wide string back which we need to convert back to a utf-8 string
-	if (SUCCEEDED(getPath)) {
-		// If size == 0, we have errors and are not able to convert the wide string
-		int size = WideCharToMultiByte(CP_UTF8, 0, path, -1, nullptr, 0, nullptr, nullptr);
-		if (size > 0) {
-			std::string converted(size - 1, 0);
-			WideCharToMultiByte(CP_UTF8, 0, path, -1, &converted[0], size, nullptr, nullptr);
-			result = converted;
-		}
-		CoTaskMemFree(path);
-	}
-	
-	return result;
+	// Convert app-data path from wide char to UTF-8 string
+	const int size_needed = WideCharToMultiByte(CP_UTF8, 0, path.get(), -1, nullptr, 0, nullptr, nullptr);
+	assert(size_needed > 0 && "failed to convert from wide char to UTF-8");
+	std::string appDataPath(size_needed, 0);
+	WideCharToMultiByte(CP_UTF8, 0, path.get(), -1, &appDataPath[0], size_needed, nullptr, nullptr);
+	return appDataPath;
 }
