@@ -46,6 +46,9 @@ if exist ..\Releases\Overload-%version%-%platform% (
     echo Temporary build deleted.
 )
 
+:: Open the output folder in the file explorer
+explorer ..\Releases
+
 :: Return to the original directory
 popd
 popd
