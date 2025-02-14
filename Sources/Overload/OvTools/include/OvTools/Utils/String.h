@@ -18,6 +18,13 @@ namespace OvTools::Utils
 	class String
 	{
 	public:
+		enum ETrimType
+		{
+			Leading = 1,
+			Trailing = 2,
+			TwoWays = 4 // Leading and Trailing
+		};
+
 		/**
 		* Disabled constructor
 		*/
@@ -45,5 +52,25 @@ namespace OvTools::Utils
         * @param p_isAvailable (A callback that must returning true if the input string is available)
         */
         static std::string GenerateUnique(const std::string& p_source, std::function<bool(std::string)> p_isAvailable);
+
+		/**
+		* Trim whitespaces from a string in a desired direction (Leading, Trailing or both as TwoWays).
+		* @param p_str String to trim
+		* @param p_trimType The desired trim direction, default is Trailing
+		*/
+		static void Trim(std::string& p_str, const ETrimType p_trimType = ETrimType::Trailing);
+
+	private:
+		/**
+		* Leading trim of whitespaces from a string.
+		* param p_str String to trim
+		*/
+		static void LeadingTrim(std::string& p_str);
+
+		/**
+		* Trailing trim of whitespaces from a string.
+		* param p_str String to trim
+		*/
+		static void TrailingTrim(std::string& p_str);
 	};
 }

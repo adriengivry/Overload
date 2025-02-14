@@ -78,3 +78,27 @@ std::string OvTools::Utils::String::GenerateUnique(const std::string& p_source, 
 
     return result;
 }
+
+void OvTools::Utils::String::Trim(std::string& p_str, const ETrimType p_trimType)  
+{  
+   if (p_trimType & ETrimType::Leading || p_trimType & ETrimType::TwoWays)  
+   {  
+       LeadingTrim(p_str);
+   }  
+   if (p_trimType & ETrimType::Trailing || p_trimType & ETrimType::TwoWays)  
+   {  
+       TrailingTrim(p_str);
+   }  
+}
+
+void OvTools::Utils::String::LeadingTrim(std::string& p_str)
+{
+    p_str.erase(p_str.begin(),
+                std::find_if(p_str.begin(), p_str.end(), [](unsigned char ch) { return !std::isspace(ch); }));
+}
+
+void OvTools::Utils::String::TrailingTrim(std::string& p_str)
+{
+    p_str.erase(std::find_if(p_str.rbegin(), p_str.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(),
+                p_str.end());
+}
