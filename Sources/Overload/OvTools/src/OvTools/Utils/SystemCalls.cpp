@@ -45,7 +45,7 @@ std::string OvTools::Utils::SystemCalls::GetPathToAppdata()
 	// Convert app-data path from wide char to UTF-8 string
 	const int size_needed = WideCharToMultiByte(CP_UTF8, 0, path.get(), -1, nullptr, 0, nullptr, nullptr);
 	assert(size_needed > 0 && "failed to convert from wide char to UTF-8");
-	std::string appDataPath(size_needed, 0);
+	std::string appDataPath(size_needed - 1, 0);
 	WideCharToMultiByte(CP_UTF8, 0, path.get(), -1, &appDataPath[0], size_needed, nullptr, nullptr);
 	return appDataPath;
 }
