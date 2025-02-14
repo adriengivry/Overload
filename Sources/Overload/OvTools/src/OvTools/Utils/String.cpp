@@ -99,6 +99,5 @@ void OvTools::Utils::String::LeadingTrim(std::string& p_str)
 
 void OvTools::Utils::String::TrailingTrim(std::string& p_str)
 {
-    p_str.erase(std::find_if(p_str.rbegin(), p_str.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(),
-                p_str.end());
+    p_str.erase(p_str.find_last_not_of(" \t\n\r\f\v") + 1);
 }
