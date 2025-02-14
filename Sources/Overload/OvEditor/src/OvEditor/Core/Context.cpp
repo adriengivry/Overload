@@ -42,7 +42,7 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 	OvWindowing::Settings::DeviceSettings deviceSettings;
 	deviceSettings.contextMajorVersion = 4;
 	deviceSettings.contextMinorVersion = 3;
-	windowSettings.title = "Overload Editor";
+	windowSettings.title = "Overload (" + std::string(OVERLOAD_VERSION) + ")";
 	windowSettings.width = 1600;
 	windowSettings.height = 900;
 
