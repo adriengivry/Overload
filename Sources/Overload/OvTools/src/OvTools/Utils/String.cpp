@@ -79,24 +79,14 @@ std::string OvTools::Utils::String::GenerateUnique(const std::string& p_source, 
     return result;
 }
 
-void OvTools::Utils::String::Trim(std::string& p_str, const ETrimType p_trimType)  
+void OvTools::Utils::String::Trim(std::string& p_str, const TrimOptions p_trimOptions)
 {  
-   if (p_trimType & ETrimType::Leading || p_trimType & ETrimType::TwoWays)  
-   {  
-       LeadingTrim(p_str);
-   }  
-   if (p_trimType & ETrimType::Trailing || p_trimType & ETrimType::TwoWays)  
-   {  
-       TrailingTrim(p_str);
-   }  
-}
-
-void OvTools::Utils::String::LeadingTrim(std::string& p_str)
-{
-    p_str.erase(0, p_str.find_first_not_of(" \t\n\r\f\v"));
-}
-
-void OvTools::Utils::String::TrailingTrim(std::string& p_str)
-{
-    p_str.erase(p_str.find_last_not_of(" \t\n\r\f\v") + 1);
+    if (p_trimOptions.left)
+    {
+        p_str.erase(0, p_str.find_first_not_of(" \t\n\r\f\v"));
+    }
+    if (p_trimOptions.right)
+    {
+        p_str.erase(p_str.find_last_not_of(" \t\n\r\f\v") + 1);
+    }
 }

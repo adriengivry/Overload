@@ -74,7 +74,7 @@ void OvTools::Filesystem::IniFile::Load()
 		{
 			if (IsValidLine(currentLine))
 			{
-                OvTools::Utils::String::Trim(currentLine, OvTools::Utils::String::ETrimType::TwoWays);
+                                OvTools::Utils::String::Trim(currentLine);
 				RegisterPair(ExtractKeyAndValue(currentLine));
 			}
 		}

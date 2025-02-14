@@ -13,16 +13,15 @@
 namespace OvTools::Utils
 {
 	/*
-	* Handle random numbers generation
+        * Helper class for string manipulation
 	*/
 	class String
 	{
 	public:
-		enum ETrimType
+		struct TrimOptions
 		{
-			Leading = 1,
-			Trailing = 2,
-			TwoWays = 4 // Leading and Trailing
+			const bool left = true;
+			const bool right = true;
 		};
 
 		/**
@@ -54,23 +53,10 @@ namespace OvTools::Utils
         static std::string GenerateUnique(const std::string& p_source, std::function<bool(std::string)> p_isAvailable);
 
 		/**
-		* Trim whitespaces from a string in a desired direction (Leading, Trailing or both as TwoWays).
+                * Trim whitespaces from a string with the option to trim the left and right of the string by passing a TrimOptions struct.
 		* @param p_str String to trim
-		* @param p_trimType The desired trim direction, default is Trailing
+		* @param p_trimOptions The desired trim options, default is trimming left and right
 		*/
-		static void Trim(std::string& p_str, const ETrimType p_trimType = ETrimType::Trailing);
-
-	private:
-		/**
-		* Leading trim of whitespaces from a string.
-		* param p_str String to trim
-		*/
-		static void LeadingTrim(std::string& p_str);
-
-		/**
-		* Trailing trim of whitespaces from a string.
-		* param p_str String to trim
-		*/
-		static void TrailingTrim(std::string& p_str);
+		static void Trim(std::string& p_str, const TrimOptions p_trimOptions = {});
 	};
 }
