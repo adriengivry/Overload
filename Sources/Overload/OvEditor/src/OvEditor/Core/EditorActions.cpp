@@ -51,17 +51,21 @@ void OvEditor::Core::EditorActions::LoadEmptyScene()
 	if (GetCurrentEditorMode() != EEditorMode::EDIT)
 		StopPlaying();
 
-	m_context.sceneManager.LoadEmptyLightedScene();
+	m_context.sceneManager.LoadEmptyScene();
+	auto scene = m_context.sceneManager.GetCurrentScene();
+	scene->AddDefaultCamera();
+	scene->AddDefaultLights();
+
 	OVLOG_INFO("New scene created");
 }
 
-void OvEditor::Core::EditorActions::SaveCurrentSceneTo(const std::string& p_path)
+void OvEditor::Core::EditorActions::SaveSceneToDisk(OvCore::SceneSystem::Scene& p_scene, const std::string& p_path)
 {
 	tinyxml2::XMLDocument doc;
 	tinyxml2::XMLNode* node = doc.NewElement("root");
 	doc.InsertFirstChild(node);
 	m_context.sceneManager.StoreCurrentSceneSourcePath(p_path);
-	m_context.sceneManager.GetCurrentScene()->OnSerialize(doc, node);
+	p_scene.OnSerialize(doc, node);
 	doc.SaveFile(p_path.c_str());
 }
 
@@ -84,8 +88,12 @@ void OvEditor::Core::EditorActions::SaveSceneChanges()
 {
 	if (IsCurrentSceneLoadedFromDisk())
 	{
-		SaveCurrentSceneTo(m_context.sceneManager.GetCurrentSceneSourcePath());
-		OVLOG_INFO("Current scene saved to: " + m_context.sceneManager.GetCurrentSceneSourcePath());
+		auto currentScene = m_context.sceneManager.GetCurrentScene();
+		OVASSERT(currentScene, "Current scene is null");
+
+		const std::string currentScenePath = m_context.sceneManager.GetCurrentSceneSourcePath();
+		SaveSceneToDisk(*currentScene, currentScenePath);
+		OVLOG_INFO("Current scene saved to: " + currentScenePath);
 	}
 	else
 	{
@@ -112,7 +120,8 @@ void OvEditor::Core::EditorActions::SaveAs()
 			}
 		}
 
-		SaveCurrentSceneTo(dialog.GetSelectedFilePath());
+		auto currentScene = m_context.sceneManager.GetCurrentScene();
+		SaveSceneToDisk(*currentScene, dialog.GetSelectedFilePath());
 		OVLOG_INFO("Current scene saved to: " + dialog.GetSelectedFilePath());
 	}
 }

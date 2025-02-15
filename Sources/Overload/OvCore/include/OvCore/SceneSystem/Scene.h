@@ -46,6 +46,16 @@ namespace OvCore::SceneSystem
 		~Scene();
 
 		/**
+		* Add a default camera to the scene
+		*/
+		void AddDefaultCamera();
+
+		/**
+		* Add default lights to the scene
+		*/
+		void AddDefaultLights();
+
+		/**
 		* Play the scene
 		*/
 		void Play();
