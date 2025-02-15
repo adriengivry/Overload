@@ -579,7 +579,7 @@ public:
 
 	void CreateScript(const std::string& p_name, const std::string& p_path)
 	{
-		const std::string fileContent = OVSERVICE(OvCore::Scripting::IScriptEngine).GetDefaultScriptContent(p_name);
+		const std::string fileContent = OVSERVICE(OvCore::Scripting::ScriptEngine).GetDefaultScriptContent(p_name);
 		
 		std::ofstream outfile(p_path);
 		outfile << fileContent << std::endl;
@@ -608,7 +608,7 @@ public:
 				return std::find(FILENAMES_CHARS.begin(), FILENAMES_CHARS.end(), c) == FILENAMES_CHARS.end();
 			}), p_newName.end());
 
-			const std::string extension = OVSERVICE(OvCore::Scripting::IScriptEngine).GetDefaultExtension();
+			const std::string extension = OVSERVICE(OvCore::Scripting::ScriptEngine).GetDefaultExtension();
 			const std::string newPath = filePath + p_newName + extension;
 
 			if (!std::filesystem::exists(newPath))

@@ -163,7 +163,7 @@ OvEditor::Panels::Inspector::Inspector
 		// Add script button state updater
 		const auto updateAddScriptButton = [&addScriptButton, this](const std::string& p_script)
 		{
-			const std::string defaultScriptExtension = OVSERVICE(OvCore::Scripting::IScriptEngine).GetDefaultExtension();
+			const std::string defaultScriptExtension = OVSERVICE(OvCore::Scripting::ScriptEngine).GetDefaultExtension();
 
 			const std::string realScriptPath =
 				EDITOR_CONTEXT(projectScriptsPath) +
@@ -180,7 +180,7 @@ OvEditor::Panels::Inspector::Inspector
 		m_scriptSelectorWidget->ContentChangedEvent += updateAddScriptButton;
 
 		addScriptButton.ClickedEvent += [updateAddScriptButton, this] {
-			const std::string defaultScriptExtension = OVSERVICE(OvCore::Scripting::IScriptEngine).GetDefaultExtension();
+			const std::string defaultScriptExtension = OVSERVICE(OvCore::Scripting::ScriptEngine).GetDefaultExtension();
 
 			const std::string realScriptPath =
 				EDITOR_CONTEXT(projectScriptsPath) +

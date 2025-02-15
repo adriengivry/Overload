@@ -7,8 +7,9 @@
 #pragma once
 
 #include <OvCore/ECS/Components/CPhysicalObject.h>
-#include <OvCore/Scripting/IScriptContext.h>
 #include <OvTools/Utils/OptRef.h>
+#include <OvCore/Scripting/ScriptEngine.h>
+// namespace OvCore::Scripting { class Script; }
 
 namespace OvCore::ECS { class Actor; }
 
@@ -41,12 +42,12 @@ namespace OvCore::ECS::Components
 		* Sets the script context of this behaviour
 		* @param p_scriptContext
 		*/
-		void SetScriptContext(std::unique_ptr<Scripting::IScriptContext>&& p_scriptContext);
+		void SetScriptContext(std::unique_ptr<Scripting::Script>&& p_scriptContext);
 
 		/**
 		* Returns the script context of this behaviour
 		*/
-		OvTools::Utils::OptRef<Scripting::IScriptContext> GetScriptContext();
+		OvTools::Utils::OptRef<Scripting::Script> GetScriptContext();
 
 		/**
 		* Removes the script context of this behaviour
@@ -158,6 +159,6 @@ namespace OvCore::ECS::Components
 		const std::string name;
 
 	private:
-		std::unique_ptr<Scripting::IScriptContext> m_scriptContext;
+		std::unique_ptr<Scripting::Script> m_scriptContext;
 	};
 }

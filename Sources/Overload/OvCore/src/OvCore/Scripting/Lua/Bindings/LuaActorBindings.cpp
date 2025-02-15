@@ -20,7 +20,7 @@
 #include "OvCore/ECS/Components/CAudioSource.h"
 #include "OvCore/ECS/Components/CAudioListener.h"
 #include "OvCore/ECS/Components/CPostProcessStack.h"
-#include <OvCore/Scripting/Lua/LuaScriptContext.h>
+#include <OvCore/Scripting/LuaScriptEngine.h>
 
 #include <sol.hpp>
 
@@ -71,7 +71,7 @@ void BindLuaActor(sol::state& p_luaState)
 			{
 				if (auto scriptContext = behaviour->GetScriptContext())
 				{
-					return static_cast<OvCore::Scripting::LuaScriptContext&>(scriptContext.value()).table;
+					return *static_cast<OvCore::Scripting::LuaScript&>(scriptContext.value()).m_context.table;
 				}
 			}
 			return sol::nil;

@@ -745,7 +745,7 @@ std::string OvEditor::Core::EditorActions::GetScriptPath(const std::string & p_p
 
 	OvTools::Utils::String::Replace(result, m_context.projectScriptsPath, "");
 
-	for (auto& extension : OVSERVICE(OvCore::Scripting::IScriptEngine).GetValidExtensions())
+	for (auto& extension : OVSERVICE(OvCore::Scripting::ScriptEngine).GetValidExtensions())
 	{
 		if (result.ends_with(extension))
 		{

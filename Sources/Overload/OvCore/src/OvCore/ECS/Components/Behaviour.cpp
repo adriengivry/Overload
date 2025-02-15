@@ -10,17 +10,17 @@
 #include <OvCore/ECS/Actor.h>
 #include <OvCore/ECS/Components/Behaviour.h>
 #include <OvCore/Global/ServiceLocator.h>
-#include <OvCore/Scripting/IScriptEngine.h>
+#include <OvCore/Scripting/ScriptEngine.h>
 
 OvCore::ECS::Components::Behaviour::Behaviour(ECS::Actor& p_owner, const std::string& p_name) :
 	name(p_name), AComponent(p_owner)
 {
-	OVSERVICE(Scripting::IScriptEngine).AddBehaviour(*this);
+	OVSERVICE(Scripting::ScriptEngine).AddBehaviour(*this);
 }
 
 OvCore::ECS::Components::Behaviour::~Behaviour()
 {
-	OVSERVICE(Scripting::IScriptEngine).RemoveBehaviour(*this);
+	OVSERVICE(Scripting::ScriptEngine).RemoveBehaviour(*this);
 }
 
 std::string OvCore::ECS::Components::Behaviour::GetName()
@@ -28,12 +28,12 @@ std::string OvCore::ECS::Components::Behaviour::GetName()
 	return "Behaviour";
 }
 
-void OvCore::ECS::Components::Behaviour::SetScriptContext(std::unique_ptr<Scripting::IScriptContext>&& p_scriptContext)
+void OvCore::ECS::Components::Behaviour::SetScriptContext(std::unique_ptr<Scripting::Script>&& p_scriptContext)
 {
 	m_scriptContext = std::move(p_scriptContext);
 }
 
-OvTools::Utils::OptRef<OvCore::Scripting::IScriptContext> OvCore::ECS::Components::Behaviour::GetScriptContext()
+OvTools::Utils::OptRef<OvCore::Scripting::Script> OvCore::ECS::Components::Behaviour::GetScriptContext()
 {
 	if (m_scriptContext)
 	{
@@ -50,72 +50,72 @@ void OvCore::ECS::Components::Behaviour::ResetScriptContext()
 
 void OvCore::ECS::Components::Behaviour::OnAwake()
 {
-	OVSERVICE(Scripting::IScriptEngine).OnAwake(*this);
+	OVSERVICE(Scripting::ScriptEngine).OnAwake(*this);
 }
 
 void OvCore::ECS::Components::Behaviour::OnStart()
 {
-	OVSERVICE(Scripting::IScriptEngine).OnAwake(*this);
+	OVSERVICE(Scripting::ScriptEngine).OnAwake(*this);
 }
 
 void OvCore::ECS::Components::Behaviour::OnEnable()
 {
-	OVSERVICE(Scripting::IScriptEngine).OnEnable(*this);
+	OVSERVICE(Scripting::ScriptEngine).OnEnable(*this);
 }
 
 void OvCore::ECS::Components::Behaviour::OnDisable()
 {
-	OVSERVICE(Scripting::IScriptEngine).OnDisable(*this);
+	OVSERVICE(Scripting::ScriptEngine).OnDisable(*this);
 }
 
 void OvCore::ECS::Components::Behaviour::OnDestroy()
 {
-	OVSERVICE(Scripting::IScriptEngine).OnDestroy(*this);
+	OVSERVICE(Scripting::ScriptEngine).OnDestroy(*this);
 }
 
 void OvCore::ECS::Components::Behaviour::OnUpdate(float p_deltaTime)
 {
-	OVSERVICE(Scripting::IScriptEngine).OnUpdate(*this, p_deltaTime);
+	OVSERVICE(Scripting::ScriptEngine).OnUpdate(*this, p_deltaTime);
 }
 
 void OvCore::ECS::Components::Behaviour::OnFixedUpdate(float p_deltaTime)
 {
-	OVSERVICE(Scripting::IScriptEngine).OnFixedUpdate(*this, p_deltaTime);
+	OVSERVICE(Scripting::ScriptEngine).OnFixedUpdate(*this, p_deltaTime);
 }
 
 void OvCore::ECS::Components::Behaviour::OnLateUpdate(float p_deltaTime)
 {
-	OVSERVICE(Scripting::IScriptEngine).OnLateUpdate(*this, p_deltaTime);
+	OVSERVICE(Scripting::ScriptEngine).OnLateUpdate(*this, p_deltaTime);
 }
 
 void OvCore::ECS::Components::Behaviour::OnCollisionEnter(Components::CPhysicalObject& p_otherObject)
 {
-	OVSERVICE(Scripting::IScriptEngine).OnCollisionEnter(*this, p_otherObject);
+	OVSERVICE(Scripting::ScriptEngine).OnCollisionEnter(*this, p_otherObject);
 }
 
 void OvCore::ECS::Components::Behaviour::OnCollisionStay(Components::CPhysicalObject& p_otherObject)
 {
-	OVSERVICE(Scripting::IScriptEngine).OnCollisionStay(*this, p_otherObject);
+	OVSERVICE(Scripting::ScriptEngine).OnCollisionStay(*this, p_otherObject);
 }
 
 void OvCore::ECS::Components::Behaviour::OnCollisionExit(Components::CPhysicalObject& p_otherObject)
 {
-	OVSERVICE(Scripting::IScriptEngine).OnCollisionExit(*this, p_otherObject);
+	OVSERVICE(Scripting::ScriptEngine).OnCollisionExit(*this, p_otherObject);
 }
 
 void OvCore::ECS::Components::Behaviour::OnTriggerEnter(Components::CPhysicalObject& p_otherObject)
 {
-	OVSERVICE(Scripting::IScriptEngine).OnTriggerEnter(*this, p_otherObject);
+	OVSERVICE(Scripting::ScriptEngine).OnTriggerEnter(*this, p_otherObject);
 }
 
 void OvCore::ECS::Components::Behaviour::OnTriggerStay(Components::CPhysicalObject& p_otherObject)
 {
-	OVSERVICE(Scripting::IScriptEngine).OnTriggerStay(*this, p_otherObject);
+	OVSERVICE(Scripting::ScriptEngine).OnTriggerStay(*this, p_otherObject);
 }
 
 void OvCore::ECS::Components::Behaviour::OnTriggerExit(Components::CPhysicalObject& p_otherObject)
 {
-	OVSERVICE(Scripting::IScriptEngine).OnTriggerExit(*this, p_otherObject);
+	OVSERVICE(Scripting::ScriptEngine).OnTriggerExit(*this, p_otherObject);
 }
 
 void OvCore::ECS::Components::Behaviour::OnSerialize(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node)

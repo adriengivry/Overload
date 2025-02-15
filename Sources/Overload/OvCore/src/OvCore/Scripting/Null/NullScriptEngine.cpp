@@ -4,7 +4,12 @@
 * @licence: MIT
 */
 
-#include <OvCore/Scripting/Null/NullScriptEngine.h>
+#include <OvCore/Scripting/NullScriptEngine.h>
+
+bool OvCore::Scripting::NullScript::IsValid() const
+{
+	return true;
+}
 
 std::vector<std::string> OvCore::Scripting::NullScriptEngine::GetValidExtensions()
 {
