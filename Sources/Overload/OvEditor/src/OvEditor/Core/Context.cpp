@@ -10,7 +10,7 @@
 #include <OvCore/Global/ServiceLocator.h>
 #include <OvTools/Utils/SystemCalls.h>
 #include <OvDebug/Assertion.h>
-#include <OvCore/Scripting/LuaScriptEngine.h>
+#include <OvCore/Scripting/ScriptEngine.h>
 
 #include "OvEditor/Core/Context.h"
 
@@ -135,7 +135,7 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 	physicsEngine = std::make_unique<OvPhysics::Core::PhysicsEngine>(OvPhysics::Settings::PhysicsSettings{ {0.0f, -9.81f, 0.0f } });
 
 	/* Scripting */
-	scriptEngine = std::make_unique<OvCore::Scripting::LuaScriptEngine>();
+	scriptEngine = std::make_unique<OvCore::Scripting::ScriptEngine>();
 	scriptEngine->SetScriptRootFolder(projectScriptsPath);
 
 	/* Service Locator providing */

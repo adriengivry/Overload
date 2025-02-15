@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <OvCore/Scripting/EScriptingLanguage.h>
+#include <OvCore/Scripting/Common/EScriptingLanguage.h>
 
 namespace OvCore::Scripting
 {
@@ -19,8 +19,8 @@ namespace OvCore::Scripting
 	class TScript
 	{
 	public:
-		TScript() {}
-		virtual ~TScript() {}
+		TScript();
+		virtual ~TScript();
 
 		/**
 		* Checks if the script context is valid.

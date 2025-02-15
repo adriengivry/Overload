@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include <OvCore/Scripting/EScriptingLanguage.h>
+#include <OvCore/Scripting/Common/EScriptingLanguage.h>
 
 namespace OvCore::ECS::Components
 {
@@ -28,8 +28,8 @@ namespace OvCore::Scripting
 	class TScriptEngine
 	{
 	public:
-		TScriptEngine() {}
-		virtual ~TScriptEngine() {}
+		TScriptEngine();
+		virtual ~TScriptEngine();
 
 		/**
 		* Defines the root location of the script folder

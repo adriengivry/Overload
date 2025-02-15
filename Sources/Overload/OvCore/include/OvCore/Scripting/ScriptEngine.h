@@ -6,21 +6,21 @@
 
 #pragma once
 
-#define LUA_SCRIPTING
-
 #if defined(LUA_SCRIPTING)
-#include <OvCore/Scripting/LuaScriptEngine.h>
+#include <OvCore/Scripting/Lua/LuaScript.h>
+#include <OvCore/Scripting/Lua/LuaScriptEngine.h>
 #else
-#include <OvCore/Scripting/NullScriptEngine.h>
+#include <OvCore/Scripting/Null/NullScript.h>
+#include <OvCore/Scripting/Null/NullScriptEngine.h>
 #endif
 
 namespace OvCore::Scripting
 {
 #if defined(LUA_SCRIPTING)
-	using ScriptEngine = LuaScriptEngine;
 	using Script = LuaScript;
+	using ScriptEngine = LuaScriptEngine;
 #else
-	using ScriptEngine = NullScriptEngine;
 	using Script = NullScript;
+	using ScriptEngine = NullScriptEngine;
 #endif
 }

@@ -9,9 +9,7 @@
 #include <vector>
 #include <memory>
 
-#include <OvCore/Scripting/EScriptingLanguage.h>
-#include <OvCore/Scripting/TScriptEngine.h>
-#include <OvCore/Scripting/TScript.h>
+#include <OvCore/Scripting/Common/TScriptEngine.h>
 
 #include <sol.hpp>
 
@@ -23,8 +21,7 @@ namespace OvCore::ECS::Components
 namespace OvCore::Scripting
 {
 	/**
-	* Lua scripting backend implementation.
-	* This class provides the implementation of the IScriptEngine interface using Lua as the scripting language.
+	* Lua script engine context
 	*/
 	struct LuaScriptEngineContext
 	{
@@ -34,27 +31,32 @@ namespace OvCore::Scripting
 		uint32_t errorCount;
 	};
 
-	struct LuaScriptContext
-	{
-		std::unique_ptr<sol::table> table;
-	};
-
 	using LuaScriptEngineBase = TScriptEngine<EScriptingLanguage::LUA, LuaScriptEngineContext>;
-	using LuaScriptBase = TScript<EScriptingLanguage::LUA, LuaScriptContext>;
 
+	/**
+	* Lua script engine implementation
+	*/
 	class LuaScriptEngine : public LuaScriptEngineBase
 	{
 	public:
+		/**
+		* Constructor of the Lua script engine
+		*/
 		LuaScriptEngine();
+
+		/**
+		* Destructor of the Lua script engine
+		*/
 		~LuaScriptEngine();
 
+		/**
+		* Create the Lua state
+		*/
 		void CreateContext();
-		void DestroyContext();
-	};
 
-	class LuaScript : public LuaScriptBase
-	{
-	public:
-		LuaScript(sol::table p_table);
+		/**
+		* Destroy the lua state
+		*/
+		void DestroyContext();
 	};
 }

@@ -11,16 +11,6 @@
 #include <OvCore/ECS/Components/Behaviour.h>
 #include <OvCore/ECS/Actor.h>
 
-OvCore::Scripting::LuaScript::LuaScript(sol::table table)
-{
-	m_context.table = std::make_unique<sol::table>(table);
-}
-
-bool OvCore::Scripting::LuaScriptBase::IsValid() const
-{
-	return m_context.table->valid();
-}
-
 void BindLuaActor(sol::state& p_state);
 void BindLuaComponents(sol::state& p_state);
 void BindLuaGlobal(sol::state& p_state);
@@ -41,7 +31,7 @@ void ExecuteLuaFunction(OvCore::ECS::Components::Behaviour& p_behaviour, const s
 	OVASSERT(context.has_value(), "The given context is null");
 	OVASSERT(context->IsValid(), "The given context is invalid");
 
-	const sol::table& table = *static_cast<OvCore::Scripting::LuaScript&>(context.value()).m_context.table;
+	const sol::table& table = static_cast<OvCore::Scripting::LuaScript&>(context.value()).m_context.table;
 
 	if (table[p_functionName].valid())
 	{
@@ -91,7 +81,7 @@ bool RegisterBehaviour(sol::state& p_luaState, OvCore::ECS::Components::Behaviou
 	if (auto context = p_behaviour.GetScriptContext(); context.has_value() && context->IsValid())
 	{
 		auto& luaScriptContext = static_cast<OvCore::Scripting::LuaScript&>(context.value());
-		(*luaScriptContext.m_context.table)["owner"] = &p_behaviour.owner;
+		luaScriptContext.m_context.table["owner"] = &p_behaviour.owner;
 		return true;
 	}
 
@@ -106,40 +96,6 @@ OvCore::Scripting::LuaScriptEngine::LuaScriptEngine()
 OvCore::Scripting::LuaScriptEngine::~LuaScriptEngine()
 {
 	DestroyContext();
-}
-
-void OvCore::Scripting::LuaScriptEngine::DestroyContext()
-{
-	OVASSERT(m_context.luaState != nullptr, "No valid Lua context");
-
-	std::for_each(m_context.behaviours.begin(), m_context.behaviours.end(),
-		[this](std::reference_wrapper<OvCore::ECS::Components::Behaviour> behaviour)
-		{
-			behaviour.get().ResetScriptContext();
-		}
-	);
-
-	m_context.luaState.reset();
-}
-
-void OvCore::Scripting::LuaScriptEngineBase::SetScriptRootFolder(const std::string& p_scriptRootFolder)
-{
-	m_context.scriptRootFolder = p_scriptRootFolder;
-}
-
-std::vector<std::string> OvCore::Scripting::LuaScriptEngineBase::GetValidExtensions()
-{
-	return { ".lua" };
-}
-
-std::string OvCore::Scripting::LuaScriptEngineBase::GetDefaultScriptContent(const std::string& p_name)
-{
-	return "local " + p_name + " =\n{\n}\n\nfunction " + p_name + ":OnStart()\nend\n\nfunction " + p_name + ":OnUpdate(deltaTime)\nend\n\nreturn " + p_name;
-}
-
-std::string OvCore::Scripting::LuaScriptEngineBase::GetDefaultExtension()
-{
-	return ".lua";
 }
 
 void OvCore::Scripting::LuaScriptEngine::CreateContext()
@@ -173,6 +129,51 @@ void OvCore::Scripting::LuaScriptEngine::CreateContext()
 	}
 }
 
+void OvCore::Scripting::LuaScriptEngine::DestroyContext()
+{
+	OVASSERT(m_context.luaState != nullptr, "No valid Lua context");
+
+	std::for_each(m_context.behaviours.begin(), m_context.behaviours.end(),
+		[this](std::reference_wrapper<OvCore::ECS::Components::Behaviour> behaviour)
+		{
+			behaviour.get().ResetScriptContext();
+		}
+	);
+
+	m_context.luaState.reset();
+}
+
+template<>
+OvCore::Scripting::LuaScriptEngineBase::TScriptEngine() {}
+
+template<>
+OvCore::Scripting::LuaScriptEngineBase::~TScriptEngine() {}
+
+template<>
+void OvCore::Scripting::LuaScriptEngineBase::SetScriptRootFolder(const std::string& p_scriptRootFolder)
+{
+	m_context.scriptRootFolder = p_scriptRootFolder;
+}
+
+template<>
+std::vector<std::string> OvCore::Scripting::LuaScriptEngineBase::GetValidExtensions()
+{
+	return { GetDefaultExtension() };
+}
+
+template<>
+std::string OvCore::Scripting::LuaScriptEngineBase::GetDefaultScriptContent(const std::string& p_name)
+{
+	return "local " + p_name + " =\n{\n}\n\nfunction " + p_name + ":OnStart()\nend\n\nfunction " + p_name + ":OnUpdate(deltaTime)\nend\n\nreturn " + p_name;
+}
+
+template<>
+std::string OvCore::Scripting::LuaScriptEngineBase::GetDefaultExtension()
+{
+	return ".lua";
+}
+
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::AddBehaviour(OvCore::ECS::Components::Behaviour& p_toAdd)
 {
 	OVASSERT(m_context.luaState != nullptr, "No valid Lua context");
@@ -185,6 +186,7 @@ void OvCore::Scripting::LuaScriptEngineBase::AddBehaviour(OvCore::ECS::Component
 	}
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::RemoveBehaviour(OvCore::ECS::Components::Behaviour& p_toRemove)
 {
 	if (m_context.luaState)
@@ -208,80 +210,95 @@ void OvCore::Scripting::LuaScriptEngineBase::RemoveBehaviour(OvCore::ECS::Compon
 template<>
 void OvCore::Scripting::LuaScriptEngineBase::Reload()
 {
-	static_cast<LuaScriptEngine*>(this)->DestroyContext();
-	static_cast<LuaScriptEngine*>(this)->CreateContext();
+	static_cast<LuaScriptEngine&>(*this).DestroyContext();
+	static_cast<LuaScriptEngine&>(*this).CreateContext();
 }
 
+template<>
 bool OvCore::Scripting::LuaScriptEngineBase::IsOk() const
 {
 	return m_context.luaState && m_context.errorCount == 0;
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnAwake(OvCore::ECS::Components::Behaviour& p_target)
 {
 	ExecuteLuaFunction(p_target, "OnAwake");
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnStart(OvCore::ECS::Components::Behaviour& p_target)
 {
 	ExecuteLuaFunction(p_target, "OnStart");
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnEnable(OvCore::ECS::Components::Behaviour& p_target)
 {
 	ExecuteLuaFunction(p_target, "OnEnable");
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnDisable(OvCore::ECS::Components::Behaviour& p_target)
 {
 	ExecuteLuaFunction(p_target, "OnDisable");
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnDestroy(OvCore::ECS::Components::Behaviour& p_target)
 {
 	ExecuteLuaFunction(p_target, "OnDestroy");
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
 {
 	ExecuteLuaFunction(p_target, "OnUpdate", p_deltaTime);
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnFixedUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
 {
 	ExecuteLuaFunction(p_target, "OnFixedUpdate", p_deltaTime);
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnLateUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
 {
 	ExecuteLuaFunction(p_target, "OnLateUpdate", p_deltaTime);
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnCollisionEnter(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 	ExecuteLuaFunction(p_target, "OnCollisionEnter", p_otherObject);
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnCollisionStay(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 	ExecuteLuaFunction(p_target, "OnCollisionStay", p_otherObject);
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnCollisionExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 	ExecuteLuaFunction(p_target, "OnCollisionExit", p_otherObject);
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnTriggerEnter(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 	ExecuteLuaFunction(p_target, "OnTriggerEnter", p_otherObject);
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnTriggerStay(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 	ExecuteLuaFunction(p_target, "OnTriggerStay", p_otherObject);
 }
 
+template<>
 void OvCore::Scripting::LuaScriptEngineBase::OnTriggerExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 	ExecuteLuaFunction(p_target, "OnTriggerExit", p_otherObject);

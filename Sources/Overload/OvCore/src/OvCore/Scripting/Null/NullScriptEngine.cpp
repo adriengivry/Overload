@@ -4,97 +4,122 @@
 * @licence: MIT
 */
 
-#include <OvCore/Scripting/NullScriptEngine.h>
+#include <OvCore/Scripting/Null/NullScriptEngine.h>
 
-bool OvCore::Scripting::NullScript::IsValid() const
+template<>
+OvCore::Scripting::NullScriptEngineBase::TScriptEngine() {}
+
+template<>
+OvCore::Scripting::NullScriptEngineBase::~TScriptEngine() {}
+
+template<>
+void OvCore::Scripting::NullScriptEngineBase::SetScriptRootFolder(const std::string& p_scriptRootFolder) {}
+
+template<>
+std::vector<std::string> OvCore::Scripting::NullScriptEngineBase::GetValidExtensions()
 {
-	return true;
+	return { GetDefaultExtension() };
 }
 
-std::vector<std::string> OvCore::Scripting::NullScriptEngine::GetValidExtensions()
-{
-	return { ".ovscript" };
-}
-
-std::string OvCore::Scripting::NullScriptEngine::GetDefaultScriptContent(const std::string& p_name)
+template<>
+std::string OvCore::Scripting::NullScriptEngineBase::GetDefaultScriptContent(const std::string& p_name)
 {
 	return "class " + p_name + " {\n}";
 }
 
-std::string OvCore::Scripting::NullScriptEngine::GetDefaultExtension()
+template<>
+std::string OvCore::Scripting::NullScriptEngineBase::GetDefaultExtension()
 {
 	return ".ovscript";
 }
 
-void OvCore::Scripting::NullScriptEngine::AddBehaviour(OvCore::ECS::Components::Behaviour& p_toAdd)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::AddBehaviour(OvCore::ECS::Components::Behaviour& p_toAdd)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::RemoveBehaviour(OvCore::ECS::Components::Behaviour& p_toRemove)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::RemoveBehaviour(OvCore::ECS::Components::Behaviour& p_toRemove)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::Reload()
+template<>
+void OvCore::Scripting::NullScriptEngineBase::Reload()
 {
 }
 
-bool OvCore::Scripting::NullScriptEngine::IsOk() const
+template<>
+bool OvCore::Scripting::NullScriptEngineBase::IsOk() const
 {
 	return true;
 }
 
-void OvCore::Scripting::NullScriptEngine::OnAwake(OvCore::ECS::Components::Behaviour& p_target)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnAwake(OvCore::ECS::Components::Behaviour& p_target)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::OnStart(OvCore::ECS::Components::Behaviour& p_target)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnStart(OvCore::ECS::Components::Behaviour& p_target)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::OnEnable(OvCore::ECS::Components::Behaviour& p_target)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnEnable(OvCore::ECS::Components::Behaviour& p_target)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::OnDisable(OvCore::ECS::Components::Behaviour& p_target)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnDisable(OvCore::ECS::Components::Behaviour& p_target)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::OnDestroy(OvCore::ECS::Components::Behaviour& p_target)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnDestroy(OvCore::ECS::Components::Behaviour& p_target)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::OnUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::OnFixedUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnFixedUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::OnLateUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnLateUpdate(OvCore::ECS::Components::Behaviour& p_target, float p_deltaTime)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::OnCollisionEnter(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnCollisionEnter(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::OnCollisionStay(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnCollisionStay(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::OnCollisionExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnCollisionExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::OnTriggerEnter(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnTriggerEnter(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::OnTriggerStay(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnTriggerStay(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 }
 
-void OvCore::Scripting::NullScriptEngine::OnTriggerExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
+template<>
+void OvCore::Scripting::NullScriptEngineBase::OnTriggerExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject)
 {
 }
