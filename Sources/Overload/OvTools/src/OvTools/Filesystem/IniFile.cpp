@@ -5,8 +5,8 @@
 */
 
 #include "OvTools/Filesystem/IniFile.h"
+#include "OvTools/Utils/String.h"
 
-#include <filesystem>
 #include <fstream>
 
 OvTools::Filesystem::IniFile::IniFile(const std::string& p_filePath) : m_filePath(p_filePath)
@@ -74,7 +74,7 @@ void OvTools::Filesystem::IniFile::Load()
 		{
 			if (IsValidLine(currentLine))
 			{
-				currentLine.erase(std::remove_if(currentLine.begin(), currentLine.end(), isspace), currentLine.end());
+				OvTools::Utils::String::Trim(currentLine);
 				RegisterPair(ExtractKeyAndValue(currentLine));
 			}
 		}
