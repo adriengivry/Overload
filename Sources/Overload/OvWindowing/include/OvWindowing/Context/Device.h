@@ -7,6 +7,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <array>
 
 #include <OvTools/Eventing/Event.h>
 
@@ -45,6 +46,11 @@ namespace OvWindowing::Context
 		* Return the size, in pixels, of the primary monity
 		*/
 		std::pair<int16_t, int16_t> GetMonitorSize() const;
+
+		/**
+		* Return the size, in pixels, of the work area of the primary monitor
+		*/
+		std::array<int, 4> GetWorkAreaSize() const;
 
 		/**
 		* Return an instance of GLFWcursor corresponding to the given shape

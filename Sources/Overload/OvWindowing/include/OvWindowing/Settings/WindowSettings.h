@@ -40,6 +40,16 @@ namespace OvWindowing::Settings
 		uint16_t height = 600;
 
 		/**
+		* X position of the window
+		*/
+		int16_t x = 0;
+
+		/**
+		* Y position of the window
+		*/
+		int16_t y = 0;
+
+		/**
 		* Minimum width of the window.
 		* Use WindowSettings::DontCare to disable limit
 		*/

@@ -20,6 +20,7 @@ OvWindowing::Window::Window(const Context::Device& p_device, const Settings::Win
 	m_device(p_device),
 	m_title(p_windowSettings.title),
 	m_size{ p_windowSettings.width, p_windowSettings.height },
+	m_position{ p_windowSettings.x, p_windowSettings.y },
 	m_minimumSize { p_windowSettings.minimumWidth, p_windowSettings.minimumHeight },
 	m_maximumSize { p_windowSettings.maximumWidth, p_windowSettings.maximumHeight },
 	m_fullscreen(p_windowSettings.fullscreen),
@@ -328,11 +329,7 @@ void OvWindowing::Window::CreateGlfwWindow(const Settings::WindowSettings& p_win
 	else
 	{
 		UpdateSizeLimit();
-
-		auto[x, y] = GetPosition();
-		m_position.first = x;
-		m_position.second = y;
-
+		SetPosition(m_position.first, m_position.second);
 		__WINDOWS_MAP[m_glfwWindow] = this;
 	}
 }

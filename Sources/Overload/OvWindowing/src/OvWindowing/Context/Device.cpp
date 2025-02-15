@@ -56,6 +56,20 @@ std::pair<int16_t, int16_t> OvWindowing::Context::Device::GetMonitorSize() const
 	return std::pair<int16_t, int16_t>(static_cast<int16_t>(mode->width), static_cast<int16_t>(mode->height));
 }
 
+std::array<int, 4> OvWindowing::Context::Device::GetWorkAreaSize() const
+{
+	std::array<int, 4> workArea;
+
+	glfwGetMonitorWorkarea(
+		glfwGetPrimaryMonitor(),
+		workArea.data(),
+		workArea.data() + 1,
+		workArea.data() + 2,
+		workArea.data() + 3);
+
+	return workArea;
+}
+
 GLFWcursor * OvWindowing::Context::Device::GetCursorInstance(Cursor::ECursorShape p_cursorShape) const
 {
 	return m_cursors.at(p_cursorShape);
