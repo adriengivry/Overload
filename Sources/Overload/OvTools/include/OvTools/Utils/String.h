@@ -13,7 +13,7 @@
 namespace OvTools::Utils
 {
 	/*
-        * Helper class for string manipulation
+	* Helper class for string manipulation
 	*/
 	class String
 	{
@@ -45,15 +45,15 @@ namespace OvTools::Utils
 		*/
 		static void ReplaceAll(std::string& p_target, const std::string& p_from, const std::string& p_to);
 
-        /**
-        * Generate a unique string satisfying the availability predicate
-        * @param p_source
-        * @param p_isAvailable (A callback that must returning true if the input string is available)
-        */
-        static std::string GenerateUnique(const std::string& p_source, std::function<bool(std::string)> p_isAvailable);
+		/**
+		* Generate a unique string satisfying the availability predicate
+		* @param p_source
+		* @param p_isAvailable (A callback that must returning true if the input string is available)
+		*/
+		static std::string GenerateUnique(const std::string& p_source, std::function<bool(std::string)> p_isAvailable);
 
 		/**
-                * Trim whitespaces from a string with the option to trim the left and right of the string by passing a TrimOptions struct.
+		* Trim whitespaces from a string with the option to trim the left and right of the string by passing a TrimOptions struct.
 		* @param p_str String to trim
 		* @param p_trimOptions The desired trim options, default is trimming left and right
 		*/
