@@ -69,9 +69,9 @@ void BindLuaActor(sol::state& p_luaState)
 		"GetBehaviour", [](Actor& p_this, const std::string& p_name) -> sol::table {
 			if (auto behaviour = p_this.GetBehaviour(p_name))
 			{
-				if (auto scriptContext = behaviour->GetScript())
+				if (auto script = behaviour->GetScript())
 				{
-					return static_cast<OvCore::Scripting::LuaScript&>(scriptContext.value()).GetContext().table;
+					return static_cast<OvCore::Scripting::LuaScript&>(script.value()).GetContext().table;
 				}
 			}
 			return sol::nil;
