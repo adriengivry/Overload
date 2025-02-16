@@ -55,7 +55,7 @@ void OvCore::ECS::Components::Behaviour::OnAwake()
 
 void OvCore::ECS::Components::Behaviour::OnStart()
 {
-	OVSERVICE(Scripting::ScriptEngine).OnAwake(*this);
+	OVSERVICE(Scripting::ScriptEngine).OnStart(*this);
 }
 
 void OvCore::ECS::Components::Behaviour::OnEnable()
