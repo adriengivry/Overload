@@ -2,6 +2,7 @@ workspace "Overload"
 	configurations { "Debug", "Release" }
 	platforms { "x64" }
 	startproject "OvEditor"
+	defines { "LUA_SCRIPTING" }
 
 outputdir = "%{wks.location}/../../Bin/"
 objoutdir = "%{wks.location}/../../Bin-Int/"

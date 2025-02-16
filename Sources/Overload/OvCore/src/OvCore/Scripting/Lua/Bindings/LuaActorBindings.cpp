@@ -4,10 +4,7 @@
 * @licence: MIT
 */
 
-#include "OvCore/Scripting/LuaActorBinder.h"
-
 #include "OvCore/ECS/Actor.h"
-
 #include "OvCore/ECS/Components/CTransform.h"
 #include "OvCore/ECS/Components/CCamera.h"
 #include "OvCore/ECS/Components/CPhysicalBox.h"
@@ -23,8 +20,11 @@
 #include "OvCore/ECS/Components/CAudioSource.h"
 #include "OvCore/ECS/Components/CAudioListener.h"
 #include "OvCore/ECS/Components/CPostProcessStack.h"
+#include <OvCore/Scripting/Lua/LuaScriptEngine.h>
 
-void OvCore::Scripting::LuaActorBinder::BindActor(sol::state & p_luaState)
+#include <sol.hpp>
+
+void BindLuaActor(sol::state& p_luaState)
 {
 	using namespace OvCore::ECS;
 	using namespace OvCore::ECS::Components;
@@ -41,11 +41,10 @@ void OvCore::Scripting::LuaActorBinder::BindActor(sol::state & p_luaState)
 		"SetParent", &Actor::SetParent,
 		"DetachFromParent", &Actor::DetachFromParent,
 		"Destroy", &Actor::MarkAsDestroy,
-		"IsSelfActive", &Actor::IsSelfActive, // TODO: Add to doc
+		"IsSelfActive", &Actor::IsSelfActive,
 		"IsActive", &Actor::IsActive,
 		"SetActive", &Actor::SetActive,
 		"IsDescendantOf", &Actor::IsDescendantOf,
-
 
 		/* Components Getters */
 		"GetTransform", &Actor::GetComponent<CTransform>,
@@ -63,17 +62,19 @@ void OvCore::Scripting::LuaActorBinder::BindActor(sol::state & p_luaState)
 		"GetModelRenderer", &Actor::GetComponent<CModelRenderer>,
 		"GetMaterialRenderer", &Actor::GetComponent<CMaterialRenderer>,
 		"GetAudioSource", &Actor::GetComponent<CAudioSource>,
-		"GetAudioListener", & Actor::GetComponent<CAudioListener>,
+		"GetAudioListener", &Actor::GetComponent<CAudioListener>,
 		"GetPostProcessStack", &Actor::GetComponent<CPostProcessStack>,
 
 		/* Behaviours relatives */
-		"GetBehaviour", [](Actor& p_this, const std::string& p_name) -> sol::table
-		{
-			auto behaviour = p_this.GetBehaviour(p_name);
-			if (behaviour)
-				return behaviour->GetTable();
-			else
-				return sol::nil;
+		"GetBehaviour", [](Actor& p_this, const std::string& p_name) -> sol::table {
+			if (auto behaviour = p_this.GetBehaviour(p_name))
+			{
+				if (auto script = behaviour->GetScript())
+				{
+					return static_cast<OvCore::Scripting::LuaScript&>(script.value()).GetContext().table;
+				}
+			}
+			return sol::nil;
 		},
 
 		/* Components Creators */
@@ -90,7 +91,7 @@ void OvCore::Scripting::LuaActorBinder::BindActor(sol::state & p_luaState)
 		"AddAmbientSphereLight", &Actor::AddComponent<CAmbientSphereLight>,
 		"AddMaterialRenderer", &Actor::AddComponent<CMaterialRenderer>,
 		"AddAudioSource", &Actor::AddComponent<CAudioSource>,
-		"AddAudioListener", & Actor::AddComponent<CAudioListener>,
+		"AddAudioListener", &Actor::AddComponent<CAudioListener>,
 		"AddPostProcessStack", &Actor::AddComponent<CPostProcessStack>,
 
 		/* Components Destructors */
@@ -106,13 +107,12 @@ void OvCore::Scripting::LuaActorBinder::BindActor(sol::state & p_luaState)
 		"RemoveAmbientSphereLight", &Actor::RemoveComponent<CAmbientSphereLight>,
 		"RemoveMaterialRenderer", &Actor::RemoveComponent<CMaterialRenderer>,
 		"RemoveAudioSource", &Actor::RemoveComponent<CAudioSource>,
-		"RemoveAudioListener", & Actor::RemoveComponent<CAudioListener>,
+		"RemoveAudioListener", &Actor::RemoveComponent<CAudioListener>,
 		"RemovePostProcessStack", &Actor::RemoveComponent<CPostProcessStack>,
 
 		/* Behaviour management */
 		"AddBehaviour", &Actor::AddBehaviour,
-		"RemoveBehaviour", sol::overload
-		(
+		"RemoveBehaviour", sol::overload(
 			sol::resolve<bool(Behaviour&)>(&Actor::RemoveBehaviour),
 			sol::resolve<bool(const std::string&)>(&Actor::RemoveBehaviour)
 		)

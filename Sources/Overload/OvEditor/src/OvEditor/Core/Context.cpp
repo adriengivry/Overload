@@ -10,6 +10,7 @@
 #include <OvCore/Global/ServiceLocator.h>
 #include <OvTools/Utils/SystemCalls.h>
 #include <OvDebug/Assertion.h>
+#include <OvCore/Scripting/ScriptEngine.h>
 
 #include "OvEditor/Core/Context.h"
 
@@ -133,6 +134,10 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 	/* Physics engine */
 	physicsEngine = std::make_unique<OvPhysics::Core::PhysicsEngine>(OvPhysics::Settings::PhysicsSettings{ {0.0f, -9.81f, 0.0f } });
 
+	/* Scripting */
+	scriptEngine = std::make_unique<OvCore::Scripting::ScriptEngine>();
+	scriptEngine->SetScriptRootFolder(projectScriptsPath);
+
 	/* Service Locator providing */
 	ServiceLocator::Provide<OvPhysics::Core::PhysicsEngine>(*physicsEngine);
 	ServiceLocator::Provide<ModelManager>(modelManager);
@@ -145,9 +150,7 @@ OvEditor::Core::Context::Context(const std::string& p_projectPath, const std::st
 	ServiceLocator::Provide<OvCore::SceneSystem::SceneManager>(sceneManager);
 	ServiceLocator::Provide<OvAudio::Core::AudioEngine>(*audioEngine);
 	ServiceLocator::Provide<OvAudio::Core::AudioPlayer>(*audioPlayer);
-
-	/* Scripting */
-	scriptInterpreter = std::make_unique<OvCore::Scripting::ScriptInterpreter>(projectScriptsPath);
+	ServiceLocator::Provide<OvCore::Scripting::ScriptEngine>(*scriptEngine);
 
 	ApplyProjectSettings();
 }

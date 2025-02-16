@@ -9,6 +9,7 @@
 #include "OvGame/Core/Context.h"
 
 #include <OvCore/Global/ServiceLocator.h>
+#include <OvCore/Scripting/ScriptEngine.h>
 
 using namespace OvCore::Global;
 using namespace OvCore::ResourceManagement;
@@ -79,6 +80,10 @@ OvGame::Core::Context::Context() :
 	/* Physics engine */
 	physicsEngine = std::make_unique<OvPhysics::Core::PhysicsEngine>(OvPhysics::Settings::PhysicsSettings{ {0.0f, projectSettings.Get<float>("gravity"), 0.0f } });
 
+	/* Scripting */
+	scriptEngine = std::make_unique<OvCore::Scripting::ScriptEngine>();
+	scriptEngine->SetScriptRootFolder(projectScriptsPath);
+
 	/* Service Locator providing */
 	ServiceLocator::Provide<OvPhysics::Core::PhysicsEngine>(*physicsEngine);
 	ServiceLocator::Provide<ModelManager>(modelManager);
@@ -91,9 +96,7 @@ OvGame::Core::Context::Context() :
 	ServiceLocator::Provide<OvCore::SceneSystem::SceneManager>(sceneManager);
 	ServiceLocator::Provide<OvAudio::Core::AudioEngine>(*audioEngine);
 	ServiceLocator::Provide<OvAudio::Core::AudioPlayer>(*audioPlayer);
-
-	/* Scripting */
-	scriptInterpreter = std::make_unique<OvCore::Scripting::ScriptInterpreter>(projectScriptsPath);
+	ServiceLocator::Provide<OvCore::Scripting::ScriptEngine>(*scriptEngine);
 
 	framebuffer = std::make_unique<OvRendering::Buffers::Framebuffer>(windowSettings.width, windowSettings.height);
 }

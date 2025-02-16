@@ -579,10 +579,10 @@ public:
 
 	void CreateScript(const std::string& p_name, const std::string& p_path)
 	{
-		std::string fileContent = "local " + p_name + " =\n{\n}\n\nfunction " + p_name + ":OnStart()\nend\n\nfunction " + p_name + ":OnUpdate(deltaTime)\nend\n\nreturn " + p_name;
+		const std::string fileContent = OVSERVICE(OvCore::Scripting::ScriptEngine).GetDefaultScriptContent(p_name);
 		
 		std::ofstream outfile(p_path);
-		outfile << fileContent << std::endl; // Empty scene content
+		outfile << fileContent << std::endl;
 
 		ItemAddedEvent.Invoke(p_path);
 		Close();
@@ -608,7 +608,8 @@ public:
 				return std::find(FILENAMES_CHARS.begin(), FILENAMES_CHARS.end(), c) == FILENAMES_CHARS.end();
 			}), p_newName.end());
 
-			std::string newPath = filePath + p_newName + ".lua";
+			const std::string extension = OVSERVICE(OvCore::Scripting::ScriptEngine).GetDefaultExtension();
+			const std::string newPath = filePath + p_newName + extension;
 
 			if (!std::filesystem::exists(newPath))
 			{

@@ -153,44 +153,53 @@ OvEditor::Panels::Inspector::Inspector
 	/* Script selector + button */
 	{
 		m_scriptSelectorWidget = &m_inspectorHeader->CreateWidget<OvUI::Widgets::InputFields::InputText>("");
-        m_scriptSelectorWidget->lineBreak = false;
+		m_scriptSelectorWidget->lineBreak = false;
 		auto& ddTarget = m_scriptSelectorWidget->AddPlugin<OvUI::Plugins::DDTarget<std::pair<std::string, Layout::Group*>>>("File");
 		
 		auto& addScriptButton = m_inspectorHeader->CreateWidget<OvUI::Widgets::Buttons::Button>("Add Script", OvMaths::FVector2{ 100.f, 0 });
 		addScriptButton.idleBackgroundColor = OvUI::Types::Color{ 0.7f, 0.5f, 0.f };
 		addScriptButton.textColor = OvUI::Types::Color::White;
 
-        // Add script button state updater
-        const auto updateAddScriptButton = [&addScriptButton, this](const std::string& p_script)
-        {
-            const std::string realScriptPath = EDITOR_CONTEXT(projectScriptsPath) + p_script + ".lua";
-
-            const auto targetActor = GetTargetActor();
-            const bool isScriptValid = std::filesystem::exists(realScriptPath) && targetActor && !targetActor->GetBehaviour(p_script);
-
-            addScriptButton.disabled = !isScriptValid;
-            addScriptButton.idleBackgroundColor = isScriptValid ? OvUI::Types::Color{ 0.7f, 0.5f, 0.f } : OvUI::Types::Color{ 0.1f, 0.1f, 0.1f };
-        };
-
-        m_scriptSelectorWidget->ContentChangedEvent += updateAddScriptButton;
-
-		addScriptButton.ClickedEvent += [updateAddScriptButton, this]
+		// Add script button state updater
+		const auto updateAddScriptButton = [&addScriptButton, this](const std::string& p_script)
 		{
-            const std::string realScriptPath = EDITOR_CONTEXT(projectScriptsPath) + m_scriptSelectorWidget->content + ".lua";
+			const std::string defaultScriptExtension = OVSERVICE(OvCore::Scripting::ScriptEngine).GetDefaultExtension();
 
-            // Ensure that the script is a valid one
-            if (std::filesystem::exists(realScriptPath))
-            {
-                GetTargetActor()->AddBehaviour(m_scriptSelectorWidget->content);
-                updateAddScriptButton(m_scriptSelectorWidget->content);
-            }
+			const std::string realScriptPath =
+				EDITOR_CONTEXT(projectScriptsPath) +
+				p_script +
+				defaultScriptExtension;
+
+			const auto targetActor = GetTargetActor();
+			const bool isScriptValid = std::filesystem::exists(realScriptPath) && targetActor && !targetActor->GetBehaviour(p_script);
+
+			addScriptButton.disabled = !isScriptValid;
+			addScriptButton.idleBackgroundColor = isScriptValid ? OvUI::Types::Color{ 0.7f, 0.5f, 0.f } : OvUI::Types::Color{ 0.1f, 0.1f, 0.1f };
 		};
 
-        ddTarget.DataReceivedEvent += [updateAddScriptButton, this](std::pair<std::string, Layout::Group*> p_data)
-        {
-            m_scriptSelectorWidget->content = EDITOR_EXEC(GetScriptPath(p_data.first));
-            updateAddScriptButton(m_scriptSelectorWidget->content);
-        };
+		m_scriptSelectorWidget->ContentChangedEvent += updateAddScriptButton;
+
+		addScriptButton.ClickedEvent += [updateAddScriptButton, this] {
+			const std::string defaultScriptExtension = OVSERVICE(OvCore::Scripting::ScriptEngine).GetDefaultExtension();
+
+			const std::string realScriptPath =
+				EDITOR_CONTEXT(projectScriptsPath) +
+				m_scriptSelectorWidget->content +
+				defaultScriptExtension;
+
+			// Ensure that the script is a valid one
+			if (std::filesystem::exists(realScriptPath))
+			{
+				GetTargetActor()->AddBehaviour(m_scriptSelectorWidget->content);
+				updateAddScriptButton(m_scriptSelectorWidget->content);
+			}
+		};
+
+		ddTarget.DataReceivedEvent += [updateAddScriptButton, this](std::pair<std::string, Layout::Group*> p_data)
+		{
+			m_scriptSelectorWidget->content = EDITOR_EXEC(GetScriptPath(p_data.first));
+			updateAddScriptButton(m_scriptSelectorWidget->content);
+		};
 	}
 
 	m_inspectorHeader->CreateWidget<OvUI::Widgets::Visual::Separator>();

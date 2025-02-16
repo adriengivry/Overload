@@ -128,9 +128,9 @@ void OvEditor::Core::EditorActions::SaveAs()
 
 void OvEditor::Core::EditorActions::RefreshScripts()
 {
-	m_context.scriptInterpreter->RefreshAll();
+	m_context.scriptEngine->Reload();
 	m_panelsManager.GetPanelAs<Panels::Inspector>("Inspector").Refresh();
-	if (m_context.scriptInterpreter->IsOk())
+	if (m_context.scriptEngine->IsOk())
 		OVLOG_INFO("Scripts interpretation succeeded!");
 }
 
@@ -422,10 +422,10 @@ void OvEditor::Core::EditorActions::StartPlaying()
 {
 	if (m_editorMode == EEditorMode::EDIT)
 	{
-		m_context.scriptInterpreter->RefreshAll();
+		m_context.scriptEngine->Reload();
 		EDITOR_PANEL(Panels::Inspector, "Inspector").Refresh();
 
-		if (m_context.scriptInterpreter->IsOk())
+		if (m_context.scriptEngine->IsOk())
 		{
 			PlayEvent.Invoke();
 			m_sceneBackup.Clear();
@@ -744,7 +744,14 @@ std::string OvEditor::Core::EditorActions::GetScriptPath(const std::string & p_p
 	std::string result = p_path;
 
 	OvTools::Utils::String::Replace(result, m_context.projectScriptsPath, "");
-	OvTools::Utils::String::Replace(result, ".lua", "");
+
+	for (auto& extension : OVSERVICE(OvCore::Scripting::ScriptEngine).GetValidExtensions())
+	{
+		if (result.ends_with(extension))
+		{
+			result = result.substr(0, result.size() - extension.size());
+		}
+	}
 
 	return result;
 }

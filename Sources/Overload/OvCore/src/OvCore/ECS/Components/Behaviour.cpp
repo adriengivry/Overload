@@ -7,22 +7,20 @@
 #include <OvUI/Widgets/Texts/TextColored.h>
 #include <OvDebug/Logger.h>
 
-#include "OvCore/ECS/Actor.h"
-#include "OvCore/ECS/Components/Behaviour.h"
-#include "OvCore/Scripting/LuaBinder.h"
-
-OvTools::Eventing::Event<OvCore::ECS::Components::Behaviour*> OvCore::ECS::Components::Behaviour::CreatedEvent;
-OvTools::Eventing::Event<OvCore::ECS::Components::Behaviour*> OvCore::ECS::Components::Behaviour::DestroyedEvent;
+#include <OvCore/ECS/Actor.h>
+#include <OvCore/ECS/Components/Behaviour.h>
+#include <OvCore/Global/ServiceLocator.h>
+#include <OvCore/Scripting/ScriptEngine.h>
 
 OvCore::ECS::Components::Behaviour::Behaviour(ECS::Actor& p_owner, const std::string& p_name) :
 	name(p_name), AComponent(p_owner)
 {
-	CreatedEvent.Invoke(this);
+	OVSERVICE(Scripting::ScriptEngine).AddBehaviour(*this);
 }
 
 OvCore::ECS::Components::Behaviour::~Behaviour()
 {
-	DestroyedEvent.Invoke(this);
+	OVSERVICE(Scripting::ScriptEngine).RemoveBehaviour(*this);
 }
 
 std::string OvCore::ECS::Components::Behaviour::GetName()
@@ -30,117 +28,94 @@ std::string OvCore::ECS::Components::Behaviour::GetName()
 	return "Behaviour";
 }
 
-bool OvCore::ECS::Components::Behaviour::RegisterToLuaContext(sol::state& p_luaState, const std::string& p_scriptFolder)
+void OvCore::ECS::Components::Behaviour::SetScript(std::unique_ptr<Scripting::Script>&& p_scriptContext)
 {
-	using namespace OvCore::Scripting;
-
-	auto result = p_luaState.safe_script_file(p_scriptFolder + name + ".lua", &sol::script_pass_on_error);
-
-	if (!result.valid())
-	{
-		sol::error err = result;
-		OVLOG_ERROR(err.what());
-		return false;
-	}
-	else
-	{
-		if (result.return_count() == 1 && result[0].is<sol::table>())
-		{
-			m_object = result[0];
-			m_object["owner"] = &owner;
-			return true;
-		}
-		else
-		{
-			OVLOG_ERROR("'" + name + ".lua' missing return expression");
-			return false;
-		}
-	}
+	m_script = std::move(p_scriptContext);
 }
 
-void OvCore::ECS::Components::Behaviour::UnregisterFromLuaContext()
+OvTools::Utils::OptRef<OvCore::Scripting::Script> OvCore::ECS::Components::Behaviour::GetScript()
 {
-	m_object = sol::nil;
+	if (m_script)
+	{
+		return { *m_script };
+	}
+
+	return std::nullopt;
 }
 
-sol::table& OvCore::ECS::Components::Behaviour::GetTable()
+void OvCore::ECS::Components::Behaviour::RemoveScript()
 {
-	return m_object;
+	m_script.reset();
 }
 
 void OvCore::ECS::Components::Behaviour::OnAwake()
 {
-	LuaCall("OnAwake");
+	OVSERVICE(Scripting::ScriptEngine).OnAwake(*this);
 }
 
 void OvCore::ECS::Components::Behaviour::OnStart()
 {
-	LuaCall("OnStart");
+	OVSERVICE(Scripting::ScriptEngine).OnStart(*this);
 }
 
 void OvCore::ECS::Components::Behaviour::OnEnable()
 {
-	LuaCall("OnEnable");
+	OVSERVICE(Scripting::ScriptEngine).OnEnable(*this);
 }
 
 void OvCore::ECS::Components::Behaviour::OnDisable()
 {
-	LuaCall("OnDisable");
+	OVSERVICE(Scripting::ScriptEngine).OnDisable(*this);
 }
 
 void OvCore::ECS::Components::Behaviour::OnDestroy()
 {
-	LuaCall("OnEnd"); // Retro-compatibility
-	LuaCall("OnDestroy");
+	OVSERVICE(Scripting::ScriptEngine).OnDestroy(*this);
 }
 
 void OvCore::ECS::Components::Behaviour::OnUpdate(float p_deltaTime)
 {
-	LuaCall("OnUpdate", p_deltaTime);
+	OVSERVICE(Scripting::ScriptEngine).OnUpdate(*this, p_deltaTime);
 }
 
 void OvCore::ECS::Components::Behaviour::OnFixedUpdate(float p_deltaTime)
 {
-	LuaCall("OnFixedUpdate", p_deltaTime);
+	OVSERVICE(Scripting::ScriptEngine).OnFixedUpdate(*this, p_deltaTime);
 }
 
 void OvCore::ECS::Components::Behaviour::OnLateUpdate(float p_deltaTime)
 {
-	LuaCall("OnLateUpdate", p_deltaTime);
+	OVSERVICE(Scripting::ScriptEngine).OnLateUpdate(*this, p_deltaTime);
 }
 
 void OvCore::ECS::Components::Behaviour::OnCollisionEnter(Components::CPhysicalObject& p_otherObject)
 {
-	LuaCall("OnCollisionStart", p_otherObject); // Retro-compatibility
-	LuaCall("OnCollisionEnter", p_otherObject);
+	OVSERVICE(Scripting::ScriptEngine).OnCollisionEnter(*this, p_otherObject);
 }
 
 void OvCore::ECS::Components::Behaviour::OnCollisionStay(Components::CPhysicalObject& p_otherObject)
 {
-	LuaCall("OnCollisionStay", p_otherObject);
+	OVSERVICE(Scripting::ScriptEngine).OnCollisionStay(*this, p_otherObject);
 }
 
 void OvCore::ECS::Components::Behaviour::OnCollisionExit(Components::CPhysicalObject& p_otherObject)
 {
-	LuaCall("OnCollisionStop", p_otherObject); // Retro-compatibility
-	LuaCall("OnCollisionExit", p_otherObject);
+	OVSERVICE(Scripting::ScriptEngine).OnCollisionExit(*this, p_otherObject);
 }
 
 void OvCore::ECS::Components::Behaviour::OnTriggerEnter(Components::CPhysicalObject& p_otherObject)
 {
-	LuaCall("OnTriggerStart", p_otherObject); // Retro-compatibility
-	LuaCall("OnTriggerEnter", p_otherObject);
+	OVSERVICE(Scripting::ScriptEngine).OnTriggerEnter(*this, p_otherObject);
 }
 
 void OvCore::ECS::Components::Behaviour::OnTriggerStay(Components::CPhysicalObject& p_otherObject)
 {
-	LuaCall("OnTriggerStay", p_otherObject);
+	OVSERVICE(Scripting::ScriptEngine).OnTriggerStay(*this, p_otherObject);
 }
 
 void OvCore::ECS::Components::Behaviour::OnTriggerExit(Components::CPhysicalObject& p_otherObject)
 {
-	LuaCall("OnTriggerStop", p_otherObject); // Retro-compatibility
-	LuaCall("OnTriggerExit", p_otherObject);
+	OVSERVICE(Scripting::ScriptEngine).OnTriggerExit(*this, p_otherObject);
 }
 
 void OvCore::ECS::Components::Behaviour::OnSerialize(tinyxml2::XMLDocument & p_doc, tinyxml2::XMLNode * p_node)
@@ -156,14 +131,18 @@ void OvCore::ECS::Components::Behaviour::OnInspector(OvUI::Internal::WidgetConta
 	using namespace OvMaths;
 	using namespace OvCore::Helpers;
 
-	if (m_object.valid())
+	if (!m_script)
+	{
+		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("No scripting context", OvUI::Types::Color::White);
+	}
+	else if (m_script && m_script->IsValid())
 	{
 		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Ready", OvUI::Types::Color::Green);
-		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Your script gets interpreted by the engine with success", OvUI::Types::Color::White);
+		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Your script will execute in play mode.", OvUI::Types::Color::White);
 	}
 	else
 	{
-		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Compilation failed!", OvUI::Types::Color::Red);
-		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Check the console for more information", OvUI::Types::Color::White);
+		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Invalid Script", OvUI::Types::Color::Red);
+		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Check the console for more information.", OvUI::Types::Color::White);
 	}
 }

@@ -25,7 +25,7 @@
 #include <OvCore/ResourceManagement/MaterialManager.h>
 #include <OvCore/ResourceManagement/SoundManager.h>
 #include <OvCore/SceneSystem/SceneManager.h>
-#include <OvCore/Scripting/ScriptInterpreter.h>
+#include <OvCore/Scripting/ScriptEngine.h>
 
 #include <OvUI/Core/UIManager.h>
 #include <OvAudio/Core/AudioEngine.h>
@@ -88,7 +88,7 @@ namespace OvEditor::Core
 		std::unique_ptr<OvAudio::Core::AudioPlayer> audioPlayer;
 		std::unique_ptr<OvEditor::Core::EditorResources> editorResources;
 
-		std::unique_ptr<OvCore::Scripting::ScriptInterpreter> scriptInterpreter;
+		std::unique_ptr<OvCore::Scripting::ScriptEngine> scriptEngine;
 
 		OvCore::SceneSystem::SceneManager sceneManager;
 
