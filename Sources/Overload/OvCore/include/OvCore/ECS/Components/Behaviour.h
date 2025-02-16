@@ -38,20 +38,20 @@ namespace OvCore::ECS::Components
 		virtual std::string GetName() override;
 
 		/**
-		* Sets the script context of this behaviour
-		* @param p_scriptContext
+		* Sets the script associated with this behaviour
+		* @param p_script
 		*/
-		void SetScriptContext(std::unique_ptr<Scripting::Script>&& p_scriptContext);
+		void SetScript(std::unique_ptr<Scripting::Script>&& p_script);
 
 		/**
 		* Returns the script context of this behaviour
 		*/
-		OvTools::Utils::OptRef<Scripting::Script> GetScriptContext();
+		OvTools::Utils::OptRef<Scripting::Script> GetScript();
 
 		/**
-		* Removes the script context of this behaviour
+		* Removes the script associated with this behaviour
 		*/
-		void ResetScriptContext();
+		void RemoveScript();
 
 		/**
 		* Called when the scene start right before OnStart
@@ -158,6 +158,6 @@ namespace OvCore::ECS::Components
 		const std::string name;
 
 	private:
-		std::unique_ptr<Scripting::Script> m_scriptContext;
+		std::unique_ptr<Scripting::Script> m_script;
 	};
 }

@@ -26,7 +26,7 @@ constexpr auto luaBindings = std::array{
 template<typename... Args>
 void ExecuteLuaFunction(OvCore::ECS::Components::Behaviour& p_behaviour, const std::string& p_functionName, Args&& ...p_args)
 {
-	auto context = p_behaviour.GetScriptContext();
+	auto context = p_behaviour.GetScript();
 
 	OVASSERT(context.has_value(), "The given context is null");
 	OVASSERT(context->IsValid(), "The given context is invalid");
@@ -45,7 +45,7 @@ void ExecuteLuaFunction(OvCore::ECS::Components::Behaviour& p_behaviour, const s
 	}
 }
 
-sol::table RegisterScript(sol::state& p_luaState, const std::string& p_scriptName)
+sol::table LoadScript(sol::state& p_luaState, const std::string& p_scriptName)
 {
 	using namespace OvCore::Scripting;
 
@@ -73,12 +73,12 @@ sol::table RegisterScript(sol::state& p_luaState, const std::string& p_scriptNam
 
 bool RegisterBehaviour(sol::state& p_luaState, OvCore::ECS::Components::Behaviour& p_behaviour, const std::string& p_scriptName)
 {
-	auto table = RegisterScript(p_luaState, p_scriptName);
+	auto table = LoadScript(p_luaState, p_scriptName);
 
-	p_behaviour.SetScriptContext(std::make_unique<OvCore::Scripting::LuaScript>(table));
+	p_behaviour.SetScript(std::make_unique<OvCore::Scripting::LuaScript>(table));
 
 	// Update the script context to add the owner reference
-	if (auto context = p_behaviour.GetScriptContext(); context.has_value() && context->IsValid())
+	if (auto context = p_behaviour.GetScript(); context.has_value() && context->IsValid())
 	{
 		auto& luaScript = static_cast<OvCore::Scripting::LuaScript&>(context.value());
 		luaScript.SetOwner(p_behaviour.owner);
@@ -136,7 +136,7 @@ void OvCore::Scripting::LuaScriptEngine::DestroyContext()
 	std::for_each(m_context.behaviours.begin(), m_context.behaviours.end(),
 		[this](std::reference_wrapper<OvCore::ECS::Components::Behaviour> behaviour)
 		{
-			behaviour.get().ResetScriptContext();
+			behaviour.get().RemoveScript();
 		}
 	);
 
@@ -191,7 +191,7 @@ void OvCore::Scripting::LuaScriptEngineBase::RemoveBehaviour(OvCore::ECS::Compon
 {
 	if (m_context.luaState)
 	{
-		p_toRemove.ResetScriptContext();
+		p_toRemove.RemoveScript();
 	}
 
 	m_context.behaviours.erase(

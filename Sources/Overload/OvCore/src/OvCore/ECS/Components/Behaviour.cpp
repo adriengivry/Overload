@@ -28,24 +28,24 @@ std::string OvCore::ECS::Components::Behaviour::GetName()
 	return "Behaviour";
 }
 
-void OvCore::ECS::Components::Behaviour::SetScriptContext(std::unique_ptr<Scripting::Script>&& p_scriptContext)
+void OvCore::ECS::Components::Behaviour::SetScript(std::unique_ptr<Scripting::Script>&& p_scriptContext)
 {
-	m_scriptContext = std::move(p_scriptContext);
+	m_script = std::move(p_scriptContext);
 }
 
-OvTools::Utils::OptRef<OvCore::Scripting::Script> OvCore::ECS::Components::Behaviour::GetScriptContext()
+OvTools::Utils::OptRef<OvCore::Scripting::Script> OvCore::ECS::Components::Behaviour::GetScript()
 {
-	if (m_scriptContext)
+	if (m_script)
 	{
-		return { *m_scriptContext };
+		return { *m_script };
 	}
 
 	return std::nullopt;
 }
 
-void OvCore::ECS::Components::Behaviour::ResetScriptContext()
+void OvCore::ECS::Components::Behaviour::RemoveScript()
 {
-	m_scriptContext.reset();
+	m_script.reset();
 }
 
 void OvCore::ECS::Components::Behaviour::OnAwake()
@@ -131,11 +131,11 @@ void OvCore::ECS::Components::Behaviour::OnInspector(OvUI::Internal::WidgetConta
 	using namespace OvMaths;
 	using namespace OvCore::Helpers;
 
-	if (!m_scriptContext)
+	if (!m_script)
 	{
 		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("No scripting context", OvUI::Types::Color::White);
 	}
-	else if (m_scriptContext && m_scriptContext->IsValid())
+	else if (m_script && m_script->IsValid())
 	{
 		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Ready", OvUI::Types::Color::Green);
 		p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>("Your script will execute in play mode.", OvUI::Types::Color::White);
