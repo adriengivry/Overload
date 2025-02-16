@@ -15,11 +15,18 @@ namespace OvCore::Scripting
 	* This class defines the necessary methods that a scripting engine should provide
 	* to interact with the engine's components and handle various lifecycle events.
 	*/
-	template<EScriptingLanguage Language, class ScriptContext>
+	template<EScriptingLanguage Language, class Context>
 	class TScript
 	{
 	public:
+		/**
+		* Constructor of the generic script
+		*/
 		TScript();
+
+		/**
+		* Destructor of the generic script (virtual to allow polymorphism)
+		*/
 		virtual ~TScript();
 
 		/**
@@ -28,7 +35,12 @@ namespace OvCore::Scripting
 		*/
 		bool IsValid() const;
 
-	public:
-		ScriptContext m_context;
+		/**
+		* Return the context of the script
+		*/
+		inline const Context& GetContext() const { return m_context; }
+
+	protected:
+		Context m_context;
 	};
 }

@@ -12,6 +12,11 @@
 
 #include <sol.hpp>
 
+namespace OvCore::ECS
+{
+	class Actor;
+}
+
 namespace OvCore::Scripting
 {
 	/**
@@ -30,6 +35,16 @@ namespace OvCore::Scripting
 	class LuaScript : public LuaScriptBase
 	{
 	public:
+		/**
+		* Constructor of the Lua script
+		* @param p_table
+		*/
 		LuaScript(sol::table p_table);
+
+		/**
+		* Sets the owner of the script
+		* @param p_owner
+		*/
+		void SetOwner(OvCore::ECS::Actor& p_owner);
 	};
 }

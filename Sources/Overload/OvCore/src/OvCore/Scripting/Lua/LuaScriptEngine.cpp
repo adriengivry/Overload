@@ -31,7 +31,7 @@ void ExecuteLuaFunction(OvCore::ECS::Components::Behaviour& p_behaviour, const s
 	OVASSERT(context.has_value(), "The given context is null");
 	OVASSERT(context->IsValid(), "The given context is invalid");
 
-	const sol::table& table = static_cast<OvCore::Scripting::LuaScript&>(context.value()).m_context.table;
+	const sol::table& table = static_cast<OvCore::Scripting::LuaScript&>(context.value()).GetContext().table;
 
 	if (table[p_functionName].valid())
 	{
@@ -80,8 +80,8 @@ bool RegisterBehaviour(sol::state& p_luaState, OvCore::ECS::Components::Behaviou
 	// Update the script context to add the owner reference
 	if (auto context = p_behaviour.GetScriptContext(); context.has_value() && context->IsValid())
 	{
-		auto& luaScriptContext = static_cast<OvCore::Scripting::LuaScript&>(context.value());
-		luaScriptContext.m_context.table["owner"] = &p_behaviour.owner;
+		auto& luaScript = static_cast<OvCore::Scripting::LuaScript&>(context.value());
+		luaScript.SetOwner(p_behaviour.owner);
 		return true;
 	}
 

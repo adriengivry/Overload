@@ -28,7 +28,14 @@ namespace OvCore::Scripting
 	class TScriptEngine
 	{
 	public:
+		/**
+		* Constructor of the generic script engine
+		*/
 		TScriptEngine();
+
+		/**
+		* Destructor of the generic script engine (virtual to allow polymorphism)
+		*/
 		virtual ~TScriptEngine();
 
 		/**
@@ -169,7 +176,7 @@ namespace OvCore::Scripting
 		*/
 		void OnTriggerExit(OvCore::ECS::Components::Behaviour& p_target, OvCore::ECS::Components::CPhysicalObject& p_otherObject);
 
-	public:
+	protected:
 		Context m_context;
 	};
 }

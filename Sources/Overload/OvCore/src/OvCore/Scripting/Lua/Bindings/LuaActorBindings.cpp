@@ -71,7 +71,7 @@ void BindLuaActor(sol::state& p_luaState)
 			{
 				if (auto scriptContext = behaviour->GetScriptContext())
 				{
-					return static_cast<OvCore::Scripting::LuaScript&>(scriptContext.value()).m_context.table;
+					return static_cast<OvCore::Scripting::LuaScript&>(scriptContext.value()).GetContext().table;
 				}
 			}
 			return sol::nil;
