@@ -9,7 +9,6 @@
 #include <OvCore/ECS/Components/CPhysicalObject.h>
 #include <OvTools/Utils/OptRef.h>
 #include <OvCore/Scripting/ScriptEngine.h>
-// namespace OvCore::Scripting { class Script; }
 
 namespace OvCore::ECS { class Actor; }
 
