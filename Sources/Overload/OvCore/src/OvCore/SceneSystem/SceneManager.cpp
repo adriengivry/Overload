@@ -99,7 +99,7 @@ void OvCore::SceneSystem::SceneManager::UnloadCurrentScene()
 {
 	if (m_currentScene)
 	{
-		m_currentScene.release();
+		m_currentScene.reset();
 		SceneUnloadEvent.Invoke();
 	}
 
