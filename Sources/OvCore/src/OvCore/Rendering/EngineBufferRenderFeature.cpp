@@ -119,7 +119,7 @@ void OvCore::Rendering::EngineBufferRenderFeature::OnBeforeDraw(OvRendering::Dat
 				.cameraPosition = OvMaths::FVector3::Zero
 			};
 
-			m_engineBuffer->Upload(&uboDataPage, OvRendering::HAL::BufferMemoryRange{
+			m_engineBuffer->Upload(&uboDataPage, baregl::data::BufferMemoryRange{
 				.offset = sizeof(OvMaths::FMatrix4),
 				.size = sizeof(uboDataPage)
 			});
