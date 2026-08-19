@@ -141,8 +141,7 @@ namespace
 			.controlChildrenHeight = p_layout.GetControlChildrenHeight(),
 			.forceExpandWidth = p_layout.GetForceExpandWidth(),
 			.forceExpandHeight = p_layout.GetForceExpandHeight(),
-			.containerSize = p_owner.transform.GetUISize(),
-			.pivot = p_owner.transform.GetUIPivot()
+			.containerSize = p_owner.transform.GetUISize()
 		};
 	}
 }
@@ -346,8 +345,7 @@ OvCore::ECS::Components::UI::CLayoutGroup::LayoutCacheInput OvCore::ECS::Compone
 		.controlChildrenHeight = settings.controlChildrenHeight,
 		.forceExpandWidth = settings.forceExpandWidth,
 		.forceExpandHeight = settings.forceExpandHeight,
-		.containerSize = settings.containerSize,
-		.pivot = settings.pivot
+		.containerSize = settings.containerSize
 	};
 
 	const auto& children = owner.GetChildren();
@@ -414,8 +412,8 @@ const OvCore::ECS::Components::UI::CLayoutGroup::LayoutCache& OvCore::ECS::Compo
 			.actor = child.actor,
 			.offset = child.offset,
 			.size = child.size,
-			.hasDirectWidth = GetControlChildrenWidth() || GetForceExpandWidth(),
-			.hasDirectHeight = GetControlChildrenHeight() || GetForceExpandHeight(),
+			.hasDirectWidth = GetControlChildrenWidth(),
+			.hasDirectHeight = GetControlChildrenHeight(),
 			.valid = child.valid
 		});
 	}
@@ -449,8 +447,6 @@ bool OvCore::ECS::Components::UI::CLayoutGroup::HasSameLayoutSignature(
 		p_lhs.forceExpandHeight != p_rhs.forceExpandHeight ||
 		p_lhs.containerSize.x != p_rhs.containerSize.x ||
 		p_lhs.containerSize.y != p_rhs.containerSize.y ||
-		p_lhs.pivot.x != p_rhs.pivot.x ||
-		p_lhs.pivot.y != p_rhs.pivot.y ||
 		p_lhs.children.size() != p_rhs.children.size()
 	)
 	{

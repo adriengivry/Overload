@@ -47,7 +47,6 @@ namespace OvCore::ECS::Components::UI
 		bool forceExpandWidth = false;
 		bool forceExpandHeight = false;
 		OvMaths::FVector2 containerSize = OvMaths::FVector2::Zero;
-		OvMaths::FVector2 pivot = OvMaths::FVector2::Zero;
 	};
 
 	struct ClayLayoutChildInput

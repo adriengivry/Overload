@@ -163,24 +163,24 @@ namespace OvCore::ECS::Components::UI
 		bool GetControlChildrenHeight() const;
 
 		/**
-		* Sets whether the layout should expand children width to fill available space
+		* Sets whether child layout slots expand to use all available width
 		* @param p_forceExpandWidth
 		*/
 		void SetForceExpandWidth(bool p_forceExpandWidth);
 
 		/**
-		* Returns whether the layout expands children width
+		* Returns whether child layout slots expand to use all available width
 		*/
 		bool GetForceExpandWidth() const;
 
 		/**
-		* Sets whether the layout should expand children height to fill available space
+		* Sets whether child layout slots expand to use all available height
 		* @param p_forceExpandHeight
 		*/
 		void SetForceExpandHeight(bool p_forceExpandHeight);
 
 		/**
-		* Returns whether the layout expands children height
+		* Returns whether child layout slots expand to use all available height
 		*/
 		bool GetForceExpandHeight() const;
 
@@ -254,7 +254,6 @@ namespace OvCore::ECS::Components::UI
 			bool forceExpandWidth = false;
 			bool forceExpandHeight = false;
 			OvMaths::FVector2 containerSize = OvMaths::FVector2::Zero;
-			OvMaths::FVector2 pivot = OvMaths::FVector2::Zero;
 			std::vector<LayoutCacheChildSignature> children;
 		};
 

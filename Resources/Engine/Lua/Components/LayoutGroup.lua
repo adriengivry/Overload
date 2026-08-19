@@ -85,18 +85,18 @@ function LayoutGroup:GetControlChildrenHeight() end
 ---@param value boolean
 function LayoutGroup:SetControlChildrenHeight(value) end
 
---- Returns whether the layout expands children width
+--- Returns whether child layout slots expand to use all available width
 ---@return boolean
 function LayoutGroup:GetForceExpandWidth() end
 
---- Defines whether the layout expands children width
+--- Defines whether child layout slots expand to use all available width
 ---@param value boolean
 function LayoutGroup:SetForceExpandWidth(value) end
 
---- Returns whether the layout expands children height
+--- Returns whether child layout slots expand to use all available height
 ---@return boolean
 function LayoutGroup:GetForceExpandHeight() end
 
---- Defines whether the layout expands children height
+--- Defines whether child layout slots expand to use all available height
 ---@param value boolean
 function LayoutGroup:SetForceExpandHeight(value) end
