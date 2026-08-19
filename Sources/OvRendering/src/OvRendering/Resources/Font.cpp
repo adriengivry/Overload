@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -31,6 +32,32 @@ namespace
 	constexpr float kMaximumPixelSize = 256.0f;
 	constexpr uint32_t kGlyphPadding = 1;
 	constexpr const char* kFontAtlasUniform = "u_FontAtlas";
+	constexpr size_t kInvalidGlyphIndex = OvRendering::Resources::Font::kGlyphCount;
+
+	size_t ToGlyphIndex(uint32_t p_codePoint)
+	{
+		using Font = OvRendering::Resources::Font;
+
+		if (p_codePoint >= Font::kFirstGlyph && p_codePoint < Font::kFirstGlyph + Font::kBasicLatinGlyphCount)
+		{
+			return p_codePoint - Font::kFirstGlyph;
+		}
+
+		if (p_codePoint >= Font::kFirstLatin1Glyph && p_codePoint < Font::kFirstLatin1Glyph + Font::kLatin1GlyphCount)
+		{
+			return Font::kBasicLatinGlyphCount + p_codePoint - Font::kFirstLatin1Glyph;
+		}
+
+		return kInvalidGlyphIndex;
+	}
+
+	uint32_t ToGlyphCodePoint(size_t p_index)
+	{
+		using Font = OvRendering::Resources::Font;
+		return p_index < Font::kBasicLatinGlyphCount ?
+			Font::kFirstGlyph + static_cast<uint32_t>(p_index) :
+			Font::kFirstLatin1Glyph + static_cast<uint32_t>(p_index - Font::kBasicLatinGlyphCount);
+	}
 
 	uint32_t ToPixelSizeKey(float p_pixelSize)
 	{
@@ -66,6 +93,8 @@ namespace
 		bool valid = false;
 		float pixelSize = kDefaultPixelSize;
 		float lineHeight = kDefaultPixelSize;
+		float ascender = kDefaultPixelSize * 0.8f;
+		float descender = -kDefaultPixelSize * 0.2f;
 		uint32_t atlasWidth = 0;
 		uint32_t atlasHeight = 0;
 		std::array<OvRendering::Resources::Font::Glyph, OvRendering::Resources::Font::kGlyphCount> glyphs = {};
@@ -200,23 +229,30 @@ namespace
 		if (face.handle->size)
 		{
 			result.lineHeight = static_cast<float>(face.handle->size->metrics.height) / 64.0f;
+			result.ascender = static_cast<float>(face.handle->size->metrics.ascender) / 64.0f;
+			result.descender = static_cast<float>(face.handle->size->metrics.descender) / 64.0f;
 		}
 
 		for (uint32_t atlasSize = kMinimumAtlasSize; atlasSize <= kMaximumAtlasSize; atlasSize *= 2)
 		{
+			result.glyphs = {};
 			std::vector<uint8_t> alphaAtlas(static_cast<size_t>(atlasSize) * atlasSize);
 			uint32_t cursorX = 0;
 			uint32_t cursorY = 0;
 			uint32_t rowHeight = 0;
 			bool fits = true;
 
-			for (uint32_t i = 0; i < Font::kGlyphCount; ++i)
+			for (size_t i = 0; i < Font::kGlyphCount; ++i)
 			{
-				const uint32_t character = Font::kFirstGlyph + i;
-				if (FT_Load_Char(face.handle, character, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL) != 0)
+				const uint32_t codePoint = ToGlyphCodePoint(i);
+				if (FT_Get_Char_Index(face.handle, codePoint) == 0)
 				{
-					OVLOG_WARNING("Unable to load glyph from font atlas: " + p_realPath.string());
-					return result;
+					continue;
+				}
+
+				if (FT_Load_Char(face.handle, codePoint, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL) != 0)
+				{
+					continue;
 				}
 
 				const FT_GlyphSlot glyphSlot = face.handle->glyph;
@@ -225,6 +261,7 @@ namespace
 				const uint32_t glyphHeight = static_cast<uint32_t>(bitmap.rows);
 				auto& glyph = result.glyphs[i];
 
+				glyph.valid = true;
 				glyph.xOffset = static_cast<float>(glyphSlot->bitmap_left);
 				glyph.yOffset = -static_cast<float>(glyphSlot->bitmap_top);
 				glyph.xAdvance = static_cast<float>(glyphSlot->advance.x) / 64.0f;
@@ -385,32 +422,64 @@ float OvRendering::Resources::Font::GetLineHeight(float p_pixelSize) const
 	return static_cast<float>(ToPixelSizeKey(p_pixelSize));
 }
 
-const OvRendering::Resources::Font::Glyph* OvRendering::Resources::Font::GetGlyph(char p_character) const
+float OvRendering::Resources::Font::GetAscender() const
 {
-	const auto character = static_cast<uint8_t>(p_character);
-	if (character < kFirstGlyph || character >= kFirstGlyph + kGlyphCount)
-	{
-		return nullptr;
-	}
-
 	if (const auto* variant = GetActiveVariant(); variant)
 	{
-		return &variant->glyphs[character - kFirstGlyph];
+		return variant->ascender;
 	}
 
-	return nullptr;
+	return static_cast<float>(m_activePixelSize) * 0.8f;
 }
 
-const OvRendering::Resources::Font::Glyph* OvRendering::Resources::Font::GetGlyph(char p_character, float p_pixelSize) const
+float OvRendering::Resources::Font::GetAscender(float p_pixelSize) const
 {
-	const auto character = static_cast<uint8_t>(p_character);
-	if (character < kFirstGlyph || character >= kFirstGlyph + kGlyphCount)
+	if (const auto* variant = GetVariant(ToPixelSizeKey(p_pixelSize)); variant)
+	{
+		return variant->ascender;
+	}
+
+	return static_cast<float>(ToPixelSizeKey(p_pixelSize)) * 0.8f;
+}
+
+float OvRendering::Resources::Font::GetDescender() const
+{
+	if (const auto* variant = GetActiveVariant(); variant)
+	{
+		return variant->descender;
+	}
+
+	return -static_cast<float>(m_activePixelSize) * 0.2f;
+}
+
+float OvRendering::Resources::Font::GetDescender(float p_pixelSize) const
+{
+	const auto* variant = GetVariant(ToPixelSizeKey(p_pixelSize));
+	return variant ? variant->descender : -static_cast<float>(ToPixelSizeKey(p_pixelSize)) * 0.2f;
+}
+
+const OvRendering::Resources::Font::Glyph* OvRendering::Resources::Font::GetGlyph(uint32_t p_codePoint) const
+{
+	const auto glyphIndex = ToGlyphIndex(p_codePoint);
+	const auto* variant = GetActiveVariant();
+	if (glyphIndex == kInvalidGlyphIndex || !variant || !variant->glyphs[glyphIndex].valid)
 	{
 		return nullptr;
 	}
 
+	return &variant->glyphs[glyphIndex];
+}
+
+const OvRendering::Resources::Font::Glyph* OvRendering::Resources::Font::GetGlyph(uint32_t p_codePoint, float p_pixelSize) const
+{
+	const auto glyphIndex = ToGlyphIndex(p_codePoint);
 	const auto* variant = GetVariant(ToPixelSizeKey(p_pixelSize));
-	return variant ? &variant->glyphs[character - kFirstGlyph] : nullptr;
+	if (glyphIndex == kInvalidGlyphIndex || !variant || !variant->glyphs[glyphIndex].valid)
+	{
+		return nullptr;
+	}
+
+	return &variant->glyphs[glyphIndex];
 }
 
 OvRendering::Resources::Texture* OvRendering::Resources::Font::GetAtlasTexture() const
@@ -619,6 +688,8 @@ bool OvRendering::Resources::Font::CreateAtlasVariant(uint32_t p_pixelSize)
 	variant.valid = true;
 	variant.pixelSize = bakedFont.pixelSize;
 	variant.lineHeight = bakedFont.lineHeight;
+	variant.ascender = bakedFont.ascender;
+	variant.descender = bakedFont.descender;
 	variant.atlasWidth = bakedFont.atlasWidth;
 	variant.atlasHeight = bakedFont.atlasHeight;
 	variant.glyphs = bakedFont.glyphs;

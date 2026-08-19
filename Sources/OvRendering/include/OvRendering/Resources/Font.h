@@ -27,6 +27,7 @@ namespace OvRendering::Resources
 	public:
 		struct Glyph
 		{
+			bool valid = false;
 			float xOffset = 0.0f;
 			float yOffset = 0.0f;
 			float xAdvance = 0.0f;
@@ -38,8 +39,11 @@ namespace OvRendering::Resources
 			float vMax = 0.0f;
 		};
 
-		static constexpr uint32_t kFirstGlyph = 32;
-		static constexpr uint32_t kGlyphCount = 95;
+		static constexpr uint32_t kFirstGlyph = 0x20;
+		static constexpr uint32_t kBasicLatinGlyphCount = 0x7F - kFirstGlyph;
+		static constexpr uint32_t kFirstLatin1Glyph = 0xA0;
+		static constexpr uint32_t kLatin1GlyphCount = 0x100 - kFirstLatin1Glyph;
+		static constexpr uint32_t kGlyphCount = kBasicLatinGlyphCount + kLatin1GlyphCount;
 
 		/**
 		* Constructor
@@ -105,17 +109,39 @@ namespace OvRendering::Resources
 		float GetLineHeight(float p_pixelSize) const;
 
 		/**
-		* Returns the glyph associated with the given ASCII character
-		* @param p_character
+		* Returns the ascender in atlas pixels
 		*/
-		const Glyph* GetGlyph(char p_character) const;
+		float GetAscender() const;
 
 		/**
-		* Returns the glyph associated with the given ASCII character and requested pixel size
-		* @param p_character
+		* Returns the ascender in atlas pixels for the given requested pixel size
 		* @param p_pixelSize
 		*/
-		const Glyph* GetGlyph(char p_character, float p_pixelSize) const;
+		float GetAscender(float p_pixelSize) const;
+
+		/**
+		* Returns the descender in atlas pixels
+		*/
+		float GetDescender() const;
+
+		/**
+		* Returns the descender in atlas pixels for the given requested pixel size
+		* @param p_pixelSize
+		*/
+		float GetDescender(float p_pixelSize) const;
+
+		/**
+		* Returns the glyph associated with the given Unicode code point
+		* @param p_codePoint
+		*/
+		const Glyph* GetGlyph(uint32_t p_codePoint) const;
+
+		/**
+		* Returns the glyph associated with the given Unicode code point and requested pixel size
+		* @param p_codePoint
+		* @param p_pixelSize
+		*/
+		const Glyph* GetGlyph(uint32_t p_codePoint, float p_pixelSize) const;
 
 		/**
 		* Returns the static glyph atlas texture
@@ -159,6 +185,8 @@ namespace OvRendering::Resources
 			bool valid = false;
 			float pixelSize = 32.0f;
 			float lineHeight = 32.0f;
+			float ascender = 25.6f;
+			float descender = -6.4f;
 			uint32_t atlasWidth = 0;
 			uint32_t atlasHeight = 0;
 			std::array<Glyph, kGlyphCount> glyphs = {};
