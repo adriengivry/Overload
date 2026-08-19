@@ -145,6 +145,16 @@ const OvMaths::FVector4& OvCore::ECS::Components::UI::CImage::GetTint() const
 	return m_tint;
 }
 
+void OvCore::ECS::Components::UI::CImage::SetPreserveAspect(bool p_preserveAspect)
+{
+	m_preserveAspect = p_preserveAspect;
+}
+
+bool OvCore::ECS::Components::UI::CImage::GetPreserveAspect() const
+{
+	return m_preserveAspect;
+}
+
 OvRendering::Resources::Mesh& OvCore::ECS::Components::UI::CImage::GetMesh() const
 {
 	return *m_mesh;
@@ -161,6 +171,7 @@ void OvCore::ECS::Components::UI::CImage::OnSerialize(tinyxml2::XMLDocument& p_d
 	ValidateTextureReference();
 	Helpers::Serializer::SerializeTexture(p_doc, p_node, "texture", m_texture);
 	Helpers::Serializer::SerializeVec4(p_doc, p_node, "tint", m_tint);
+	Helpers::Serializer::SerializeBoolean(p_doc, p_node, "preserve_aspect", m_preserveAspect);
 }
 
 void OvCore::ECS::Components::UI::CImage::OnDeserialize(tinyxml2::XMLDocument& p_doc, tinyxml2::XMLNode* p_node)
@@ -178,12 +189,25 @@ void OvCore::ECS::Components::UI::CImage::OnDeserialize(tinyxml2::XMLDocument& p
 		Helpers::Serializer::DeserializeVec4(p_doc, p_node, "tint", tint);
 		SetTint(tint);
 	}
+
+	if (p_node->FirstChildElement("preserve_aspect"))
+	{
+		auto preserveAspect = m_preserveAspect;
+		Helpers::Serializer::DeserializeBoolean(p_doc, p_node, "preserve_aspect", preserveAspect);
+		SetPreserveAspect(preserveAspect);
+	}
 }
 
 void OvCore::ECS::Components::UI::CImage::OnInspector(OvUI::Internal::WidgetContainer& p_root)
 {
 	ValidateTextureReference();
 	Helpers::GUIDrawer::DrawTexture(p_root, "Texture", m_texture, &m_textureChangedEvent);
+	Helpers::GUIDrawer::DrawBoolean(
+		p_root,
+		"Preserve Aspect",
+		[this]() { return GetPreserveAspect(); },
+		[this](bool p_value) { SetPreserveAspect(p_value); }
+	);
 
 	Helpers::GUIDrawer::DrawColor(
 		p_root,

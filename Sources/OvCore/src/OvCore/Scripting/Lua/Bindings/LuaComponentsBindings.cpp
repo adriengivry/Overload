@@ -307,7 +307,9 @@ void BindLuaComponents(sol::state& p_luaState)
 		"GetSize", [](UI::CImage& p_this) -> FVector2 { return p_this.GetSize(); },
 		"SetSize", &UI::CImage::SetSize,
 		"GetTint", [](UI::CImage& p_this) -> FVector4 { return p_this.GetTint(); },
-		"SetTint", &UI::CImage::SetTint
+		"SetTint", &UI::CImage::SetTint,
+		"GetPreserveAspect", &UI::CImage::GetPreserveAspect,
+		"SetPreserveAspect", &UI::CImage::SetPreserveAspect
 	);
 
 	p_luaState.new_usertype<UI::CLayoutGroup>("LayoutGroup",

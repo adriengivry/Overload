@@ -4,6 +4,7 @@
 * @licence: MIT
 */
 
+#include <algorithm>
 #include <functional>
 #include <ranges>
 #include <string>
@@ -174,7 +175,8 @@ namespace
 		OvCore::ECS::Actor& p_owner,
 		const OvCore::Rendering::UIRenderingUtils::UIFrameResolver& p_uiFrameResolver,
 		const OvMaths::FMatrix4& p_uiProjectionMatrix,
-		const OvMaths::FVector2& p_elementSize
+		const OvMaths::FVector2& p_elementSize,
+		bool p_preserveAspect = false
 	)
 	{
 		EngineDrawableDescriptor descriptor{
@@ -189,7 +191,28 @@ namespace
 			resolvedElement
 		))
 		{
-			descriptor.modelMatrix = resolvedElement.modelMatrix;
+			if (
+				p_preserveAspect &&
+				p_elementSize.x > 0.0f &&
+				p_elementSize.y > 0.0f &&
+				resolvedElement.effectiveSize.x > 0.0f &&
+				resolvedElement.effectiveSize.y > 0.0f
+			)
+			{
+				const float fitScale = std::min(
+					resolvedElement.effectiveSize.x / p_elementSize.x,
+					resolvedElement.effectiveSize.y / p_elementSize.y
+				);
+				descriptor.modelMatrix = resolvedElement.frameMatrix * OvMaths::FMatrix4::Scaling({
+					fitScale,
+					fitScale,
+					1.0f
+				});
+			}
+			else
+			{
+				descriptor.modelMatrix = resolvedElement.modelMatrix;
+			}
 
 			if (p_uiFrameResolver.IsScreenSpace())
 			{
@@ -232,7 +255,8 @@ namespace
 				owner,
 				p_uiFrameResolver,
 				p_uiProjectionMatrix,
-				p_image.GetIntrinsicSize()
+				p_image.GetIntrinsicSize(),
+				p_image.GetPreserveAspect()
 			)
 		);
 

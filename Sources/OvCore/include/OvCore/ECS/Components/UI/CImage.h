@@ -81,6 +81,17 @@ namespace OvCore::ECS::Components::UI
 		const OvMaths::FVector4& GetTint() const;
 
 		/**
+		* Defines whether the image keeps its intrinsic aspect ratio when resized
+		* @param p_preserveAspect
+		*/
+		void SetPreserveAspect(bool p_preserveAspect);
+
+		/**
+		* Returns whether the image keeps its intrinsic aspect ratio when resized
+		*/
+		bool GetPreserveAspect() const;
+
+		/**
 		* Returns the generated quad mesh
 		*/
 		OvRendering::Resources::Mesh& GetMesh() const;
@@ -120,6 +131,7 @@ namespace OvCore::ECS::Components::UI
 		OvRendering::Resources::Texture* m_texture = nullptr;
 		OvMaths::FVector4 m_tint = { 1.0f, 1.0f, 1.0f, 1.0f };
 		OvMaths::FVector2 m_intrinsicSize = { 100.0f, 100.0f };
+		bool m_preserveAspect = false;
 
 		std::unique_ptr<OvRendering::Resources::Mesh> m_mesh;
 		std::unique_ptr<OvCore::Resources::Material> m_material;

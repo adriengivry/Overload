@@ -31,3 +31,11 @@ function Image:GetTint() end
 --- Defines the image tint
 ---@param tint Vector4
 function Image:SetTint(tint) end
+
+--- Returns whether the image keeps its intrinsic aspect ratio when resized
+---@return boolean
+function Image:GetPreserveAspect() end
+
+--- Defines whether the image keeps its intrinsic aspect ratio when resized
+---@param preserveAspect boolean
+function Image:SetPreserveAspect(preserveAspect) end
