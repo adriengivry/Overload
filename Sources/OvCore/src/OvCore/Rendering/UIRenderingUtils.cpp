@@ -46,6 +46,7 @@ namespace
 		const OvCore::ECS::Components::CTransform& p_transform,
 		const OvMaths::FVector2& p_parentSize,
 		const OvMaths::FVector2& p_layoutOffset,
+		const OvMaths::FVector2& p_effectiveSize,
 		bool p_drivenByLayout
 	)
 	{
@@ -55,10 +56,15 @@ namespace
 		}
 
 		const auto anchorPreset = p_transform.GetUIAnchorPreset();
+		const auto& pivot = p_transform.GetUIPivot();
 		const auto anchorRatio = OvCore::ECS::Components::UI::UITransformResolver::GetAnchorRatio(anchorPreset);
 		const OvMaths::FVector2 anchorOffset = {
-			KeepFinite(p_parentSize.x, 0.0f) * anchorRatio.x,
-			KeepFinite(p_parentSize.y, 0.0f) * anchorRatio.y
+			OvCore::ECS::Components::UI::UITransformResolver::IsHorizontalStretch(anchorPreset) ?
+				pivot.x * p_effectiveSize.x * 0.5f :
+				KeepFinite(p_parentSize.x, 0.0f) * anchorRatio.x,
+			OvCore::ECS::Components::UI::UITransformResolver::IsVerticalStretch(anchorPreset) ?
+				-pivot.y * p_effectiveSize.y * 0.5f :
+				KeepFinite(p_parentSize.y, 0.0f) * anchorRatio.y
 		};
 		const float positionX = OvCore::ECS::Components::UI::UITransformResolver::IsHorizontalPositionEditable(anchorPreset) ?
 			p_transform.GetUIPosition().x :
@@ -85,6 +91,7 @@ namespace
 			p_transform,
 			p_parentSize,
 			p_layoutOffset,
+			p_effectiveSize,
 			p_drivenByLayout
 		);
 		const auto scale = p_transform.GetUIScale();
@@ -318,13 +325,32 @@ bool OvCore::Rendering::UIRenderingUtils::UIFrameResolver::ResolveElementUncache
 	p_outElement.layoutOffset = layoutData.offset;
 	p_outElement.elementSize = p_elementSize;
 	p_outElement.effectiveSize = OvCore::ECS::Components::UI::UITransformResolver::GetEffectiveSize(transform, p_elementSize);
+	p_outElement.widthDriven = transform.GetUISize().x > 0.0f;
+	p_outElement.heightDriven = transform.GetUISize().y > 0.0f;
 	if (layoutData.hasDirectWidth)
 	{
 		p_outElement.effectiveSize.x = layoutData.directSize.x;
+		p_outElement.widthDriven = true;
 	}
 	if (layoutData.hasDirectHeight)
 	{
 		p_outElement.effectiveSize.y = layoutData.directSize.y;
+		p_outElement.heightDriven = true;
+	}
+
+	if (!layoutData.drivenByLayout)
+	{
+		const auto anchorPreset = transform.GetUIAnchorPreset();
+		if (OvCore::ECS::Components::UI::UITransformResolver::IsHorizontalStretch(anchorPreset))
+		{
+			p_outElement.effectiveSize.x = std::max(parentSize.x, 0.0f);
+			p_outElement.widthDriven = true;
+		}
+		if (OvCore::ECS::Components::UI::UITransformResolver::IsVerticalStretch(anchorPreset))
+		{
+			p_outElement.effectiveSize.y = std::max(parentSize.y, 0.0f);
+			p_outElement.heightDriven = true;
+		}
 	}
 	p_outElement.canvasMatrix = resolvedCanvas.matrix;
 	const auto localFrameMatrix = CreateUIElementFrameMatrix(

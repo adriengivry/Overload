@@ -282,11 +282,16 @@ namespace
 			baseTextSize,
 			resolvedElement
 		);
-		const auto resolvedTextSize = hasResolvedElement ? resolvedElement.effectiveSize : baseTextSize;
+		const OvMaths::FVector2 textLayoutSize = hasResolvedElement ?
+			OvMaths::FVector2{
+				resolvedElement.widthDriven ? resolvedElement.effectiveSize.x : 0.0f,
+				resolvedElement.heightDriven ? resolvedElement.effectiveSize.y : 0.0f
+			} :
+			owner.transform.GetUISize();
 
-		auto* mesh = p_text.GetMesh(resolvedTextSize);
+		auto* mesh = p_text.GetMesh(textLayoutSize);
 		if (!mesh) return;
-		const auto renderedTextSize = p_text.GetSize(resolvedTextSize);
+		const auto renderedTextSize = p_text.GetSize(textLayoutSize);
 
 		OvRendering::Entities::Drawable drawable{
 			.mesh = *mesh,

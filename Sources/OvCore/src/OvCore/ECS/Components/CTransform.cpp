@@ -447,24 +447,61 @@ void OvCore::ECS::Components::CTransform::OnInspector(OvUI::Internal::WidgetCont
 			SetUIPosition(position);
 		});
 
-		const auto updateAnchoredPositionEditability = [this, anchoredPositionWidget = &anchoredPosition]()
+		OvCore::Helpers::GUIDrawer::CreateTitle(p_root, "Size");
+		auto& size = p_root.CreateWidget<OvUI::Widgets::Drags::DragMultipleScalars<float, 2>>(
+			OvCore::Helpers::GUIDrawer::GetDataType<float>(),
+			kMinimumSize,
+			OvCore::Helpers::GUIDrawer::_MAX_FLOAT,
+			0.0f,
+			1.0f,
+			"",
+			OvCore::Helpers::GUIDrawer::GetFormat<float>()
+		);
+		auto& sizeDispatcher = size.AddPlugin<OvUI::Plugins::DataDispatcher<std::array<float, 2>>>();
+		sizeDispatcher.RegisterGatherer([this]()
+		{
+			const auto value = GetUISize();
+			return std::array<float, 2>{ value.x, value.y };
+		});
+		sizeDispatcher.RegisterProvider([this](std::array<float, 2> p_value)
+		{
+			auto value = GetUISize();
+			const auto anchorPreset = GetUIAnchorPreset();
+			const bool drivenByLayout = OvCore::ECS::Components::UI::UITransformResolver::IsDrivenByLayout(owner);
+
+			if (drivenByLayout || !OvCore::ECS::Components::UI::UITransformResolver::IsHorizontalStretch(anchorPreset))
+			{
+				value.x = p_value[0];
+			}
+			if (drivenByLayout || !OvCore::ECS::Components::UI::UITransformResolver::IsVerticalStretch(anchorPreset))
+			{
+				value.y = p_value[1];
+			}
+
+			SetUISize(value);
+		});
+
+		const auto updateTransform2DEditability = [
+			this,
+			anchoredPositionWidget = &anchoredPosition,
+			sizeWidget = &size
+		]()
 		{
 			const auto anchorPreset = GetUIAnchorPreset();
+			const bool drivenByLayout = OvCore::ECS::Components::UI::UITransformResolver::IsDrivenByLayout(owner);
 			const bool isHorizontalEditable = IsHorizontalUIPositionEditable(anchorPreset);
 			const bool isVerticalEditable = IsVerticalUIPositionEditable(anchorPreset);
 
-			anchoredPositionWidget->disabled = OvCore::ECS::Components::UI::UITransformResolver::IsDrivenByLayout(owner) || (!isHorizontalEditable && !isVerticalEditable);
+			anchoredPositionWidget->disabledComponents = {
+				drivenByLayout || !isHorizontalEditable,
+				drivenByLayout || !isVerticalEditable
+			};
+			sizeWidget->disabledComponents = {
+				!drivenByLayout && OvCore::ECS::Components::UI::UITransformResolver::IsHorizontalStretch(anchorPreset),
+				!drivenByLayout && OvCore::ECS::Components::UI::UITransformResolver::IsVerticalStretch(anchorPreset)
+			};
 		};
-		updateAnchoredPositionEditability();
-
-		OvCore::Helpers::GUIDrawer::DrawVec2(
-			p_root,
-			"Size",
-			[this]() { return GetUISize(); },
-			[this](OvMaths::FVector2 p_value) { SetUISize(p_value); },
-			1.0f,
-			kMinimumSize
-		);
+		updateTransform2DEditability();
 
 		OvCore::Helpers::GUIDrawer::DrawVec2(
 			p_root,
@@ -515,10 +552,10 @@ void OvCore::ECS::Components::CTransform::OnInspector(OvUI::Internal::WidgetCont
 		anchorPreset.choices.emplace(static_cast<int>(EUIAnchorPreset::VERTICAL_STRETCH_RIGHT), "Vertical Stretch Right");
 		anchorPreset.choices.emplace(static_cast<int>(EUIAnchorPreset::STRETCH_BOTH), "Stretch Both");
 
-		anchorPreset.ValueChangedEvent += [this, updateAnchoredPositionEditability](int p_choice)
+		anchorPreset.ValueChangedEvent += [this, updateTransform2DEditability](int p_choice)
 		{
 			SetUIAnchorPreset(ToUIAnchorPreset(p_choice));
-			updateAnchoredPositionEditability();
+			updateTransform2DEditability();
 		};
 	}
 	else

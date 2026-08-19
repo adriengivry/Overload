@@ -11,6 +11,7 @@
 #include <unordered_map>
 
 #include <OvMaths/FMatrix4.h>
+#include <OvMaths/FQuaternion.h>
 #include <OvMaths/FVector2.h>
 #include <OvMaths/FVector3.h>
 
@@ -45,9 +46,26 @@ namespace OvCore::Rendering::UIRenderingUtils
 		OvMaths::FMatrix4 localMatrix = OvMaths::FMatrix4::Identity;
 		OvMaths::FMatrix4 frameMatrix = OvMaths::FMatrix4::Identity;
 		OvMaths::FMatrix4 modelMatrix = OvMaths::FMatrix4::Identity;
+		OvMaths::FVector2 xPositionDirection = { 1.0f, 0.0f };
+		OvMaths::FVector2 yPositionDirection = { 0.0f, 1.0f };
+		OvMaths::FVector3 xWorldAxis = OvMaths::FVector3::Right;
+		OvMaths::FVector3 yWorldAxis = OvMaths::FVector3::Up;
 		float canvasScale = 1.0f;
 		float worldScale = 1.0f;
 		float unitsScale = 1.0f;
+		bool widthDriven = false;
+		bool heightDriven = false;
+		bool screenSpace = false;
+	};
+
+	struct ResolvedUIGizmoTransform
+	{
+		OvMaths::FVector3 position = OvMaths::FVector3::Zero;
+		OvMaths::FQuaternion rotation = OvMaths::FQuaternion::Identity;
+		OvMaths::FVector2 xPositionDirection = { 1.0f, 0.0f };
+		OvMaths::FVector2 yPositionDirection = { 0.0f, 1.0f };
+		OvMaths::FVector3 xWorldAxis = OvMaths::FVector3::Right;
+		OvMaths::FVector3 yWorldAxis = OvMaths::FVector3::Up;
 		bool screenSpace = false;
 	};
 
