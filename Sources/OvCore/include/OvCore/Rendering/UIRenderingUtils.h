@@ -175,10 +175,7 @@ namespace OvCore::Rendering::UIRenderingUtils
 
 	OvMaths::FVector2 GetLayoutOffset(const OvCore::ECS::Actor& p_owner);
 
-	float GetUIWorldScale(
-		const OvCore::ECS::Components::UI::CCanvas& p_canvas,
-		bool p_screenSpace
-	);
+	float GetUIWorldScale(bool p_screenSpace);
 
 	OvMaths::FVector3 TransformUIPoint(
 		const OvMaths::FMatrix4& p_matrix,

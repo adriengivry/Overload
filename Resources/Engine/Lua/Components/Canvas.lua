@@ -38,14 +38,6 @@ function Canvas:GetScaleFactor() end
 ---@param scaleFactor number
 function Canvas:SetScaleFactor(scaleFactor) end
 
---- Returns the number of UI pixels represented by one world unit
----@return number
-function Canvas:GetPixelsPerUnit() end
-
---- Defines the number of UI pixels represented by one world unit
----@param pixelsPerUnit number
-function Canvas:SetPixelsPerUnit(pixelsPerUnit) end
-
 --- Returns the canvas scaler mode
 ---@return CanvasScalerMode
 function Canvas:GetScalerMode() end

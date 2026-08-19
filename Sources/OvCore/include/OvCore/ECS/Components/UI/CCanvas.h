@@ -71,17 +71,6 @@ namespace OvCore::ECS::Components::UI
 		float GetScaleFactor() const;
 
 		/**
-		* Sets the number of UI pixels represented by one world unit
-		* @param p_pixelsPerUnit
-		*/
-		void SetPixelsPerUnit(float p_pixelsPerUnit);
-
-		/**
-		* Returns the number of UI pixels represented by one world unit
-		*/
-		float GetPixelsPerUnit() const;
-
-		/**
 		* Sets the canvas scaler mode
 		* @param p_scalerMode
 		*/
@@ -137,7 +126,6 @@ namespace OvCore::ECS::Components::UI
 	private:
 		OvMaths::FVector2 m_referenceResolution = { 1920.0f, 1080.0f };
 		float m_scaleFactor = 1.0f;
-		float m_pixelsPerUnit = 100.0f;
 		EScalerMode m_scalerMode = EScalerMode::SCALE_WITH_SCREEN_SIZE;
 		EScreenMatchMode m_screenMatchMode = EScreenMatchMode::MATCH_WIDTH_OR_HEIGHT;
 		float m_matchWidthOrHeight = 0.5f;

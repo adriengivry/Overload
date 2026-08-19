@@ -290,8 +290,6 @@ void BindLuaComponents(sol::state& p_luaState)
 		"SetReferenceResolution", &UI::CCanvas::SetReferenceResolution,
 		"GetScaleFactor", &UI::CCanvas::GetScaleFactor,
 		"SetScaleFactor", &UI::CCanvas::SetScaleFactor,
-		"GetPixelsPerUnit", &UI::CCanvas::GetPixelsPerUnit,
-		"SetPixelsPerUnit", &UI::CCanvas::SetPixelsPerUnit,
 		"GetScalerMode", &UI::CCanvas::GetScalerMode,
 		"SetScalerMode", &UI::CCanvas::SetScalerMode,
 		"GetScreenMatchMode", &UI::CCanvas::GetScreenMatchMode,

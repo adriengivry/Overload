@@ -23,7 +23,6 @@ namespace
 {
 	constexpr float kMinimumReferenceResolutionAxis = 1.0f;
 	constexpr float kMinimumScaleFactor = 0.0001f;
-	constexpr float kMinimumPixelsPerUnit = 0.0001f;
 	constexpr float kMinimumMatchWidthOrHeight = 0.0f;
 	constexpr float kMaximumMatchWidthOrHeight = 1.0f;
 
@@ -111,16 +110,6 @@ float OvCore::ECS::Components::UI::CCanvas::GetScaleFactor() const
 	return m_scaleFactor;
 }
 
-void OvCore::ECS::Components::UI::CCanvas::SetPixelsPerUnit(float p_pixelsPerUnit)
-{
-	m_pixelsPerUnit = ClampFinite(p_pixelsPerUnit, kMinimumPixelsPerUnit);
-}
-
-float OvCore::ECS::Components::UI::CCanvas::GetPixelsPerUnit() const
-{
-	return m_pixelsPerUnit;
-}
-
 void OvCore::ECS::Components::UI::CCanvas::SetScalerMode(EScalerMode p_scalerMode)
 {
 	m_scalerMode = ToScalerMode(static_cast<int>(p_scalerMode));
@@ -155,7 +144,6 @@ void OvCore::ECS::Components::UI::CCanvas::OnSerialize(tinyxml2::XMLDocument& p_
 {
 	Helpers::Serializer::SerializeVec2(p_doc, p_node, "reference_resolution", m_referenceResolution);
 	Helpers::Serializer::SerializeFloat(p_doc, p_node, "scale_factor", m_scaleFactor);
-	Helpers::Serializer::SerializeFloat(p_doc, p_node, "pixels_per_unit", m_pixelsPerUnit);
 	Helpers::Serializer::SerializeInt(p_doc, p_node, "scaler_mode", static_cast<int>(m_scalerMode));
 	Helpers::Serializer::SerializeInt(p_doc, p_node, "screen_match_mode", static_cast<int>(m_screenMatchMode));
 	Helpers::Serializer::SerializeFloat(p_doc, p_node, "match_width_or_height", m_matchWidthOrHeight);
@@ -175,13 +163,6 @@ void OvCore::ECS::Components::UI::CCanvas::OnDeserialize(tinyxml2::XMLDocument& 
 		auto scaleFactor = m_scaleFactor;
 		Helpers::Serializer::DeserializeFloat(p_doc, p_node, "scale_factor", scaleFactor);
 		SetScaleFactor(scaleFactor);
-	}
-
-	if (p_node->FirstChildElement("pixels_per_unit"))
-	{
-		auto pixelsPerUnit = m_pixelsPerUnit;
-		Helpers::Serializer::DeserializeFloat(p_doc, p_node, "pixels_per_unit", pixelsPerUnit);
-		SetPixelsPerUnit(pixelsPerUnit);
 	}
 
 	if (p_node->FirstChildElement("scaler_mode"))
@@ -224,15 +205,6 @@ void OvCore::ECS::Components::UI::CCanvas::OnInspector(OvUI::Internal::WidgetCon
 		std::bind(&CCanvas::SetScaleFactor, this, std::placeholders::_1),
 		0.01f,
 		kMinimumScaleFactor
-	);
-
-	Helpers::GUIDrawer::DrawScalar<float>(
-		p_root,
-		"Pixels Per Unit",
-		std::bind(&CCanvas::GetPixelsPerUnit, this),
-		std::bind(&CCanvas::SetPixelsPerUnit, this, std::placeholders::_1),
-		1.0f,
-		kMinimumPixelsPerUnit
 	);
 
 	Helpers::GUIDrawer::CreateTitle(p_root, "Scaler Mode");

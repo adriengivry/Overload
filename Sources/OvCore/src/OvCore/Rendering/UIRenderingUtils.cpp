@@ -23,6 +23,7 @@ namespace
 {
 	constexpr float kDegreesToRadians = 3.14159265359f / 180.0f;
 	constexpr float kMinimumCanvasScale = 0.0001f;
+	constexpr float kUIWorldPreviewScale = 0.01f;
 
 	float ClampFinite(float p_value, float p_min)
 	{
@@ -259,7 +260,7 @@ bool OvCore::Rendering::UIRenderingUtils::UIFrameResolver::ResolveCanvasUncached
 	p_outCanvas.size = UIRenderingUtils::GetCanvasSize(*canvas, m_renderSize);
 	p_outCanvas.matrix = m_screenSpace ? OvMaths::FMatrix4::Identity : CalculateUnscaledModelMatrix(p_actor);
 	p_outCanvas.canvasScale = UIRenderingUtils::GetCanvasScale(*canvas, m_renderSize);
-	p_outCanvas.worldScale = UIRenderingUtils::GetUIWorldScale(*canvas, m_screenSpace);
+	p_outCanvas.worldScale = UIRenderingUtils::GetUIWorldScale(m_screenSpace);
 	p_outCanvas.unitsScale = m_screenSpace ? p_outCanvas.canvasScale : p_outCanvas.canvasScale * p_outCanvas.worldScale;
 	p_outCanvas.modelMatrix =
 		p_outCanvas.matrix *
@@ -569,17 +570,14 @@ OvMaths::FVector2 OvCore::Rendering::UIRenderingUtils::GetLayoutOffset(const OvC
 	return OvCore::ECS::Components::UI::UITransformResolver::ResolveLayoutData(p_owner).offset;
 }
 
-float OvCore::Rendering::UIRenderingUtils::GetUIWorldScale(
-	const OvCore::ECS::Components::UI::CCanvas& p_canvas,
-	bool p_screenSpace
-)
+float OvCore::Rendering::UIRenderingUtils::GetUIWorldScale(bool p_screenSpace)
 {
 	if (p_screenSpace)
 	{
 		return 1.0f;
 	}
 
-	return 1.0f / p_canvas.GetPixelsPerUnit();
+	return kUIWorldPreviewScale;
 }
 
 OvMaths::FVector3 OvCore::Rendering::UIRenderingUtils::TransformUIPoint(
