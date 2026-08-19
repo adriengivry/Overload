@@ -41,7 +41,7 @@
 #include <OvRendering/Features/DebugShapeRenderFeature.h>
 #include <OvRendering/Features/FrameInfoRenderFeature.h>
 #include <OvRendering/Features/LightingRenderFeature.h>
-#include <OvRendering/HAL/Profiling.h>
+#include <OvRendering/Utils/Profiling.h>
 
 using namespace OvMaths;
 using namespace OvRendering::Resources;
@@ -109,16 +109,16 @@ namespace
 		}.GenerateMatrix();
 	}
 
-	std::unique_ptr<OvRendering::HAL::ShaderStorageBuffer> CreateDebugLightBuffer()
+	std::unique_ptr<baregl::Buffer> CreateDebugLightBuffer()
 	{
-		auto lightBuffer = std::make_unique<OvRendering::HAL::ShaderStorageBuffer>();
+		auto lightBuffer = std::make_unique<baregl::Buffer>();
 
 		const std::array<OvMaths::FMatrix4, 2> lightMatrices = {
 			CreateDebugDirectionalLight(),
 			CreateDebugAmbientLight()
 		};
 
-		lightBuffer->Allocate(sizeof(lightMatrices), OvRendering::Settings::EAccessSpecifier::STATIC_READ);
+		lightBuffer->Allocate(sizeof(lightMatrices), baregl::types::EAccessSpecifier::STATIC_READ);
 		lightBuffer->Upload(lightMatrices.data());
 
 		return lightBuffer;
@@ -183,6 +183,7 @@ protected:
 
 		// Override the light buffer with fake lights
 		m_fakeLightsBuffer->Bind(
+			baregl::types::EBufferType::SHADER_STORAGE,
 			lightingRenderFeature ?
 			lightingRenderFeature->GetBufferBindingPoint() :
 			0
@@ -213,7 +214,7 @@ protected:
 
 private:
 	OvCore::Resources::Material m_cameraMaterial;
-	std::unique_ptr<OvRendering::HAL::ShaderStorageBuffer> m_fakeLightsBuffer;
+	std::unique_ptr<baregl::Buffer> m_fakeLightsBuffer;
 };
 
 class DebugReflectionProbesRenderPass : public OvRendering::Core::ARenderPass
@@ -248,6 +249,7 @@ protected:
 
 		// Override the light buffer with fake lights
 		m_fakeLightsBuffer->Bind(
+			baregl::types::EBufferType::SHADER_STORAGE,
 			lightingRenderFeature ?
 			lightingRenderFeature->GetBufferBindingPoint() :
 			0
@@ -290,7 +292,7 @@ protected:
 
 private:
 	OvCore::Resources::Material m_reflectiveMaterial;
-	std::unique_ptr<OvRendering::HAL::ShaderStorageBuffer> m_fakeLightsBuffer;
+	std::unique_ptr<baregl::Buffer> m_fakeLightsBuffer;
 };
 
 class DebugLightsRenderPass : public OvRendering::Core::ARenderPass

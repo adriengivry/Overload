@@ -15,8 +15,9 @@
 #include <OvDebug/Logger.h>
 #include <OvRendering/Resources/Font.h>
 #include <OvRendering/Resources/Loaders/TextureLoader.h>
-#include <OvRendering/Settings/ETextureFilteringMode.h>
-#include <OvRendering/Settings/ETextureWrapMode.h>
+
+#include <baregl/types/ETextureFilteringMode.h>
+#include <baregl/types/ETextureWrapMode.h>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -551,7 +552,7 @@ void OvRendering::Resources::Font::DestroyAtlasVariants()
 
 bool OvRendering::Resources::Font::CreateAtlasVariant(uint32_t p_pixelSize)
 {
-	using namespace OvRendering::Settings;
+	using namespace baregl::types;
 
 	if (m_realPath.empty())
 	{
