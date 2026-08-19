@@ -24,6 +24,16 @@ namespace OvEditor::Core
 	class GizmoBehaviour
 	{
 	public:
+		struct UITranslationContext
+		{
+			OvMaths::FVector3 origin = OvMaths::FVector3::Zero;
+			OvMaths::FVector2 xPositionDirection = { 1.0f, 0.0f };
+			OvMaths::FVector2 yPositionDirection = { 0.0f, 1.0f };
+			OvMaths::FVector3 xWorldAxis = OvMaths::FVector3::Right;
+			OvMaths::FVector3 yWorldAxis = OvMaths::FVector3::Up;
+			bool screenSpace = false;
+		};
+
 		enum class EDirection
 		{
 			X,
@@ -42,17 +52,14 @@ namespace OvEditor::Core
 		* @param p_cameraPosition
 		* @param p_operation
 		* @param p_direction
-		* @param p_overrideWorldPosition
-		* @param p_uiUnitsScale
+		* @param p_uiTranslationContext
 		*/
 		void StartPicking(
 			OvCore::ECS::Actor& p_target,
 			const OvMaths::FVector3& p_cameraPosition,
 			EGizmoOperation p_operation,
 			EDirection p_direction,
-			const OvMaths::FVector3* p_overrideWorldPosition = nullptr,
-			const float* p_uiUnitsScale = nullptr,
-			bool p_uiScreenSpace = false
+			const UITranslationContext* p_uiTranslationContext = nullptr
 		);
 
 		/**
@@ -154,7 +161,8 @@ namespace OvEditor::Core
 		OvMaths::FTransform m_originalTransform;
 		OvMaths::FVector3 m_initialOffset;
 		OvMaths::FVector2 m_originalUIPosition = OvMaths::FVector2::Zero;
-		float m_uiUnitsScale = 1.0f;
+		OvMaths::FVector2 m_uiPositionDirection = OvMaths::FVector2::Zero;
+		OvMaths::FVector3 m_uiWorldAxis = OvMaths::FVector3::Zero;
 		bool m_isUITranslation = false;
 		bool m_isUIScreenSpace = false;
 		OvMaths::FVector2 m_originMouse;

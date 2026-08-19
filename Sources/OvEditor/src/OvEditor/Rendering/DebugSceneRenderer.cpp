@@ -137,18 +137,30 @@ namespace
 			return false;
 		}
 
-		OvCore::Rendering::UIRenderingUtils::ResolvedUIElement resolvedElement;
-		if (!p_uiFrameResolver.ResolveElement(
+		OvCore::Rendering::UIRenderingUtils::ResolvedUIGizmoTransform resolvedTransform;
+		if (!OvCore::Rendering::UIRenderingUtils::ResolveUIGizmoTransform(
+			p_uiFrameResolver,
 			p_actor,
-			resolvedElement
+			resolvedTransform
 		))
 		{
 			return false;
 		}
 
-		p_position = OvCore::Rendering::UIRenderingUtils::TransformUIElementPivot(resolvedElement);
-		p_rotation = p_actor.transform.GetWorldRotation();
+		p_position = resolvedTransform.position;
+		p_rotation = resolvedTransform.rotation;
 		return true;
+	}
+
+	bool ShouldRenderWorldDebugElements(const OvRendering::Core::CompositeRenderer& p_renderer)
+	{
+		if (!p_renderer.HasDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>())
+		{
+			return true;
+		}
+
+		const auto& sceneDescriptor = p_renderer.GetDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>();
+		return !sceneDescriptor.renderUIInScreenSpace;
 	}
 }
 
@@ -172,6 +184,11 @@ protected:
 	{
 		ZoneScoped;
 		TracyGpuZone("DebugCamerasRenderPass");
+
+		if (!ShouldRenderWorldDebugElements(m_renderer))
+		{
+			return;
+		}
 
 		using namespace OvRendering::Features;
 
@@ -238,6 +255,11 @@ protected:
 	{
 		ZoneScoped;
 		TracyGpuZone("DebugReflectionProbesRenderPass");
+
+		if (!ShouldRenderWorldDebugElements(m_renderer))
+		{
+			return;
+		}
 
 		using namespace OvRendering::Features;
 
@@ -313,6 +335,11 @@ protected:
 		ZoneScoped;
 		TracyGpuZone("DebugLightsRenderPass");
 
+		if (!ShouldRenderWorldDebugElements(m_renderer))
+		{
+			return;
+		}
+
 		auto& sceneDescriptor = m_renderer.GetDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>();
 
 		m_lightMaterial.SetProperty("u_Scale", OvEditor::Settings::EditorSettings::LightBillboardScale * 0.1f);
@@ -373,6 +400,7 @@ protected:
 		{
 			auto& selectedActor = debugSceneDescriptor.selectedActor.value();
 			const bool isActorHovered = debugSceneDescriptor.highlightedActor && debugSceneDescriptor.highlightedActor->GetID() == selectedActor.GetID();
+			const bool renderWorldDebugElements = ShouldRenderWorldDebugElements(m_renderer);
 
 			DrawActorDebugElements(selectedActor);
 			if (!selectedActor.GetComponent<OvCore::ECS::Components::UI::CCanvas>())
@@ -407,28 +435,32 @@ protected:
 				gizmoScaleOverride = kUIScreenSpaceGizmoScale;
 				showGizmoZAxis = false;
 			}
-			m_renderer.GetFeature<OvEditor::Rendering::OutlineRenderFeature>().DrawOutline(
-				selectedActor,
-				isActorHovered ?
-					kHoveredOutlineColor :
-					kSelectedOutlineColor,
-				kSelectedOutlineWidth
-			);
-			m_renderer.Clear(false, true, false, OvMaths::FVector3::Zero);
-			m_renderer.GetFeature<OvEditor::Rendering::GizmoRenderFeature>().DrawGizmo(
-				gizmoPosition,
-				gizmoRotation,
-				debugSceneDescriptor.gizmoOperation,
-				false,
-				debugSceneDescriptor.highlightedGizmoDirection,
-				gizmoViewMatrixOverride,
-				gizmoProjectionMatrixOverride,
-				gizmoScaleOverride,
-				showGizmoZAxis
-			);
+
+			if (renderWorldDebugElements || hasUIGizmoTransform)
+			{
+				m_renderer.GetFeature<OvEditor::Rendering::OutlineRenderFeature>().DrawOutline(
+					selectedActor,
+					isActorHovered ?
+						kHoveredOutlineColor :
+						kSelectedOutlineColor,
+					kSelectedOutlineWidth
+				);
+				m_renderer.Clear(false, true, false, OvMaths::FVector3::Zero);
+				m_renderer.GetFeature<OvEditor::Rendering::GizmoRenderFeature>().DrawGizmo(
+					gizmoPosition,
+					gizmoRotation,
+					debugSceneDescriptor.gizmoOperation,
+					false,
+					debugSceneDescriptor.highlightedGizmoDirection,
+					gizmoViewMatrixOverride,
+					gizmoProjectionMatrixOverride,
+					gizmoScaleOverride,
+					showGizmoZAxis
+				);
+			}
 		}
 		
-		if (debugSceneDescriptor.highlightedActor)
+		if (debugSceneDescriptor.highlightedActor && ShouldRenderWorldDebugElements(m_renderer))
 		{
 			auto& highlightedActor = debugSceneDescriptor.highlightedActor.value();
 
@@ -444,59 +476,64 @@ protected:
 	{
 		if (p_actor.IsActive())
 		{
+			const bool renderWorldDebugElements = ShouldRenderWorldDebugElements(m_renderer);
+
 			if (auto layout = p_actor.GetComponent<OvCore::ECS::Components::UI::CLayoutGroup>())
 			{
 				DrawUIBounds(p_actor, layout->GetComputedSize());
 			}
 
-			/* Render static mesh outline and bounding spheres */
-			if (OvEditor::Settings::EditorSettings::ShowGeometryBounds)
+			if (renderWorldDebugElements)
 			{
-				auto modelRenderer = p_actor.GetComponent<OvCore::ECS::Components::CModelRenderer>();
-
-				if (modelRenderer && modelRenderer->GetModel())
+				/* Render static mesh outline and bounding spheres */
+				if (OvEditor::Settings::EditorSettings::ShowGeometryBounds)
 				{
-					DrawBoundingSpheres(*modelRenderer);
+					auto modelRenderer = p_actor.GetComponent<OvCore::ECS::Components::CModelRenderer>();
+
+					if (modelRenderer && modelRenderer->GetModel())
+					{
+						DrawBoundingSpheres(*modelRenderer);
+					}
 				}
-			}
 
-			/* Render camera component frustum */
-			if (auto cameraComponent = p_actor.GetComponent<OvCore::ECS::Components::CCamera>(); cameraComponent)
-			{
-				DrawCameraFrustum(*cameraComponent);
-			}
-
-			/* Render camera component frustum */
-			if (auto reflectionProbeComponent = p_actor.GetComponent<OvCore::ECS::Components::CReflectionProbe>(); reflectionProbeComponent)
-			{
-				if (reflectionProbeComponent->GetInfluencePolicy() == OvCore::ECS::Components::CReflectionProbe::EInfluencePolicy::LOCAL)
+				/* Render camera component frustum */
+				if (auto cameraComponent = p_actor.GetComponent<OvCore::ECS::Components::CCamera>(); cameraComponent)
 				{
-					DrawReflectionProbeInfluenceVolume(*reflectionProbeComponent);
+					DrawCameraFrustum(*cameraComponent);
 				}
-			}
 
-			/* Render the actor collider */
-			if (p_actor.GetComponent<OvCore::ECS::Components::CPhysicalObject>())
-			{
-				DrawActorCollider(p_actor);
-			}
-
-			/* Render the actor ambient light */
-			if (auto ambientBoxComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientBoxLight>())
-			{
-				DrawAmbientBoxVolume(*ambientBoxComp);
-			}
-
-			if (auto ambientSphereComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientSphereLight>())
-			{
-				DrawAmbientSphereVolume(*ambientSphereComp);
-			}
-
-			if (OvEditor::Settings::EditorSettings::ShowLightBounds)
-			{
-				if (auto light = p_actor.GetComponent<OvCore::ECS::Components::CLight>())
+				/* Render reflection probe influence volume */
+				if (auto reflectionProbeComponent = p_actor.GetComponent<OvCore::ECS::Components::CReflectionProbe>(); reflectionProbeComponent)
 				{
-					DrawLightBounds(*light);
+					if (reflectionProbeComponent->GetInfluencePolicy() == OvCore::ECS::Components::CReflectionProbe::EInfluencePolicy::LOCAL)
+					{
+						DrawReflectionProbeInfluenceVolume(*reflectionProbeComponent);
+					}
+				}
+
+				/* Render the actor collider */
+				if (p_actor.GetComponent<OvCore::ECS::Components::CPhysicalObject>())
+				{
+					DrawActorCollider(p_actor);
+				}
+
+				/* Render the actor ambient light */
+				if (auto ambientBoxComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientBoxLight>())
+				{
+					DrawAmbientBoxVolume(*ambientBoxComp);
+				}
+
+				if (auto ambientSphereComp = p_actor.GetComponent<OvCore::ECS::Components::CAmbientSphereLight>())
+				{
+					DrawAmbientSphereVolume(*ambientSphereComp);
+				}
+
+				if (OvEditor::Settings::EditorSettings::ShowLightBounds)
+				{
+					if (auto light = p_actor.GetComponent<OvCore::ECS::Components::CLight>())
+					{
+						DrawLightBounds(*light);
+					}
 				}
 			}
 

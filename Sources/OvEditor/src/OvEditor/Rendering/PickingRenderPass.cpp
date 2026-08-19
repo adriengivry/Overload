@@ -64,18 +64,30 @@ namespace
 			return false;
 		}
 
-		OvCore::Rendering::UIRenderingUtils::ResolvedUIElement resolvedElement;
-		if (!p_uiFrameResolver.ResolveElement(
+		OvCore::Rendering::UIRenderingUtils::ResolvedUIGizmoTransform resolvedTransform;
+		if (!OvCore::Rendering::UIRenderingUtils::ResolveUIGizmoTransform(
+			p_uiFrameResolver,
 			p_actor,
-			resolvedElement
+			resolvedTransform
 		))
 		{
 			return false;
 		}
 
-		p_position = OvCore::Rendering::UIRenderingUtils::TransformUIElementPivot(resolvedElement);
-		p_rotation = p_actor.transform.GetWorldRotation();
+		p_position = resolvedTransform.position;
+		p_rotation = resolvedTransform.rotation;
 		return true;
+	}
+
+	bool ShouldPickWorldDebugElements(const OvRendering::Core::CompositeRenderer& p_renderer)
+	{
+		if (!p_renderer.HasDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>())
+		{
+			return true;
+		}
+
+		const auto& sceneDescriptor = p_renderer.GetDescriptor<OvCore::Rendering::SceneRenderer::SceneDescriptor>();
+		return !sceneDescriptor.renderUIInScreenSpace;
 	}
 }
 
@@ -167,9 +179,13 @@ void OvEditor::Rendering::PickingRenderPass::Draw(OvRendering::Data::PipelineSta
 	m_renderer.Clear(true, true, true);
 
 	DrawPickableModels(pso, scene);
-	DrawPickableCameras(pso, scene);
-	DrawPickableReflectionProbes(pso, scene);
-	DrawPickableLights(pso, scene);
+
+	if (ShouldPickWorldDebugElements(m_renderer))
+	{
+		DrawPickableCameras(pso, scene);
+		DrawPickableReflectionProbes(pso, scene);
+		DrawPickableLights(pso, scene);
+	}
 
 	// Clear depth, gizmos are rendered on top of everything else
 	m_renderer.Clear(false, true, false);
@@ -179,6 +195,7 @@ void OvEditor::Rendering::PickingRenderPass::Draw(OvRendering::Data::PipelineSta
 		auto& selectedActor = debugSceneDescriptor.selectedActor.value();
 		auto gizmoPosition = selectedActor.transform.GetWorldPosition();
 		auto gizmoRotation = selectedActor.transform.GetWorldRotation();
+		const bool pickWorldDebugElements = ShouldPickWorldDebugElements(m_renderer);
 		const bool hasUIGizmoTransform = TryGetUIActorGizmoTransform(
 			sceneDescriptor.includeUI,
 			uiFrameResolver,
@@ -201,16 +218,19 @@ void OvEditor::Rendering::PickingRenderPass::Draw(OvRendering::Data::PipelineSta
 			showGizmoZAxis = false;
 		}
 
-		DrawPickableGizmo(
-			pso,
-			gizmoPosition,
-			gizmoRotation,
-			debugSceneDescriptor.gizmoOperation,
-			gizmoViewMatrixOverride,
-			gizmoProjectionMatrixOverride,
-			gizmoScaleOverride,
-			showGizmoZAxis
-		);
+		if (pickWorldDebugElements || hasUIGizmoTransform)
+		{
+			DrawPickableGizmo(
+				pso,
+				gizmoPosition,
+				gizmoRotation,
+				debugSceneDescriptor.gizmoOperation,
+				gizmoViewMatrixOverride,
+				gizmoProjectionMatrixOverride,
+				gizmoScaleOverride,
+				showGizmoZAxis
+			);
+		}
 	}
 
 	m_actorPickingFramebuffer.Unbind();

@@ -38,29 +38,38 @@ void OvEditor::Core::GizmoBehaviour::StartPicking(
 	const OvMaths::FVector3& p_cameraPosition,
 	EGizmoOperation p_operation,
 	EDirection p_direction,
-	const OvMaths::FVector3* p_overrideWorldPosition,
-	const float* p_uiUnitsScale,
-	bool p_uiScreenSpace
+	const UITranslationContext* p_uiTranslationContext
 )
 {
 	m_target = &p_target;
 	m_firstMouse = true;
 	m_firstPick = true;
 	m_originalTransform = p_target.transform.GetFTransform();
-	if (p_overrideWorldPosition)
+	if (p_uiTranslationContext)
 	{
-		m_originalTransform.SetWorldPosition(*p_overrideWorldPosition);
+		m_originalTransform.SetWorldPosition(p_uiTranslationContext->origin);
 	}
 	m_distanceToActor = OvMaths::FVector3::Distance(p_cameraPosition, m_originalTransform.GetWorldPosition());
 	m_currentOperation = p_operation;
 	m_direction = p_direction;
-	m_isUITranslation = p_target.transform.HasActiveUIData() && p_uiUnitsScale != nullptr;
-	m_isUIScreenSpace = m_isUITranslation && p_uiScreenSpace;
-	m_uiUnitsScale = p_uiUnitsScale ? std::max(std::abs(*p_uiUnitsScale), 0.0001f) : 1.0f;
+	m_isUITranslation = p_target.transform.HasActiveUIData() && p_uiTranslationContext != nullptr;
+	m_isUIScreenSpace = m_isUITranslation && p_uiTranslationContext->screenSpace;
+	m_uiPositionDirection = OvMaths::FVector2::Zero;
+	m_uiWorldAxis = OvMaths::FVector3::Zero;
 
 	if (m_isUITranslation)
 	{
 		m_originalUIPosition = p_target.transform.GetUIPosition();
+		if (m_direction == EDirection::X)
+		{
+			m_uiPositionDirection = p_uiTranslationContext->xPositionDirection;
+			m_uiWorldAxis = p_uiTranslationContext->xWorldAxis;
+		}
+		else if (m_direction == EDirection::Y)
+		{
+			m_uiPositionDirection = p_uiTranslationContext->yPositionDirection;
+			m_uiWorldAxis = p_uiTranslationContext->yWorldAxis;
+		}
 	}
 	else
 	{
@@ -73,7 +82,8 @@ void OvEditor::Core::GizmoBehaviour::StopPicking()
 	m_target = nullptr;
 	m_isUITranslation = false;
 	m_isUIScreenSpace = false;
-	m_uiUnitsScale = 1.0f;
+	m_uiPositionDirection = OvMaths::FVector2::Zero;
+	m_uiWorldAxis = OvMaths::FVector3::Zero;
 }
 
 OvMaths::FVector3 OvEditor::Core::GizmoBehaviour::GetFakeDirection() const
@@ -164,33 +174,32 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 
 		if (m_isUIScreenSpace)
 		{
-			const auto mouseDelta = m_currentMouse - m_originMouse;
-			OvMaths::FVector2 axisDelta = OvMaths::FVector2::Zero;
-
-			switch (m_direction)
+			const float unitsScale = OvMaths::FVector3::Length(m_uiWorldAxis);
+			if (unitsScale <= 0.0001f)
 			{
-			case EDirection::X:
-				axisDelta.x = mouseDelta.x / m_uiUnitsScale;
-				break;
-			case EDirection::Y:
-				axisDelta.y = -mouseDelta.y / m_uiUnitsScale;
-				break;
-			case EDirection::Z:
-				break;
+				return;
 			}
+
+			const auto mouseDelta = m_currentMouse - m_originMouse;
+			const auto screenAxis = OvMaths::FVector2::Normalize({ m_uiWorldAxis.x, -m_uiWorldAxis.y });
+			auto translationUnits = OvMaths::FVector2::Dot(mouseDelta, screenAxis) / unitsScale;
 
 			if (IsSnappedBehaviourEnabled())
 			{
-				axisDelta.x = SnapValue(axisDelta.x, OvEditor::Settings::EditorSettings::TranslationSnapUnit);
-				axisDelta.y = SnapValue(axisDelta.y, OvEditor::Settings::EditorSettings::TranslationSnapUnit);
+				translationUnits = SnapValue(translationUnits, OvEditor::Settings::EditorSettings::TranslationSnapUnit);
 			}
 
-			m_target->transform.SetUIPosition(m_originalUIPosition + axisDelta);
+			m_target->transform.SetUIPosition(m_originalUIPosition + m_uiPositionDirection * translationUnits);
 			return;
 		}
 
 		const auto ray = GetMouseRay(m_currentMouse, p_viewMatrix, p_projectionMatrix, p_viewSize);
-		const OvMaths::FVector3 direction = GetRealDirection(true);
+		const float axisScale = OvMaths::FVector3::Length(m_uiWorldAxis);
+		if (axisScale <= 0.0001f)
+		{
+			return;
+		}
+		const OvMaths::FVector3 direction = OvMaths::FVector3::Normalize(m_uiWorldAxis);
 		const OvMaths::FVector3 planePoint = m_originalTransform.GetWorldPosition();
 		const OvMaths::FVector3 planeTangent = OvMaths::FVector3::Cross(direction, planePoint - p_cameraPosition);
 		const OvMaths::FVector3 planeNormal = OvMaths::FVector3::Cross(direction, planeTangent);
@@ -218,27 +227,14 @@ void OvEditor::Core::GizmoBehaviour::ApplyTranslation(const OvMaths::FMatrix4& p
 		}
 
 		const auto translationVector = point - planePoint + m_initialOffset;
-		auto translationPixels = OvMaths::FVector3::Dot(translationVector, direction) / m_uiUnitsScale;
+		auto translationUnits = OvMaths::FVector3::Dot(translationVector, direction) / axisScale;
 
 		if (IsSnappedBehaviourEnabled())
 		{
-			translationPixels = SnapValue(translationPixels, OvEditor::Settings::EditorSettings::TranslationSnapUnit);
+			translationUnits = SnapValue(translationUnits, OvEditor::Settings::EditorSettings::TranslationSnapUnit);
 		}
 
-		OvMaths::FVector2 axisDelta = OvMaths::FVector2::Zero;
-		switch (m_direction)
-		{
-		case EDirection::X:
-			axisDelta.x = translationPixels;
-			break;
-		case EDirection::Y:
-			axisDelta.y = translationPixels;
-			break;
-		case EDirection::Z:
-			break;
-		}
-
-		m_target->transform.SetUIPosition(m_originalUIPosition + axisDelta);
+		m_target->transform.SetUIPosition(m_originalUIPosition + m_uiPositionDirection * translationUnits);
 		return;
 	}
 

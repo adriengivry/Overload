@@ -202,6 +202,12 @@ namespace OvCore::Rendering::UIRenderingUtils
 
 	OvMaths::FVector3 TransformUIElementPivot(const ResolvedUIElement& p_element);
 
+	bool ResolveUIGizmoTransform(
+		const UIFrameResolver& p_frameResolver,
+		const OvCore::ECS::Actor& p_actor,
+		ResolvedUIGizmoTransform& p_outTransform
+	);
+
 	bool ResolveUICanvas(
 		const OvCore::ECS::Actor& p_actor,
 		const OvMaths::FVector2& p_renderSize,

@@ -126,6 +126,40 @@ namespace
 
 		return p_matrix;
 	}
+
+	OvMaths::FVector3 TransformUIDirection(
+		const OvMaths::FMatrix4& p_matrix,
+		const OvMaths::FVector2& p_direction
+	)
+	{
+		const auto result = p_matrix * OvMaths::FVector4{ p_direction.x, p_direction.y, 0.0f, 0.0f };
+		return { result.x, result.y, result.z };
+	}
+
+	OvMaths::FQuaternion CreateUIRotation(
+		const OvMaths::FVector3& p_xAxis,
+		const OvMaths::FVector3& p_yAxis
+	)
+	{
+		constexpr float kMinimumAxisLength = 0.0001f;
+		if (
+			OvMaths::FVector3::Length(p_xAxis) < kMinimumAxisLength ||
+			OvMaths::FVector3::Length(p_yAxis) < kMinimumAxisLength
+		)
+		{
+			return OvMaths::FQuaternion::Identity;
+		}
+
+		const auto xAxis = OvMaths::FVector3::Normalize(p_xAxis);
+		const auto yAxis = OvMaths::FVector3::Normalize(p_yAxis);
+		const auto forward = OvMaths::FVector3::Cross(xAxis, yAxis);
+		if (OvMaths::FVector3::Length(forward) < kMinimumAxisLength)
+		{
+			return OvMaths::FQuaternion::Identity;
+		}
+
+		return OvMaths::FQuaternion::LookAt(OvMaths::FVector3::Normalize(forward), yAxis);
+	}
 }
 
 OvCore::Rendering::UIRenderingUtils::UIFrameResolver::UIFrameResolver(
@@ -365,6 +399,11 @@ bool OvCore::Rendering::UIRenderingUtils::UIFrameResolver::ResolveElementUncache
 		p_elementSize,
 		p_outElement.effectiveSize
 	);
+	const float rotation = transform.GetUIRotation() * kDegreesToRadians;
+	p_outElement.xPositionDirection = { std::cos(rotation), std::sin(rotation) };
+	p_outElement.yPositionDirection = { -std::sin(rotation), std::cos(rotation) };
+	p_outElement.xWorldAxis = TransformUIDirection(parentFrameMatrix, p_outElement.xPositionDirection);
+	p_outElement.yWorldAxis = TransformUIDirection(parentFrameMatrix, p_outElement.yPositionDirection);
 	p_outElement.canvasScale = resolvedCanvas.canvasScale;
 	p_outElement.worldScale = resolvedCanvas.worldScale;
 	p_outElement.unitsScale = resolvedCanvas.unitsScale;
@@ -635,6 +674,36 @@ OvMaths::FVector3 OvCore::Rendering::UIRenderingUtils::TransformUIElementPivot(c
 			-pivot.y * referenceSize.y * 0.5f
 		}
 	);
+}
+
+bool OvCore::Rendering::UIRenderingUtils::ResolveUIGizmoTransform(
+	const UIFrameResolver& p_frameResolver,
+	const OvCore::ECS::Actor& p_actor,
+	ResolvedUIGizmoTransform& p_outTransform
+)
+{
+	if (p_actor.GetComponent<OvCore::ECS::Components::UI::CCanvas>())
+	{
+		return false;
+	}
+
+	ResolvedUIElement resolvedElement;
+	if (!p_frameResolver.ResolveElement(
+		p_actor,
+		resolvedElement
+	))
+	{
+		return false;
+	}
+
+	p_outTransform.position = TransformUIElementPivot(resolvedElement);
+	p_outTransform.xPositionDirection = resolvedElement.xPositionDirection;
+	p_outTransform.yPositionDirection = resolvedElement.yPositionDirection;
+	p_outTransform.xWorldAxis = resolvedElement.xWorldAxis;
+	p_outTransform.yWorldAxis = resolvedElement.yWorldAxis;
+	p_outTransform.rotation = CreateUIRotation(p_outTransform.xWorldAxis, p_outTransform.yWorldAxis);
+	p_outTransform.screenSpace = resolvedElement.screenSpace;
+	return true;
 }
 
 bool OvCore::Rendering::UIRenderingUtils::ResolveUICanvas(

@@ -21,12 +21,6 @@
 
 namespace
 {
-	struct UIGizmoContext
-	{
-		OvMaths::FVector3 origin = OvMaths::FVector3::Zero;
-		float unitsScale = 1.0f;
-	};
-
 	OvTools::Utils::OptRef<OvCore::ECS::Actor> GetActorFromPickingResult(
 		OvEditor::Rendering::PickingRenderPass::PickingResult p_result
 	)
@@ -42,23 +36,28 @@ namespace
 		return std::nullopt;
 	}
 
-	std::optional<UIGizmoContext> ResolveUIGizmoContext(
+	std::optional<OvEditor::Core::GizmoBehaviour::UITranslationContext> ResolveUIGizmoContext(
 		OvCore::ECS::Actor& p_actor,
 		const OvCore::Rendering::UIRenderingUtils::UIFrameResolver& p_uiFrameResolver
 	)
 	{
-		OvCore::Rendering::UIRenderingUtils::ResolvedUIElement resolvedElement;
-		if (!p_uiFrameResolver.ResolveElement(
+		OvCore::Rendering::UIRenderingUtils::ResolvedUIGizmoTransform resolvedTransform;
+		if (!OvCore::Rendering::UIRenderingUtils::ResolveUIGizmoTransform(
+			p_uiFrameResolver,
 			p_actor,
-			resolvedElement
+			resolvedTransform
 		))
 		{
 			return std::nullopt;
 		}
 
-		return UIGizmoContext{
-			OvCore::Rendering::UIRenderingUtils::TransformUIElementPivot(resolvedElement),
-			resolvedElement.unitsScale
+		return OvEditor::Core::GizmoBehaviour::UITranslationContext{
+			.origin = resolvedTransform.position,
+			.xPositionDirection = resolvedTransform.xPositionDirection,
+			.yPositionDirection = resolvedTransform.yPositionDirection,
+			.xWorldAxis = resolvedTransform.xWorldAxis,
+			.yWorldAxis = resolvedTransform.yWorldAxis,
+			.screenSpace = resolvedTransform.screenSpace
 		};
 	}
 }
@@ -274,17 +273,12 @@ void OvEditor::Panels::SceneView::HandleActorPicking()
 					selectedActor,
 					uiFrameResolver
 				);
-				const auto* uiOrigin = uiGizmoContext ? &uiGizmoContext->origin : nullptr;
-				const auto* uiUnitsScale = uiGizmoContext ? &uiGizmoContext->unitsScale : nullptr;
-
 				m_gizmoOperations.StartPicking(
 					selectedActor,
 					m_camera.GetPosition(),
 					m_currentOperation,
 					m_highlightedGizmoDirection.value(),
-					uiOrigin,
-					uiUnitsScale,
-					uiFrameResolver.IsScreenSpace()
+					uiGizmoContext ? &uiGizmoContext.value() : nullptr
 				);
 			}
 			else if (m_highlightedActor)
