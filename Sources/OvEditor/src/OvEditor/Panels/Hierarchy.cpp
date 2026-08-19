@@ -396,6 +396,10 @@ OvEditor::Panels::Hierarchy::Hierarchy
 		ConsiderWidget(*p_element.second);
 
 		p_element.first->DetachFromParent();
+		if (auto* currentScene = EDITOR_CONTEXT(sceneManager).GetCurrentScene())
+		{
+			currentScene->MoveActorToEnd(*p_element.first);
+		}
 	};
 
 	AddPlugin<ActorContextualMenu>(nullptr, nullptr);
