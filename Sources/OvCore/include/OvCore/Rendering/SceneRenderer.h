@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <functional>
 #include <map>
 #include <optional>
 
@@ -59,7 +60,7 @@ namespace OvCore::Rendering
 					{
 						if (materialKey != p_other.materialKey)
 						{
-							return materialKey < p_other.materialKey;
+							return std::less<const OvRendering::Data::Material*>{}(materialKey, p_other.materialKey);
 						}
 					}
 
