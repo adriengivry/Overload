@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <functional>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace OvTools::Eventing

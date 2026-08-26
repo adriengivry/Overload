@@ -14,7 +14,7 @@ namespace OvTools::Eventing
 	ListenerID Event<ArgTypes...>::AddListener(Callback p_callback)
 	{
 		ListenerID listenerID = m_availableListenerID++;
-		m_callbacks.emplace(listenerID, p_callback);
+		m_callbacks.emplace(listenerID, std::move(p_callback));
 		return listenerID;
 	}
 
@@ -51,16 +51,23 @@ namespace OvTools::Eventing
 	template<class... ArgTypes>
 	void Event<ArgTypes...>::Invoke(ArgTypes... p_args)
 	{
-		std::vector<Callback> callbacks;
-		callbacks.reserve(m_callbacks.size());
+		std::vector<ListenerID> listenerIDs;
+		listenerIDs.reserve(m_callbacks.size());
 
-		for (const auto& pair : m_callbacks)
+		for (const auto& listener : m_callbacks)
 		{
-			callbacks.push_back(pair.second);
+			listenerIDs.push_back(listener.first);
 		}
 
-		for (const auto& callback : callbacks)
+		for (const auto listenerID : listenerIDs)
 		{
+			const auto listener = m_callbacks.find(listenerID);
+			if (listener == m_callbacks.end())
+			{
+				continue;
+			}
+
+			const auto callback = listener->second;
 			if (callback)
 			{
 				callback(p_args...);
