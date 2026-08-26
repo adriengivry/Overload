@@ -5,6 +5,7 @@
 */
 
 #include <algorithm>
+#include <cmath>
 
 #include <OvCore/ECS/Actor.h>
 #include <OvCore/ECS/Components/UI/CCanvas.h>
@@ -200,50 +201,16 @@ bool OvCore::ECS::Components::UI::UITransformResolver::IsDrivenByLayout(const EC
 	return parent && parent->GetComponent<OvCore::ECS::Components::UI::CLayoutGroup>();
 }
 
-OvCore::ECS::Components::UI::UITransformResolver::LayoutData OvCore::ECS::Components::UI::UITransformResolver::ResolveLayoutData(const ECS::Actor& p_owner)
-{
-	LayoutData result;
-	const auto* child = &p_owner;
-
-	while (const auto* parent = child->GetParent())
-	{
-		if (const auto* layout = parent->GetComponent<OvCore::ECS::Components::UI::CLayoutGroup>())
-		{
-			if (const auto childLayout = layout->GetChildLayout(*child); childLayout && childLayout->valid)
-			{
-				result.offset += childLayout->offset;
-
-				if (child == &p_owner)
-				{
-					if (childLayout->hasDirectWidth && childLayout->size.x > 0.0f)
-					{
-						result.directSize.x = childLayout->size.x;
-						result.hasDirectWidth = true;
-					}
-
-					if (childLayout->hasDirectHeight && childLayout->size.y > 0.0f)
-					{
-						result.directSize.y = childLayout->size.y;
-						result.hasDirectHeight = true;
-					}
-				}
-			}
-		}
-
-		child = parent;
-	}
-
-	return result;
-}
-
 OvMaths::FVector2 OvCore::ECS::Components::UI::UITransformResolver::GetEffectiveSize(
 	const OvCore::ECS::Components::CTransform& p_transform,
 	const OvMaths::FVector2& p_elementSize
 )
 {
 	const auto& size = p_transform.GetUISize();
+	const auto fallbackWidth = std::isfinite(p_elementSize.x) ? std::max(p_elementSize.x, 0.0f) : 0.0f;
+	const auto fallbackHeight = std::isfinite(p_elementSize.y) ? std::max(p_elementSize.y, 0.0f) : 0.0f;
 	return {
-		size.x > 0.0f ? size.x : std::max(p_elementSize.x, 0.0f),
-		size.y > 0.0f ? size.y : std::max(p_elementSize.y, 0.0f)
+		std::isfinite(size.x) && size.x > 0.0f ? size.x : fallbackWidth,
+		std::isfinite(size.y) && size.y > 0.0f ? size.y : fallbackHeight
 	};
 }

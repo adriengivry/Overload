@@ -197,6 +197,16 @@ namespace OvCore::ECS::Components::UI
 		std::optional<ChildLayout> GetChildLayout(const ECS::Actor& p_child) const;
 
 		/**
+		* Returns the resolved layout data for a direct child using an effective container size
+		* @param p_child
+		* @param p_containerSize
+		*/
+		std::optional<ChildLayout> GetChildLayout(
+			const ECS::Actor& p_child,
+			const OvMaths::FVector2& p_containerSize
+		) const;
+
+		/**
 		* Returns the layout offsets for direct children
 		*/
 		std::vector<ChildOffset> GetChildOffsets() const;
@@ -271,8 +281,13 @@ namespace OvCore::ECS::Components::UI
 			std::vector<ChildLayout> children;
 		};
 
-		LayoutCacheInput BuildLayoutCacheInput() const;
+		LayoutCacheInput BuildLayoutCacheInput(const OvMaths::FVector2& p_containerSize) const;
 		const LayoutCache& GetResolvedLayout() const;
+		const LayoutCache& GetResolvedLayout(const OvMaths::FVector2& p_containerSize) const;
+		const LayoutCache& ResolveLayout(
+			const OvMaths::FVector2& p_containerSize,
+			LayoutCache& p_cache
+		) const;
 		void InvalidateLayoutCache() const;
 		static bool HasSameLayoutSignature(const LayoutCacheSignature& p_lhs, const LayoutCacheSignature& p_rhs);
 
@@ -286,6 +301,7 @@ namespace OvCore::ECS::Components::UI
 		bool m_forceExpandWidth = false;
 		bool m_forceExpandHeight = false;
 		mutable LayoutCache m_layoutCache;
+		mutable LayoutCache m_effectiveLayoutCache;
 		mutable std::unique_ptr<ClayLayoutSolverContext> m_layoutSolverContext;
 	};
 }

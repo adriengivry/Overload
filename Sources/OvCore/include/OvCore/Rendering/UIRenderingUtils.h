@@ -140,14 +140,17 @@ namespace OvCore::Rendering::UIRenderingUtils
 
 		bool HasActiveUIData(const OvCore::ECS::Actor& p_actor) const;
 		const OvCore::ECS::Actor* FindCanvasOwner(const OvCore::ECS::Actor& p_actor) const;
-		CachedLayoutData GetLayoutData(const OvCore::ECS::Actor& p_actor) const;
+		CachedLayoutData GetLayoutData(
+			const OvCore::ECS::Actor& p_actor,
+			const OvMaths::FVector2& p_parentSize
+		) const;
 
 	private:
 		OvMaths::FVector2 m_renderSize = { 1.0f, 1.0f };
 		bool m_screenSpace = true;
 		mutable std::unordered_map<const OvCore::ECS::Actor*, bool> m_activeUIDataCache;
 		mutable std::unordered_map<const OvCore::ECS::Actor*, const OvCore::ECS::Actor*> m_canvasOwnerCache;
-		mutable std::unordered_map<const OvCore::ECS::Actor*, CachedLayoutData> m_layoutDataCache;
+		mutable std::unordered_map<ElementKey, CachedLayoutData, ElementKeyHash> m_layoutDataCache;
 		mutable std::unordered_map<const OvCore::ECS::Actor*, OvMaths::FVector2> m_elementSizeCache;
 		mutable std::unordered_map<const OvCore::ECS::Actor*, std::optional<ResolvedUICanvas>> m_canvasCache;
 		mutable std::unordered_map<ElementKey, std::optional<ResolvedUIElement>, ElementKeyHash> m_elementCache;
@@ -176,11 +179,6 @@ namespace OvCore::Rendering::UIRenderingUtils
 	OvCore::ECS::Actor* FindCanvasOwner(OvCore::ECS::Actor& p_owner);
 	const OvCore::ECS::Actor* FindCanvasOwner(const OvCore::ECS::Actor& p_owner);
 
-	OvMaths::FMatrix4 GetCanvasMatrix(
-		const OvCore::ECS::Actor& p_owner,
-		bool p_screenSpace
-	);
-
 	OvMaths::FVector2 GetCanvasSize(
 		const OvCore::ECS::Actor& p_owner,
 		const OvMaths::FVector2& p_renderSize
@@ -190,8 +188,6 @@ namespace OvCore::Rendering::UIRenderingUtils
 		const OvCore::ECS::Actor& p_owner,
 		const OvMaths::FVector2& p_renderSize
 	);
-
-	OvMaths::FVector2 GetLayoutOffset(const OvCore::ECS::Actor& p_owner);
 
 	float GetUIWorldScale(bool p_screenSpace);
 
@@ -208,25 +204,4 @@ namespace OvCore::Rendering::UIRenderingUtils
 		ResolvedUIGizmoTransform& p_outTransform
 	);
 
-	bool ResolveUICanvas(
-		const OvCore::ECS::Actor& p_actor,
-		const OvMaths::FVector2& p_renderSize,
-		bool p_screenSpace,
-		ResolvedUICanvas& p_outCanvas
-	);
-
-	bool ResolveUIElement(
-		const OvCore::ECS::Actor& p_actor,
-		const OvMaths::FVector2& p_renderSize,
-		bool p_screenSpace,
-		const OvMaths::FVector2& p_elementSize,
-		ResolvedUIElement& p_outElement
-	);
-
-	bool ResolveUIElement(
-		const OvCore::ECS::Actor& p_actor,
-		const OvMaths::FVector2& p_renderSize,
-		bool p_screenSpace,
-		ResolvedUIElement& p_outElement
-	);
 }

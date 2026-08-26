@@ -42,6 +42,14 @@ namespace
 		return std::isfinite(p_value) ? std::clamp(p_value, kMinimumPadding, kMaximumPadding) : p_fallback;
 	}
 
+	OvMaths::FVector2 ClampLayoutSize(const OvMaths::FVector2& p_size)
+	{
+		return {
+			std::isfinite(p_size.x) ? std::max(p_size.x, 0.0f) : 0.0f,
+			std::isfinite(p_size.y) ? std::max(p_size.y, 0.0f) : 0.0f
+		};
+	}
+
 	OvCore::ECS::Components::UI::CLayoutGroup::EDirection ToDirection(int p_value)
 	{
 		using EDirection = OvCore::ECS::Components::UI::CLayoutGroup::EDirection;
@@ -128,7 +136,7 @@ namespace
 
 	OvCore::ECS::Components::UI::ClayLayoutSettings CreateLayoutSettings(
 		const OvCore::ECS::Components::UI::CLayoutGroup& p_layout,
-		const OvCore::ECS::Actor& p_owner
+		const OvMaths::FVector2& p_containerSize
 	)
 	{
 		return {
@@ -141,7 +149,7 @@ namespace
 			.controlChildrenHeight = p_layout.GetControlChildrenHeight(),
 			.forceExpandWidth = p_layout.GetForceExpandWidth(),
 			.forceExpandHeight = p_layout.GetForceExpandHeight(),
-			.containerSize = p_owner.transform.GetUISize()
+			.containerSize = p_containerSize
 		};
 	}
 }
@@ -310,6 +318,27 @@ std::optional<OvCore::ECS::Components::UI::CLayoutGroup::ChildLayout> OvCore::EC
 	return std::nullopt;
 }
 
+std::optional<OvCore::ECS::Components::UI::CLayoutGroup::ChildLayout> OvCore::ECS::Components::UI::CLayoutGroup::GetChildLayout(
+	const ECS::Actor& p_child,
+	const OvMaths::FVector2& p_containerSize
+) const
+{
+	if (p_child.GetParent() != &owner)
+	{
+		return std::nullopt;
+	}
+
+	for (const auto& childLayout : GetResolvedLayout(p_containerSize).children)
+	{
+		if (childLayout.actor == &p_child)
+		{
+			return childLayout;
+		}
+	}
+
+	return std::nullopt;
+}
+
 std::vector<OvCore::ECS::Components::UI::CLayoutGroup::ChildOffset> OvCore::ECS::Components::UI::CLayoutGroup::GetChildOffsets() const
 {
 	const auto& childLayouts = GetResolvedLayout().children;
@@ -330,10 +359,12 @@ std::vector<OvCore::ECS::Components::UI::CLayoutGroup::ChildLayout> OvCore::ECS:
 	return GetResolvedLayout().children;
 }
 
-OvCore::ECS::Components::UI::CLayoutGroup::LayoutCacheInput OvCore::ECS::Components::UI::CLayoutGroup::BuildLayoutCacheInput() const
+OvCore::ECS::Components::UI::CLayoutGroup::LayoutCacheInput OvCore::ECS::Components::UI::CLayoutGroup::BuildLayoutCacheInput(
+	const OvMaths::FVector2& p_containerSize
+) const
 {
 	LayoutCacheInput input;
-	const auto settings = CreateLayoutSettings(*this, owner);
+	const auto settings = CreateLayoutSettings(*this, p_containerSize);
 
 	input.signature = {
 		.direction = settings.direction,
@@ -380,11 +411,33 @@ OvCore::ECS::Components::UI::CLayoutGroup::LayoutCacheInput OvCore::ECS::Compone
 
 const OvCore::ECS::Components::UI::CLayoutGroup::LayoutCache& OvCore::ECS::Components::UI::CLayoutGroup::GetResolvedLayout() const
 {
-	const auto input = BuildLayoutCacheInput();
+	return ResolveLayout(owner.transform.GetUISize(), m_layoutCache);
+}
 
-	if (m_layoutCache.valid && HasSameLayoutSignature(m_layoutCache.signature, input.signature))
+const OvCore::ECS::Components::UI::CLayoutGroup::LayoutCache& OvCore::ECS::Components::UI::CLayoutGroup::GetResolvedLayout(
+	const OvMaths::FVector2& p_containerSize
+) const
+{
+	const auto containerSize = ClampLayoutSize(p_containerSize);
+	const auto& transformSize = owner.transform.GetUISize();
+	if (containerSize.x == transformSize.x && containerSize.y == transformSize.y)
 	{
-		return m_layoutCache;
+		return GetResolvedLayout();
+	}
+
+	return ResolveLayout(containerSize, m_effectiveLayoutCache);
+}
+
+const OvCore::ECS::Components::UI::CLayoutGroup::LayoutCache& OvCore::ECS::Components::UI::CLayoutGroup::ResolveLayout(
+	const OvMaths::FVector2& p_containerSize,
+	LayoutCache& p_cache
+) const
+{
+	const auto input = BuildLayoutCacheInput(p_containerSize);
+
+	if (p_cache.valid && HasSameLayoutSignature(p_cache.signature, input.signature))
+	{
+		return p_cache;
 	}
 
 	std::vector<ClayLayoutChildInput> layoutChildren;
@@ -398,17 +451,21 @@ const OvCore::ECS::Components::UI::CLayoutGroup::LayoutCache& OvCore::ECS::Compo
 		});
 	}
 
-	const auto layoutResult = ClayLayoutSolver::Solve(*m_layoutSolverContext, CreateLayoutSettings(*this, owner), layoutChildren);
+	const auto layoutResult = ClayLayoutSolver::Solve(
+		*m_layoutSolverContext,
+		CreateLayoutSettings(*this, p_containerSize),
+		layoutChildren
+	);
 
-	m_layoutCache.valid = true;
-	m_layoutCache.signature = input.signature;
-	m_layoutCache.size = layoutResult.size;
-	m_layoutCache.children.clear();
-	m_layoutCache.children.reserve(layoutResult.children.size());
+	p_cache.valid = true;
+	p_cache.signature = input.signature;
+	p_cache.size = layoutResult.size;
+	p_cache.children.clear();
+	p_cache.children.reserve(layoutResult.children.size());
 
 	for (const auto& child : layoutResult.children)
 	{
-		m_layoutCache.children.push_back({
+		p_cache.children.push_back({
 			.actor = child.actor,
 			.offset = child.offset,
 			.size = child.size,
@@ -418,13 +475,15 @@ const OvCore::ECS::Components::UI::CLayoutGroup::LayoutCache& OvCore::ECS::Compo
 		});
 	}
 
-	return m_layoutCache;
+	return p_cache;
 }
 
 void OvCore::ECS::Components::UI::CLayoutGroup::InvalidateLayoutCache() const
 {
 	m_layoutCache.valid = false;
 	m_layoutCache.children.clear();
+	m_effectiveLayoutCache.valid = false;
+	m_effectiveLayoutCache.children.clear();
 }
 
 bool OvCore::ECS::Components::UI::CLayoutGroup::HasSameLayoutSignature(
