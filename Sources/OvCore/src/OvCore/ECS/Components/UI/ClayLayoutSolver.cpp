@@ -49,8 +49,8 @@ namespace
 	struct ClayLayoutPassResult
 	{
 		OvMaths::FVector2 size = OvMaths::FVector2::Zero;
-		std::vector<Clay_BoundingBox> childBoxes;
-		std::vector<bool> childFound;
+		std::vector<Clay_BoundingBox> slotBoxes;
+		std::vector<bool> slotFound;
 	};
 
 	class ScopedClayContext
@@ -76,6 +76,12 @@ namespace
 	public:
 		Clay_Context* GetContext(size_t p_childCount)
 		{
+			constexpr auto maxChildCount = static_cast<size_t>(std::numeric_limits<int32_t>::max() - kSolverElementOverhead);
+			if (p_childCount > maxChildCount)
+			{
+				return nullptr;
+			}
+
 			const auto requiredCapacity = std::max(
 				kMinimumElementCapacity,
 				static_cast<int32_t>(p_childCount) + kSolverElementOverhead
@@ -168,38 +174,6 @@ namespace
 			CLAY_LEFT_TO_RIGHT;
 	}
 
-	Clay_LayoutAlignmentX ToClayHorizontalAlignment(OvCore::ECS::Components::UI::CLayoutGroup::EHorizontalAlignment p_alignment)
-	{
-		using EHorizontalAlignment = OvCore::ECS::Components::UI::CLayoutGroup::EHorizontalAlignment;
-
-		switch (p_alignment)
-		{
-		case EHorizontalAlignment::LEFT:
-			return CLAY_ALIGN_X_LEFT;
-		case EHorizontalAlignment::RIGHT:
-			return CLAY_ALIGN_X_RIGHT;
-		case EHorizontalAlignment::CENTER:
-		default:
-			return CLAY_ALIGN_X_CENTER;
-		}
-	}
-
-	Clay_LayoutAlignmentY ToClayVerticalAlignment(OvCore::ECS::Components::UI::CLayoutGroup::EVerticalAlignment p_alignment)
-	{
-		using EVerticalAlignment = OvCore::ECS::Components::UI::CLayoutGroup::EVerticalAlignment;
-
-		switch (p_alignment)
-		{
-		case EVerticalAlignment::TOP:
-			return CLAY_ALIGN_Y_TOP;
-		case EVerticalAlignment::BOTTOM:
-			return CLAY_ALIGN_Y_BOTTOM;
-		case EVerticalAlignment::CENTER:
-		default:
-			return CLAY_ALIGN_Y_CENTER;
-		}
-	}
-
 	Clay_SizingAxis MakeFixedSizing(float p_size)
 	{
 		return CLAY_SIZING_FIXED(ClampNonNegative(p_size));
@@ -215,14 +189,9 @@ namespace
 		return CLAY_SIZING_GROW(ClampNonNegative(p_minSize), kMaximumLayoutSize);
 	}
 
-	Clay_SizingAxis MakeChildSizing(float p_preferredSize, bool p_controlSize, bool p_forceExpand)
+	Clay_SizingAxis MakeSlotSizing(float p_preferredSize, bool p_forceExpand)
 	{
-		if (p_controlSize && p_forceExpand)
-		{
-			return MakeGrowSizing(p_preferredSize);
-		}
-
-		return MakeFixedSizing(p_preferredSize);
+		return p_forceExpand ? MakeGrowSizing(p_preferredSize) : MakeFixedSizing(p_preferredSize);
 	}
 
 	Clay_ElementDeclaration CreateContainerDeclaration(
@@ -236,24 +205,22 @@ namespace
 		declaration.layout.sizing.height = p_heightSizing;
 		declaration.layout.padding = ToClayPadding(p_settings.padding);
 		declaration.layout.childGap = ToClaySpacing(p_settings.spacing);
-		declaration.layout.childAlignment.x = ToClayHorizontalAlignment(p_settings.horizontalAlignment);
-		declaration.layout.childAlignment.y = ToClayVerticalAlignment(p_settings.verticalAlignment);
 		declaration.layout.layoutDirection = ToClayDirection(p_settings.direction);
 		return declaration;
 	}
 
-	Clay_ElementDeclaration CreateChildDeclaration(
+	Clay_ElementDeclaration CreateSlotDeclaration(
 		const OvCore::ECS::Components::UI::ClayLayoutSettings& p_settings,
 		const OvCore::ECS::Components::UI::ClayLayoutChildInput& p_child,
-		bool p_useControlledSizing
+		bool p_resolveFlexibleSizing
 	)
 	{
 		Clay_ElementDeclaration declaration{};
-		declaration.layout.sizing.width = p_useControlledSizing ?
-			MakeChildSizing(p_child.preferredSize.x, p_settings.controlChildrenWidth, p_settings.forceExpandWidth) :
+		declaration.layout.sizing.width = p_resolveFlexibleSizing ?
+			MakeSlotSizing(p_child.preferredSize.x, p_settings.forceExpandWidth) :
 			MakeFixedSizing(p_child.preferredSize.x);
-		declaration.layout.sizing.height = p_useControlledSizing ?
-			MakeChildSizing(p_child.preferredSize.y, p_settings.controlChildrenHeight, p_settings.forceExpandHeight) :
+		declaration.layout.sizing.height = p_resolveFlexibleSizing ?
+			MakeSlotSizing(p_child.preferredSize.y, p_settings.forceExpandHeight) :
 			MakeFixedSizing(p_child.preferredSize.y);
 		return declaration;
 	}
@@ -265,7 +232,7 @@ namespace
 		Clay_SizingAxis p_containerWidthSizing,
 		Clay_SizingAxis p_containerHeightSizing,
 		const OvMaths::FVector2& p_rootSize,
-		bool p_useControlledChildSizing
+		bool p_resolveFlexibleSlots
 	)
 	{
 		std::lock_guard lock(GetClayApiMutex());
@@ -277,9 +244,9 @@ namespace
 		});
 
 		const auto containerId = CLAY_ID("Overload_LayoutGroup_Container");
-		const auto childIdBase = CLAY_STRING("Overload_LayoutGroup_Child");
-		std::vector<Clay_ElementId> childIds;
-		childIds.reserve(p_children.size());
+		const auto slotIdBase = CLAY_STRING("Overload_LayoutGroup_Slot");
+		std::vector<Clay_ElementId> slotIds;
+		slotIds.reserve(p_children.size());
 
 		Clay_BeginLayout();
 
@@ -287,9 +254,9 @@ namespace
 		{
 			for (size_t i = 0; i < p_children.size(); ++i)
 			{
-				const auto childId = Clay_GetElementIdWithIndex(childIdBase, static_cast<uint32_t>(i));
-				childIds.push_back(childId);
-				CLAY(childId, CreateChildDeclaration(p_settings, p_children[i], p_useControlledChildSizing))
+				const auto slotId = Clay_GetElementIdWithIndex(slotIdBase, static_cast<uint32_t>(i));
+				slotIds.push_back(slotId);
+				CLAY(slotId, CreateSlotDeclaration(p_settings, p_children[i], p_resolveFlexibleSlots))
 				{
 				}
 			}
@@ -310,13 +277,13 @@ namespace
 			std::max(containerData.boundingBox.height, kMinimumLayoutSize)
 		};
 
-		result.childBoxes.reserve(childIds.size());
-		result.childFound.reserve(childIds.size());
-		for (const auto& childId : childIds)
+		result.slotBoxes.reserve(slotIds.size());
+		result.slotFound.reserve(slotIds.size());
+		for (const auto& slotId : slotIds)
 		{
-			const auto childData = Clay_GetElementData(childId);
-			result.childBoxes.push_back(childData.found ? childData.boundingBox : Clay_BoundingBox{});
-			result.childFound.push_back(childData.found);
+			const auto slotData = Clay_GetElementData(slotId);
+			result.slotBoxes.push_back(slotData.found ? slotData.boundingBox : Clay_BoundingBox{});
+			result.slotFound.push_back(slotData.found);
 		}
 
 		return result;
@@ -344,46 +311,6 @@ namespace
 			centerX - halfSize.x,
 			halfSize.y - centerY
 		};
-	}
-
-	float GetHorizontalAlignmentOffset(
-		OvCore::ECS::Components::UI::CLayoutGroup::EHorizontalAlignment p_alignment,
-		float p_availableWidth,
-		float p_contentWidth
-	)
-	{
-		const float extraSpace = std::max(0.0f, p_availableWidth - p_contentWidth);
-
-		switch (p_alignment)
-		{
-		case OvCore::ECS::Components::UI::CLayoutGroup::EHorizontalAlignment::LEFT:
-			return 0.0f;
-		case OvCore::ECS::Components::UI::CLayoutGroup::EHorizontalAlignment::RIGHT:
-			return extraSpace;
-		case OvCore::ECS::Components::UI::CLayoutGroup::EHorizontalAlignment::CENTER:
-		default:
-			return extraSpace * 0.5f;
-		}
-	}
-
-	float GetVerticalAlignmentOffset(
-		OvCore::ECS::Components::UI::CLayoutGroup::EVerticalAlignment p_alignment,
-		float p_availableHeight,
-		float p_contentHeight
-	)
-	{
-		const float extraSpace = std::max(0.0f, p_availableHeight - p_contentHeight);
-
-		switch (p_alignment)
-		{
-		case OvCore::ECS::Components::UI::CLayoutGroup::EVerticalAlignment::TOP:
-			return 0.0f;
-		case OvCore::ECS::Components::UI::CLayoutGroup::EVerticalAlignment::BOTTOM:
-			return extraSpace;
-		case OvCore::ECS::Components::UI::CLayoutGroup::EVerticalAlignment::CENTER:
-		default:
-			return extraSpace * 0.5f;
-		}
 	}
 
 	float GetHorizontalAlignmentFactor(
@@ -418,164 +345,116 @@ namespace
 		}
 	}
 
-	OvMaths::FVector2 GetChildrenContentSize(
-		const std::vector<OvCore::ECS::Components::UI::ClayLayoutChildResult>& p_children,
-		OvCore::ECS::Components::UI::CLayoutGroup::EDirection p_direction,
-		float p_spacing
+	std::vector<OvCore::ECS::Components::UI::ClayLayoutChildResult> ProjectSlotsToChildren(
+		const ClayLayoutPassResult& p_pass,
+		const OvCore::ECS::Components::UI::ClayLayoutSettings& p_settings,
+		const std::vector<OvCore::ECS::Components::UI::ClayLayoutChildInput>& p_children,
+		const OvMaths::FVector2& p_layoutSize
 	)
 	{
-		if (p_children.empty())
+		using EDirection = OvCore::ECS::Components::UI::CLayoutGroup::EDirection;
+		using ClayLayoutChildResult = OvCore::ECS::Components::UI::ClayLayoutChildResult;
+
+		const auto padding = ToClayPadding(p_settings.padding);
+		const float spacing = static_cast<float>(ToClaySpacing(p_settings.spacing));
+		const float horizontalAlignment = GetHorizontalAlignmentFactor(p_settings.horizontalAlignment);
+		const float verticalAlignment = GetVerticalAlignmentFactor(p_settings.verticalAlignment);
+		const float availableWidth = std::max(
+			p_layoutSize.x - static_cast<float>(padding.left + padding.right),
+			0.0f
+		);
+		const float availableHeight = std::max(
+			p_layoutSize.y - static_cast<float>(padding.top + padding.bottom),
+			0.0f
+		);
+
+		std::vector<OvMaths::FVector2> slotSizes;
+		slotSizes.reserve(p_children.size());
+
+		float mainAxisContentSize = 0.0f;
+		for (size_t i = 0; i < p_children.size(); ++i)
 		{
-			return OvMaths::FVector2::Zero;
+			const auto slotBox = i < p_pass.slotBoxes.size() ? p_pass.slotBoxes[i] : Clay_BoundingBox{};
+			const bool hasResolvedSlot =
+				i < p_pass.slotFound.size() &&
+				p_pass.slotFound[i] &&
+				slotBox.width > 0.0f &&
+				slotBox.height > 0.0f;
+			const OvMaths::FVector2 slotSize = hasResolvedSlot ?
+				OvMaths::FVector2{ slotBox.width, slotBox.height } :
+				OvMaths::FVector2{
+					ClampNonNegative(p_children[i].preferredSize.x),
+					ClampNonNegative(p_children[i].preferredSize.y)
+				};
+
+			slotSizes.push_back(slotSize);
+			mainAxisContentSize += p_settings.direction == EDirection::HORIZONTAL ? slotSize.x : slotSize.y;
 		}
 
-		OvMaths::FVector2 result = OvMaths::FVector2::Zero;
-
-		for (const auto& child : p_children)
+		if (slotSizes.size() > 1)
 		{
-			if (!child.valid)
-			{
-				continue;
-			}
+			mainAxisContentSize += spacing * static_cast<float>(slotSizes.size() - 1);
+		}
 
-			if (p_direction == OvCore::ECS::Components::UI::CLayoutGroup::EDirection::HORIZONTAL)
+		const float mainAxisAvailableSize = p_settings.direction == EDirection::HORIZONTAL ?
+			availableWidth :
+			availableHeight;
+		const float mainAxisAlignment = p_settings.direction == EDirection::HORIZONTAL ?
+			horizontalAlignment :
+			verticalAlignment;
+		float mainAxisCursor = (p_settings.direction == EDirection::HORIZONTAL ?
+			static_cast<float>(padding.left) :
+			static_cast<float>(padding.top)) +
+			std::max(mainAxisAvailableSize - mainAxisContentSize, 0.0f) * mainAxisAlignment;
+
+		std::vector<ClayLayoutChildResult> results;
+		results.reserve(p_children.size());
+
+		// Clay owns slot sizing. This projection keeps Overload's centered coordinate system deterministic.
+		for (size_t i = 0; i < p_children.size(); ++i)
+		{
+			const auto& slotSize = slotSizes[i];
+			OvMaths::FVector2 slotTopLeft;
+
+			if (p_settings.direction == EDirection::HORIZONTAL)
 			{
-				result.x += child.size.x;
-				result.y = std::max(result.y, child.size.y);
+				slotTopLeft = {
+					mainAxisCursor,
+					static_cast<float>(padding.top) +
+						std::max(availableHeight - slotSize.y, 0.0f) * verticalAlignment
+				};
+				mainAxisCursor += slotSize.x + spacing;
 			}
 			else
 			{
-				result.x = std::max(result.x, child.size.x);
-				result.y += child.size.y;
+				slotTopLeft = {
+					static_cast<float>(padding.left) +
+						std::max(availableWidth - slotSize.x, 0.0f) * horizontalAlignment,
+					mainAxisCursor
+				};
+				mainAxisCursor += slotSize.y + spacing;
 			}
+
+			const OvMaths::FVector2 childSize = {
+				p_settings.controlChildrenWidth ? slotSize.x : ClampNonNegative(p_children[i].preferredSize.x),
+				p_settings.controlChildrenHeight ? slotSize.y : ClampNonNegative(p_children[i].preferredSize.y)
+			};
+			const OvMaths::FVector2 childTopLeft = {
+				slotTopLeft.x + std::max(slotSize.x - childSize.x, 0.0f) * horizontalAlignment,
+				slotTopLeft.y + std::max(slotSize.y - childSize.y, 0.0f) * verticalAlignment
+			};
+
+			results.push_back({
+				.actor = p_children[i].actor,
+				.offset = ToChildOffset(childTopLeft, childSize, p_layoutSize),
+				.size = childSize,
+				.valid = p_children[i].actor && childSize.x > 0.0f && childSize.y > 0.0f
+			});
 		}
 
-		const auto validChildCount = static_cast<float>(std::count_if(p_children.begin(), p_children.end(), [](const auto& p_child)
-		{
-			return p_child.valid;
-		}));
-		const float gapSize = p_spacing * std::max(validChildCount - 1.0f, 0.0f);
-
-		if (p_direction == OvCore::ECS::Components::UI::CLayoutGroup::EDirection::HORIZONTAL)
-		{
-			result.x += gapSize;
-		}
-		else
-		{
-			result.y += gapSize;
-		}
-
-		return result;
+		return results;
 	}
 
-	float GetValidChildCount(
-		const std::vector<OvCore::ECS::Components::UI::ClayLayoutChildResult>& p_children
-	)
-	{
-		return static_cast<float>(std::count_if(p_children.begin(), p_children.end(), [](const auto& p_child)
-		{
-			return p_child.valid;
-		}));
-	}
-
-	float GetFlexibleSlotSpace(
-		const OvCore::ECS::Components::UI::ClayLayoutResult& p_result,
-		OvCore::ECS::Components::UI::CLayoutGroup::EDirection p_direction,
-		float p_availableSize,
-		float p_spacing,
-		bool p_forceExpand,
-		bool p_controlSize
-	)
-	{
-		if (!p_forceExpand || p_controlSize)
-		{
-			return 0.0f;
-		}
-
-		const auto childCount = GetValidChildCount(p_result.children);
-		if (childCount <= 0.0f)
-		{
-			return 0.0f;
-		}
-
-		const auto contentSize = GetChildrenContentSize(p_result.children, p_direction, p_spacing);
-		const float occupiedSize = p_direction == OvCore::ECS::Components::UI::CLayoutGroup::EDirection::HORIZONTAL ?
-			contentSize.x :
-			contentSize.y;
-		return std::max(p_availableSize - occupiedSize, 0.0f) / childCount;
-	}
-
-	void ApplyAlignedOffsets(
-		OvCore::ECS::Components::UI::ClayLayoutResult& p_result,
-		const OvCore::ECS::Components::UI::ClayLayoutSettings& p_settings
-	)
-	{
-		const auto padding = ToClayPadding(p_settings.padding);
-		const float spacing = static_cast<float>(ToClaySpacing(p_settings.spacing));
-		const float availableWidth = std::max(0.0f, p_result.size.x - padding.left - padding.right);
-		const float availableHeight = std::max(0.0f, p_result.size.y - padding.top - padding.bottom);
-		const auto contentSize = GetChildrenContentSize(p_result.children, p_settings.direction, spacing);
-		const auto childCount = GetValidChildCount(p_result.children);
-
-		if (p_settings.direction == OvCore::ECS::Components::UI::CLayoutGroup::EDirection::HORIZONTAL)
-		{
-			const float flexibleSlotSpace = GetFlexibleSlotSpace(
-				p_result,
-				p_settings.direction,
-				availableWidth,
-				spacing,
-				p_settings.forceExpandWidth,
-				p_settings.controlChildrenWidth
-			);
-			const float positionedContentWidth = contentSize.x + flexibleSlotSpace * childCount;
-			float childLeft = static_cast<float>(padding.left) +
-				GetHorizontalAlignmentOffset(p_settings.horizontalAlignment, availableWidth, positionedContentWidth);
-
-			for (auto& child : p_result.children)
-			{
-				if (!child.valid)
-				{
-					continue;
-				}
-
-				const float positionedChildLeft = childLeft +
-					flexibleSlotSpace * GetHorizontalAlignmentFactor(p_settings.horizontalAlignment);
-				const float childTop = static_cast<float>(padding.top) +
-					GetVerticalAlignmentOffset(p_settings.verticalAlignment, availableHeight, child.size.y);
-				child.offset = ToChildOffset({ positionedChildLeft, childTop }, child.size, p_result.size);
-				childLeft += child.size.x + flexibleSlotSpace + spacing;
-			}
-		}
-		else
-		{
-			const float flexibleSlotSpace = GetFlexibleSlotSpace(
-				p_result,
-				p_settings.direction,
-				availableHeight,
-				spacing,
-				p_settings.forceExpandHeight,
-				p_settings.controlChildrenHeight
-			);
-			const float positionedContentHeight = contentSize.y + flexibleSlotSpace * childCount;
-			float childTop = static_cast<float>(padding.top) +
-				GetVerticalAlignmentOffset(p_settings.verticalAlignment, availableHeight, positionedContentHeight);
-
-			for (auto& child : p_result.children)
-			{
-				if (!child.valid)
-				{
-					continue;
-				}
-
-				const float childLeft = static_cast<float>(padding.left) +
-					GetHorizontalAlignmentOffset(p_settings.horizontalAlignment, availableWidth, child.size.x);
-				const float positionedChildTop = childTop +
-					flexibleSlotSpace * GetVerticalAlignmentFactor(p_settings.verticalAlignment);
-				child.offset = ToChildOffset({ childLeft, positionedChildTop }, child.size, p_result.size);
-				childTop += child.size.y + flexibleSlotSpace + spacing;
-			}
-		}
-	}
 }
 
 struct OvCore::ECS::Components::UI::ClayLayoutSolverContext::Impl : ClaySolverRuntime
@@ -639,8 +518,6 @@ OvCore::ECS::Components::UI::ClayLayoutSolution OvCore::ECS::Components::UI::Cla
 )
 {
 	ClayLayoutSolution solution;
-	solution.settings = p_measurement.settings;
-	solution.preferredSize = p_measurement.preferredSize;
 
 	if (!p_measurement.valid)
 	{
@@ -673,28 +550,7 @@ OvCore::ECS::Components::UI::ClayLayoutSolution OvCore::ECS::Components::UI::Cla
 	);
 
 	solution.result.size = GetRootSize(settings.containerSize, p_measurement.preferredSize);
-	solution.result.children.reserve(p_children.size());
-
-	for (size_t i = 0; i < p_children.size(); ++i)
-	{
-		const auto childBox = i < finalPass.childBoxes.size() ? finalPass.childBoxes[i] : Clay_BoundingBox{};
-		const bool childValid =
-			i < finalPass.childFound.size() &&
-			finalPass.childFound[i] &&
-			childBox.width > 0.0f &&
-			childBox.height > 0.0f;
-		const auto childSize = childValid ?
-			OvMaths::FVector2{ childBox.width, childBox.height } :
-			p_children[i].preferredSize;
-		const bool hasUsableChild = p_children[i].actor && childSize.x > 0.0f && childSize.y > 0.0f;
-
-		solution.result.children.push_back({
-			.actor = p_children[i].actor,
-			.offset = OvMaths::FVector2::Zero,
-			.size = childSize,
-			.valid = hasUsableChild
-		});
-	}
+	solution.result.children = ProjectSlotsToChildren(finalPass, settings, p_children, solution.result.size);
 
 	solution.valid = true;
 	return solution;
@@ -709,9 +565,7 @@ OvCore::ECS::Components::UI::ClayLayoutResult OvCore::ECS::Components::UI::ClayL
 		return {};
 	}
 
-	auto result = p_solution.result;
-	ApplyAlignedOffsets(result, p_solution.settings);
-	return result;
+	return p_solution.result;
 }
 
 OvCore::ECS::Components::UI::ClayLayoutResult OvCore::ECS::Components::UI::ClayLayoutSolver::Solve(

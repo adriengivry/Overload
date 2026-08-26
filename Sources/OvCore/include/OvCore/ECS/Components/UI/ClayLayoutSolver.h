@@ -78,8 +78,6 @@ namespace OvCore::ECS::Components::UI
 
 	struct ClayLayoutSolution
 	{
-		ClayLayoutSettings settings;
-		OvMaths::FVector2 preferredSize = OvMaths::FVector2::Zero;
 		ClayLayoutResult result;
 		bool valid = false;
 	};

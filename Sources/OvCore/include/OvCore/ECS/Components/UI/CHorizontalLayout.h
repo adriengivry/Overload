@@ -50,4 +50,3 @@ namespace OvCore::ECS::Components
 		static constexpr std::string_view Name = "class OvCore::ECS::Components::UI::CHorizontalLayout";
 	};
 }
-
