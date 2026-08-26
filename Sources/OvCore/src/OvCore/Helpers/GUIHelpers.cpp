@@ -31,6 +31,7 @@ namespace
 		case EFileType::SHADER:   return "Pick Shader";
 		case EFileType::MATERIAL: return "Pick Material";
 		case EFileType::SOUND:    return "Pick Sound";
+		case EFileType::FONT:     return "Pick Font";
 		case EFileType::SCRIPT:   return "Pick Script";
 		case EFileType::SCENE:    return "Pick Scene";
 		case EFileType::PREFAB:   return "Pick Prefab";

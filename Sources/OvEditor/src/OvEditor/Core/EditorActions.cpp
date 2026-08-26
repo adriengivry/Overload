@@ -1624,7 +1624,7 @@ bool OvEditor::Core::EditorActions::ImportAssetAtLocation(const std::string& p_d
 	std::string fontFormats = "*.ttf;*.otf;";
 
 	OpenFileDialog selectAssetDialog("Select an asset to import");
-	selectAssetDialog.AddFileType("Any supported format", modelFormats + textureFormats + shaderFormats + soundFormats + scriptFormats + fontFormats);
+	selectAssetDialog.AddFileType("Any supported format", modelFormats + textureFormats + shaderFormats + shaderPartFormats + soundFormats + scriptFormats + fontFormats);
 	selectAssetDialog.AddFileType("Model (.fbx, .obj)", modelFormats);
 	selectAssetDialog.AddFileType("Texture (.png, .jpeg, .jpg, .tga, .hdr)", textureFormats);
 	selectAssetDialog.AddFileType("Shader (.ovfx)", shaderFormats);

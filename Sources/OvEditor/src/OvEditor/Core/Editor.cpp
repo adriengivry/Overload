@@ -146,7 +146,7 @@ void OvEditor::Core::Editor::SetupUI()
 			}
 			else
 			{
-				// SOUND, FONT, UNKNOWN → open with OS default
+				// SOUND, FONT, UNKNOWN use the OS default application.
 				OvTools::Utils::SystemCalls::OpenFile(EDITOR_EXEC(GetRealPath(path)));
 			}
 		}
