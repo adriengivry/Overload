@@ -190,7 +190,11 @@ namespace OvCore::ECS::Components::UI
 		mutable std::string m_unavailableFontPath;
 
 		mutable bool m_layoutDirty = true;
+		mutable bool m_layoutAvailable = false;
 		mutable OvMaths::FVector2 m_lastLayoutUISize = OvMaths::FVector2::Zero;
+		mutable OvRendering::Resources::Font* m_layoutFont = nullptr;
+		mutable uint64_t m_layoutFontRevision = 0;
+		mutable uint64_t m_layoutFontManagerRevision = 0;
 		mutable bool m_meshDirty = true;
 		mutable OvMaths::FVector2 m_lastMeshUISize = OvMaths::FVector2::Zero;
 		mutable OvMaths::FVector2 m_size = OvMaths::FVector2::Zero;
@@ -200,6 +204,8 @@ namespace OvCore::ECS::Components::UI
 		OvRendering::Resources::Font* m_materialFont = nullptr;
 		OvRendering::Resources::Shader* m_materialShader = nullptr;
 		uint64_t m_materialFontRevision = 0;
+		uint64_t m_materialFontManagerRevision = 0;
+		uint64_t m_materialManagerRevision = 0;
 		bool m_materialSourceDirty = true;
 		bool m_materialColorDirty = true;
 	};

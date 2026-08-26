@@ -418,23 +418,37 @@ void OvCore::ECS::Components::UI::CText::RebuildLayout() const
 
 void OvCore::ECS::Components::UI::CText::RebuildLayout(const OvMaths::FVector2& p_uiSize) const
 {
-	if (!m_layoutDirty && IsSameSize(m_lastLayoutUISize, p_uiSize))
+	auto* font = GetFont();
+	const auto fontManagerRevision = Global::ServiceLocator::Get<ResourceManagement::FontManager>().GetResourcesRevision();
+	const uint64_t fontRevision = font ? font->GetRevision() : 0;
+	const bool fontChanged =
+		font != m_layoutFont ||
+		fontRevision != m_layoutFontRevision ||
+		fontManagerRevision != m_layoutFontManagerRevision;
+
+	if (!m_layoutDirty && !fontChanged && IsSameSize(m_lastLayoutUISize, p_uiSize))
 	{
 		return;
 	}
 
-	auto* font = GetFont();
+	m_meshDirty = true;
+	m_layoutFont = font;
+	m_layoutFontRevision = fontRevision;
+	m_layoutFontManagerRevision = fontManagerRevision;
+
 	if (!font)
 	{
 		m_layout = {};
 		m_size = OvMaths::FVector2::Zero;
 		m_lastLayoutUISize = p_uiSize;
-		m_layoutDirty = true;
+		m_layoutDirty = false;
+		m_layoutAvailable = false;
 		m_meshDirty = true;
 		return;
 	}
 
 	m_layoutDirty = false;
+	m_layoutAvailable = true;
 	m_lastLayoutUISize = p_uiSize;
 
 	m_layout = TextLayoutEngine::Layout({
@@ -456,15 +470,18 @@ void OvCore::ECS::Components::UI::CText::RebuildMesh() const
 
 void OvCore::ECS::Components::UI::CText::RebuildMesh(const OvMaths::FVector2& p_uiSize) const
 {
+	RebuildLayout(p_uiSize);
+
 	if (!m_meshDirty && IsSameSize(m_lastMeshUISize, p_uiSize))
 	{
 		return;
 	}
 
-	RebuildLayout(p_uiSize);
-	if (m_layoutDirty)
+	if (!m_layoutAvailable)
 	{
 		m_mesh.reset();
+		m_meshDirty = false;
+		m_lastMeshUISize = p_uiSize;
 		return;
 	}
 
@@ -480,6 +497,9 @@ void OvCore::ECS::Components::UI::CText::RebuildMesh(const OvMaths::FVector2& p_
 
 void OvCore::ECS::Components::UI::CText::RefreshMaterial()
 {
+	auto& fontManager = Global::ServiceLocator::Get<ResourceManagement::FontManager>();
+	auto& materialManager = Global::ServiceLocator::Get<ResourceManagement::MaterialManager>();
+
 	if (!m_material)
 	{
 		m_material = std::make_unique<OvRendering::Data::Material>();
@@ -491,13 +511,15 @@ void OvCore::ECS::Components::UI::CText::RefreshMaterial()
 		const auto& textMaterialPath = Global::ServiceLocator::Get<ResourceManagement::UIResourceRegistry>().GetDefinition().textMaterialPath;
 		auto* defaultMaterial = textMaterialPath.empty() ?
 			nullptr :
-			Global::ServiceLocator::Get<ResourceManagement::MaterialManager>().GetResource(textMaterialPath, false);
+			materialManager.GetResource(textMaterialPath, false);
 		auto* currentShader = defaultMaterial && defaultMaterial->HasShader() ? defaultMaterial->GetShader() : nullptr;
 		auto* currentFont = m_fontPath.empty() || m_fontPath == "?" ?
 			nullptr :
-			Global::ServiceLocator::Get<ResourceManagement::FontManager>().GetResource(m_fontPath, false);
+			fontManager.GetResource(m_fontPath, false);
 
 		if (
+			materialManager.GetResourcesRevision() != m_materialManagerRevision ||
+			fontManager.GetResourcesRevision() != m_materialFontManagerRevision ||
 			currentShader != m_materialShader ||
 			currentFont != m_materialFont ||
 			(currentFont && currentFont->GetRevision() != m_materialFontRevision)
@@ -512,13 +534,15 @@ void OvCore::ECS::Components::UI::CText::RefreshMaterial()
 		const auto& textMaterialPath = Global::ServiceLocator::Get<ResourceManagement::UIResourceRegistry>().GetDefinition().textMaterialPath;
 		auto* defaultMaterial = textMaterialPath.empty() ?
 			nullptr :
-			Global::ServiceLocator::Get<ResourceManagement::MaterialManager>().GetResource(textMaterialPath);
+			materialManager.GetResource(textMaterialPath);
 		auto* defaultShader = defaultMaterial && defaultMaterial->HasShader() ? defaultMaterial->GetShader() : nullptr;
 		auto* font = GetFont();
 
 		m_materialFont = font;
 		m_materialShader = defaultShader;
 		m_materialFontRevision = font ? font->GetRevision() : 0;
+		m_materialFontManagerRevision = fontManager.GetResourcesRevision();
+		m_materialManagerRevision = materialManager.GetResourcesRevision();
 
 		if (!defaultShader || !font || !font->EnsureEmbeddedMaterial(defaultShader, m_fontSize))
 		{
