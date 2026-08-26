@@ -4,10 +4,14 @@
 * @licence: MIT
 */
 
+#include <array>
 #include <filesystem>
 #include <format>
+#include <memory>
 #include <ranges>
 #include <string>
+#include <string_view>
+#include <type_traits>
 
 #include <OvCore/ECS/Components/CAmbientBoxLight.h>
 #include <OvCore/ECS/Components/CAmbientSphereLight.h>
@@ -72,18 +76,6 @@ namespace
 
 		void AddComponent(Actor& p_actor) const override
 		{
-			if constexpr (
-				std::is_same_v<TComponent, UI::CCanvas> ||
-				std::is_same_v<TComponent, UI::CImage> ||
-				std::is_same_v<TComponent, UI::CText> ||
-				std::is_same_v<TComponent, UI::CLayoutGroup> ||
-				std::is_same_v<TComponent, UI::CHorizontalLayout> ||
-				std::is_same_v<TComponent, UI::CVerticalLayout>
-			)
-			{
-				p_actor.transform.EnableUIData();
-			}
-
 			p_actor.AddComponent<TComponent>();
 		}
 
