@@ -148,7 +148,7 @@ namespace
 		bool& p_lineHasContent
 	)
 	{
-		if (p_width <= p_maxWidth || !p_lineHasContent)
+		if (p_width <= p_maxWidth)
 		{
 			p_output.insert(p_output.end(), p_text.begin() + p_begin, p_text.begin() + p_end);
 			p_lineWidth += p_width;
