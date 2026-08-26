@@ -5,9 +5,26 @@
 */
 
 #include <cfloat>
+#include <cstddef>
 #include <imgui.h>
 
 #include <OvUI/Widgets/InputFields/InputText.h>
+
+namespace
+{
+	int ResizeInputTextBuffer(ImGuiInputTextCallbackData* p_data)
+	{
+		if (p_data->EventFlag != ImGuiInputTextFlags_CallbackResize || !p_data->UserData)
+		{
+			return 0;
+		}
+
+		auto& content = *static_cast<std::string*>(p_data->UserData);
+		content.resize(static_cast<std::size_t>(p_data->BufTextLen));
+		p_data->Buf = content.data();
+		return 0;
+	}
+}
 
 OvUI::Widgets::InputFields::InputText::InputText(const std::string& p_content, const std::string& p_label) :
 	DataWidget<std::string>(content), content(p_content), label(p_label)
@@ -51,12 +68,9 @@ void OvUI::Widgets::InputFields::InputText::_Draw_Impl()
 	if (needFocus)
 		ImGui::SetKeyboardFocusHere(0);
 
-	constexpr size_t kSingleLineBufferSize = 256;
-	constexpr size_t kMultilineBufferSize = 4096;
-	const size_t bufferSize = multiline ? kMultilineBufferSize : kSingleLineBufferSize;
-	content.resize(bufferSize, '\0');
-
-	const auto commonFlags = selectAllOnClick ? ImGuiInputTextFlags_AutoSelectAll : ImGuiInputTextFlags_None;
+	const auto commonFlags =
+		(selectAllOnClick ? ImGuiInputTextFlags_AutoSelectAll : ImGuiInputTextFlags_None) |
+		ImGuiInputTextFlags_CallbackResize;
 	bool enterPressed = false;
 
 	if (multiline)
@@ -68,23 +82,25 @@ void OvUI::Widgets::InputFields::InputText::_Draw_Impl()
 
 		enterPressed = ImGui::InputTextMultiline(
 			(label + m_widgetID).c_str(),
-			&content[0],
-			bufferSize,
+			content.data(),
+			content.capacity() + 1,
 			ImVec2(fieldWidth, fieldHeight),
-			commonFlags
+			commonFlags,
+			ResizeInputTextBuffer,
+			&content
 		);
 	}
 	else
 	{
 		enterPressed = ImGui::InputText(
 			(label + m_widgetID).c_str(),
-			&content[0],
-			bufferSize,
-			ImGuiInputTextFlags_EnterReturnsTrue | commonFlags
+			content.data(),
+			content.capacity() + 1,
+			ImGuiInputTextFlags_EnterReturnsTrue | commonFlags,
+			ResizeInputTextBuffer,
+			&content
 		);
 	}
-
-	content = content.c_str();
 
 	if (content != previousContent)
 	{
