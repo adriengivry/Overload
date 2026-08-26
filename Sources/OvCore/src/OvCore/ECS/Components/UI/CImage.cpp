@@ -45,24 +45,6 @@ namespace
 	{
 		return { p_value.r, p_value.g, p_value.b, p_value.a };
 	}
-
-	bool IsRegisteredTexture(const OvRendering::Resources::Texture* p_texture)
-	{
-		if (!p_texture)
-		{
-			return false;
-		}
-
-		for (const auto& [_, texture] : OvCore::Global::ServiceLocator::Get<OvCore::ResourceManagement::TextureManager>().GetResources())
-		{
-			if (texture == p_texture)
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
 }
 
 OvCore::ECS::Components::UI::CImage::CImage(ECS::Actor& p_owner) :
@@ -70,10 +52,9 @@ AComponent(p_owner)
 {
 	m_textureChangedEvent += [this]
 	{
-		m_textureReferenceDirty = m_texture != nullptr;
+		m_textureReferenceDirty = true;
 		m_materialTextureDirty = true;
-		UpdateIntrinsicSize();
-		RebuildMesh();
+		SynchronizeTextureState();
 	};
 
 	owner.transform.EnableUIData();
@@ -93,20 +74,22 @@ std::string OvCore::ECS::Components::UI::CImage::GetTypeName()
 
 void OvCore::ECS::Components::UI::CImage::SetTexture(OvRendering::Resources::Texture* p_texture)
 {
+	SynchronizeTextureState();
+
 	if (m_texture == p_texture)
 	{
 		return;
 	}
 
 	m_texture = p_texture;
-	m_textureReferenceDirty = p_texture != nullptr;
+	m_textureReferenceDirty = true;
 	m_materialTextureDirty = true;
-	UpdateIntrinsicSize();
-	RebuildMesh();
+	SynchronizeTextureState();
 }
 
 OvRendering::Resources::Texture* OvCore::ECS::Components::UI::CImage::GetTexture() const
 {
+	SynchronizeTextureState();
 	return m_texture;
 }
 
@@ -128,6 +111,7 @@ OvMaths::FVector2 OvCore::ECS::Components::UI::CImage::GetSize() const
 
 OvMaths::FVector2 OvCore::ECS::Components::UI::CImage::GetIntrinsicSize() const
 {
+	SynchronizeTextureState();
 	return m_intrinsicSize;
 }
 
@@ -157,6 +141,7 @@ bool OvCore::ECS::Components::UI::CImage::GetPreserveAspect() const
 
 OvRendering::Resources::Mesh& OvCore::ECS::Components::UI::CImage::GetMesh() const
 {
+	SynchronizeTextureState();
 	return *m_mesh;
 }
 
@@ -168,7 +153,7 @@ OvCore::Resources::Material* OvCore::ECS::Components::UI::CImage::GetMaterial()
 
 void OvCore::ECS::Components::UI::CImage::OnSerialize(tinyxml2::XMLDocument& p_doc, tinyxml2::XMLNode* p_node)
 {
-	ValidateTextureReference();
+	SynchronizeTextureState();
 	Helpers::Serializer::SerializeTexture(p_doc, p_node, "texture", m_texture);
 	Helpers::Serializer::SerializeVec4(p_doc, p_node, "tint", m_tint);
 	Helpers::Serializer::SerializeBoolean(p_doc, p_node, "preserve_aspect", m_preserveAspect);
@@ -200,7 +185,7 @@ void OvCore::ECS::Components::UI::CImage::OnDeserialize(tinyxml2::XMLDocument& p
 
 void OvCore::ECS::Components::UI::CImage::OnInspector(OvUI::Internal::WidgetContainer& p_root)
 {
-	ValidateTextureReference();
+	SynchronizeTextureState();
 	Helpers::GUIDrawer::DrawTexture(p_root, "Texture", m_texture, &m_textureChangedEvent);
 	Helpers::GUIDrawer::DrawBoolean(
 		p_root,
@@ -218,9 +203,9 @@ void OvCore::ECS::Components::UI::CImage::OnInspector(OvUI::Internal::WidgetCont
 	);
 }
 
-void OvCore::ECS::Components::UI::CImage::RebuildMesh()
+void OvCore::ECS::Components::UI::CImage::RebuildMesh() const
 {
-	const auto size = GetIntrinsicSize();
+	const auto size = m_intrinsicSize;
 
 	const float halfWidth = size.x * 0.5f;
 	const float halfHeight = size.y * 0.5f;
@@ -237,25 +222,40 @@ void OvCore::ECS::Components::UI::CImage::RebuildMesh()
 	m_mesh = std::make_unique<OvRendering::Resources::Mesh>(vertices, indices);
 }
 
-void OvCore::ECS::Components::UI::CImage::ValidateTextureReference()
+void OvCore::ECS::Components::UI::CImage::SynchronizeTextureState() const
 {
-	m_textureReferenceDirty = false;
+	auto& textureManager = Global::ServiceLocator::Get<ResourceManagement::TextureManager>();
+	const auto managerRevision = textureManager.GetResourcesRevision();
+	const bool registryChanged = managerRevision != m_textureManagerRevision;
+	bool textureStateChanged = m_textureReferenceDirty;
 
-	if (m_texture && !IsRegisteredTexture(m_texture))
+	if (m_texture && (m_textureReferenceDirty || registryChanged) && !textureManager.ContainsResource(m_texture))
 	{
 		m_texture = nullptr;
+		textureStateChanged = true;
+	}
+
+	m_textureReferenceDirty = false;
+	m_textureManagerRevision = managerRevision;
+
+	const uint64_t textureRevision = m_texture ? m_texture->GetRevision() : 0;
+	textureStateChanged |= textureRevision != m_textureRevision;
+	m_textureRevision = textureRevision;
+
+	if (textureStateChanged)
+	{
 		m_materialTextureDirty = true;
 		UpdateIntrinsicSize();
 		RebuildMesh();
 	}
 }
 
-void OvCore::ECS::Components::UI::CImage::UpdateIntrinsicSize()
+void OvCore::ECS::Components::UI::CImage::UpdateIntrinsicSize() const
 {
 	const auto defaultSize = GetDefaultImageSize();
 	m_intrinsicSize = defaultSize;
 
-	if (!m_texture || !IsRegisteredTexture(m_texture))
+	if (!m_texture)
 	{
 		return;
 	}
@@ -269,17 +269,20 @@ void OvCore::ECS::Components::UI::CImage::UpdateIntrinsicSize()
 
 void OvCore::ECS::Components::UI::CImage::RefreshMaterial()
 {
+	SynchronizeTextureState();
+	auto& materialManager = Global::ServiceLocator::Get<ResourceManagement::MaterialManager>();
+
+	if (m_materialManagerRevision != materialManager.GetResourcesRevision())
+	{
+		m_materialStateDirty = true;
+	}
+
 	if (!m_material)
 	{
 		m_material = std::make_unique<OvCore::Resources::Material>();
 		m_materialStateDirty = true;
 		m_materialTextureDirty = true;
 		m_materialTintDirty = true;
-	}
-
-	if (m_textureReferenceDirty)
-	{
-		ValidateTextureReference();
 	}
 
 	if (m_materialTexture != m_texture)
@@ -297,7 +300,8 @@ void OvCore::ECS::Components::UI::CImage::RefreshMaterial()
 		const auto& imageMaterialPath = Global::ServiceLocator::Get<ResourceManagement::UIResourceRegistry>().GetDefinition().imageMaterialPath;
 		auto* defaultMaterial = imageMaterialPath.empty() ?
 			nullptr :
-			Global::ServiceLocator::Get<ResourceManagement::MaterialManager>().GetResource(imageMaterialPath);
+			materialManager.GetResource(imageMaterialPath);
+		m_materialManagerRevision = materialManager.GetResourcesRevision();
 
 		if (!defaultMaterial || !defaultMaterial->HasShader())
 		{

@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
 
 #include <OvCore/ECS/Components/AComponent.h>
@@ -122,25 +123,28 @@ namespace OvCore::ECS::Components::UI
 		virtual void OnInspector(OvUI::Internal::WidgetContainer& p_root) override;
 
 	private:
-		void ValidateTextureReference();
-		void UpdateIntrinsicSize();
-		void RebuildMesh();
+		void SynchronizeTextureState() const;
+		void UpdateIntrinsicSize() const;
+		void RebuildMesh() const;
 		void RefreshMaterial();
 
 	private:
-		OvRendering::Resources::Texture* m_texture = nullptr;
+		mutable OvRendering::Resources::Texture* m_texture = nullptr;
 		OvMaths::FVector4 m_tint = { 1.0f, 1.0f, 1.0f, 1.0f };
-		OvMaths::FVector2 m_intrinsicSize = { 100.0f, 100.0f };
+		mutable OvMaths::FVector2 m_intrinsicSize = { 100.0f, 100.0f };
 		bool m_preserveAspect = false;
 
-		std::unique_ptr<OvRendering::Resources::Mesh> m_mesh;
+		mutable std::unique_ptr<OvRendering::Resources::Mesh> m_mesh;
 		std::unique_ptr<OvCore::Resources::Material> m_material;
 		OvTools::Eventing::Event<> m_textureChangedEvent;
 		OvRendering::Resources::Texture* m_materialTexture = nullptr;
 
-		bool m_textureReferenceDirty = true;
+		mutable uint64_t m_textureManagerRevision = 0;
+		mutable uint64_t m_textureRevision = 0;
+		uint64_t m_materialManagerRevision = 0;
+		mutable bool m_textureReferenceDirty = true;
 		bool m_materialStateDirty = true;
-		bool m_materialTextureDirty = true;
+		mutable bool m_materialTextureDirty = true;
 		bool m_materialTintDirty = true;
 	};
 }
