@@ -58,17 +58,21 @@ void OvUI::Widgets::Layout::Group::_Draw_Impl()
 		for (size_t index = 0; index < widgetsToDraw.size(); ++index)
 		{
 			ImGui::TableSetColumnIndex(static_cast<int>(index));
+			auto* widget = widgetsToDraw[index];
+			if (!widget || widget->IsDestroyed())
+			{
+				continue;
+			}
 
 			if (static_cast<int>(index) == stretchWidget)
 			{
 				ImGui::SetNextItemWidth(-FLT_MIN);
 			}
 
-			auto& widget = *widgetsToDraw[index];
-			const auto previousLineBreak = widget.lineBreak;
-			widget.lineBreak = true;
-			widget.Draw();
-			widget.lineBreak = previousLineBreak;
+			const auto previousLineBreak = widget->lineBreak;
+			widget->lineBreak = true;
+			widget->Draw();
+			widget->lineBreak = previousLineBreak;
 		}
 
 		ImGui::EndTable();
