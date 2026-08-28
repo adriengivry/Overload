@@ -1506,7 +1506,7 @@ bool OvEditor::Core::EditorActions::ImportAsset(const std::string& p_initialDest
 {
 	using namespace OvWindowing::Dialogs;
 
-	std::string modelFormats = "*.fbx;*.obj;";
+	std::string modelFormats = "*.fbx;*.obj;*.glb;*.gltf;*.vrm;";
 	std::string textureFormats = "*.png;*.jpeg;*.jpg;*.tga;*.hdr;";
 	std::string shaderFormats = "*.ovfx;";
 	std::string shaderPartFormats = "*.ovfxh;";
@@ -1591,7 +1591,7 @@ bool OvEditor::Core::EditorActions::ImportAssetAtLocation(const std::string& p_d
 {
 	using namespace OvWindowing::Dialogs;
 
-	std::string modelFormats = "*.fbx;*.obj;";
+	std::string modelFormats = "*.fbx;*.obj;*.glb;*.gltf;*.vrm;";
 	std::string textureFormats = "*.png;*.jpeg;*.jpg;*.tga;*.hdr;";
 	std::string shaderFormats = "*.ovfx;";
 	std::string shaderPartFormats = "*.ovfxh;";
