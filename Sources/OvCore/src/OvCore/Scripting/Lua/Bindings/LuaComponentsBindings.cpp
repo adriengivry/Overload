@@ -122,6 +122,9 @@ void BindLuaComponents(sol::state& p_luaState)
 		"GetBoneLocalPosition", &CSkinnedMeshRenderer::GetBoneLocalPosition,
 		"GetBoneLocalRotation", &CSkinnedMeshRenderer::GetBoneLocalRotation,
 		"GetBoneLocalScale", &CSkinnedMeshRenderer::GetBoneLocalScale,
+		"GetBoneGlobalPosition", &CSkinnedMeshRenderer::GetBoneGlobalPosition,
+		"GetBoneGlobalRotation", &CSkinnedMeshRenderer::GetBoneGlobalRotation,
+		"GetBoneGlobalScale", &CSkinnedMeshRenderer::GetBoneGlobalScale,
 		"SetBoneLocalPosition", &CSkinnedMeshRenderer::SetBoneLocalPosition,
 		"SetBoneLocalRotation", &CSkinnedMeshRenderer::SetBoneLocalRotation,
 		"SetBoneLocalScale", &CSkinnedMeshRenderer::SetBoneLocalScale
