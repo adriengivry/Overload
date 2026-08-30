@@ -205,6 +205,27 @@ namespace OvCore::ECS::Components
 		std::optional<OvMaths::FVector3> GetBoneLocalScale(uint32_t p_boneIndex) const;
 
 		/**
+		* Returns the current bone global position in skeleton/model space, excluding the owning actor's world transform
+		* @param p_boneIndex
+		* @return The bone global position, or std::nullopt if the bone index is invalid
+		*/
+		std::optional<OvMaths::FVector3> GetBoneGlobalPosition(uint32_t p_boneIndex) const;
+
+		/**
+		* Returns the current bone global rotation in skeleton/model space, excluding the owning actor's world transform
+		* @param p_boneIndex
+		* @return The bone global rotation, or std::nullopt if the bone index is invalid
+		*/
+		std::optional<OvMaths::FQuaternion> GetBoneGlobalRotation(uint32_t p_boneIndex) const;
+
+		/**
+		* Returns the current bone global scale in skeleton/model space, excluding the owning actor's world transform
+		* @param p_boneIndex
+		* @return The bone global scale, or std::nullopt if the bone index is invalid
+		*/
+		std::optional<OvMaths::FVector3> GetBoneGlobalScale(uint32_t p_boneIndex) const;
+
+		/**
 		* Sets the local bone position
 		* @param p_boneIndex
 		* @param p_position
