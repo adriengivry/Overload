@@ -96,6 +96,17 @@ namespace
 		}
 	}
 
+	OvMaths::FVector2 ToLayoutSpace(const OvMaths::FVector2& p_size, const OvMaths::FVector2& p_scale)
+	{
+		return { p_size.x * p_scale.x, p_size.y * p_scale.y };
+	}
+
+	OvMaths::FVector2 ToElementSpace(const OvMaths::FVector2& p_size, const OvMaths::FVector2& p_scale)
+	{
+		return { p_size.x / p_scale.x, p_size.y / p_scale.y };
+	}
+
+	// Layout slots reserve the space occupied on screen, which includes the child scale
 	std::optional<OvMaths::FVector2> GetLayoutSize(const OvCore::ECS::Actor& p_child)
 	{
 		OvMaths::FVector2 elementSize = OvMaths::FVector2::Zero;
@@ -117,18 +128,20 @@ namespace
 			hasElementSize = true;
 		}
 
+		const auto scale = p_child.transform.GetUIScale();
+
 		if (OvCore::ECS::Components::UI::UITransformResolver::HasActiveUIData(p_child))
 		{
 			const auto size = OvCore::ECS::Components::UI::UITransformResolver::GetEffectiveSize(p_child.transform, elementSize);
 			if (size.x > 0.0f && size.y > 0.0f)
 			{
-				return size;
+				return ToLayoutSpace(size, scale);
 			}
 		}
 
 		if (hasElementSize && elementSize.x > 0.0f && elementSize.y > 0.0f)
 		{
-			return elementSize;
+			return ToLayoutSpace(elementSize, scale);
 		}
 
 		return std::nullopt;
@@ -465,10 +478,12 @@ const OvCore::ECS::Components::UI::CLayoutGroup::LayoutCache& OvCore::ECS::Compo
 
 	for (const auto& child : layoutResult.children)
 	{
+		const auto scale = child.actor ? child.actor->transform.GetUIScale() : OvMaths::FVector2::One;
+
 		p_cache.children.push_back({
 			.actor = child.actor,
 			.offset = child.offset,
-			.size = child.size,
+			.size = ToElementSpace(child.size, scale),
 			.hasDirectWidth = GetControlChildrenWidth(),
 			.hasDirectHeight = GetControlChildrenHeight(),
 			.valid = child.valid
