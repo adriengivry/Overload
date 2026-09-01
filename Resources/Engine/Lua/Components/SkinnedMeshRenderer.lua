@@ -55,9 +55,12 @@ function SkinnedMeshRenderer:SetTime(timeSeconds) end
 ---@return number
 function SkinnedMeshRenderer:GetTime() end
 
---- Sets an external model used as animation source, or nil to use the rendered model
----@param model Model|nil
-function SkinnedMeshRenderer:SetAnimationSourceModel(model) end
+--- Sets an external model used as animation source, either as a Model or as an asset path.
+--- A path is loaded on first use and cached by the model manager.
+--- Pass nil, or an empty path, to use the rendered model animations
+---@overload fun(self: SkinnedMeshRenderer, model: Model|nil)
+---@overload fun(self: SkinnedMeshRenderer, path: string)
+function SkinnedMeshRenderer:SetAnimationSourceModel(...) end
 
 --- Returns the external animation source model, or nil when the rendered model is used
 ---@return Model|nil

@@ -127,6 +127,14 @@ namespace OvCore::ECS::Components
 		void SetAnimationSourceModel(OvRendering::Resources::Model* p_model);
 
 		/**
+		* Sets the external model used as animation source, resolved from its asset path.
+		* The model is loaded on first use and kept by the model manager, so repeated calls with the
+		* same path are cheap. Pass an empty path to use the rendered model animations.
+		* @param p_path
+		*/
+		void SetAnimationSourceModel(const std::string& p_path);
+
+		/**
 		* Returns the external animation source model, or nullptr when the rendered model is used
 		*/
 		OvRendering::Resources::Model* GetAnimationSourceModel() const;
