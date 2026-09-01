@@ -69,7 +69,7 @@ namespace OvEditor::Rendering
 			std::optional<OvMaths::FMatrix4> p_viewMatrixOverride = std::nullopt,
 			std::optional<OvMaths::FMatrix4> p_projectionMatrixOverride = std::nullopt,
 			std::optional<float> p_scaleOverride = std::nullopt,
-			bool p_showZAxis = true
+			int p_visibleAxes = OvEditor::Core::kGizmoAxisAll
 		);
 
 	private:

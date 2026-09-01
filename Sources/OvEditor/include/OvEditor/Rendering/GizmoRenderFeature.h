@@ -21,6 +21,7 @@
 #include <OvCore/Rendering/SceneRenderer.h>
 
 #include "OvEditor/Core/Context.h"
+#include "OvEditor/Core/GizmoBehaviour.h"
 
 namespace OvEditor::Rendering
 {
@@ -47,6 +48,10 @@ namespace OvEditor::Rendering
 		* @param p_operation
 		* @param p_pickable (Determine the shader to use to render the gizmo)
 		* @param p_highlightedDirection
+		* @param p_viewMatrixOverride
+		* @param p_projectionMatrixOverride
+		* @param p_scaleOverride
+		* @param p_visibleAxes (Gizmo axis bitmask, see kGizmoAxis* constants)
 		*/
 		void DrawGizmo(
 			const OvMaths::FVector3& p_position,
@@ -57,7 +62,7 @@ namespace OvEditor::Rendering
 			std::optional<OvMaths::FMatrix4> p_viewMatrixOverride = std::nullopt,
 			std::optional<OvMaths::FMatrix4> p_projectionMatrixOverride = std::nullopt,
 			std::optional<float> p_scaleOverride = std::nullopt,
-			bool p_showZAxis = true
+			int p_visibleAxes = OvEditor::Core::kGizmoAxisAll
 		);
 
 	private:

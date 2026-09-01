@@ -169,4 +169,18 @@ namespace OvEditor::Core
 		OvMaths::FVector2 m_currentMouse;
 		OvMaths::FVector2 m_screenDirection;
 	};
+
+	/* Gizmo axis bitmask, using GizmoBehaviour::EDirection values as bit indices */
+	constexpr int kGizmoAxisX = 1 << 0;
+	constexpr int kGizmoAxisY = 1 << 1;
+	constexpr int kGizmoAxisZ = 1 << 2;
+	constexpr int kGizmoAxisAll = kGizmoAxisX | kGizmoAxisY | kGizmoAxisZ;
+
+	/**
+	* Returns the gizmo axes that the given operation can drive on the given user interface actor
+	* @param p_actor
+	* @param p_operation
+	* @param p_screenSpace
+	*/
+	int GetUIGizmoAxes(const OvCore::ECS::Actor& p_actor, EGizmoOperation p_operation, bool p_screenSpace);
 }

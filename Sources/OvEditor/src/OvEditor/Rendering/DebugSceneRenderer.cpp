@@ -424,16 +424,24 @@ protected:
 			std::optional<OvMaths::FMatrix4> gizmoViewMatrixOverride;
 			std::optional<OvMaths::FMatrix4> gizmoProjectionMatrixOverride;
 			std::optional<float> gizmoScaleOverride;
-			bool showGizmoZAxis = true;
-			if (hasUIGizmoTransform && uiFrameResolver.IsScreenSpace())
+			int gizmoVisibleAxes = OvEditor::Core::kGizmoAxisAll;
+			if (hasUIGizmoTransform)
 			{
-				gizmoViewMatrixOverride = OvMaths::FMatrix4::Identity;
-				gizmoProjectionMatrixOverride = uiFrameResolver.CreateProjectionMatrix(
-					-kUIScreenSpaceGizmoDepth,
-					kUIScreenSpaceGizmoDepth
+				gizmoVisibleAxes = OvEditor::Core::GetUIGizmoAxes(
+					selectedActor,
+					debugSceneDescriptor.gizmoOperation,
+					uiFrameResolver.IsScreenSpace()
 				);
-				gizmoScaleOverride = kUIScreenSpaceGizmoScale;
-				showGizmoZAxis = false;
+
+				if (uiFrameResolver.IsScreenSpace())
+				{
+					gizmoViewMatrixOverride = OvMaths::FMatrix4::Identity;
+					gizmoProjectionMatrixOverride = uiFrameResolver.CreateProjectionMatrix(
+						-kUIScreenSpaceGizmoDepth,
+						kUIScreenSpaceGizmoDepth
+					);
+					gizmoScaleOverride = kUIScreenSpaceGizmoScale;
+				}
 			}
 
 			if (renderWorldDebugElements || hasUIGizmoTransform)
@@ -455,7 +463,7 @@ protected:
 					gizmoViewMatrixOverride,
 					gizmoProjectionMatrixOverride,
 					gizmoScaleOverride,
-					showGizmoZAxis
+					gizmoVisibleAxes
 				);
 			}
 		}

@@ -21,7 +21,7 @@ out VS_OUT
 
 uniform bool u_IsBall;
 uniform bool u_IsPickable;
-uniform bool u_ShowZAxis;
+uniform int u_VisibleAxes;
 uniform int u_HighlightedAxis;
 uniform float u_GizmoScale;
 
@@ -43,7 +43,10 @@ mat4 rotationMatrix(vec3 axis, float angle)
 
 void main()
 {
-	if (!u_ShowZAxis && gl_InstanceID == 0)
+	/* Instances are ordered Z, X, Y, while axis bits are ordered X, Y, Z */
+	int axisBit = gl_InstanceID == 1 ? 1 : (gl_InstanceID == 2 ? 2 : 4);
+
+	if ((u_VisibleAxes & axisBit) == 0)
 	{
 		vs_out.Color = vec3(0.0f);
 		gl_Position = vec4(2.0f, 2.0f, 2.0f, 1.0f);

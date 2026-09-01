@@ -432,3 +432,26 @@ OvMaths::FVector3 OvEditor::Core::GizmoBehaviour::GetMouseRay(const OvMaths::FVe
 
 	return OvMaths::FVector3(farthestPoint.x, farthestPoint.y, farthestPoint.z) * nearestPoint.w - OvMaths::FVector3(nearestPoint.x, nearestPoint.y, nearestPoint.z) * farthestPoint.w; ;
 }
+
+int OvEditor::Core::GetUIGizmoAxes(const OvCore::ECS::Actor& p_actor, EGizmoOperation p_operation, bool p_screenSpace)
+{
+	// User interface elements are laid out on the canvas plane, so the Z axis is meaningless in screen space
+	int axes = p_screenSpace ? kGizmoAxisX | kGizmoAxisY : kGizmoAxisAll;
+
+	if (p_operation != EGizmoOperation::TRANSLATE)
+	{
+		return axes;
+	}
+
+	if (!p_actor.transform.IsHorizontalUIPositionEditable())
+	{
+		axes &= ~kGizmoAxisX;
+	}
+
+	if (!p_actor.transform.IsVerticalUIPositionEditable())
+	{
+		axes &= ~kGizmoAxisY;
+	}
+
+	return axes;
+}

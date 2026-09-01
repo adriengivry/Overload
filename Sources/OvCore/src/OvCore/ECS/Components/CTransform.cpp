@@ -333,12 +333,16 @@ OvCore::ECS::Components::CTransform::EUIAnchorPreset OvCore::ECS::Components::CT
 
 bool OvCore::ECS::Components::CTransform::IsHorizontalUIPositionEditable() const
 {
-	return IsHorizontalUIPositionEditable(GetUIAnchorPreset());
+	return
+		IsHorizontalUIPositionEditable(GetUIAnchorPreset()) &&
+		!OvCore::ECS::Components::UI::UITransformResolver::IsDrivenByLayout(owner);
 }
 
 bool OvCore::ECS::Components::CTransform::IsVerticalUIPositionEditable() const
 {
-	return IsVerticalUIPositionEditable(GetUIAnchorPreset());
+	return
+		IsVerticalUIPositionEditable(GetUIAnchorPreset()) &&
+		!OvCore::ECS::Components::UI::UITransformResolver::IsDrivenByLayout(owner);
 }
 
 void OvCore::ECS::Components::CTransform::OnSerialize(tinyxml2::XMLDocument& p_doc, tinyxml2::XMLNode* p_node)
@@ -432,14 +436,13 @@ void OvCore::ECS::Components::CTransform::OnInspector(OvUI::Internal::WidgetCont
 		anchoredPositionDispatcher.RegisterProvider([this](std::array<float, 2> p_value)
 		{
 			auto position = GetUIPosition();
-			const auto anchorPreset = GetUIAnchorPreset();
 
-			if (IsHorizontalUIPositionEditable(anchorPreset))
+			if (IsHorizontalUIPositionEditable())
 			{
 				position.x = p_value[0];
 			}
 
-			if (IsVerticalUIPositionEditable(anchorPreset))
+			if (IsVerticalUIPositionEditable())
 			{
 				position.y = p_value[1];
 			}
@@ -489,12 +492,10 @@ void OvCore::ECS::Components::CTransform::OnInspector(OvUI::Internal::WidgetCont
 		{
 			const auto anchorPreset = GetUIAnchorPreset();
 			const bool drivenByLayout = OvCore::ECS::Components::UI::UITransformResolver::IsDrivenByLayout(owner);
-			const bool isHorizontalEditable = IsHorizontalUIPositionEditable(anchorPreset);
-			const bool isVerticalEditable = IsVerticalUIPositionEditable(anchorPreset);
 
 			anchoredPositionWidget->disabledComponents = {
-				drivenByLayout || !isHorizontalEditable,
-				drivenByLayout || !isVerticalEditable
+				!IsHorizontalUIPositionEditable(),
+				!IsVerticalUIPositionEditable()
 			};
 			sizeWidget->disabledComponents = {
 				!drivenByLayout && OvCore::ECS::Components::UI::UITransformResolver::IsHorizontalStretch(anchorPreset),
