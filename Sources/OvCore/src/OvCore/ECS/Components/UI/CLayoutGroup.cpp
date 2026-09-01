@@ -19,6 +19,7 @@
 #include <OvCore/ECS/Components/UI/ClayLayoutSolver.h>
 #include <OvCore/ECS/Components/UI/CLayoutGroup.h>
 #include <OvCore/ECS/Components/UI/CText.h>
+#include <OvCore/ECS/Components/UI/UIInspectorUtils.h>
 #include <OvCore/ECS/Components/UI/UITransformResolver.h>
 #include <OvCore/Helpers/GUIDrawer.h>
 #include <OvCore/Helpers/Serializer.h>
@@ -626,6 +627,8 @@ void OvCore::ECS::Components::UI::CLayoutGroup::OnDeserialize(tinyxml2::XMLDocum
 
 void OvCore::ECS::Components::UI::CLayoutGroup::OnInspector(OvUI::Internal::WidgetContainer& p_root)
 {
+	UIInspectorUtils::DrawCanvasRequirement(p_root, owner);
+
 	if (IsDirectionEditable())
 	{
 		Helpers::GUIDrawer::CreateTitle(p_root, "Direction");

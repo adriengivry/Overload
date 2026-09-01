@@ -16,6 +16,7 @@
 #include <OvCore/ECS/Components/UI/CText.h>
 #include <OvCore/ECS/Components/UI/TextLayoutEngine.h>
 #include <OvCore/ECS/Components/UI/TextMeshBuilder.h>
+#include <OvCore/ECS/Components/UI/UIInspectorUtils.h>
 #include <OvCore/Global/ServiceLocator.h>
 #include <OvCore/Helpers/GUIDrawer.h>
 #include <OvCore/Helpers/Serializer.h>
@@ -310,6 +311,8 @@ void OvCore::ECS::Components::UI::CText::OnDeserialize(tinyxml2::XMLDocument& p_
 
 void OvCore::ECS::Components::UI::CText::OnInspector(OvUI::Internal::WidgetContainer& p_root)
 {
+	UIInspectorUtils::DrawCanvasRequirement(p_root, owner);
+
 	Helpers::GUIDrawer::CreateTitle(p_root, "Text");
 	auto& textInput = p_root.CreateWidget<OvUI::Widgets::InputFields::InputText>("");
 	textInput.multiline = true;

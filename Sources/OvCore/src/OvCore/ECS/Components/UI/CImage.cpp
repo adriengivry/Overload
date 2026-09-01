@@ -12,6 +12,7 @@
 
 #include <OvCore/ECS/Actor.h>
 #include <OvCore/ECS/Components/UI/CImage.h>
+#include <OvCore/ECS/Components/UI/UIInspectorUtils.h>
 #include <OvCore/Global/ServiceLocator.h>
 #include <OvCore/Helpers/GUIDrawer.h>
 #include <OvCore/Helpers/Serializer.h>
@@ -185,6 +186,8 @@ void OvCore::ECS::Components::UI::CImage::OnDeserialize(tinyxml2::XMLDocument& p
 
 void OvCore::ECS::Components::UI::CImage::OnInspector(OvUI::Internal::WidgetContainer& p_root)
 {
+	UIInspectorUtils::DrawCanvasRequirement(p_root, owner);
+
 	SynchronizeTextureState();
 	Helpers::GUIDrawer::DrawTexture(p_root, "Texture", m_texture, &m_textureChangedEvent);
 	Helpers::GUIDrawer::DrawBoolean(
