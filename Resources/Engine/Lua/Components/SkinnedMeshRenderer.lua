@@ -119,6 +119,21 @@ function SkinnedMeshRenderer:GetBoneLocalRotation(boneIndex) end
 ---@return Vector3|nil
 function SkinnedMeshRenderer:GetBoneLocalScale(boneIndex) end
 
+--- Returns the current bone global position in skeleton/model space, excluding the owning actor's world transform, or nil
+---@param boneIndex integer
+---@return Vector3|nil
+function SkinnedMeshRenderer:GetBoneGlobalPosition(boneIndex) end
+
+--- Returns the current bone global rotation in skeleton/model space, excluding the owning actor's world transform, or nil
+---@param boneIndex integer
+---@return Quaternion|nil
+function SkinnedMeshRenderer:GetBoneGlobalRotation(boneIndex) end
+
+--- Returns the current bone global scale in skeleton/model space, excluding the owning actor's world transform, or nil
+---@param boneIndex integer
+---@return Vector3|nil
+function SkinnedMeshRenderer:GetBoneGlobalScale(boneIndex) end
+
 --- Sets local bone position
 ---@param boneIndex integer
 ---@param position Vector3

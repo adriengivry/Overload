@@ -103,7 +103,7 @@ namespace
 		return interpolate(prev, next, next.time - prev.time);
 	}
 
-	void DecomposeLocalTransform(
+	void DecomposeTransform(
 		const OvMaths::FMatrix4& p_matrix,
 		OvMaths::FVector3& p_position,
 		OvMaths::FQuaternion& p_rotation,
@@ -571,7 +571,7 @@ std::optional<OvMaths::FVector3> OvCore::ECS::Components::CSkinnedMeshRenderer::
 	OvMaths::FVector3 position;
 	OvMaths::FQuaternion rotation;
 	OvMaths::FVector3 scale;
-	DecomposeLocalTransform(m_localPose[*nodeIndex], position, rotation, scale);
+	DecomposeTransform(m_localPose[*nodeIndex], position, rotation, scale);
 	return position;
 }
 
@@ -586,7 +586,7 @@ std::optional<OvMaths::FQuaternion> OvCore::ECS::Components::CSkinnedMeshRendere
 	OvMaths::FVector3 position;
 	OvMaths::FQuaternion rotation;
 	OvMaths::FVector3 scale;
-	DecomposeLocalTransform(m_localPose[*nodeIndex], position, rotation, scale);
+	DecomposeTransform(m_localPose[*nodeIndex], position, rotation, scale);
 	return rotation;
 }
 
@@ -601,7 +601,52 @@ std::optional<OvMaths::FVector3> OvCore::ECS::Components::CSkinnedMeshRenderer::
 	OvMaths::FVector3 position;
 	OvMaths::FQuaternion rotation;
 	OvMaths::FVector3 scale;
-	DecomposeLocalTransform(m_localPose[*nodeIndex], position, rotation, scale);
+	DecomposeTransform(m_localPose[*nodeIndex], position, rotation, scale);
+	return scale;
+}
+
+std::optional<OvMaths::FVector3> OvCore::ECS::Components::CSkinnedMeshRenderer::GetBoneGlobalPosition(uint32_t p_boneIndex) const
+{
+	const auto nodeIndex = GetNodeIndexFromBoneIndex(p_boneIndex);
+	if (!nodeIndex.has_value() || *nodeIndex >= m_globalPose.size())
+	{
+		return std::nullopt;
+	}
+
+	OvMaths::FVector3 position;
+	OvMaths::FQuaternion rotation;
+	OvMaths::FVector3 scale;
+	DecomposeTransform(m_globalPose[*nodeIndex], position, rotation, scale);
+	return position;
+}
+
+std::optional<OvMaths::FQuaternion> OvCore::ECS::Components::CSkinnedMeshRenderer::GetBoneGlobalRotation(uint32_t p_boneIndex) const
+{
+	const auto nodeIndex = GetNodeIndexFromBoneIndex(p_boneIndex);
+	if (!nodeIndex.has_value() || *nodeIndex >= m_globalPose.size())
+	{
+		return std::nullopt;
+	}
+
+	OvMaths::FVector3 position;
+	OvMaths::FQuaternion rotation;
+	OvMaths::FVector3 scale;
+	DecomposeTransform(m_globalPose[*nodeIndex], position, rotation, scale);
+	return rotation;
+}
+
+std::optional<OvMaths::FVector3> OvCore::ECS::Components::CSkinnedMeshRenderer::GetBoneGlobalScale(uint32_t p_boneIndex) const
+{
+	const auto nodeIndex = GetNodeIndexFromBoneIndex(p_boneIndex);
+	if (!nodeIndex.has_value() || *nodeIndex >= m_globalPose.size())
+	{
+		return std::nullopt;
+	}
+
+	OvMaths::FVector3 position;
+	OvMaths::FQuaternion rotation;
+	OvMaths::FVector3 scale;
+	DecomposeTransform(m_globalPose[*nodeIndex], position, rotation, scale);
 	return scale;
 }
 
@@ -616,7 +661,7 @@ bool OvCore::ECS::Components::CSkinnedMeshRenderer::SetBoneLocalPosition(uint32_
 	OvMaths::FVector3 currentPosition;
 	OvMaths::FQuaternion currentRotation;
 	OvMaths::FVector3 currentScale;
-	DecomposeLocalTransform(m_localPose[*nodeIndex], currentPosition, currentRotation, currentScale);
+	DecomposeTransform(m_localPose[*nodeIndex], currentPosition, currentRotation, currentScale);
 
 	const OvMaths::FTransform transform(p_position, currentRotation, currentScale);
 	m_localPose[*nodeIndex] = transform.GetLocalMatrix();
@@ -636,7 +681,7 @@ bool OvCore::ECS::Components::CSkinnedMeshRenderer::SetBoneLocalRotation(uint32_
 	OvMaths::FVector3 currentPosition;
 	OvMaths::FQuaternion currentRotation;
 	OvMaths::FVector3 currentScale;
-	DecomposeLocalTransform(m_localPose[*nodeIndex], currentPosition, currentRotation, currentScale);
+	DecomposeTransform(m_localPose[*nodeIndex], currentPosition, currentRotation, currentScale);
 
 	const OvMaths::FTransform transform(currentPosition, p_rotation, currentScale);
 	m_localPose[*nodeIndex] = transform.GetLocalMatrix();
@@ -656,7 +701,7 @@ bool OvCore::ECS::Components::CSkinnedMeshRenderer::SetBoneLocalScale(uint32_t p
 	OvMaths::FVector3 currentPosition;
 	OvMaths::FQuaternion currentRotation;
 	OvMaths::FVector3 currentScale;
-	DecomposeLocalTransform(m_localPose[*nodeIndex], currentPosition, currentRotation, currentScale);
+	DecomposeTransform(m_localPose[*nodeIndex], currentPosition, currentRotation, currentScale);
 
 	const OvMaths::FTransform transform(currentPosition, currentRotation, p_scale);
 	m_localPose[*nodeIndex] = transform.GetLocalMatrix();
