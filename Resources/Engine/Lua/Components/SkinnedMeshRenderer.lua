@@ -1,8 +1,8 @@
 ---@meta
 
 --- A component responsible for skeletal animation playback and skinning runtime control
---- Up to GetMaxLayerCount() animations can play at once, each layer owning its own animation
---- source model, animation, time, speed, loop mode and weight.
+--- Any number of animations can play at once, each layer owning its own animation source model,
+--- animation, time, speed, loop mode and weight.
 --- Layer arguments default to 0 (the base layer), which always exists
 ---@class SkinnedMeshRenderer : Component
 SkinnedMeshRenderer = {}
@@ -15,12 +15,8 @@ function SkinnedMeshRenderer:GetOwner() end
 ---@return integer
 function SkinnedMeshRenderer:GetLayerCount() end
 
---- Returns the maximum number of animation layers a renderer can hold
+--- Appends a new animation layer and returns its index
 ---@return integer
-function SkinnedMeshRenderer:GetMaxLayerCount() end
-
---- Appends a new animation layer and returns its index, or nil when the maximum is reached
----@return integer|nil
 function SkinnedMeshRenderer:AddLayer() end
 
 --- Removes an animation layer, shifting the following layers down by one.

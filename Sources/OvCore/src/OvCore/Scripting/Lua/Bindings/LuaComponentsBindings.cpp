@@ -94,7 +94,6 @@ void BindLuaComponents(sol::state& p_luaState)
 	p_luaState.new_usertype<CSkinnedMeshRenderer>("SkinnedMeshRenderer",
 		sol::base_classes, sol::bases<AComponent>(),
 		"GetLayerCount", &CSkinnedMeshRenderer::GetLayerCount,
-		"GetMaxLayerCount", &CSkinnedMeshRenderer::GetMaxLayerCount,
 		"AddLayer", &CSkinnedMeshRenderer::AddLayer,
 		"RemoveLayer", &CSkinnedMeshRenderer::RemoveLayer,
 		"Play", [](CSkinnedMeshRenderer& p_this, std::optional<uint32_t> p_layer) { p_this.Play(p_layer.value_or(0)); },

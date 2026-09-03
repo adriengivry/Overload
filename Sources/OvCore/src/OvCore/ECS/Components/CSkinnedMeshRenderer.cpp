@@ -5,7 +5,6 @@
 */
 
 #include <algorithm>
-#include <array>
 #include <cmath>
 #include <limits>
 
@@ -35,16 +34,6 @@
 namespace
 {
 	constexpr float kMinimumLayerWeight = 0.0001f;
-
-	struct ActiveLayerSample
-	{
-		const OvRendering::Animation::SkeletalAnimation* animation = nullptr;
-		float sampleTime = 0.0f;
-		float duration = 0.0f;
-		float weight = 1.0f;
-		bool looping = true;
-		const std::vector<int32_t>* sourceNodeByTargetNode = nullptr;
-	};
 
 	// std::clamp propagates NaN, so non-finite weights are rejected before clamping
 	float ClampLayerWeight(float p_value)
@@ -329,6 +318,8 @@ namespace
 OvCore::ECS::Components::CSkinnedMeshRenderer::CSkinnedMeshRenderer(ECS::Actor& p_owner) :
 	AComponent(p_owner)
 {
+	m_layers.emplace_back();
+
 	NotifyModelChanged();
 }
 
@@ -350,12 +341,10 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::NotifyModelChanged()
 
 bool OvCore::ECS::Components::CSkinnedMeshRenderer::HasSkinningData() const
 {
-	bool hasAnimatedLayer = false;
-	for (uint32_t layerIndex = 0; layerIndex < m_layerCount && !hasAnimatedLayer; ++layerIndex)
+	const bool hasAnimatedLayer = std::any_of(m_layers.begin(), m_layers.end(), [this](const AnimationLayer& p_layer)
 	{
-		const auto& layer = m_layers[layerIndex];
-		hasAnimatedLayer = layer.animationIndex.has_value() && IsLayerCompatible(layer);
-	}
+		return p_layer.animationIndex.has_value() && IsLayerCompatible(p_layer);
+	});
 
 	return HasCompatibleModel() &&
 		!m_boneMatrices.empty() &&
@@ -364,36 +353,24 @@ bool OvCore::ECS::Components::CSkinnedMeshRenderer::HasSkinningData() const
 
 uint32_t OvCore::ECS::Components::CSkinnedMeshRenderer::GetLayerCount() const
 {
-	return m_layerCount;
+	return static_cast<uint32_t>(m_layers.size());
 }
 
-uint32_t OvCore::ECS::Components::CSkinnedMeshRenderer::GetMaxLayerCount() const
+uint32_t OvCore::ECS::Components::CSkinnedMeshRenderer::AddLayer()
 {
-	return kMaxAnimationLayers;
-}
-
-std::optional<uint32_t> OvCore::ECS::Components::CSkinnedMeshRenderer::AddLayer()
-{
-	if (m_layerCount >= kMaxAnimationLayers)
-	{
-		return std::nullopt;
-	}
-
-	const uint32_t addedLayer = m_layerCount++;
-	m_layers[addedLayer] = AnimationLayer{};
+	m_layers.emplace_back();
 	RebuildRuntimeData();
-	return addedLayer;
+	return static_cast<uint32_t>(m_layers.size() - 1);
 }
 
 bool OvCore::ECS::Components::CSkinnedMeshRenderer::RemoveLayer(uint32_t p_layer)
 {
-	if (p_layer >= m_layerCount || m_layerCount <= 1)
+	if (p_layer >= m_layers.size() || m_layers.size() <= 1)
 	{
 		return false;
 	}
 
-	std::rotate(m_layers.begin() + p_layer, m_layers.begin() + p_layer + 1, m_layers.begin() + m_layerCount);
-	m_layers[--m_layerCount] = AnimationLayer{};
+	m_layers.erase(m_layers.begin() + p_layer);
 	RebuildRuntimeData();
 	return true;
 }
@@ -804,9 +781,8 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::OnUpdate(float p_deltaTime)
 	bool timeChanged = false;
 	bool playbackStateChanged = false;
 
-	for (uint32_t layerIndex = 0; layerIndex < m_layerCount; ++layerIndex)
+	for (auto& layer : m_layers)
 	{
-		auto& layer = m_layers[layerIndex];
 		if (!layer.playing)
 		{
 			continue;
@@ -853,7 +829,7 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::OnSerialize(tinyxml2::XMLDoc
 	tinyxml2::XMLNode* layersNode = p_doc.NewElement("layers");
 	p_node->InsertEndChild(layersNode);
 
-	for (uint32_t layerIndex = 0; layerIndex < m_layerCount; ++layerIndex)
+	for (uint32_t layerIndex = 0; layerIndex < m_layers.size(); ++layerIndex)
 	{
 		tinyxml2::XMLNode* layerNode = p_doc.NewElement("layer");
 		layersNode->InsertEndChild(layerNode);
@@ -876,12 +852,15 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::OnDeserialize(tinyxml2::XMLD
 
 	if (tinyxml2::XMLNode* layersRoot = p_node->FirstChildElement("layers"))
 	{
-		tinyxml2::XMLElement* currentLayer = layersRoot->FirstChildElement("layer");
-		uint32_t layerIndex = 0;
+		m_layers.clear();
 
-		while (currentLayer && layerIndex < kMaxAnimationLayers)
+		for (
+			tinyxml2::XMLElement* currentLayer = layersRoot->FirstChildElement("layer");
+			currentLayer;
+			currentLayer = currentLayer->NextSiblingElement("layer")
+		)
 		{
-			auto& layer = m_layers[layerIndex];
+			auto& layer = m_layers.emplace_back();
 			OvCore::Helpers::Serializer::DeserializeModel(p_doc, currentLayer, "animation_source", layer.animationSourceModel);
 			OvCore::Helpers::Serializer::DeserializeString(p_doc, currentLayer, "animation", layer.deserializedAnimationName);
 			OvCore::Helpers::Serializer::DeserializeFloat(p_doc, currentLayer, "weight", layer.weight);
@@ -891,12 +870,13 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::OnDeserialize(tinyxml2::XMLD
 			OvCore::Helpers::Serializer::DeserializeFloat(p_doc, currentLayer, "time_ticks", layer.timeTicks);
 
 			layer.weight = ClampLayerWeight(layer.weight);
-
-			currentLayer = currentLayer->NextSiblingElement("layer");
-			++layerIndex;
 		}
 
-		m_layerCount = std::max(layerIndex, 1u);
+		// The base layer always exists, even when the scene holds an empty <layers> element
+		if (m_layers.empty())
+		{
+			m_layers.emplace_back();
+		}
 	}
 
 	SetMeshBoundsScale(m_meshBoundsScale);
@@ -940,10 +920,10 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::BuildLayerWidgets(OvUI::Inte
 		widget.first->Destroy();
 	}
 
-	for (uint32_t layerIndex = 0; layerIndex < m_layerCount; ++layerIndex)
+	for (uint32_t layerIndex = 0; layerIndex < m_layers.size(); ++layerIndex)
 	{
 		auto& layerGroup = p_container.CreateWidget<OvUI::Widgets::Layout::GroupCollapsable>("Layer " + std::to_string(layerIndex));
-		layerGroup.closable = m_layerCount > 1;
+		layerGroup.closable = m_layers.size() > 1;
 		layerGroup.CloseEvent += [this, &p_container, layerIndex]
 		{
 			RemoveLayer(layerIndex);
@@ -1077,15 +1057,12 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::BuildLayerWidgets(OvUI::Inte
 		});
 	}
 
-	if (m_layerCount < kMaxAnimationLayers)
+	auto& addLayerButton = p_container.CreateWidget<OvUI::Widgets::Buttons::Button>("Add Layer");
+	addLayerButton.ClickedEvent += [this, &p_container]
 	{
-		auto& addLayerButton = p_container.CreateWidget<OvUI::Widgets::Buttons::Button>("Add Layer");
-		addLayerButton.ClickedEvent += [this, &p_container]
-		{
-			AddLayer();
-			BuildLayerWidgets(p_container);
-		};
-	}
+		AddLayer();
+		BuildLayerWidgets(p_container);
+	};
 }
 
 bool OvCore::ECS::Components::CSkinnedMeshRenderer::HasCompatibleModel() const
@@ -1105,12 +1082,12 @@ const OvRendering::Resources::Model* OvCore::ECS::Components::CSkinnedMeshRender
 
 OvCore::ECS::Components::CSkinnedMeshRenderer::AnimationLayer* OvCore::ECS::Components::CSkinnedMeshRenderer::FindLayer(uint32_t p_layer)
 {
-	return p_layer < m_layerCount ? &m_layers[p_layer] : nullptr;
+	return p_layer < m_layers.size() ? &m_layers[p_layer] : nullptr;
 }
 
 const OvCore::ECS::Components::CSkinnedMeshRenderer::AnimationLayer* OvCore::ECS::Components::CSkinnedMeshRenderer::FindLayer(uint32_t p_layer) const
 {
-	return p_layer < m_layerCount ? &m_layers[p_layer] : nullptr;
+	return p_layer < m_layers.size() ? &m_layers[p_layer] : nullptr;
 }
 
 void OvCore::ECS::Components::CSkinnedMeshRenderer::SyncWithModel()
@@ -1162,10 +1139,10 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::RebuildRuntimeData()
 
 	std::vector<int32_t> nodeMapScratch;
 
-	for (uint32_t layerIndex = 0; layerIndex < m_layerCount; ++layerIndex)
+	for (auto& layer : m_layers)
 	{
-		RebuildLayerRuntimeData(m_layers[layerIndex], nodeMapScratch);
-		ResolveLayerAnimation(m_layers[layerIndex]);
+		RebuildLayerRuntimeData(layer, nodeMapScratch);
+		ResolveLayerAnimation(layer);
 	}
 
 	EvaluatePose();
@@ -1259,13 +1236,10 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::EvaluatePose()
 
 	const auto& skeleton = m_model->GetSkeleton().value();
 
-	std::array<ActiveLayerSample, kMaxAnimationLayers> activeLayers;
-	uint32_t activeLayerCount = 0;
+	m_activeLayerSamples.clear();
 
-	for (uint32_t layerIndex = 0; layerIndex < m_layerCount; ++layerIndex)
+	for (const auto& layer : m_layers)
 	{
-		const auto& layer = m_layers[layerIndex];
-
 		if (layer.sourceNodeByTargetNode.size() != skeleton.nodes.size())
 		{
 			continue;
@@ -1289,7 +1263,7 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::EvaluatePose()
 			(layer.looping ? WrapTime(layer.timeTicks, duration) : std::clamp(layer.timeTicks, 0.0f, duration)) :
 			0.0f;
 
-		activeLayers[activeLayerCount++] = { &animation, sampleTime, duration, layer.weight, layer.looping, &layer.sourceNodeByTargetNode };
+		m_activeLayerSamples.push_back({ &animation, sampleTime, duration, layer.weight, layer.looping, &layer.sourceNodeByTargetNode });
 	}
 
 	for (size_t targetNodeIndex = 0; targetNodeIndex < skeleton.nodes.size(); ++targetNodeIndex)
@@ -1301,9 +1275,8 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::EvaluatePose()
 		OvMaths::FVector3 blendedScale;
 		float accumulatedWeight = 0.0f;
 
-		for (uint32_t activeLayerIndex = 0; activeLayerIndex < activeLayerCount; ++activeLayerIndex)
+		for (const auto& activeLayer : m_activeLayerSamples)
 		{
-			const auto& activeLayer = activeLayers[activeLayerIndex];
 			const int32_t sourceNodeIndex = (*activeLayer.sourceNodeByTargetNode)[targetNodeIndex];
 			if (sourceNodeIndex < 0)
 			{

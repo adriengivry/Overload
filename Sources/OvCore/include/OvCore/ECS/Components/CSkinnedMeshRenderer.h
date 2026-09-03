@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <array>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -18,16 +17,15 @@
 #include <OvMaths/FVector3.h>
 
 namespace OvCore::ECS { class Actor; }
+namespace OvRendering::Animation { struct SkeletalAnimation; }
 namespace OvRendering::Resources { class Model; }
 
 namespace OvCore::ECS::Components
 {
-	constexpr uint32_t kMaxAnimationLayers = 4;
-
 	/**
 	* Component responsible for skeletal animation playback and skinning data generation.
-	* Up to kMaxAnimationLayers animations can play simultaneously, each layer owning its own
-	* animation source model, animation, playback time, speed, loop mode and weight.
+	* Any number of animations can play simultaneously, each layer owning its own animation source
+	* model, animation, playback time, speed, loop mode and weight.
 	* Bones are blended per node, and only layers holding a track for a given node contribute to it,
 	* their weights being normalized against each other. Nodes no layer animates keep their bind pose.
 	*/
@@ -66,15 +64,9 @@ namespace OvCore::ECS::Components
 		uint32_t GetLayerCount() const;
 
 		/**
-		* Returns the maximum number of animation layers a renderer can hold
+		* Appends a new animation layer, returning its index
 		*/
-		uint32_t GetMaxLayerCount() const;
-
-		/**
-		* Appends a new animation layer, returning its index.
-		* Returns std::nullopt when the maximum layer count is already reached.
-		*/
-		std::optional<uint32_t> AddLayer();
+		uint32_t AddLayer();
 
 		/**
 		* Removes an animation layer, shifting the following layers down by one.
@@ -345,6 +337,17 @@ namespace OvCore::ECS::Components
 			std::vector<int32_t> sourceNodeByTargetNode;
 		};
 
+		// Per-layer data sampled once per pose evaluation, before blending the skeleton node by node
+		struct ActiveLayerSample
+		{
+			const OvRendering::Animation::SkeletalAnimation* animation = nullptr;
+			float sampleTime = 0.0f;
+			float duration = 0.0f;
+			float weight = 1.0f;
+			bool looping = true;
+			const std::vector<int32_t>* sourceNodeByTargetNode = nullptr;
+		};
+
 		bool HasCompatibleModel() const;
 		bool IsLayerCompatible(const AnimationLayer& p_layer) const;
 		const OvRendering::Resources::Model* GetLayerAnimationModel(const AnimationLayer& p_layer) const;
@@ -368,8 +371,10 @@ namespace OvCore::ECS::Components
 		float m_poseEvaluationRate = 60.0f;
 		float m_poseEvaluationAccumulator = 0.0f;
 
-		std::array<AnimationLayer, kMaxAnimationLayers> m_layers;
-		uint32_t m_layerCount = 1;
+		std::vector<AnimationLayer> m_layers;
+
+		// Reused across pose evaluations to keep them free of per-frame allocations
+		std::vector<ActiveLayerSample> m_activeLayerSamples;
 
 		uint64_t m_poseVersion = 0;
 		bool m_manualPoseOverride = false;
