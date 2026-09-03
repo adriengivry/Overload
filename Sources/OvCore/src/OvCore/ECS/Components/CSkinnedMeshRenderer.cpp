@@ -16,8 +16,10 @@
 #include <OvCore/ECS/Actor.h>
 #include <OvCore/ECS/Components/CModelRenderer.h>
 #include <OvCore/ECS/Components/CSkinnedMeshRenderer.h>
+#include <OvCore/Global/ServiceLocator.h>
 #include <OvCore/Helpers/GUIDrawer.h>
 #include <OvCore/Helpers/Serializer.h>
+#include <OvCore/ResourceManagement/ModelManager.h>
 #include <OvDebug/Logger.h>
 #include <OvMaths/FMatrix3.h>
 #include <OvMaths/FTransform.h>
@@ -327,14 +329,6 @@ namespace
 OvCore::ECS::Components::CSkinnedMeshRenderer::CSkinnedMeshRenderer(ECS::Actor& p_owner) :
 	AComponent(p_owner)
 {
-	for (auto& animationSourceChangedEvent : m_animationSourceChangedEvents)
-	{
-		animationSourceChangedEvent += [this]()
-		{
-			RebuildRuntimeData();
-		};
-	}
-
 	NotifyModelChanged();
 }
 
@@ -960,7 +954,25 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::BuildLayerWidgets(OvUI::Inte
 		columns.SetID("skinned_layer_" + std::to_string(layerIndex));
 		columns.widths[0] = 200 * OVUI_SCALE;
 
-		GUIDrawer::DrawMesh(columns, "Animation Source", m_layers[layerIndex].animationSourceModel, &m_animationSourceChangedEvents[layerIndex]);
+		// The animation source is bound through the setter, so the widget holds no reference into
+		// the layer storage, which moves whenever a layer is added or removed
+		GUIDrawer::DrawAsset(
+			columns,
+			"Animation Source",
+			[this, layerIndex]
+			{
+				const auto model = GetAnimationSourceModel(layerIndex);
+				return model ? model->path : std::string{};
+			},
+			[this, layerIndex](std::string p_path)
+			{
+				SetAnimationSourceModel(
+					p_path.empty() ? nullptr : OVSERVICE(OvCore::ResourceManagement::ModelManager).GetResource(p_path),
+					layerIndex
+				);
+			},
+			OvTools::Utils::PathParser::EFileType::MODEL
+		);
 
 		GUIDrawer::CreateTitle(columns, "Animation");
 		const auto activeAnimationIndex = GetActiveAnimationIndex(layerIndex);

@@ -16,7 +16,6 @@
 #include <OvMaths/FMatrix4.h>
 #include <OvMaths/FQuaternion.h>
 #include <OvMaths/FVector3.h>
-#include <OvTools/Eventing/Event.h>
 
 namespace OvCore::ECS { class Actor; }
 namespace OvRendering::Resources { class Model; }
@@ -364,7 +363,6 @@ namespace OvCore::ECS::Components
 
 	private:
 		const OvRendering::Resources::Model* m_model = nullptr;
-		std::array<OvTools::Eventing::Event<>, kMaxAnimationLayers> m_animationSourceChangedEvents;
 
 		float m_meshBoundsScale = 1.5f;
 		float m_poseEvaluationRate = 60.0f;
