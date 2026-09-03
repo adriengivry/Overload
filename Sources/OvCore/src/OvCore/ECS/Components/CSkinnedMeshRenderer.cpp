@@ -27,7 +27,7 @@
 #include <OvUI/Widgets/Buttons/Button.h>
 #include <OvUI/Widgets/Layout/Columns.h>
 #include <OvUI/Widgets/Layout/Group.h>
-#include <OvUI/Widgets/Layout/GroupCollapsable.h>
+#include <OvUI/Widgets/Layout/TreeNode.h>
 #include <OvUI/Widgets/Selection/ComboBox.h>
 #include <OvUI/Widgets/Texts/Text.h>
 
@@ -922,15 +922,12 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::BuildLayerWidgets(OvUI::Inte
 
 	for (uint32_t layerIndex = 0; layerIndex < m_layers.size(); ++layerIndex)
 	{
-		auto& layerGroup = p_container.CreateWidget<OvUI::Widgets::Layout::GroupCollapsable>("Layer " + std::to_string(layerIndex));
-		layerGroup.closable = m_layers.size() > 1;
-		layerGroup.CloseEvent += [this, &p_container, layerIndex]
-		{
-			RemoveLayer(layerIndex);
-			BuildLayerWidgets(p_container);
-		};
+		// Layers are array elements, so they use a tree node rather than the collapsable group
+		// reserved for components. The identifier keeps the node folded state across rebuilds
+		auto& layerNode = p_container.CreateWidget<OvUI::Widgets::Layout::TreeNode>("Layer " + std::to_string(layerIndex));
+		layerNode.SetID("skinned_layer_node_" + std::to_string(layerIndex));
 
-		auto& columns = layerGroup.CreateWidget<OvUI::Widgets::Layout::Columns<2>>();
+		auto& columns = layerNode.CreateWidget<OvUI::Widgets::Layout::Columns<2>>();
 		columns.SetID("skinned_layer_" + std::to_string(layerIndex));
 		columns.widths[0] = 200 * OVUI_SCALE;
 
@@ -1034,7 +1031,7 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::BuildLayerWidgets(OvUI::Inte
 		);
 
 		// Gathered every frame, so assigning an incompatible source reports it without a panel refresh
-		auto& diagnostic = layerGroup.CreateWidget<OvUI::Widgets::Texts::Text>();
+		auto& diagnostic = layerNode.CreateWidget<OvUI::Widgets::Texts::Text>();
 		diagnostic.AddPlugin<OvUI::Plugins::DataDispatcher<std::string>>().RegisterGatherer([this, layerIndex]
 		{
 			const auto layer = FindLayer(layerIndex);
@@ -1055,6 +1052,16 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::BuildLayerWidgets(OvUI::Inte
 
 			return std::string{};
 		});
+
+		if (m_layers.size() > 1)
+		{
+			auto& removeLayerButton = layerNode.CreateWidget<OvUI::Widgets::Buttons::Button>("Remove Layer");
+			removeLayerButton.ClickedEvent += [this, &p_container, layerIndex]
+			{
+				RemoveLayer(layerIndex);
+				BuildLayerWidgets(p_container);
+			};
+		}
 	}
 
 	auto& addLayerButton = p_container.CreateWidget<OvUI::Widgets::Buttons::Button>("Add Layer");
