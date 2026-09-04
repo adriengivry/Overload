@@ -29,7 +29,7 @@
 #include <OvUI/Widgets/Layout/Group.h>
 #include <OvUI/Widgets/Layout/TreeNode.h>
 #include <OvUI/Widgets/Selection/ComboBox.h>
-#include <OvUI/Widgets/Texts/Text.h>
+#include <OvUI/Widgets/Texts/TextColored.h>
 
 namespace
 {
@@ -896,10 +896,12 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::OnInspector(OvUI::Internal::
 	GUIDrawer::DrawScalar<float>(p_root, "Pose Eval Rate", m_poseEvaluationRate, 1.0f, 0.0f, 240.0f);
 	m_poseEvaluationRate = std::max(0.0f, m_poseEvaluationRate);
 
-	auto& modelDiagnostic = p_root.CreateWidget<OvUI::Widgets::Texts::Text>();
-	modelDiagnostic.AddPlugin<OvUI::Plugins::DataDispatcher<std::string>>().RegisterGatherer([this]
+	auto& modelDiagnostic = p_root.CreateWidget<OvUI::Widgets::Texts::TextColored>();
+	modelDiagnostic.AddPlugin<OvUI::Plugins::DataDispatcher<std::string>>().RegisterGatherer([this, &modelDiagnostic]
 	{
-		return HasCompatibleModel() ? std::string{} : std::string{ "No skinned model assigned" };
+		const bool ready = HasCompatibleModel();
+		modelDiagnostic.color = ready ? OVUI_STYLE(Success) : OVUI_STYLE(TextDisabled);
+		return ready ? std::string{ "Ready" } : std::string{ "No skinned model assigned" };
 	});
 
 	// Layers live in their own full-width container so they can be rebuilt in place when one is
@@ -1031,8 +1033,8 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::BuildLayerWidgets(OvUI::Inte
 		);
 
 		// Gathered every frame, so assigning an incompatible source reports it without a panel refresh
-		auto& diagnostic = layerNode.CreateWidget<OvUI::Widgets::Texts::Text>();
-		diagnostic.AddPlugin<OvUI::Plugins::DataDispatcher<std::string>>().RegisterGatherer([this, layerIndex]
+		auto& diagnostic = layerNode.CreateWidget<OvUI::Widgets::Texts::TextColored>();
+		diagnostic.AddPlugin<OvUI::Plugins::DataDispatcher<std::string>>().RegisterGatherer([this, &diagnostic, layerIndex]
 		{
 			const auto layer = FindLayer(layerIndex);
 			if (!layer)
@@ -1042,11 +1044,13 @@ void OvCore::ECS::Components::CSkinnedMeshRenderer::BuildLayerWidgets(OvUI::Inte
 
 			if (layer->animationSourceModel && !IsLayerCompatible(*layer))
 			{
+				diagnostic.color = OVUI_STYLE(Danger);
 				return std::string{ "Animation source skeleton is not compatible with model" };
 			}
 
 			if (layer->animationNames.empty())
 			{
+				diagnostic.color = OVUI_STYLE(Warning);
 				return std::string{ layer->animationSourceModel ? "Animation source has no animation clips" : "Model has no animation clips" };
 			}
 
