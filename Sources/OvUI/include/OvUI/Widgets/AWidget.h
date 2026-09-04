@@ -86,6 +86,7 @@ namespace OvUI::Widgets
 		bool enabled = true;
 		bool disabled = false;
 		bool lineBreak = true;
+		bool fullWidth = false; // ask column-based containers to draw this widget across all of their columns
 		bool neverDisabled = false; // provide a way to bypass the "readonly" setting used by a WidgetContainer
 
 	protected:

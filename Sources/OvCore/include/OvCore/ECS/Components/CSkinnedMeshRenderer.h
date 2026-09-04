@@ -15,15 +15,19 @@
 #include <OvMaths/FMatrix4.h>
 #include <OvMaths/FQuaternion.h>
 #include <OvMaths/FVector3.h>
-#include <OvTools/Eventing/Event.h>
 
 namespace OvCore::ECS { class Actor; }
+namespace OvRendering::Animation { struct SkeletalAnimation; }
 namespace OvRendering::Resources { class Model; }
 
 namespace OvCore::ECS::Components
 {
 	/**
 	* Component responsible for skeletal animation playback and skinning data generation.
+	* Any number of animations can play simultaneously, each layer owning its own animation source
+	* model, animation, playback time, speed, loop mode and weight.
+	* Bones are blended per node, and only layers holding a track for a given node contribute to it,
+	* their weights being normalized against each other. Nodes no layer animates keep their bind pose.
 	*/
 	class CSkinnedMeshRenderer : public AComponent
 	{
@@ -55,46 +59,87 @@ namespace OvCore::ECS::Components
 		bool HasSkinningData() const;
 
 		/**
-		* Start animation playback
+		* Returns the number of active animation layers (always at least 1)
 		*/
-		void Play();
+		uint32_t GetLayerCount() const;
 
 		/**
-		* Pause animation playback
+		* Appends a new animation layer, returning its index
 		*/
-		void Pause();
+		uint32_t AddLayer();
 
 		/**
-		* Stop animation playback and reset time to 0
+		* Removes an animation layer, shifting the following layers down by one.
+		* Fails when the index is invalid or when only one layer remains.
+		* @param p_layer
 		*/
-		void Stop();
+		bool RemoveLayer(uint32_t p_layer);
 
 		/**
-		* Returns true if playback is active
+		* Start animation playback on a layer
+		* @param p_layer
 		*/
-		bool IsPlaying() const;
+		void Play(uint32_t p_layer = 0);
 
 		/**
-		* Sets loop mode
+		* Pause animation playback on a layer
+		* @param p_layer
+		*/
+		void Pause(uint32_t p_layer = 0);
+
+		/**
+		* Stop animation playback on a layer and reset its time to 0
+		* @param p_layer
+		*/
+		void Stop(uint32_t p_layer = 0);
+
+		/**
+		* Returns true if playback is active on a layer
+		* @param p_layer
+		*/
+		bool IsPlaying(uint32_t p_layer = 0) const;
+
+		/**
+		* Sets loop mode on a layer
 		* @param p_value
+		* @param p_layer
 		*/
-		void SetLooping(bool p_value);
+		void SetLooping(bool p_value, uint32_t p_layer = 0);
 
 		/**
-		* Returns true if loop mode is enabled
+		* Returns true if loop mode is enabled on a layer
+		* @param p_layer
 		*/
-		bool IsLooping() const;
+		bool IsLooping(uint32_t p_layer = 0) const;
 
 		/**
-		* Set playback speed
+		* Set playback speed on a layer
 		* @param p_value
+		* @param p_layer
 		*/
-		void SetPlaybackSpeed(float p_value);
+		void SetPlaybackSpeed(float p_value, uint32_t p_layer = 0);
 
 		/**
-		* Get playback speed
+		* Get playback speed of a layer
+		* @param p_layer
 		*/
-		float GetPlaybackSpeed() const;
+		float GetPlaybackSpeed(uint32_t p_layer = 0) const;
+
+		/**
+		* Sets the blend weight of a layer, clamped to the [0,1] range
+		* Weights are normalized per node against the other layers animating that node, so a layer
+		* animating a node alone contributes fully until its weight reaches 0, where the node falls
+		* back to its bind pose
+		* @param p_value
+		* @param p_layer
+		*/
+		void SetLayerWeight(float p_value, uint32_t p_layer = 0);
+
+		/**
+		* Returns the blend weight of a layer
+		* @param p_layer
+		*/
+		float GetLayerWeight(uint32_t p_layer = 0) const;
 
 		/**
 		* Returns the scale applied to mesh bounds during frustum culling
@@ -110,64 +155,76 @@ namespace OvCore::ECS::Components
 		void SetMeshBoundsScale(float p_scale);
 
 		/**
-		* Sets the current playback time in seconds
+		* Sets the current playback time of a layer in seconds
 		* @param p_timeSeconds
+		* @param p_layer
 		*/
-		void SetTime(float p_timeSeconds);
+		void SetTime(float p_timeSeconds, uint32_t p_layer = 0);
 
 		/**
-		* Returns the current playback time in seconds
+		* Returns the current playback time of a layer in seconds
+		* @param p_layer
 		*/
-		float GetTime() const;
+		float GetTime(uint32_t p_layer = 0) const;
 
 		/**
-		* Sets the external model used as animation source. Pass nullptr to use the rendered model animations.
+		* Sets the external model used as animation source by a layer.
+		* Pass nullptr to use the rendered model animations.
 		* @param p_model
+		* @param p_layer
 		*/
-		void SetAnimationSourceModel(OvRendering::Resources::Model* p_model);
+		void SetAnimationSourceModel(OvRendering::Resources::Model* p_model, uint32_t p_layer = 0);
 
 		/**
-		* Returns the external animation source model, or nullptr when the rendered model is used
+		* Returns the external animation source model of a layer, or nullptr when the rendered model is used
+		* @param p_layer
 		*/
-		OvRendering::Resources::Model* GetAnimationSourceModel() const;
+		OvRendering::Resources::Model* GetAnimationSourceModel(uint32_t p_layer = 0) const;
 
 		/**
-		* Returns true if the current animation source can be applied to the rendered model skeleton
+		* Returns true if the animation source of a layer can be applied to the rendered model skeleton
+		* @param p_layer
 		*/
-		bool IsAnimationSourceCompatible() const;
+		bool IsAnimationSourceCompatible(uint32_t p_layer = 0) const;
 
 		/**
-		* Returns the number of available animations
+		* Returns the number of animations available to a layer
+		* @param p_layer
 		*/
-		uint32_t GetAnimationCount() const;
+		uint32_t GetAnimationCount(uint32_t p_layer = 0) const;
 
 		/**
-		* Returns the animation name at index (std::nullopt if index is invalid)
+		* Returns the animation name at index for a layer (std::nullopt if index is invalid)
 		* @param p_index
+		* @param p_layer
 		*/
-		std::optional<std::string> GetAnimationName(uint32_t p_index) const;
+		std::optional<std::string> GetAnimationName(uint32_t p_index, uint32_t p_layer = 0) const;
 
 		/**
-		* Sets the active animation by index. Pass std::nullopt to clear and return to T-pose.
+		* Sets the active animation of a layer by index. Pass std::nullopt to clear the layer.
 		* @param p_index
+		* @param p_layer
 		*/
-		bool SetAnimation(std::optional<uint32_t> p_index);
+		bool SetAnimation(std::optional<uint32_t> p_index, uint32_t p_layer = 0);
 
 		/**
-		* Sets the active animation by name
+		* Sets the active animation of a layer by name
 		* @param p_name
+		* @param p_layer
 		*/
-		bool SetAnimation(const std::string& p_name);
+		bool SetAnimation(const std::string& p_name, uint32_t p_layer = 0);
 
 		/**
-		* Returns the active animation index, or std::nullopt if none is set
+		* Returns the active animation index of a layer, or std::nullopt if none is set
+		* @param p_layer
 		*/
-		std::optional<uint32_t> GetActiveAnimationIndex() const;
+		std::optional<uint32_t> GetActiveAnimationIndex(uint32_t p_layer = 0) const;
 
 		/**
-		* Returns the active animation name (empty if none)
+		* Returns the active animation name of a layer (std::nullopt if none)
+		* @param p_layer
 		*/
-		std::optional<std::string> GetActiveAnimationName() const;
+		std::optional<std::string> GetActiveAnimationName(uint32_t p_layer = 0) const;
 
 		/**
 		* Returns the number of available bones
@@ -283,38 +340,66 @@ namespace OvCore::ECS::Components
 		virtual void OnInspector(OvUI::Internal::WidgetContainer& p_root) override;
 
 	private:
+		struct AnimationLayer
+		{
+			OvRendering::Resources::Model* animationSourceModel = nullptr;
+			std::optional<uint32_t> animationIndex = std::nullopt;
+			std::string deserializedAnimationName;
+			float timeTicks = 0.0f;
+			float speed = 1.0f;
+			float weight = 1.0f;
+			bool playing = true;
+			bool looping = true;
+
+			// Runtime data, rebuilt whenever the model or the layer animation source changes.
+			// sourceNodeByTargetNode maps a rendered skeleton node to the source node driving it
+			// (-1 when unanimated), and is empty when the source is incompatible.
+			std::vector<std::string> animationNames;
+			std::vector<int32_t> sourceNodeByTargetNode;
+		};
+
+		// Per-layer data sampled once per pose evaluation, before blending the skeleton node by node
+		struct ActiveLayerSample
+		{
+			const OvRendering::Animation::SkeletalAnimation* animation = nullptr;
+			float sampleTime = 0.0f;
+			float duration = 0.0f;
+			float weight = 1.0f;
+			bool looping = true;
+			const std::vector<int32_t>* sourceNodeByTargetNode = nullptr;
+		};
+
 		bool HasCompatibleModel() const;
-		bool HasCompatibleAnimationSource() const;
-		const OvRendering::Resources::Model* GetAnimationModel() const;
+		bool IsLayerCompatible(const AnimationLayer& p_layer) const;
+		const OvRendering::Resources::Model* GetLayerAnimationModel(const AnimationLayer& p_layer) const;
+		AnimationLayer* FindLayer(uint32_t p_layer);
+		const AnimationLayer* FindLayer(uint32_t p_layer) const;
 		void SyncWithModel();
 		void RebuildRuntimeData();
+		void RebuildLayerRuntimeData(AnimationLayer& p_layer, std::vector<int32_t>& p_nodeMapScratch);
+		void ResolveLayerAnimation(AnimationLayer& p_layer);
 		void EvaluatePose();
 		std::optional<uint32_t> GetNodeIndexFromBoneIndex(uint32_t p_boneIndex) const;
 		void RecomputeBoneMatricesFromLocalPose();
-		float GetAnimationDurationSeconds() const;
-		void UpdatePlayback(float p_deltaTime);
+		float GetAnimationDurationSeconds(uint32_t p_layer) const;
+		void UpdatePlayback(AnimationLayer& p_layer, float p_deltaTime);
+		void BuildLayerWidgets(OvUI::Internal::WidgetContainer& p_container);
 
 	private:
 		const OvRendering::Resources::Model* m_model = nullptr;
-		OvRendering::Resources::Model* m_animationSourceModel = nullptr;
-		OvTools::Eventing::Event<> m_animationSourceChangedEvent;
 
-		bool m_playing = true;
-		bool m_looping = true;
-		float m_playbackSpeed = 1.0f;
 		float m_meshBoundsScale = 1.5f;
 		float m_poseEvaluationRate = 60.0f;
 		float m_poseEvaluationAccumulator = 0.0f;
 
-		float m_currentTimeTicks = 0.0f;
-		std::optional<uint32_t> m_animationIndex = std::nullopt;
-		std::string m_deserializedAnimationName;
+		std::vector<AnimationLayer> m_layers;
+
+		// Reused across pose evaluations to keep them free of per-frame allocations
+		std::vector<ActiveLayerSample> m_activeLayerSamples;
 
 		uint64_t m_poseVersion = 0;
 		bool m_manualPoseOverride = false;
 
-		std::vector<std::string> m_animationNames;
-		std::vector<int32_t> m_animationNodeMap;
 		std::vector<OvMaths::FMatrix4> m_localPose;
 		std::vector<OvMaths::FMatrix4> m_globalPose;
 		std::vector<OvMaths::FMatrix4> m_boneMatrices;
