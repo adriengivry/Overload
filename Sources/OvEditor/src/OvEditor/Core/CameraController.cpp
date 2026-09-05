@@ -107,6 +107,13 @@ namespace
 		ActorFocusTarget& p_outTarget
 	)
 	{
+		// In screen space the resolved matrices are expressed in canvas units, so they cannot be
+		// used as a world position to move the camera to
+		if (p_uiFrameResolver.IsScreenSpace())
+		{
+			return false;
+		}
+
 		OvCore::Rendering::UIRenderingUtils::ResolvedUIElement resolvedElement;
 		if (!p_uiFrameResolver.ResolveElement(
 			p_actor,
@@ -135,7 +142,7 @@ namespace
 			focusRadius = std::max(focusRadius, OvMaths::FVector3::Length(corner - p_outTarget.position));
 		}
 
-		p_outTarget.distance = p_uiFrameResolver.IsScreenSpace() ? 4.0f : std::max(4.0f, focusRadius * 2.0f);
+		p_outTarget.distance = std::max(4.0f, focusRadius * 2.0f);
 		return true;
 	}
 
