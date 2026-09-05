@@ -219,31 +219,107 @@ namespace OvCore::ECS::Components
 		*/
 		OvMaths::FVector3 GetLocalRight() const;
 
+		/**
+		* Create the user interface data if the transform doesn't have any yet
+		*/
 		void EnableUIData();
+
+		/**
+		* Discard the user interface data held by the transform
+		*/
 		void DisableUIData();
+
+		/**
+		* Check if the transform holds user interface data
+		*/
 		bool HasUIData() const;
+
+		/**
+		* Check if the user interface data is in effect, meaning the owner has a canvas ancestor
+		*/
 		bool HasActiveUIData() const;
+
+		/**
+		* Return the user interface data, if any
+		*/
 		const std::optional<UIData>& GetUIData() const;
 
+		/**
+		* Set the anchored position, in canvas units
+		* @param p_position
+		*/
 		void SetUIPosition(const OvMaths::FVector2& p_position);
+
+		/**
+		* Return the anchored position, in canvas units
+		*/
 		const OvMaths::FVector2& GetUIPosition() const;
 
+		/**
+		* Set the rotation around the canvas plane, in degrees, stored in the local rotation
+		* @param p_rotation
+		*/
 		void SetUIRotation(float p_rotation);
+
+		/**
+		* Return the rotation around the canvas plane, in degrees
+		*/
 		float GetUIRotation() const;
 
+		/**
+		* Set the scale applied on the canvas plane, stored in the local scale
+		* @param p_scale
+		*/
 		void SetUIScale(const OvMaths::FVector2& p_scale);
+
+		/**
+		* Return the scale applied on the canvas plane
+		*/
 		OvMaths::FVector2 GetUIScale() const;
 
+		/**
+		* Set the size in canvas units, an axis left to zero being derived from the element itself
+		* @param p_size
+		*/
 		void SetUISize(const OvMaths::FVector2& p_size);
+
+		/**
+		* Return the size in canvas units, an axis left to zero being derived from the element itself
+		*/
 		const OvMaths::FVector2& GetUISize() const;
 
+		/**
+		* Set the normalized pivot, clamped to the [-1, 1] range on both axes
+		* @param p_pivot
+		*/
 		void SetUIPivot(const OvMaths::FVector2& p_pivot);
+
+		/**
+		* Return the normalized pivot
+		*/
 		const OvMaths::FVector2& GetUIPivot() const;
 
+		/**
+		* Set the anchor preset used to resolve the element against its parent
+		* @param p_anchorPreset
+		*/
 		void SetUIAnchorPreset(EUIAnchorPreset p_anchorPreset);
+
+		/**
+		* Return the anchor preset used to resolve the element against its parent
+		*/
 		EUIAnchorPreset GetUIAnchorPreset() const;
 
+		/**
+		* Check if the horizontal anchored position can be edited, which isn't the case when the
+		* axis is stretched or driven by a parent layout
+		*/
 		bool IsHorizontalUIPositionEditable() const;
+
+		/**
+		* Check if the vertical anchored position can be edited, which isn't the case when the
+		* axis is stretched or driven by a parent layout
+		*/
 		bool IsVerticalUIPositionEditable() const;
 
 		/**
