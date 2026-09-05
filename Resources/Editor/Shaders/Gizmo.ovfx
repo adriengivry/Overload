@@ -46,7 +46,8 @@ void main()
 	/* Instances are ordered Z, X, Y, while axis bits are ordered X, Y, Z */
 	int axisBit = gl_InstanceID == 1 ? 1 : (gl_InstanceID == 2 ? 2 : 4);
 
-	if ((u_VisibleAxes & axisBit) == 0)
+	/* The ball is drawn with a single instance and isn't tied to an axis */
+	if (!u_IsBall && (u_VisibleAxes & axisBit) == 0)
 	{
 		vs_out.Color = vec3(0.0f);
 		gl_Position = vec4(2.0f, 2.0f, 2.0f, 1.0f);
