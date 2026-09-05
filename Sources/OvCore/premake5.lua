@@ -23,7 +23,6 @@ project "OvCore"
 		-- Dependencies
 		dependdir .. "baregl/include",
 		dependdir .. "ImGui/include",
-		dependdir .. "clay/include",
 		dependdir .. "lua/include",
 		dependdir .. "sol/include",
 		dependdir .. "tinyxml2/include",

@@ -16,9 +16,9 @@
 
 #include <OvCore/ECS/Actor.h>
 #include <OvCore/ECS/Components/UI/CImage.h>
-#include <OvCore/ECS/Components/UI/ClayLayoutSolver.h>
 #include <OvCore/ECS/Components/UI/CLayoutGroup.h>
 #include <OvCore/ECS/Components/UI/CText.h>
+#include <OvCore/ECS/Components/UI/LayoutSolver.h>
 #include <OvCore/ECS/Components/UI/UIInspectorUtils.h>
 #include <OvCore/ECS/Components/UI/UITransformResolver.h>
 #include <OvCore/Helpers/GUIDrawer.h>
@@ -148,7 +148,7 @@ namespace
 		return std::nullopt;
 	}
 
-	OvCore::ECS::Components::UI::ClayLayoutSettings CreateLayoutSettings(
+	OvCore::ECS::Components::UI::LayoutSettings CreateLayoutSettings(
 		const OvCore::ECS::Components::UI::CLayoutGroup& p_layout,
 		const OvMaths::FVector2& p_containerSize
 	)
@@ -171,11 +171,8 @@ namespace
 OvCore::ECS::Components::UI::CLayoutGroup::CLayoutGroup(ECS::Actor& p_owner) :
 AComponent(p_owner)
 {
-	m_layoutSolverContext = std::make_unique<ClayLayoutSolverContext>();
 	owner.transform.EnableUIData();
 }
-
-OvCore::ECS::Components::UI::CLayoutGroup::~CLayoutGroup() = default;
 
 std::string OvCore::ECS::Components::UI::CLayoutGroup::GetName()
 {
@@ -454,7 +451,7 @@ const OvCore::ECS::Components::UI::CLayoutGroup::LayoutCache& OvCore::ECS::Compo
 		return p_cache;
 	}
 
-	std::vector<ClayLayoutChildInput> layoutChildren;
+	std::vector<LayoutChildInput> layoutChildren;
 	layoutChildren.reserve(input.children.size());
 
 	for (const auto& child : input.children)
@@ -465,8 +462,7 @@ const OvCore::ECS::Components::UI::CLayoutGroup::LayoutCache& OvCore::ECS::Compo
 		});
 	}
 
-	const auto layoutResult = ClayLayoutSolver::Solve(
-		*m_layoutSolverContext,
+	const auto layoutResult = LayoutSolver::Solve(
 		CreateLayoutSettings(*this, p_containerSize),
 		layoutChildren
 	);

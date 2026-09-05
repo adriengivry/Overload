@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <memory>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -19,8 +18,6 @@ namespace OvCore::ECS { class Actor; }
 
 namespace OvCore::ECS::Components::UI
 {
-	class ClayLayoutSolverContext;
-
 	/**
 	* Arranges direct user interface children along an axis
 	*/
@@ -64,11 +61,6 @@ namespace OvCore::ECS::Components::UI
 		* @param p_owner
 		*/
 		CLayoutGroup(ECS::Actor& p_owner);
-
-		/**
-		* Destructor
-		*/
-		~CLayoutGroup() override;
 
 		/**
 		* Returns the name of the component
@@ -302,7 +294,6 @@ namespace OvCore::ECS::Components::UI
 		bool m_forceExpandHeight = false;
 		mutable LayoutCache m_layoutCache;
 		mutable LayoutCache m_effectiveLayoutCache;
-		mutable std::unique_ptr<ClayLayoutSolverContext> m_layoutSolverContext;
 	};
 }
 

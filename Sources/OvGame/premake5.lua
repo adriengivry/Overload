@@ -57,10 +57,7 @@ project "OvGame"
 		"OvRendering",
 		"OvTools",
 		"OvUI",
-		"OvWindowing",
-
-		-- Dependencies that others depend on - must come after
-		"clay"
+		"OvWindowing"
 	}
 
 	filter { "configurations:Debug" }
@@ -112,7 +109,6 @@ project "OvGame"
 			outputdir .. "%{cfg.buildcfg}/OvAudio/libOvAudio.a",
 			outputdir .. "%{cfg.buildcfg}/assimp/libassimp.a",
 			outputdir .. "%{cfg.buildcfg}/tinyxml2/libtinyxml2.a",
-			outputdir .. "%{cfg.buildcfg}/clay/libclay.a",
 			"-Wl,--no-whole-archive",
 			"-Wl,--allow-multiple-definition",  -- Tracy and Bullet3 have some duplicate symbols
 		}
