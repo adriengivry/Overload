@@ -207,6 +207,13 @@ namespace OvCore::SceneSystem
 		std::vector<OvCore::ECS::Actor*>& GetActors();
 
 		/**
+		* Moves an actor to the end of the scene order.
+		* @param p_actor
+		* @return True when the actor belongs to this scene
+		*/
+		bool MoveActorToEnd(ECS::Actor& p_actor);
+
+		/**
 		* Return the fast access components data structure
 		*/
 		const FastAccessComponents& GetFastAccessComponents() const;
