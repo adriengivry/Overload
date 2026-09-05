@@ -85,11 +85,7 @@ namespace
 			{
 				return !p_actor.GetComponent<CPhysicalObject>();
 			}
-			else if constexpr (
-				std::is_same_v<TComponent, UI::CLayoutGroup> ||
-				std::is_same_v<TComponent, UI::CHorizontalLayout> ||
-				std::is_same_v<TComponent, UI::CVerticalLayout>
-			)
+			else if constexpr (std::is_base_of_v<UI::CLayoutGroup, TComponent>)
 			{
 				return !p_actor.GetComponent<UI::CLayoutGroup>();
 			}
@@ -126,7 +122,6 @@ namespace
 		CreateComponentInfo<UI::CCanvas>("Canvas"),
 		CreateComponentInfo<UI::CHorizontalLayout>("Horizontal Layout"),
 		CreateComponentInfo<UI::CImage>("Image"),
-		CreateComponentInfo<UI::CLayoutGroup>("Layout Group"),
 		CreateComponentInfo<UI::CText>("Text"),
 		CreateComponentInfo<UI::CVerticalLayout>("Vertical Layout"),
 	});
