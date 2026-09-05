@@ -92,9 +92,9 @@ OvEditor::Core::Context::Context(const std::filesystem::path& p_projectFolder) :
 		.shaderPath = ":Shaders/Standard.ovfx"
 	});
 	uiResourceRegistry.ProvideDefinition({
-		.imageMaterialPath = ":Materials\\Image.ovmat",
-		.textMaterialPath = ":Materials\\Text.ovmat",
-		.defaultFontPath = ":Fonts\\Roboto-Regular.ttf"
+		.imageMaterialPath = ":Materials/Image.ovmat",
+		.textMaterialPath = ":Materials/Text.ovmat",
+		.defaultFontPath = ":Fonts/Roboto-Regular.ttf"
 	});
 
 	/* Settings */
