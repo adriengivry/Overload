@@ -73,7 +73,7 @@ OvGame::Core::Context::Context() :
 	projectSettings.TryGet("x_resolution", targetWindowResolution[0]);
 	projectSettings.TryGet("y_resolution", targetWindowResolution[1]);
 	windowSettings.maximized = false;
-	windowSettings.resizable = false;
+	projectSettings.TryGet("resizable", windowSettings.resizable);
 	projectSettings.TryGet("fullscreen", windowSettings.fullscreen);
 	projectSettings.TryGet("samples", windowSettings.samples);
 
@@ -176,6 +176,10 @@ OvGame::Core::Context::Context() :
 		windowSettings.height,
 		true, false, false
 	);
+
+	window->FramebufferResizeEvent.AddListener([this](unsigned short width, unsigned short height) {
+		framebuffer->Resize(width, height);
+	});
 }
 
 OvGame::Core::Context::~Context()

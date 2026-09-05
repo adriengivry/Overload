@@ -193,6 +193,7 @@ void OvEditor::Core::Context::ResetProjectSettings()
 	projectSettings.Add<int>("x_resolution", 1280);
 	projectSettings.Add<int>("y_resolution", 720);
 	projectSettings.Add<bool>("fullscreen", false);
+	projectSettings.Add<bool>("resizable", false);
 	projectSettings.Add<std::string>("executable_name", "Game");
 	projectSettings.Add<std::string>("start_scene", "");
 	projectSettings.Add<bool>("vsync", true);
@@ -209,6 +210,7 @@ bool OvEditor::Core::Context::IsProjectSettingsIntegrityVerified()
 		projectSettings.IsKeyExisting("x_resolution") &&
 		projectSettings.IsKeyExisting("y_resolution") &&
 		projectSettings.IsKeyExisting("fullscreen") &&
+		projectSettings.IsKeyExisting("resizable") &&
 		projectSettings.IsKeyExisting("executable_name") &&
 		projectSettings.IsKeyExisting("start_scene") &&
 		projectSettings.IsKeyExisting("vsync") &&
