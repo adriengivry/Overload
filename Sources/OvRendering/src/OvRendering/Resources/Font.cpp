@@ -273,6 +273,12 @@ namespace
 					continue;
 				}
 
+				if (glyphWidth + kGlyphPadding > atlasSize)
+				{
+					fits = false;
+					break;
+				}
+
 				if (cursorX + glyphWidth + kGlyphPadding > atlasSize)
 				{
 					cursorX = 0;
